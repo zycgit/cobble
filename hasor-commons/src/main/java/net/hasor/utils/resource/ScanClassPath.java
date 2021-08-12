@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.utils;
-import net.hasor.utils.asm.AnnotationVisitor;
-import net.hasor.utils.asm.ClassReader;
-import net.hasor.utils.asm.ClassVisitor;
-import net.hasor.utils.asm.Opcodes;
+package net.hasor.utils.resource;
+import net.hasor.utils.ResourcesUtils;
+import net.hasor.utils.StringUtils;
+import net.hasor.utils.proxy.asm.AnnotationVisitor;
+import net.hasor.utils.proxy.asm.ClassReader;
+import net.hasor.utils.proxy.asm.ClassVisitor;
+import net.hasor.utils.proxy.asm.Opcodes;
 
 import java.io.IOException;
 import java.io.InputStream;

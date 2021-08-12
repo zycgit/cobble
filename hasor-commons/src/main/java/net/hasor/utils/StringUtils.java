@@ -121,23 +121,7 @@ import java.util.Locale;
  * @since 1.0
  * @version $Id: StringUtils.java 1058365 2011-01-13 00:04:49Z niallp $
  */
-//@Immutable
 public class StringUtils {
-    // Performance testing notes (JDK 1.4, Jul03, scolebourne)
-    // Whitespace:
-    // Character.isWhitespace() is faster than WHITESPACE.indexOf()
-    // where WHITESPACE is a string of all whitespace characters
-    //
-    // Character access:
-    // String.charAt(n) versus toCharArray(), then array[n]
-    // String.charAt(n) is about 15% worse for a 10K string
-    // They are about equal for a length 50 string
-    // String.charAt(n) is about 4 times better for a length 3 string
-    // String.charAt(n) is best bet overall
-    //
-    // Append:
-    // String.concat about twice as fast as StringBuffer.append
-    // (not sure who tested this)
     /**
      * The empty String <code>""</code>.
      * @since 2.0

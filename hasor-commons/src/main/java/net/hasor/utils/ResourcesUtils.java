@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry;
  * @version 2010-9-24
  * @author 赵永春 (zyc@hasor.net)
  */
-public abstract class ResourcesUtils {
+public class ResourcesUtils {
     /** 发现事件 */
     public static class ScanEvent {
         private String      name    = null;

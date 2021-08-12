@@ -17,7 +17,8 @@ package net.hasor.utils.ref;
 import java.util.*;
 
 /**
- * 参照{@link java.util.HashSet}实现的WeakHashSet.详细介绍参看{@link java.util.Set}和{@link java.util.WeakHashMap}功能
+ * 参照{@link java.util.HashSet}实现的 WeakHashSet.
+ * 详细介绍参看{@link java.util.Set}和{@link java.util.WeakHashMap}功能
  * @version : 2013-11-8
  * @author (网络收集)
  */

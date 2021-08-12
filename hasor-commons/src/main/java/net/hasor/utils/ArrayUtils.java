@@ -298,6 +298,7 @@ public class ArrayUtils {
         }
         return array.clone();
     }
+
     /**
      * <p>Clones an array returning a typecast result and handling
      * <code>null</code>.</p>
@@ -3532,6 +3533,7 @@ public class ArrayUtils {
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
     }
+
     /**
      * <p>Adds all the elements of the given arrays into a new array.</p>
      * <p>The new array contains all of the element of <code>array1</code> followed
@@ -3560,6 +3562,7 @@ public class ArrayUtils {
         System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         return joinedArray;
     }
+
     /**
      * <p>Copies the given array and adds the given element at the end of the new array.</p>
      *

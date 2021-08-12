@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * 弱引用列表，WeakArrayList是修改自org.arakhne.util.ref下的WeakArrayList
+ * 弱引用列表，WeakArrayList是修改自 org.arakhne.util.ref 下的WeakArrayList
  * @version : 2013-11-8
  * @author (网络收集)
  */
