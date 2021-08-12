@@ -16,8 +16,6 @@
 package net.hasor.utils;
 import net.hasor.utils.ref.SpaceHashMap;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +27,6 @@ import java.util.Set;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class SpaceHashMapTest {
-    protected Logger logger = LoggerFactory.getLogger(getClass());
-
     // - 配置信息读取
     @Test
     public void mapTest() {

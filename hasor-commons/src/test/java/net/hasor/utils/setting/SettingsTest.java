@@ -18,8 +18,6 @@ import net.hasor.test.beans.SelectEnum;
 import net.hasor.utils.setting.provider.ConfigSource;
 import net.hasor.utils.setting.provider.StreamType;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -28,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SettingsTest {
-    protected            Logger logger           = LoggerFactory.getLogger(getClass());
     private static final String DATA_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String TIME_FORMAT      = "HH:mm:ss";
     private static final String DATA_FORMAT      = "yyyy-MM-dd";
