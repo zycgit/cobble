@@ -3,7 +3,7 @@
     <!-- Maven Info -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.hasor</groupId>
-    <artifactId>hasor-commons</artifactId>
+    <artifactId>cobble</artifactId>
     <version>4.2.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -23,7 +23,7 @@
     </properties>
 
     <!-- 项目信息 -->
-    <name>HasorCommons</name>
+    <name>HasorCobble</name>
     <description>java utils</description>
     <url>${project.website}</url>
     <inceptionYear>${project.inceptionYear}</inceptionYear>
