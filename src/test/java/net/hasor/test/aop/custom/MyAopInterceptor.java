@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.test.aop.custom;
-import net.hasor.utils.proxy.MethodInterceptor;
-import net.hasor.utils.proxy.MethodInvocation;
+import net.hasor.cobble.proxy.MethodInterceptor;
+import net.hasor.cobble.proxy.MethodInvocation;
 
 public class MyAopInterceptor implements MethodInterceptor {
     private static boolean called  = false;

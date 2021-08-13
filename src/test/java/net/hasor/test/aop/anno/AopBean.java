@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.test.aop.anno;
-import net.hasor.utils.proxy.aop.Aop;
-import net.hasor.utils.setting.Settings;
+import net.hasor.cobble.proxy.aop.Aop;
+import net.hasor.cobble.setting.Settings;
 
 import java.util.*;
 

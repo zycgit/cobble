@@ -15,7 +15,7 @@
  */
 package net.hasor.test.aop.level;
 import net.hasor.test.aop.custom.MyAopInterceptor;
-import net.hasor.utils.proxy.aop.Aop;
+import net.hasor.cobble.proxy.aop.Aop;
 
 /**
  * 类级别

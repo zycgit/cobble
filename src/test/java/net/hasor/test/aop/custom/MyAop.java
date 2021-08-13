@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.test.aop.custom;
-import net.hasor.utils.proxy.aop.Aop;
+import net.hasor.cobble.proxy.aop.Aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -3,7 +3,7 @@
     <!-- Maven Info -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.hasor</groupId>
-    <artifactId>cobble</artifactId>
+    <artifactId>hasor-cobble</artifactId>
     <version>4.2.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -90,7 +90,7 @@
                     <failOnWarnings>false</failOnWarnings>
                     <doclint>none</doclint>
                     <additionalJOption>--allow-script-in-comments</additionalJOption>
-                    <excludePackageNames>net.hasor.utils.*,net.hasor.libs.*</excludePackageNames>
+                    <excludePackageNames>net.hasor.cobble.*,net.hasor.libs.*</excludePackageNames>
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
                     <header><![CDATA[ [<a target="_blank" href="http://www.hasor.net">Web Site</a>] ]]></header>
@@ -174,13 +174,13 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.yaml:snakeyaml</include>
-                                    <include>net.hasor:cobble</include>
+                                    <include>net.hasor:hasor-cobble</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>org.yaml.snakeyaml</pattern>
-                                    <shadedPattern>net.hasor.utils.setting.provider.yaml</shadedPattern>
+                                    <shadedPattern>net.hasor.cobble.setting.provider.yaml</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
