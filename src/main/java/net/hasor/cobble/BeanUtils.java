@@ -21,10 +21,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.*;
+import java.util.*;
 
 /**
  *
@@ -577,6 +576,54 @@ public class BeanUtils {
             BeanUtils.writePropertyOrField(dest, propertyName, val);
         } else {
             ((Map) dest).put(propertyName, val);
+        }
+    }
+
+    public static String safeToString(Object obj) {
+        return (obj == null) ? null : obj.toString();
+    }
+
+    public static Integer safeToInteger(Object obj) {
+        return (obj == null) ? null : (Integer) ConverterUtils.convert(Integer.class, obj);
+    }
+
+    public static Long safeToLong(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        }
+        return (Long) ConverterUtils.convert(Long.class, obj);
+    }
+
+    public static Boolean safeToBoolean(Object obj) {
+        return (obj == null) ? null : (Boolean) ConverterUtils.convert(Boolean.class, obj);
+    }
+
+    public static Date safeToDate(Object obj) {
+        if (obj == null) {
+            return null;
+        } else if (obj instanceof Date) {
+            return (Date) obj;
+        } else if (obj instanceof ZonedDateTime) {
+            ZonedDateTime zonedDateTime = ((ZonedDateTime) obj);
+            return Timestamp.from(zonedDateTime.toInstant());
+        } else if (obj instanceof OffsetDateTime) {
+            ZonedDateTime zonedDateTime = ((OffsetDateTime) obj).atZoneSameInstant(ZoneOffset.systemDefault());
+            return Timestamp.from(zonedDateTime.toInstant());
+        } else if (obj instanceof OffsetTime) {
+            ZonedDateTime zonedDateTime = ((OffsetTime) obj).atDate(LocalDate.ofEpochDay(0)).atZoneSameInstant(ZoneOffset.UTC);
+            return Timestamp.from(zonedDateTime.toInstant());
+        } else if (obj instanceof LocalDateTime) {
+            return Timestamp.valueOf((LocalDateTime) obj);
+        } else if (obj instanceof LocalDate) {
+            LocalDateTime dateTime = LocalDateTime.of((LocalDate) obj, LocalTime.of(0, 0, 0, 0));
+            return Timestamp.valueOf(dateTime);
+        } else if (obj instanceof Number) {
+            return new Date(((Number) obj).longValue());
+        } else {
+            throw new ClassCastException(obj.getClass() + " Type cannot be converted to Date");
         }
     }
 }
