@@ -21,4 +21,12 @@
             <email>zyc@hasor.net</email>
         </developer>
     </developers>
+
+    <!-- 引用依赖 -->
+    <dependencies>
+        <dependency>
+            <groupId>net.hasor</groupId>
+            <artifactId>cobble-lang</artifactId>
+        </dependency>
+    </dependencies>
 </project>

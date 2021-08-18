@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
-import net.hasor.cobble.resource.ResourcesUtils;
 import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.resource.ResourcesUtils;
 import net.hasor.cobble.setting.provider.ConfigSource;
 import net.hasor.cobble.setting.provider.StreamType;
 
@@ -28,15 +28,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * 继承自{@link MergedSettings}父类，该类自动装载 classpath 中所有静态配置文件。
- * 并且自动装载主配置文件（该配置文件应当只有一个）。
+ * 继承自{@link MergedSettings}父类。
  * @version : 2013-9-9
  * @author 赵永春 (zyc@hasor.net)
  */
 public class DefaultSettings extends MergedSettings {
     private URI settingURI;
 
-    private void outInitLog(String mode, Object oriResource) {
+    protected void outInitLog(String mode, Object oriResource) {
         if (this.settingURI != null) {
             logger.info("create Settings, settingsType is [" + mode + "] mode, mainSettings = " + this.settingURI);
         } else {
