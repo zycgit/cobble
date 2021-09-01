@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble;
-import java.util.concurrent.ThreadFactory;
+package net.hasor.cobble.io.output.hole;
+import java.io.Writer;
 
 /**
- *
- * @version : 2015年3月28日
+ * 黑洞 Writer
+ * @version 2021-03-02
  * @author 赵永春 (zyc@hasor.net)
  */
-public class NameThreadFactory implements ThreadFactory {
-    private String      nameSample = "Thread-%s";
-    private ClassLoader loader     = null;
-    private int         index      = 1;
-
-    //
-    public NameThreadFactory(String nameSample, ClassLoader loader) {
-        this.nameSample = nameSample;
-        this.loader = loader;
+public class BlackHoleWriter extends Writer {
+    @Override
+    public void write(char[] cbuf, int off, int len) {
     }
 
-    //
-    public Thread newThread(Runnable run) {
-        Thread t = new Thread(run);
-        t.setContextClassLoader(this.loader);
-        t.setName(String.format(nameSample, index++));
-        t.setDaemon(true);
-        return t;
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void close() {
     }
 }

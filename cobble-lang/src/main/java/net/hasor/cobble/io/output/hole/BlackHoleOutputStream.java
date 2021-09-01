@@ -13,25 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.io.hole;
-import java.io.IOException;
-import java.io.Writer;
+package net.hasor.cobble.io.output.hole;
+import java.io.OutputStream;
 
 /**
- * 黑洞 Writer
+ * 黑洞 OutputStream
  * @version 2021-03-02
  * @author 赵永春 (zyc@hasor.net)
  */
-public class BlackHoleWriter extends Writer {
+public class BlackHoleOutputStream extends OutputStream {
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-    }
-
-    @Override
-    public void flush() throws IOException {
-    }
-
-    @Override
-    public void close() throws IOException {
+    public void write(int b) {
     }
 }

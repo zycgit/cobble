@@ -21,7 +21,7 @@ import java.io.Writer;
 /**
  * 使用OutputStream输出Writer的工具类
  * @version 2009-5-13
- * @author 网络收集
+ * @author 赵永春 (zyc@hasor.net)
  */
 public class WriterOutputStream extends OutputStream {
     private Writer writer   = null;

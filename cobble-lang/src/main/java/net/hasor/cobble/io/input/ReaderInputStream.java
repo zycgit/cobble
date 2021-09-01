@@ -19,7 +19,7 @@ import java.io.*;
 /**
  * 使用InputStream读取Reader的工具类
  * @version 2009-5-13
- * @author 网络收集
+ * @author 赵永春 (zyc@hasor.net)
  */
 public class ReaderInputStream extends InputStream {
     private Reader                reader        = null;

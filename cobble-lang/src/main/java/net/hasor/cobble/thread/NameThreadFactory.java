@@ -13,27 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.io.hole;
-import java.io.IOException;
+package net.hasor.cobble.thread;
+import java.util.concurrent.ThreadFactory;
 
 /**
- * 黑洞 Appendable
- * @version 2021-03-02
+ *
+ * @version : 2015年3月28日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class BlackHoleAppendable implements Appendable {
-    @Override
-    public Appendable append(CharSequence csq) throws IOException {
-        return this;
+public class NameThreadFactory implements ThreadFactory {
+    private String      nameSample = "Thread-%s";
+    private ClassLoader loader     = null;
+    private int         index      = 1;
+
+    public NameThreadFactory(String nameSample, ClassLoader loader) {
+        this.nameSample = nameSample;
+        this.loader = loader;
     }
 
-    @Override
-    public Appendable append(CharSequence csq, int start, int end) throws IOException {
-        return this;
-    }
-
-    @Override
-    public Appendable append(char c) throws IOException {
-        return this;
+    public Thread newThread(Runnable run) {
+        Thread t = new Thread(run);
+        t.setContextClassLoader(this.loader);
+        t.setName(String.format(nameSample, index++));
+        t.setDaemon(true);
+        return t;
     }
 }

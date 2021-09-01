@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.io.hole;
-import java.io.IOException;
-import java.io.OutputStream;
+package net.hasor.cobble.scope;
+import java.util.function.Supplier;
 
 /**
- * 黑洞 OutputStream
- * @version 2021-03-02
+ * 多例
+ * @version : 2015年6月28日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class BlackHoleOutputStream extends OutputStream {
+public class PrototypeScope implements Scope {
+    public final static PrototypeScope SINGLETON = new PrototypeScope();
+
     @Override
-    public void write(int b) throws IOException {
+    public <T> Supplier<T> scope(Object key, Supplier<T> provider) {
+        return provider;
     }
 }

@@ -19,11 +19,6 @@
         </dependency>
         <dependency>
             <groupId>net.hasor</groupId>
-            <artifactId>cobble-json</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.hasor</groupId>
             <artifactId>cobble-lang</artifactId>
             <scope>compile</scope>
         </dependency>

@@ -13,69 +13,80 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.io.hole;
-import java.io.DataOutput;
-import java.io.IOException;
+package net.hasor.cobble.io.output.hole;
+import java.io.ObjectOutput;
 
 /**
  * 黑洞 DataOutput
  * @version 2021-03-02
  * @author 赵永春 (zyc@hasor.net)
  */
-public class BlackHoleDataOutput implements DataOutput {
+public class BlackHoleObjectOutput implements ObjectOutput {
     @Override
-    public void write(int b) throws IOException {
+    public void writeObject(Object obj) {
     }
 
     @Override
-    public void write(byte[] b) throws IOException {
+    public void write(int b) {
     }
 
     @Override
-    public void write(byte[] b, int off, int len) throws IOException {
+    public void write(byte[] b) {
     }
 
     @Override
-    public void writeBoolean(boolean v) throws IOException {
+    public void write(byte[] b, int off, int len) {
     }
 
     @Override
-    public void writeByte(int v) throws IOException {
+    public void writeBoolean(boolean v) {
     }
 
     @Override
-    public void writeShort(int v) throws IOException {
+    public void writeByte(int v) {
     }
 
     @Override
-    public void writeChar(int v) throws IOException {
+    public void writeShort(int v) {
     }
 
     @Override
-    public void writeInt(int v) throws IOException {
+    public void writeChar(int v) {
     }
 
     @Override
-    public void writeLong(long v) throws IOException {
+    public void writeInt(int v) {
     }
 
     @Override
-    public void writeFloat(float v) throws IOException {
+    public void writeLong(long v) {
     }
 
     @Override
-    public void writeDouble(double v) throws IOException {
+    public void writeFloat(float v) {
     }
 
     @Override
-    public void writeBytes(String s) throws IOException {
+    public void writeDouble(double v) {
     }
 
     @Override
-    public void writeChars(String s) throws IOException {
+    public void writeBytes(String s) {
     }
 
     @Override
-    public void writeUTF(String s) throws IOException {
+    public void writeChars(String s) {
+    }
+
+    @Override
+    public void writeUTF(String s) {
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void close() {
     }
 }

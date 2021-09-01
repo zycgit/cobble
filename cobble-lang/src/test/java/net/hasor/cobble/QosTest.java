@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
+import net.hasor.cobble.thread.QoSBucket;
 import org.junit.Test;
 
 /**
