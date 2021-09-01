@@ -19,14 +19,12 @@ import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.convert.ConverterUtils;
 import net.hasor.cobble.setting.data.TreeNode;
 
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Settings接口的抽象实现。
- *
  * @version : 2013-4-2
  * @author 赵永春 (zyc@hasor.net)
  */
@@ -48,10 +46,6 @@ public class BasicSettings extends AbstractSettings implements Settings {
         for (TreeNode sv : valueSet) {
             sv.update(updateValue, this);
         }
-    }
-
-    @Override
-    public void refresh() throws IOException {
     }
 
     /** 获取可用的命名空间。 */
@@ -104,19 +98,6 @@ public class BasicSettings extends AbstractSettings implements Settings {
         }
     }
 
-    /**
-     * 设置参数，如果出现多个值，则会覆盖。(使用默认命名空间 : DefaultNameSpace)
-     * @see #DefaultNameSpace
-     */
-    @Override
-    public void setSetting(String key, Object value) {
-        if (value instanceof SettingNode) {
-            this.setSetting(key, value, ((SettingNode) value).getSpace());
-        } else {
-            this.setSetting(key, value, DefaultNameSpace);
-        }
-    }
-
     /** 设置参数，如果出现多个值，则会覆盖。 */
     public void setSetting(String key, Object value, String namespace) {
         if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
@@ -140,11 +121,6 @@ public class BasicSettings extends AbstractSettings implements Settings {
             String valueStr = (value == null) ? null : value.toString();
             dataNode.setValue(key.trim(), valueStr);
         }
-    }
-
-    /** 添加参数，如果参数名称相同则追加一项。 */
-    public void addSetting(String key, Object value) {
-        this.addSetting(key, value, DefaultNameSpace);
     }
 
     /** 添加参数，如果参数名称相同则追加一项。 */

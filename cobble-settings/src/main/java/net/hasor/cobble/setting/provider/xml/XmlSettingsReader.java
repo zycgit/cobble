@@ -56,9 +56,7 @@ public class XmlSettingsReader implements SettingsReader {
             InputStream asStream = ResourcesUtils.getResourceAsStream(classLoader, resourceUrl);
             if (asStream != null) {
                 readXml(new InputStreamReader(asStream, Settings.DefaultCharset), readTo);
-                return;
             }
-            return;
         }
     }
 

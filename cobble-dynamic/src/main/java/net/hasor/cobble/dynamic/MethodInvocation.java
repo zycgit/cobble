@@ -26,14 +26,14 @@ public interface MethodInvocation {
      * Gets the method being called.
      * @return the method being called.
      */
-    public Method getMethod();
+    Method getMethod();
 
     /**
      * Get the arguments as an array object.
      * It is possible to change element values within this array to change the arguments.
      * @return the argument of the invocation
      */
-    public Object[] getArguments();
+    Object[] getArguments();
 
     /**
      * Proceeds to the next interceptor in the chain.
@@ -41,11 +41,11 @@ public interface MethodInvocation {
      * @return see the children interfaces' proceed definition.
      * @throws Throwable if the joinpoint throws an exception.
      */
-    public Object proceed() throws Throwable;
+    Object proceed() throws Throwable;
 
     /** Returns the object that holds the current join point's static part.
      * <p>For instance, the target object for an invocation.
      * @return the object (can be null if the accessible object is
      */
-    public Object getThis();
+    Object getThis();
 }

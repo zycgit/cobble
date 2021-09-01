@@ -28,9 +28,9 @@ import java.util.List;
  * @author 赵永春 (zyc@hasor.net)
  */
 class AopChainInvocation implements MethodInvocation {
-    private MethodInterceptor[] beforeInterceptor = null;
-    private MethodInvocation    invocation        = null;
-    private int                 index             = -1;
+    private final MethodInterceptor[] beforeInterceptor;
+    private final MethodInvocation    invocation;
+    private       int                 index = -1;
 
     public AopChainInvocation(TypeSupplier appContext, List<Class<? extends MethodInterceptor>> interTypeList, MethodInvocation invocation) {
         List<MethodInterceptor> beforeList = new ArrayList<>();

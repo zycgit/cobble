@@ -58,7 +58,6 @@ public class PropertiesSettingsReader implements SettingsReader {
                 properties.load(new InputStreamReader(asStream, StandardCharsets.UTF_8));
                 loadProperties(readTo, properties);
             }
-            return;
         }
     }
 

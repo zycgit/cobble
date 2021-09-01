@@ -41,5 +41,5 @@ public interface MethodInterceptor {
      * @return 返回拦截器执行结果
      * @throws Throwable 抛出的异常
      */
-    public Object invoke(MethodInvocation invocation) throws Throwable;
+    Object invoke(MethodInvocation invocation) throws Throwable;
 }

@@ -22,8 +22,8 @@ package net.hasor.cobble.dynamic;
  */
 public interface PropertyDelegate {
     /** 该委托属性的get方法，参数是属性所处的对象 */
-    public Object get(Object target) throws Throwable;
+    Object get(Object target) throws Throwable;
 
     /** 该委托属性的set方法，第一个参数是属性所处的对象，第二个参数代表设置的新值 */
-    public void set(Object target, Object newValue) throws Throwable;
+    void set(Object target, Object newValue) throws Throwable;
 }

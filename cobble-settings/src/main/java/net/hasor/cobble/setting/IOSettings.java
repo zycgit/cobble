@@ -22,6 +22,6 @@ import java.io.IOException;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface IOSettings extends Settings {
-    /**装载配置文件*/
-    public int loadSettings() throws IOException;
+    /** 装载配置文件 */
+    int loadSettings() throws IOException;
 }

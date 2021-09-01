@@ -18,217 +18,225 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * <p>
- * 配置文件设置
- * </p>
+ * <p> 配置文件设置 </p>
  *
  * @version : 2013-4-23
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface Settings {
-    public static final String DefaultNameSpace = "http://www.hasor.net/sechma/main";
-    public static final String DefaultCharset   = "UTF-8";
+    String DefaultNameSpace = "http://www.hasor.net/sechma/main";
+    String DefaultCharset   = "UTF-8";
 
-    /** @return 已解析的命名空间列表。 */
-    public String[] getSettingArray();
+    /** @return 已解析的命名空间列表 */
+    String[] getSettingArray();
 
-    /** 获取指在某个特定命名空间下的Settings接口对象。 */
-    public Settings getSettings(String namespace);
+    /** 获取指在某个特定命名空间下的Settings接口对象 */
+    Settings getSettings(String namespace);
 
-    /** 强制重新装载配置文件。 */
-    public void refresh() throws IOException;
+    /** 强制重新装载配置文件 */
+    default void refresh() throws IOException {
+    }
 
-    /** 设置参数，如果出现多个值，则会覆盖。 */
-    public void setSetting(String key, Object value);
+    /**
+     * 设置参数，如果出现多个值，则会覆盖。(使用默认命名空间 : DefaultNameSpace)
+     * @see #DefaultNameSpace
+     */
+    default void setSetting(String key, Object value) {
+        if (value instanceof SettingNode) {
+            this.setSetting(key, value, ((SettingNode) value).getSpace());
+        } else {
+            this.setSetting(key, value, DefaultNameSpace);
+        }
+    }
 
-    /** 设置参数，如果出现多个值，则会覆盖。 */
-    public void setSetting(String key, Object value, String namespace);
+    /** 设置参数，如果出现多个值，则会覆盖 */
+    void setSetting(String key, Object value, String namespace);
 
     /** 将整个配置项的多个值全部删除（全部命名空间） */
-    public void removeSetting(String s);
+    void removeSetting(String s);
 
-    /** 将整个配置项的多个值全部删除。 */
-    public void removeSetting(String key, String namespace);
+    /** 将整个配置项的多个值全部删除 */
+    void removeSetting(String key, String namespace);
 
-    /** 添加参数，如果参数名称相同则追加一项。 */
-    public void addSetting(String key, Object var);
+    /** 添加参数，如果参数名称相同则追加一项 */
+    default void addSetting(String key, Object value) {
+        this.addSetting(key, value, DefaultNameSpace);
+    }
 
-    /** 添加参数，如果参数名称相同则追加一项。 */
-    public void addSetting(String key, Object var, String namespace);
-    //
+    /** 添加参数，如果参数名称相同则追加一项 */
+    void addSetting(String key, Object var, String namespace);
 
-    /** 解析全局配置参数，并且返回其{@link Character}形式对象。 */
-    public Character getChar(String name);
+    /** 解析全局配置参数，并且返回其{@link Character}形式对象 */
+    Character getChar(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Character}形式对象。第二个参数为默认值。 */
-    public Character getChar(String name, Character defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Character}形式对象。第二个参数为默认值 */
+    Character getChar(String name, Character defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link String}形式对象。 */
-    public String getString(String name);
+    /** 解析全局配置参数，并且返回其{@link String}形式对象 */
+    String getString(String name);
 
-    /** 解析全局配置参数，并且返回其{@link String}形式对象。第二个参数为默认值。 */
-    public String getString(String name, String defaultValue);
+    /** 解析全局配置参数，并且返回其{@link String}形式对象。第二个参数为默认值 */
+    String getString(String name, String defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象。 */
-    public Boolean getBoolean(String name);
+    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象 */
+    Boolean getBoolean(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象。第二个参数为默认值。 */
-    public Boolean getBoolean(String name, Boolean defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象。第二个参数为默认值 */
+    Boolean getBoolean(String name, Boolean defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Short}形式对象。 */
-    public Short getShort(String name);
+    /** 解析全局配置参数，并且返回其{@link Short}形式对象 */
+    Short getShort(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Short}形式对象。第二个参数为默认值。 */
-    public Short getShort(String name, Short defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Short}形式对象。第二个参数为默认值 */
+    Short getShort(String name, Short defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Integer}形式对象。 */
-    public Integer getInteger(String name);
+    /** 解析全局配置参数，并且返回其{@link Integer}形式对象 */
+    Integer getInteger(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Integer}形式对象。第二个参数为默认值。 */
-    public Integer getInteger(String name, Integer defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Integer}形式对象。第二个参数为默认值 */
+    Integer getInteger(String name, Integer defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Long}形式对象。 */
-    public Long getLong(String name);
+    /** 解析全局配置参数，并且返回其{@link Long}形式对象 */
+    Long getLong(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Long}形式对象。第二个参数为默认值。 */
-    public Long getLong(String name, Long defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Long}形式对象。第二个参数为默认值 */
+    Long getLong(String name, Long defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Float}形式对象。 */
-    public Float getFloat(String name);
+    /** 解析全局配置参数，并且返回其{@link Float}形式对象 */
+    Float getFloat(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Float}形式对象。第二个参数为默认值。 */
-    public Float getFloat(String name, Float defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Float}形式对象。第二个参数为默认值 */
+    Float getFloat(String name, Float defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Double}形式对象。 */
-    public Double getDouble(String name);
+    /** 解析全局配置参数，并且返回其{@link Double}形式对象 */
+    Double getDouble(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Double}形式对象。第二个参数为默认值。 */
-    public Double getDouble(String name, Double defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Double}形式对象。第二个参数为默认值 */
+    Double getDouble(String name, Double defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。 */
-    public Date getDate(String name);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象 */
+    Date getDate(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值。 */
-    public Date getDate(String name, Date defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值 */
+    Date getDate(String name, Date defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值。 */
-    public Date getDate(String name, long defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值 */
+    Date getDate(String name, long defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。 */
-    public Date getDate(String name, String format);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象 */
+    Date getDate(String name, String format);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值。 */
-    public Date getDate(String name, String format, Date defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值 */
+    Date getDate(String name, String format, Date defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值。 */
-    public Date getDate(String name, String format, long defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值 */
+    Date getDate(String name, String format, long defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Enum}形式对象。 */
-    public <T extends Enum<?>> T getEnum(String name, Class<T> enmType);
+    /** 解析全局配置参数，并且返回其{@link Enum}形式对象 */
+    <T extends Enum<?>> T getEnum(String name, Class<T> enmType);
 
-    /** 解析全局配置参数，并且返回其{@link Enum}形式对象。第三个参数为默认值。 */
-    public <T extends Enum<?>> T getEnum(String name, Class<T> enmType, T defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Enum}形式对象。第三个参数为默认值 */
+    <T extends Enum<?>> T getEnum(String name, Class<T> enmType, T defaultValue);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’）。 */
-    public String getFilePath(String name);
+    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’） */
+    String getFilePath(String name);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’）。第二个参数为默认值。 */
-    public String getFilePath(String name, String defaultValue);
+    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’）。第二个参数为默认值 */
+    String getFilePath(String name, String defaultValue);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’）。 */
-    public String getDirectoryPath(String name);
+    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’） */
+    String getDirectoryPath(String name);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’）。第二个参数为默认值。 */
-    public String getDirectoryPath(String name, String defaultValue);
+    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’）。第二个参数为默认值 */
+    String getDirectoryPath(String name, String defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link SettingNode}形式对象。 */
-    public SettingNode getNode(String name);
-    //
+    /** 解析全局配置参数，并且返回其{@link SettingNode}形式对象 */
+    SettingNode getNode(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Character}形式对象。 */
-    public Character[] getCharArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Character}形式对象 */
+    Character[] getCharArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Character}形式对象。第二个参数为默认值。 */
-    public Character[] getCharArray(String name, Character defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Character}形式对象。第二个参数为默认值 */
+    Character[] getCharArray(String name, Character defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link String}形式对象。 */
-    public String[] getStringArray(String name);
+    /** 解析全局配置参数，并且返回其{@link String}形式对象 */
+    String[] getStringArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link String}形式对象。第二个参数为默认值。 */
-    public String[] getStringArray(String name, String defaultValue);
+    /** 解析全局配置参数，并且返回其{@link String}形式对象。第二个参数为默认值 */
+    String[] getStringArray(String name, String defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象。 */
-    public Boolean[] getBooleanArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象 */
+    Boolean[] getBooleanArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象。第二个参数为默认值。 */
-    public Boolean[] getBooleanArray(String name, Boolean defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Boolean}形式对象。第二个参数为默认值 */
+    Boolean[] getBooleanArray(String name, Boolean defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Short}形式对象。 */
-    public Short[] getShortArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Short}形式对象 */
+    Short[] getShortArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Short}形式对象。第二个参数为默认值。 */
-    public Short[] getShortArray(String name, Short defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Short}形式对象。第二个参数为默认值 */
+    Short[] getShortArray(String name, Short defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Integer}形式对象。 */
-    public Integer[] getIntegerArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Integer}形式对象 */
+    Integer[] getIntegerArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Integer}形式对象。第二个参数为默认值。 */
-    public Integer[] getIntegerArray(String name, Integer defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Integer}形式对象。第二个参数为默认值 */
+    Integer[] getIntegerArray(String name, Integer defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Long}形式对象。 */
-    public Long[] getLongArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Long}形式对象 */
+    Long[] getLongArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Long}形式对象。第二个参数为默认值。 */
-    public Long[] getLongArray(String name, Long defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Long}形式对象。第二个参数为默认值 */
+    Long[] getLongArray(String name, Long defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Float}形式对象。 */
-    public Float[] getFloatArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Float}形式对象 */
+    Float[] getFloatArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Float}形式对象。第二个参数为默认值。 */
-    public Float[] getFloatArray(String name, Float defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Float}形式对象。第二个参数为默认值 */
+    Float[] getFloatArray(String name, Float defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Double}形式对象。 */
-    public Double[] getDoubleArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Double}形式对象 */
+    Double[] getDoubleArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Double}形式对象。第二个参数为默认值。 */
-    public Double[] getDoubleArray(String name, Double defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Double}形式对象。第二个参数为默认值 */
+    Double[] getDoubleArray(String name, Double defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。 */
-    public Date[] getDateArray(String name);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象 */
+    Date[] getDateArray(String name);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值。 */
-    public Date[] getDateArray(String name, Date defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值 */
+    Date[] getDateArray(String name, Date defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值。 */
-    public Date[] getDateArray(String name, long defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第二个参数为默认值 */
+    Date[] getDateArray(String name, long defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。 */
-    public Date[] getDateArray(String name, String format);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象 */
+    Date[] getDateArray(String name, String format);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值。 */
-    public Date[] getDateArray(String name, String format, Date defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值 */
+    Date[] getDateArray(String name, String format, Date defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值。 */
-    public Date[] getDateArray(String name, String format, long defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Date}形式对象。第三个参数为默认值 */
+    Date[] getDateArray(String name, String format, long defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link Enum}形式对象。 */
-    public <T extends Enum<?>> T[] getEnumArray(String name, Class<T> enmType);
+    /** 解析全局配置参数，并且返回其{@link Enum}形式对象 */
+    <T extends Enum<?>> T[] getEnumArray(String name, Class<T> enmType);
 
-    /** 解析全局配置参数，并且返回其{@link Enum}形式对象。第三个参数为默认值。 */
-    public <T extends Enum<?>> T[] getEnumArray(String name, Class<T> enmType, T defaultValue);
+    /** 解析全局配置参数，并且返回其{@link Enum}形式对象。第三个参数为默认值 */
+    <T extends Enum<?>> T[] getEnumArray(String name, Class<T> enmType, T defaultValue);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’）。 */
-    public String[] getFilePathArray(String name);
+    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’） */
+    String[] getFilePathArray(String name);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’）。第二个参数为默认值。 */
-    public String[] getFilePathArray(String name, String defaultValue);
+    /** 解析全局配置参数，并且返回字符串（用于表示文件，结尾不带‘/’）。第二个参数为默认值 */
+    String[] getFilePathArray(String name, String defaultValue);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’）。 */
-    public String[] getDirectoryPathArray(String name);
+    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’） */
+    String[] getDirectoryPathArray(String name);
 
-    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’）。第二个参数为默认值。 */
-    public String[] getDirectoryPathArray(String name, String defaultValue);
+    /** 解析全局配置参数，并且返回字符串（用于表示目录，结尾带‘/’）。第二个参数为默认值 */
+    String[] getDirectoryPathArray(String name, String defaultValue);
 
-    /** 解析全局配置参数，并且返回其{@link SettingNode}形式对象。 */
-    public SettingNode[] getNodeArray(String name);
+    /** 解析全局配置参数，并且返回其{@link SettingNode}形式对象 */
+    SettingNode[] getNodeArray(String name);
 }

@@ -27,91 +27,91 @@ import java.util.function.Predicate;
  */
 public interface SettingNode {
     /** @return 获取父节点 */
-    public SettingNode getParent();
+    SettingNode getParent();
 
-    public String getSpace();
+    String getSpace();
 
-    public boolean isDefault();
+    boolean isDefault();
 
-    public boolean isEmpty();
+    boolean isEmpty();
 
     /** @return 获取节点名称 */
-    public String getName();
+    String getName();
 
     /** @return 获取节点完整的名称 */
-    public String getFullName();
+    String getFullName();
 
     /** @return 获取Xml节点文本值 */
-    public String getValue();
+    String getValue();
 
     /** @return 获取Xml节点Xml文本值 */
-    public String[] getValues();
+    String[] getValues();
 
-    public void setValue(String value);
+    void setValue(String value);
 
-    public void addValue(String value);
+    void addValue(String value);
 
-    public void clearValue();
-
-    /** @return 获取Xml节点文本值 */
-    public String getSubValue(String elementName);
+    void clearValue();
 
     /** @return 获取Xml节点文本值 */
-    public String[] getSubValues(String elementName);
+    String getSubValue(String elementName);
+
+    /** @return 获取Xml节点文本值 */
+    String[] getSubValues(String elementName);
 
     /** @return 获取属性集合 */
-    public SettingNode getSubNode(String elementName);
+    SettingNode getSubNode(String elementName);
 
-    public SettingNode[] getSubNodes(String elementName);
+    SettingNode[] getSubNodes(String elementName);
 
-    public SettingNode[] getSubNodes(String elementName, Predicate<SettingNode> predicate);
+    SettingNode[] getSubNodes(String elementName, Predicate<SettingNode> predicate);
 
-    public String[] getSubKeys();
+    String[] getSubKeys();
 
     /** @return 获取属性集合 */
-    public SettingNode[] getSubNodes();
+    SettingNode[] getSubNodes();
 
-    public SettingNode newNode(String elementName);
+    SettingNode newNode(String elementName);
 
-    public SettingNode newLast(String configKey);
+    SettingNode newLast(String configKey);
 
-    public void clearSub();
+    void clearSub();
 
-    public void clearSub(String elementName);
+    void clearSub(String elementName);
 
-    public SettingNode addSubNode(SettingNode target);
+    SettingNode addSubNode(SettingNode target);
 
-    public SettingNode addSubNode(String elementName, SettingNode target);
+    SettingNode addSubNode(String elementName, SettingNode target);
 
-    public void setNode(String configKey, SettingNode target);
+    void setNode(String configKey, SettingNode target);
 
-    public void addNode(String configKey, SettingNode target);
+    void addNode(String configKey, SettingNode target);
 
-    public void setValue(String configKey, String value);
+    void setValue(String configKey, String value);
 
-    public void addValue(String configKey, String value);
+    void addValue(String configKey, String value);
 
-    public SettingNode findNode(String configKey);
+    SettingNode findNode(String configKey);
 
-    public SettingNode findOrNew(String configKey);
+    SettingNode findOrNew(String configKey);
 
-    public List<SettingNode> findNodes(String configKey);
+    List<SettingNode> findNodes(String configKey);
 
-    public String findValue(String configKey);
+    String findValue(String configKey);
 
-    public String[] findValues(String configKey);
+    String[] findValues(String configKey);
 
-    public void visitNodes(Consumer<SettingNode> consumer);
+    void visitNodes(Consumer<SettingNode> consumer);
 
-    public void clear();
+    void clear();
 
-    public void findClear(String configKey);
+    void findClear(String configKey);
 
-    public void update(UpdateValue updateValue, Settings context);
+    void update(UpdateValue updateValue, Settings context);
 
-    public Map<String, String> toMap();
+    Map<String, String> toMap();
 
-    public Map<String, List<String>> toMapList();
+    Map<String, List<String>> toMapList();
 
-    public String toXml();
+    String toXml();
 }

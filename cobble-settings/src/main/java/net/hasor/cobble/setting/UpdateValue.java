@@ -21,5 +21,5 @@ import net.hasor.cobble.setting.data.DataNode;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface UpdateValue {
-    public void update(DataNode dataNode, Settings context);
+    void update(DataNode dataNode, Settings context);
 }
