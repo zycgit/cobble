@@ -55,6 +55,7 @@
     <modules>
         <module>cobble-all</module>
         <module>cobble-lang</module>
+        <module>cobble-loader</module>
         <module>cobble-dynamic</module>
         <module>cobble-settings</module>
     </modules>

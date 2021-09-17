@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
-import net.hasor.cobble.resource.ResourcesUtils;
+import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.provider.ConfigSource;
 import net.hasor.cobble.setting.provider.SettingsReader;
 import net.hasor.cobble.setting.provider.StreamType;

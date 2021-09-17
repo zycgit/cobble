@@ -23,8 +23,8 @@ import java.util.*;
  * @author (网络收集)
  */
 public class WeakHashSet<E> extends AbstractSet<E> implements Set<E> {
-    private transient    WeakHashMap<E, Object> map;
-    private static final Object                 PRESENT = new Object();
+    private final transient WeakHashMap<E, Object> map;
+    private static final    Object                 PRESENT = new Object();
 
     public WeakHashSet() {
         this.map = new WeakHashMap<>();

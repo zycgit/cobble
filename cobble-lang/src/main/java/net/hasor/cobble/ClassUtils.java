@@ -81,8 +81,8 @@ public class ClassUtils {
     private static final Map<Class<?>, Class<?>> wrapperPrimitiveMap = new HashMap<>();
 
     static {
-        for (Iterator<?> it = ClassUtils.primitiveWrapperMap.keySet().iterator(); it.hasNext(); ) {
-            Class<?> primitiveClass = (Class<?>) it.next();
+        for (Class<?> aClass : ClassUtils.primitiveWrapperMap.keySet()) {
+            Class<?> primitiveClass = (Class<?>) aClass;
             Class<?> wrapperClass = ClassUtils.primitiveWrapperMap.get(primitiveClass);
             if (!primitiveClass.equals(wrapperClass)) {
                 ClassUtils.wrapperPrimitiveMap.put(wrapperClass, primitiveClass);
@@ -110,9 +110,7 @@ public class ClassUtils {
         ClassUtils.reverseAbbreviationMap.put(abbreviation, primitive);
     }
 
-    /**
-     * Feed abbreviation maps
-     */
+    /** Feed abbreviation maps */
     static {
         ClassUtils.addAbbreviation("int", "I");
         ClassUtils.addAbbreviation("boolean", "Z");
@@ -274,7 +272,7 @@ public class ClassUtils {
         if (cls == null) {
             return null;
         }
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
         Class<?> superclass = cls.getSuperclass();
         while (superclass != null) {
             classes.add(superclass);
@@ -300,7 +298,7 @@ public class ClassUtils {
         if (cls == null) {
             return null;
         }
-        List<Class<?>> interfacesFound = new ArrayList<Class<?>>();
+        List<Class<?>> interfacesFound = new ArrayList<>();
         ClassUtils.getAllInterfaces(cls, interfacesFound);
         return interfacesFound;
     }
@@ -314,10 +312,10 @@ public class ClassUtils {
     private static void getAllInterfaces(Class<?> cls, final List<Class<?>> interfacesFound) {
         while (cls != null) {
             Class<?>[] interfaces = cls.getInterfaces();
-            for (int i = 0; i < interfaces.length; i++) {
-                if (!interfacesFound.contains(interfaces[i])) {
-                    interfacesFound.add(interfaces[i]);
-                    ClassUtils.getAllInterfaces(interfaces[i], interfacesFound);
+            for (Class<?> anInterface : interfaces) {
+                if (!interfacesFound.contains(anInterface)) {
+                    interfacesFound.add(anInterface);
+                    ClassUtils.getAllInterfaces(anInterface, interfacesFound);
                 }
             }
             cls = cls.getSuperclass();
@@ -342,9 +340,8 @@ public class ClassUtils {
         if (classNames == null) {
             return null;
         }
-        List<Class<?>> classes = new ArrayList<Class<?>>(classNames.size());
-        for (Iterator<String> it = classNames.iterator(); it.hasNext(); ) {
-            String className = (String) it.next();
+        List<Class<?>> classes = new ArrayList<>(classNames.size());
+        for (String className : classNames) {
             try {
                 classes.add(Class.forName(className));
             } catch (Exception ex) {
@@ -370,9 +367,8 @@ public class ClassUtils {
         if (classes == null) {
             return null;
         }
-        List<String> classNames = new ArrayList<String>(classes.size());
-        for (Iterator<Class<?>> it = classes.iterator(); it.hasNext(); ) {
-            Class<?> cls = it.next();
+        List<String> classNames = new ArrayList<>(classes.size());
+        for (Class<?> cls : classes) {
             if (cls == null) {
                 classNames.add(null);
             } else {
@@ -453,7 +449,7 @@ public class ClassUtils {
      * @since 2.5
      */
     public static boolean isAssignable(Class<?>[] classArray, Class<?>[] toClassArray, final boolean autoboxing) {
-        if (ArrayUtils.isSameLength(classArray, toClassArray) == false) {
+        if (!ArrayUtils.isSameLength(classArray, toClassArray)) {
             return false;
         }
         if (classArray == null) {
@@ -463,7 +459,7 @@ public class ClassUtils {
             toClassArray = ArrayUtils.EMPTY_CLASS_ARRAY;
         }
         for (int i = 0; i < classArray.length; i++) {
-            if (ClassUtils.isAssignable(classArray[i], toClassArray[i], autoboxing) == false) {
+            if (!ClassUtils.isAssignable(classArray[i], toClassArray[i], autoboxing)) {
                 return false;
             }
         }
@@ -804,7 +800,7 @@ public class ClassUtils {
      * @throws NoSuchMethodException if the method is not found in the given class
      *  or if the metothod doen't conform with the requirements
      */
-    public static Method getPublicMethod(final Class<?> cls, final String methodName, final Class<?> parameterTypes[]) throws SecurityException, NoSuchMethodException {
+    public static Method getPublicMethod(final Class<?> cls, final String methodName, final Class<?>[] parameterTypes) throws SecurityException, NoSuchMethodException {
         Method declaredMethod = cls.getMethod(methodName, parameterTypes);
         if (Modifier.isPublic(declaredMethod.getDeclaringClass().getModifiers())) {
             return declaredMethod;
@@ -827,7 +823,7 @@ public class ClassUtils {
                 return candidateMethod;
             }
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (parameterTypes != null) {
             for (Class<?> pt : parameterTypes) {
                 sb.append(pt.getName() + ",");
@@ -1081,7 +1077,7 @@ public class ClassUtils {
      * 格式为：<code>&lt;修饰符&gt;&nbsp;&lt;返回值&gt;&nbsp;&lt;类名&gt;.&lt;方法名&gt;(&lt;参数签名列表&gt;)</code>*/
     public static String getDescName(final Method method) {
         //public void addChild(org.noe.safety.services.SYS_TB_MenuTree)
-        StringBuffer str = new StringBuffer("");
+        StringBuilder str = new StringBuilder("");
         //1.访问修饰符
         int modifiers = method.getModifiers();
         if (Modifier.isPublic(modifiers)) {

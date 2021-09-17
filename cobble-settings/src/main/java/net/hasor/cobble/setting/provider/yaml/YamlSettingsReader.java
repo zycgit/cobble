@@ -16,7 +16,7 @@
  *
  */
 package net.hasor.cobble.setting.provider.yaml;
-import net.hasor.cobble.resource.ResourcesUtils;
+import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.SettingNode;
 import net.hasor.cobble.setting.Settings;
 import net.hasor.cobble.setting.data.TreeNode;

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import net.hasor.cobble.resource.ResourcesUtils;
 import org.junit.Test;
 
 import java.io.IOException;

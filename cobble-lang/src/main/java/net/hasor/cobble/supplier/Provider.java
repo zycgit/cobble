@@ -27,6 +27,7 @@ import java.util.function.Supplier;
  * @version : 2014年5月22日
  * @author 赵永春 (zyc@byshell.org)
  */
+@FunctionalInterface
 public interface Provider<T> extends Supplier<T>, Callable<T> {
     /** @return 获取对象。*/
     public default T get() {
@@ -68,11 +69,15 @@ public interface Provider<T> extends Supplier<T>, Callable<T> {
         return callable::call;
     }
 
-    public static <V, T extends V> Provider<V> ofs(Supplier<T> supplier) {
+    public static <V, T extends V> Provider<V> of2(T instance) {
+        return () -> instance;
+    }
+
+    public static <V, T extends V> Provider<V> of2(Supplier<T> supplier) {
         return supplier::get;
     }
 
-    public static <V, T extends V> Provider<V> ofc(Callable<T> callable) {
+    public static <V, T extends V> Provider<V> of2(Callable<T> callable) {
         return callable::call;
     }
 }

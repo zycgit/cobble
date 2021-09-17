@@ -16,7 +16,7 @@
  *
  */
 package net.hasor.cobble.setting.provider.xml;
-import net.hasor.cobble.resource.ResourcesUtils;
+import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.Settings;
 import net.hasor.cobble.setting.provider.ConfigSource;
 import net.hasor.cobble.setting.provider.SettingsReader;
