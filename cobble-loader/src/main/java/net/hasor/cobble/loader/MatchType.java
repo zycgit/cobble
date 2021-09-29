@@ -13,7 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.hasor.cobble.loader;
 /**
- * 资源加载工具,可以实现 classpath、zip、dir。多个位置的资源组合成一个接口同时提供资源加载。
+ * 扫描器资源匹配类型
+ * @version : 2021-09-12
+ * @author 赵永春 (zyc@hasor.net)
  */
-package net.hasor.cobble.resource;
+public enum MatchType {
+    /** 不制定匹配策略 */
+    None,
+    /** 前缀匹配 */
+    Prefix,
+    /** 尾缀匹配 */
+    Suffix,
+    /** 全字匹配 */
+    Match,
+    /** 正则表达式匹配 */
+    Regex,
+}

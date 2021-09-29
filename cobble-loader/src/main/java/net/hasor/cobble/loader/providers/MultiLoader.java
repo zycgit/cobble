@@ -1,0 +1,114 @@
+/*
+ * Copyright 2008-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.Loader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.Scanner;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/**
+ *
+ * @version : 2015年7月1日
+ * @author 赵永春 (zyc@byshell.org)
+ */
+public class MultiLoader implements Loader {
+    private final List<Loader> loaders = new CopyOnWriteArrayList<>();
+
+    /**
+     * Creates a new multi resource Loader that will use the specified loaders.
+     * @param loaders the loaders that are used to load resources.
+     */
+    public MultiLoader(Loader[] loaders) {
+        if (loaders == null) {
+            return;
+        }
+        for (Loader loader : loaders) {
+            addResourceLoader(loader);
+        }
+    }
+
+    /**添加一个 {@link Loader} */
+    public void addResourceLoader(Loader loader) {
+        if (loader == null) {
+            return;
+        }
+        if (!this.loaders.contains(loader)) {
+            this.loaders.add(loader);
+        }
+    }
+
+    protected Loader findLoader(String resource) {
+        for (Loader loads : this.loaders) {
+            if (loads != null && loads.exist(resource)) {
+                return loads;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public URL getResource(String resource) throws IOException {
+        Loader loader = findLoader(resource);
+        return loader == null ? null : loader.getResource(resource);
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String resource) throws IOException {
+        Loader loader = findLoader(resource);
+        return loader == null ? null : loader.getResourceAsStream(resource);
+    }
+
+    @Override
+    public List<URL> getResources(String resource) throws IOException {
+        List<URL> result = new ArrayList<>();
+        for (Loader loads : this.loaders) {
+            List<URL> resources = loads.getResources(resource);
+            result.addAll(resources);
+        }
+        return result;
+    }
+
+    @Override
+    public List<InputStream> getResourcesAsStream(String resource) throws IOException {
+        List<InputStream> result = new ArrayList<>();
+        for (Loader loads : this.loaders) {
+            List<InputStream> resources = loads.getResourcesAsStream(resource);
+            result.addAll(resources);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean exist(String resource) {
+        return findLoader(resource) != null;
+    }
+
+    @Override
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+        List<T> result = new ArrayList<>();
+        for (Loader loads : this.loaders) {
+            List<T> resources = loads.scanResources(matchType, scanner, scanPackages);
+            result.addAll(resources);
+        }
+        return result;
+    }
+}
