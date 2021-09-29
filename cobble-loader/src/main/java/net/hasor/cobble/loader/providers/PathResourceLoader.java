@@ -35,14 +35,14 @@ import java.util.stream.Collectors;
  * @version : 2011-9-17
  * @author 赵永春 (zyc@hasor.net)
  */
-public class PathLoader extends AbstractLoader {
+public class PathResourceLoader extends AbstractResourceLoader {
     private final List<File> dirPathList;
 
-    public PathLoader() {
+    public PathResourceLoader() {
         this.dirPathList = new ArrayList<>();
     }
 
-    public PathLoader(File dirFile) {
+    public PathResourceLoader(File dirFile) {
         this.dirPathList = new ArrayList<>();
         this.addPath(dirFile);
     }
@@ -127,19 +127,22 @@ public class PathLoader extends AbstractLoader {
         }
     }
 
-    private <T> void scanDirFile(File baseDir, List<T> result, File scanDir, Scanner<T> scanner, Predicate<File>[] scanPackages) throws IOException {
+    private <T> void scanDirFile(File baseDir, List<T> result, File scanDir, Scanner<T> scanner, Predicate<File>[] scanPackages, boolean matchOnce) throws IOException {
         File[] listFiles = scanDir.listFiles();
         if (listFiles == null) {
             return;
         }
         for (File fileItem : listFiles) {
+            if (matchOnce && !result.isEmpty()) {
+                return;
+            }
             if (fileItem.isHidden() || !fileItem.exists()) {
                 // 过滤掉：隐藏和不存在的
                 continue;
             }
             if (fileItem.isDirectory()) {
                 // 目录继续向下搜索
-                scanDirFile(baseDir, result, fileItem, scanner, scanPackages);
+                scanDirFile(baseDir, result, fileItem, scanner, scanPackages, matchOnce);
                 continue;
             }
             String resourceName = fileItem.getAbsolutePath().substring(baseDir.getAbsolutePath().length() + 1);
@@ -167,9 +170,21 @@ public class PathLoader extends AbstractLoader {
         Predicate<File>[] tests = buildPredicate(matchType, scanPackages, File::getPath);
         for (File baseDir : this.dirPathList) {
             if (baseDir.exists()) {
-                scanDirFile(baseDir, result, baseDir, scanner, tests);
+                scanDirFile(baseDir, result, baseDir, scanner, tests, false);
             }
         }
         return result;
+    }
+
+    @Override
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+        List<T> result = new ArrayList<>();
+        Predicate<File>[] tests = buildPredicate(matchType, scanPackages, File::getPath);
+        for (File baseDir : this.dirPathList) {
+            if (baseDir.exists()) {
+                scanDirFile(baseDir, result, baseDir, scanner, tests, true);
+            }
+        }
+        return result.isEmpty() ? null : result.get(0);
     }
 }

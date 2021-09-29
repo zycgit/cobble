@@ -24,12 +24,18 @@ import java.util.List;
  * @version : 2021-09-12
  * @author 赵永春 (zyc@hasor.net)
  */
-public interface Loader {
+public interface ResourceLoader {
     public <T> List<T> scanResources(Scanner<T> scanner) throws IOException;
 
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException;
 
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException;
+
+    public <T> T scanOneResource(Scanner<T> scanner) throws IOException;
+
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException;
+
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException;
 
     public URL getResource(String resource) throws IOException;
 
@@ -44,4 +50,8 @@ public interface Loader {
     public ClassLoader toClassLoader();
 
     public ClassLoader toClassLoader(ClassLoader parent);
+
+    public ClassFinder toClassFinder();
+
+    public ClassFinder toClassFinder(ClassLoader parent);
 }

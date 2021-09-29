@@ -20,12 +20,12 @@ package net.hasor.cobble.loader;
  * @author 赵永春 (zyc@hasor.net)
  */
 public enum MatchType {
-    /** 不制定匹配策略 */
+    /** 扫描所有资源 */
     None,
     /** 前缀匹配 */
     Prefix,
     /** 含有字符串 */
-    Contains,
+    ContainsAny,
     /** 尾缀匹配 */
     Suffix,
     /** 全字匹配 */

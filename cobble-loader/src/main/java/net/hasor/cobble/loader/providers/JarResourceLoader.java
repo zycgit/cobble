@@ -38,15 +38,15 @@ import java.util.zip.ZipEntry;
  * @version : 2021-09-12
  * @author 赵永春 (zyc@hasor.net)
  */
-public class JarLoader extends AbstractLoader {
+public class JarResourceLoader extends AbstractResourceLoader {
     private final JarFile       jarFile;
     private final List<JarFile> nestedJarFile;
 
-    public JarLoader(File file) throws IOException {
+    public JarResourceLoader(File file) throws IOException {
         this(file, Collections.emptyList());
     }
 
-    public JarLoader(File file, List<String> nestedList) throws IOException {
+    public JarResourceLoader(File file, List<String> nestedList) throws IOException {
         this.jarFile = new JarFile(file);
         this.nestedJarFile = new ArrayList<>();
         for (String nestedJar : nestedList) {
@@ -156,7 +156,7 @@ public class JarLoader extends AbstractLoader {
         }
     }
 
-    private <T> void scanJarFile(List<T> result, JarFile jarFile, Scanner<T> scanner, Predicate<JarEntry>[] scanPackages) throws IOException {
+    private <T> void scanJarFile(List<T> result, JarFile jarFile, Scanner<T> scanner, Predicate<JarEntry>[] scanPackages, boolean matchOnce) throws IOException {
         Iterator<JarEntry> zipEntry = jarFile.stream().iterator();
         while (zipEntry.hasNext()) {
             JarEntry entry = zipEntry.next();
@@ -170,6 +170,9 @@ public class JarLoader extends AbstractLoader {
             if (res != null) {
                 result.add(res);
             }
+            if (matchOnce && !result.isEmpty()) {
+                return;
+            }
         }
     }
 
@@ -178,12 +181,28 @@ public class JarLoader extends AbstractLoader {
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPackages, ZipEntry::getName);
         //
-        this.scanJarFile(result, this.jarFile, scanner, tests);
+        this.scanJarFile(result, this.jarFile, scanner, tests, false);
         if (!this.nestedJarFile.isEmpty()) {
             for (JarFile nestedJar : this.nestedJarFile) {
-                this.scanJarFile(result, nestedJar, scanner, tests);
+                this.scanJarFile(result, nestedJar, scanner, tests, false);
             }
         }
         return result;
+    }
+
+    @Override
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+        List<T> result = new ArrayList<>();
+        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPackages, ZipEntry::getName);
+        //
+        this.scanJarFile(result, this.jarFile, scanner, tests, true);
+        if (result.isEmpty() && !this.nestedJarFile.isEmpty()) {
+            for (JarFile nestedJar : this.nestedJarFile) {
+                if (result.isEmpty()) {
+                    this.scanJarFile(result, nestedJar, scanner, tests, true);
+                }
+            }
+        }
+        return result.isEmpty() ? null : result.get(0);
     }
 }

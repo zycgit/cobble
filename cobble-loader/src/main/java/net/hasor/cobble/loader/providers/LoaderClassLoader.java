@@ -16,11 +16,11 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.Loader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.loader.ScanEvent;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -31,15 +31,17 @@ import java.util.List;
  * @author 赵永春 (zyc@hasor.net)
  */
 class LoaderClassLoader extends ClassLoader {
-    private final Loader loader;
+    public static final String         tempDirectory = "LoaderClassLoader";
+    private             File           tempDir;
+    private final       ResourceLoader resourceLoader;
 
-    public LoaderClassLoader(Loader loader) {
-        this.loader = loader;
+    public LoaderClassLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 
-    public LoaderClassLoader(Loader loader, ClassLoader parentLoader) {
+    public LoaderClassLoader(ResourceLoader resourceLoader, ClassLoader parentLoader) {
         super(parentLoader);
-        this.loader = loader;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -47,7 +49,7 @@ class LoaderClassLoader extends ClassLoader {
         if (LoaderClassLoader.class.getName().equals(className)) {
             return LoaderClassLoader.class;
         }
-        if (this.loader != null) {
+        if (this.resourceLoader != null) {
             String resourceName = className.replace(".", "/") + ".class";
             InputStream inStream = this.getResourceAsStream(resourceName);
             if (inStream == null) {
@@ -70,8 +72,8 @@ class LoaderClassLoader extends ClassLoader {
     @Override
     protected URL findResource(String name) {
         try {
-            if (this.loader != null) {
-                URL resourceURL = this.loader.getResource(name);
+            if (this.resourceLoader != null) {
+                URL resourceURL = this.resourceLoader.getResource(name);
                 if (resourceURL != null) {
                     return resourceURL;
                 }
@@ -85,8 +87,8 @@ class LoaderClassLoader extends ClassLoader {
     @Override
     public Enumeration<URL> findResources(String name) throws IOException {
         try {
-            if (this.loader != null) {
-                List<URL> resourceURLs = this.loader.getResources(name);
+            if (this.resourceLoader != null) {
+                List<URL> resourceURLs = this.resourceLoader.getResources(name);
                 if (resourceURLs != null && !resourceURLs.isEmpty()) {
                     return CollectionUtils.asEnumeration(resourceURLs);
                 }
@@ -103,15 +105,103 @@ class LoaderClassLoader extends ClassLoader {
             return inputStream;
         } else {
             try {
-                return this.loader != null ? this.loader.getResourceAsStream(name) : null;
+                return this.resourceLoader != null ? this.resourceLoader.getResourceAsStream(name) : null;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
+    /**
+     * @see java.lang.ClassLoader#findLibrary(java.lang.String)
+     * @return The absolute path of the native library.
+     */
     @Override
     protected String findLibrary(String sLib) {
-        return super.findLibrary(sLib);
+        try {
+            File tempLib = findJarNativeEntry(sLib);
+            if (tempLib != null) {
+                return tempLib.getAbsolutePath();
+            }
+            return super.findLibrary(sLib);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Finds native library entry.
+     *
+     * @param sLib Library name. For example for the library name "Native"
+     *  - Windows returns entry "Native.dll"
+     *  - Linux returns entry "libNative.so"
+     *  - Mac returns entry "libNative.jnilib" or "libNative.dylib"
+     *    (depending on Apple or Oracle JDK and/or JDK version)
+     * @return Native library entry.
+     */
+    private File findJarNativeEntry(String sLib) throws IOException {
+        String sName = System.mapLibraryName(sLib);
+        return this.resourceLoader.scanOneResource(MatchType.Suffix, event -> {
+            // Example: sName is "Native.dll"
+            String sEntry = event.getName(); // "Native.dll" or "abc/xyz/Native.dll"
+            // sName "Native.dll" could be found, for example
+            //   - in the path: abc/Native.dll/xyz/my.dll <-- do not load this one!
+            //   - in the partial name: abc/aNative.dll   <-- do not load this one!
+            String[] token = sEntry.split("/"); // the last token is library name
+            if (token.length > 0 && token[token.length - 1].equals(sName)) {
+                File fileTmp = createTempFile(event);
+                fileTmp.deleteOnExit();
+                return fileTmp;
+            }
+            return null;
+        }, new String[] { sName });
+    }
+
+    /**
+     * Using temp files (one per inner JAR/DLL) solves many issues:
+     * 1. There are no ways to load JAR defined in a JarEntry directly
+     *    into the JarFile object (see also #6 below).
+     * 2. Cannot use memory-mapped files because they are using
+     *    nio channels, which are not supported by JarFile ctor.
+     * 3. JarFile object keeps opened JAR files handlers for fast access.
+     * 4. Deep resource in a jar-in-jar does not have well defined URL.
+     *    Making temp file with JAR solves this problem.
+     * 5. Similar issues with native libraries:
+     *    <code>ClassLoader.findLibrary()</code> accepts ONLY string with
+     *    absolute path to the file with native library.
+     * 6. Option "java.protocol.handler.pkgs" does not allow access to nested JARs(?).
+     *
+     * @param inf JAR entry information.
+     * @return temporary file object presenting JAR entry.
+     */
+    private File createTempFile(ScanEvent inf) throws IOException {
+        // Temp files directory:
+        //   WinXP: C:/Documents and Settings/username/Local Settings/Temp/LoaderClassLoader
+        //   Unix: /var/tmp/LoaderClassLoader
+        if (tempDir == null) {
+            File dir = new File(System.getProperty("java.io.tmpdir"), tempDirectory);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            chmod777(dir); // Unix - allow temp directory RW access to all users.
+            if (!dir.exists() || !dir.isDirectory()) {
+                throw new IOException("Cannot create temp directory " + dir.getAbsolutePath());
+            }
+            tempDir = dir;
+        }
+        File fileTmp = File.createTempFile(inf.getName() + ".", null, tempDir);
+        fileTmp.deleteOnExit();
+        chmod777(fileTmp); // Unix - allow temp file deletion by any user
+        //
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileTmp)); InputStream in = inf.getStream()) {
+            IOUtils.copy(in, out);
+        }
+        return fileTmp;
+    }
+
+    private void chmod777(File file) {
+        file.setReadable(true, false);
+        file.setWritable(true, false);
+        file.setExecutable(true, false); // Unix: allow content for dir, redundant for file
     }
 }

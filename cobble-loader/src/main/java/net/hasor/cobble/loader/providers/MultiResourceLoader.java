@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.Loader;
 import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
@@ -30,24 +30,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version : 2015年7月1日
  * @author 赵永春 (zyc@byshell.org)
  */
-public class MultiLoader extends AbstractLoader {
-    private final List<Loader> loaders = new CopyOnWriteArrayList<>();
+public class MultiResourceLoader extends AbstractResourceLoader {
+    private final List<ResourceLoader> loaders = new CopyOnWriteArrayList<>();
 
     /**
      * Creates a new multi resource Loader that will use the specified loaders.
      * @param loaders the loaders that are used to load resources.
      */
-    public MultiLoader(Loader[] loaders) {
+    public MultiResourceLoader(ResourceLoader[] loaders) {
         if (loaders == null) {
             return;
         }
-        for (Loader loader : loaders) {
+        for (ResourceLoader loader : loaders) {
             addResourceLoader(loader);
         }
     }
 
-    /**添加一个 {@link Loader} */
-    public void addResourceLoader(Loader loader) {
+    /**添加一个 {@link ResourceLoader} */
+    public void addResourceLoader(ResourceLoader loader) {
         if (loader == null) {
             return;
         }
@@ -56,8 +56,8 @@ public class MultiLoader extends AbstractLoader {
         }
     }
 
-    protected Loader findLoader(String resource) {
-        for (Loader loads : this.loaders) {
+    protected ResourceLoader findLoader(String resource) {
+        for (ResourceLoader loads : this.loaders) {
             if (loads != null && loads.exist(resource)) {
                 return loads;
             }
@@ -67,20 +67,20 @@ public class MultiLoader extends AbstractLoader {
 
     @Override
     public URL getResource(String resource) throws IOException {
-        Loader loader = findLoader(resource);
+        ResourceLoader loader = findLoader(resource);
         return loader == null ? null : loader.getResource(resource);
     }
 
     @Override
     public InputStream getResourceAsStream(String resource) throws IOException {
-        Loader loader = findLoader(resource);
+        ResourceLoader loader = findLoader(resource);
         return loader == null ? null : loader.getResourceAsStream(resource);
     }
 
     @Override
     public List<URL> getResources(String resource) throws IOException {
         List<URL> result = new ArrayList<>();
-        for (Loader loads : this.loaders) {
+        for (ResourceLoader loads : this.loaders) {
             List<URL> resources = loads.getResources(resource);
             result.addAll(resources);
         }
@@ -90,7 +90,7 @@ public class MultiLoader extends AbstractLoader {
     @Override
     public List<InputStream> getResourcesAsStream(String resource) throws IOException {
         List<InputStream> result = new ArrayList<>();
-        for (Loader loads : this.loaders) {
+        for (ResourceLoader loads : this.loaders) {
             List<InputStream> resources = loads.getResourcesAsStream(resource);
             result.addAll(resources);
         }
@@ -105,10 +105,21 @@ public class MultiLoader extends AbstractLoader {
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
         List<T> result = new ArrayList<>();
-        for (Loader loads : this.loaders) {
+        for (ResourceLoader loads : this.loaders) {
             List<T> resources = loads.scanResources(matchType, scanner, scanPackages);
             result.addAll(resources);
         }
         return result;
+    }
+
+    @Override
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+        for (ResourceLoader loads : this.loaders) {
+            T resources = loads.scanOneResource(matchType, scanner, scanPackages);
+            if (resources != null) {
+                return resources;
+            }
+        }
+        return null;
     }
 }

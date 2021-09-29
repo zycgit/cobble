@@ -23,10 +23,10 @@ import java.io.File;
 /**
  * Tests for {@link JarFile}.
  */
-public class PathLoaderTests {
+public class PathResourceLoaderTests {
     @Test
     public void loadClassTest() throws Exception {
-        PathLoader dirFile = new PathLoader();
+        PathResourceLoader dirFile = new PathResourceLoader();
         dirFile.addPath(new File("src/test/resources/dir/app.zip"));
         //
         ClassLoader classLoader = dirFile.toClassLoader();

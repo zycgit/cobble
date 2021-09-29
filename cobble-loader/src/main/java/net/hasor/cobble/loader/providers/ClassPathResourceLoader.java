@@ -39,37 +39,25 @@ import java.util.zip.ZipEntry;
  * @version : 2013-6-6
  * @author 赵永春 (zyc@hasor.net)
  */
-public class ClassPathLoader extends AbstractLoader {
-    private       String      prefixPackage = null;
-    private       ClassLoader classLoader   = null;
+public class ClassPathResourceLoader extends AbstractResourceLoader {
+    private       ClassLoader classLoader = null;
     private final List<URL>   classpath;
 
-    public ClassPathLoader() {
-        this("", Thread.currentThread().getContextClassLoader());
+    public ClassPathResourceLoader() {
+        this(Thread.currentThread().getContextClassLoader());
     }
 
-    public ClassPathLoader(String prefixPackage) {
-        this(prefixPackage, Thread.currentThread().getContextClassLoader());
-    }
-
-    public ClassPathLoader(String prefixPackage, ClassLoader classLoader) {
-        this.prefixPackage = prefixPackage;
+    public ClassPathResourceLoader(ClassLoader classLoader) {
         this.classLoader = Objects.requireNonNull(classLoader);
         this.classpath = ClassUtils.getClassPath(classLoader);
     }
 
-    /** 获取装载资源使用的类装载器 */
-    public ClassLoader getClassLoader() {
-        return this.classLoader;
-    }
-
     private String formatResourcePath(String resourcePath) {
-        String path = this.prefixPackage + (resourcePath.charAt(0) == '/' ? resourcePath : "/" + resourcePath);
-        path = path.replaceAll("/{2}", "/");
-        if (path.charAt(0) == '/') {
-            path = path.substring(1);
+        resourcePath = resourcePath.replaceAll("/{2}", "/");
+        if (resourcePath.charAt(0) == '/') {
+            resourcePath = resourcePath.substring(1);
         }
-        return path;
+        return resourcePath;
     }
 
     @Override
@@ -126,21 +114,49 @@ public class ClassPathLoader extends AbstractLoader {
             if (protocol.equals("file")) {
                 File contextDir = new File(URLDecoder.decode(url.getFile()));
                 if (contextDir.isDirectory()) {
-                    dirScan(result, contextDir, contextDir, testDir, scanner);
+                    dirScan(result, contextDir, contextDir, testDir, scanner, false);
                 } else {
                     JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
-                    jarScan(result, jarFile, testJar, scanner);
+                    jarScan(result, jarFile, testJar, scanner, false);
                 }
             } else if (protocol.equals("jar")) {
                 JarURLConnection jarc = (JarURLConnection) url.openConnection();
                 JarFile jarFile = jarc.getJarFile();
-                jarScan(result, jarFile, testJar, scanner);
+                jarScan(result, jarFile, testJar, scanner, false);
             }
         }
         return result;
     }
 
-    private static <T> void jarScan(List<T> result, JarFile jarFile, Predicate<JarEntry>[] jarTest, Scanner<T> scanner) throws IOException {
+    @Override
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+        List<T> result = new ArrayList<>();
+        Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPackages, ZipEntry::getName);
+        Predicate<File>[] testDir = buildPredicate(matchType, scanPackages, File::getPath);
+        for (URL url : this.classpath) {
+            String protocol = url.getProtocol();
+            if (protocol.equals("file")) {
+                File contextDir = new File(URLDecoder.decode(url.getFile()));
+                if (contextDir.isDirectory()) {
+                    dirScan(result, contextDir, contextDir, testDir, scanner, true);
+                } else {
+                    JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
+                    jarScan(result, jarFile, testJar, scanner, true);
+                }
+            } else if (protocol.equals("jar")) {
+                JarURLConnection jarc = (JarURLConnection) url.openConnection();
+                JarFile jarFile = jarc.getJarFile();
+                jarScan(result, jarFile, testJar, scanner, true);
+            }
+            //
+            if (!result.isEmpty()) {
+                return result.get(0);
+            }
+        }
+        return null;
+    }
+
+    private static <T> void jarScan(List<T> result, JarFile jarFile, Predicate<JarEntry>[] jarTest, Scanner<T> scanner, boolean matchOnce) throws IOException {
         URL content = new File(jarFile.getName()).toURI().toURL();
         Iterator<JarEntry> zipEntry = jarFile.stream().iterator();
         while (zipEntry.hasNext()) {
@@ -154,6 +170,9 @@ public class ClassPathLoader extends AbstractLoader {
             T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
             if (res != null) {
                 result.add(res);
+            }
+            if (matchOnce && !result.isEmpty()) {
+                return;
             }
         }
     }
@@ -171,20 +190,26 @@ public class ClassPathLoader extends AbstractLoader {
         }
     }
 
-    private static <T> void dirScan(List<T> result, File contextDir, File curFile, Predicate<File>[] testDir, Scanner<T> scanner) throws IOException {
+    private static <T> void dirScan(List<T> result, File contextDir, File curFile, Predicate<File>[] testDir, Scanner<T> scanner, boolean matchOnce) throws IOException {
+        if (matchOnce && !result.isEmpty()) {
+            return;
+        }
         File[] listFiles = curFile.listFiles();
         if (listFiles == null) {
             return;
         }
         //
         for (File fileItem : listFiles) {
+            if (matchOnce && !result.isEmpty()) {
+                return;
+            }
             if (fileItem.isHidden() || !fileItem.exists()) {
                 // 过滤掉：隐藏和不存在的
                 continue;
             }
             if (fileItem.isDirectory()) {
                 // 目录继续向下搜索
-                dirScan(result, contextDir, fileItem, testDir, scanner);
+                dirScan(result, contextDir, fileItem, testDir, scanner, matchOnce);
                 continue;
             }
             //

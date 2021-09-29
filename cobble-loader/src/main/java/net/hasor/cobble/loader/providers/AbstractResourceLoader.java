@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.Loader;
+import net.hasor.cobble.loader.ClassFinder;
 import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.function.Predicate;
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public abstract class AbstractLoader implements Loader {
+public abstract class AbstractResourceLoader implements ResourceLoader {
     public ClassLoader toClassLoader() {
         return new LoaderClassLoader(this);
     }
@@ -37,12 +38,28 @@ public abstract class AbstractLoader implements Loader {
         return new LoaderClassLoader(this, parent);
     }
 
+    public ClassFinder toClassFinder() {
+        return new LoaderClassScanner(this, this.toClassLoader());
+    }
+
+    public ClassFinder toClassFinder(ClassLoader parent) {
+        return new LoaderClassScanner(this, this.toClassLoader(parent));
+    }
+
     public <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
         return scanResources(MatchType.None, scanner, new String[0]);
     }
 
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
         return scanResources(matchType, scanner, new String[0]);
+    }
+
+    public <T> T scanOneResource(Scanner<T> scanner) throws IOException {
+        return scanOneResource(MatchType.None, scanner, new String[0]);
+    }
+
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
+        return scanOneResource(matchType, scanner, new String[0]);
     }
 
     protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPackages, Function<T, String> nameFunc) {
@@ -65,7 +82,7 @@ public abstract class AbstractLoader implements Loader {
                     tests[i] = e -> nameFunc.apply(e).matches(matchExpr);
                     break;
                 }
-                case Contains: {
+                case ContainsAny: {
                     tests[i] = e -> nameFunc.apply(e).contains(matchExpr);
                     break;
                 }

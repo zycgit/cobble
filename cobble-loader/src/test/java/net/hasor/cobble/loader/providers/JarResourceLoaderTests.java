@@ -24,11 +24,11 @@ import java.io.File;
 /**
  * Tests for {@link JarFile}.
  */
-public class JarLoaderTests {
+public class JarResourceLoaderTests {
     @Test
     public void loadClassTest() throws Exception {
         String zipFile = ResourcesUtils.getResource("/jars/app.zip").getFile();
-        JarLoader jarFile = new JarLoader(new File(zipFile));
+        JarResourceLoader jarFile = new JarResourceLoader(new File(zipFile));
         ClassLoader classLoader = jarFile.toClassLoader();
         //
         Class<?> c = classLoader.loadClass("demo.Application");
