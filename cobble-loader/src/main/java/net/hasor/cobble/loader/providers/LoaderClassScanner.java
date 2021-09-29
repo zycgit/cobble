@@ -70,7 +70,7 @@ class LoaderClassScanner implements ClassFinder {
                     className = className.replace("/", ".");
                     return testAndLoad(className, featureType.getName());
                 }
-            });
+            }, loadPackages);
             return new HashSet<>(classes);
         } catch (IOException e) {
             throw new IllegalStateException(ExceptionUtils.getRootCause(e));
