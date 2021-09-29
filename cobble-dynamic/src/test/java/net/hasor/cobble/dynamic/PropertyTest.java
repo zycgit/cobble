@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.json.JSON;
 import net.hasor.cobble.supplier.Provider;
 import org.junit.Test;
 
@@ -31,9 +30,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", "abc");
-        assert JSON.toJSONString(instance, SerializerFeature.UseSingleQuotes).equals("{'name':'abc'}");
+        assert JSON.toString(instance).equals("{'name':'abc'}");
         BeanUtils.writeProperty(instance, "name", "def");
-        assert JSON.toJSONString(instance, SerializerFeature.UseSingleQuotes).equals("{'name':'def'}");
+        assert JSON.toString(instance).equals("{'name':'def'}");
     }
 
     @Test
@@ -45,9 +44,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", true);
-        assert JSON.toJSONString(instance, SerializerFeature.UseSingleQuotes).equals("{'name':true}");
+        assert JSON.toString(instance).equals("{'name':true}");
         BeanUtils.writeProperty(instance, "name", false);
-        assert JSON.toJSONString(instance, SerializerFeature.UseSingleQuotes).equals("{'name':false}");
+        assert JSON.toString(instance).equals("{'name':false}");
     }
 
     @Test

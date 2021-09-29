@@ -39,7 +39,7 @@
 
     <build>
         <plugins>
-            <!-- 把 yaml 的源码和 class 集成到项目中 -->
+            <!-- 把 asm 的源码和 class 集成到项目中 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -62,7 +62,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.objectweb.asm</pattern>
-                                    <shadedPattern>net.hasor.cobble.dynamic.asm</shadedPattern>
+                                    <shadedPattern>net.hasor.cobble.asm</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

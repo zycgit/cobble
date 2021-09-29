@@ -14,17 +14,22 @@
     <dependencies>
         <dependency>
             <groupId>net.hasor</groupId>
-            <artifactId>cobble-dynamic</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.hasor</groupId>
             <artifactId>cobble-lang</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.hasor</groupId>
+            <artifactId>cobble-dynamic</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.hasor</groupId>
             <artifactId>cobble-settings</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.hasor</groupId>
+            <artifactId>cobble-loader</artifactId>
             <scope>compile</scope>
         </dependency>
     </dependencies>

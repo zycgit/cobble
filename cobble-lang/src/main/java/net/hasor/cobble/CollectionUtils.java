@@ -78,6 +78,11 @@ public class CollectionUtils {
     }
 
     /** 转换为 Enumeration */
+    public static <T> Enumeration<T> asEnumeration(final List<T> list) {
+        return list == null ? null : asEnumeration(list.iterator());
+    }
+
+    /** 转换为 Enumeration */
     public static <T> Enumeration<T> asEnumeration(final Iterator<T> iterator) {
         return new Enumeration<T>() {
             @Override
