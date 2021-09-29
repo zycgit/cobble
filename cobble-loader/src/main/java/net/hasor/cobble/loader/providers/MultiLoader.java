@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version : 2015年7月1日
  * @author 赵永春 (zyc@byshell.org)
  */
-public class MultiLoader implements Loader {
+public class MultiLoader extends AbstractLoader {
     private final List<Loader> loaders = new CopyOnWriteArrayList<>();
 
     /**

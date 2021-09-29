@@ -16,7 +16,6 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
-import net.hasor.cobble.loader.Loader;
 import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
  * @version : 2011-9-17
  * @author 赵永春 (zyc@hasor.net)
  */
-public class PathLoader implements Loader {
+public class PathLoader extends AbstractLoader {
     private final List<File> dirPathList;
 
     public PathLoader() {
@@ -133,7 +132,6 @@ public class PathLoader implements Loader {
         if (listFiles == null) {
             return;
         }
-        //
         for (File fileItem : listFiles) {
             if (fileItem.isHidden() || !fileItem.exists()) {
                 // 过滤掉：隐藏和不存在的
@@ -144,7 +142,8 @@ public class PathLoader implements Loader {
                 scanDirFile(baseDir, result, fileItem, scanner, scanPackages);
                 continue;
             }
-            if (!testFound(fileItem, scanPackages)) {
+            String resourceName = fileItem.getAbsolutePath().substring(baseDir.getAbsolutePath().length() + 1);
+            if (!testFound(new File(resourceName), scanPackages)) {
                 // 匹配失败
                 continue;
             }
@@ -155,7 +154,6 @@ public class PathLoader implements Loader {
                     throw new IOException("file cannot be read :" + fileItem);
                 }
             };
-            String resourceName = fileItem.getAbsolutePath().substring(baseDir.getAbsolutePath().length() + 1);
             T res = scanner.found(new ScanEvent(resourceName, fileItem.length(), fileItem.toURI().toURL(), inputStream));
             if (res != null) {
                 result.add(res);
@@ -163,47 +161,10 @@ public class PathLoader implements Loader {
         }
     }
 
-    private Predicate<File>[] buildPredicate(MatchType matchType, String[] scanPackages) {
-        if (matchType == null) {
-            throw new IllegalStateException("missing matchType.");
-        }
-        Predicate<File>[] tests = new Predicate[scanPackages.length];
-        for (int i = 0; i < scanPackages.length; i++) {
-            final String matchExpr = scanPackages[i];
-            switch (matchType) {
-                case None: {
-                    tests[i] = e -> true;
-                    break;
-                }
-                case Match: {
-                    tests[i] = e -> e.getAbsolutePath().equals(matchExpr);
-                    break;
-                }
-                case Regex: {
-                    tests[i] = e -> e.getAbsolutePath().matches(matchExpr);
-                    break;
-                }
-                case Prefix: {
-                    tests[i] = e -> e.getAbsolutePath().startsWith(matchExpr);
-                    break;
-                }
-                case Suffix: {
-                    tests[i] = e -> e.getAbsolutePath().endsWith(matchExpr);
-                    break;
-                }
-                default: {
-                    tests[i] = e -> false;
-                    break;
-                }
-            }
-        }
-        return tests;
-    }
-
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<File>[] tests = buildPredicate(matchType, scanPackages);
+        Predicate<File>[] tests = buildPredicate(matchType, scanPackages, File::getPath);
         for (File baseDir : this.dirPathList) {
             if (baseDir.exists()) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests);

@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 /**
@@ -1094,7 +1096,7 @@ public class ClassUtils {
         return str.toString();
     }
 
-    /**获取泛型类型。*/
+    /** 获取泛型类型 */
     public static Class<?> getSuperClassGenricType(final Class<?> clazz, final int index) {
         //返回表示此 Class 所表示的实体（类、接口、基本类型或 void）的直接超类的 Type。
         Type genType = clazz.getGenericSuperclass();
@@ -1118,5 +1120,33 @@ public class ClassUtils {
         } catch (InstantiationException | IllegalAccessException e) {
             throw ExceptionUtils.toRuntime(e);
         }
+    }
+
+    /** 获取ClassPath路径 */
+    public static List<URL> getClassPath(ClassLoader classLoader) {
+        List<ClassLoader> classLoaders = new ArrayList<>();
+        while (true) {
+            if (classLoader == null) {
+                break;
+            } else {
+                classLoaders.add(classLoader);
+                classLoader = classLoader.getParent();
+            }
+        }
+        //
+        List<URL> resources = new ArrayList<>();
+        for (ClassLoader loader : classLoaders) {
+            if (loader instanceof URLClassLoader) {
+                URL[] urLs = ((URLClassLoader) loader).getURLs();
+                if (urLs != null) {
+                    for (URL url : urLs) {
+                        if (!resources.contains(url)) {
+                            resources.add(url);
+                        }
+                    }
+                }
+            }
+        }
+        return resources;
     }
 }

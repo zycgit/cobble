@@ -25,13 +25,9 @@ import java.util.List;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface Loader {
-    public default <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
-        return scanResources(MatchType.None, scanner, new String[0]);
-    }
+    public <T> List<T> scanResources(Scanner<T> scanner) throws IOException;
 
-    public default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanResources(matchType, scanner, new String[0]);
-    }
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException;
 
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException;
 
@@ -45,11 +41,7 @@ public interface Loader {
 
     public boolean exist(String resource);
 
-    public default ClassLoader toClassLoader() {
-        return new LoaderClassLoader(this);
-    }
+    public ClassLoader toClassLoader();
 
-    public default ClassLoader toClassLoader(ClassLoader parent) {
-        return new LoaderClassLoader(this, parent);
-    }
+    public ClassLoader toClassLoader(ClassLoader parent);
 }

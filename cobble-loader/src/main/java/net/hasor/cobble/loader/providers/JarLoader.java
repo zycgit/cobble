@@ -16,7 +16,6 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
-import net.hasor.cobble.loader.Loader;
 import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
@@ -39,7 +38,7 @@ import java.util.zip.ZipEntry;
  * @version : 2021-09-12
  * @author 赵永春 (zyc@hasor.net)
  */
-public class JarLoader implements Loader {
+public class JarLoader extends AbstractLoader {
     private final JarFile       jarFile;
     private final List<JarFile> nestedJarFile;
 
@@ -174,47 +173,10 @@ public class JarLoader implements Loader {
         }
     }
 
-    private Predicate<JarEntry>[] buildPredicate(MatchType matchType, String[] scanPackages) {
-        if (matchType == null) {
-            throw new IllegalStateException("missing matchType.");
-        }
-        Predicate<JarEntry>[] tests = new Predicate[scanPackages.length];
-        for (int i = 0; i < scanPackages.length; i++) {
-            final String matchExpr = scanPackages[i];
-            switch (matchType) {
-                case None: {
-                    tests[i] = e -> true;
-                    break;
-                }
-                case Match: {
-                    tests[i] = e -> e.getName().equals(matchExpr);
-                    break;
-                }
-                case Regex: {
-                    tests[i] = e -> e.getName().matches(matchExpr);
-                    break;
-                }
-                case Prefix: {
-                    tests[i] = e -> e.getName().startsWith(matchExpr);
-                    break;
-                }
-                case Suffix: {
-                    tests[i] = e -> e.getName().endsWith(matchExpr);
-                    break;
-                }
-                default: {
-                    tests[i] = e -> false;
-                    break;
-                }
-            }
-        }
-        return tests;
-    }
-
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPackages);
+        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPackages, ZipEntry::getName);
         //
         this.scanJarFile(result, this.jarFile, scanner, tests);
         if (!this.nestedJarFile.isEmpty()) {

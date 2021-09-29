@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.loader;
+package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.Loader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

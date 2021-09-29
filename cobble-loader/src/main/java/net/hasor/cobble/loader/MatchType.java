@@ -24,6 +24,8 @@ public enum MatchType {
     None,
     /** 前缀匹配 */
     Prefix,
+    /** 含有字符串 */
+    Contains,
     /** 尾缀匹配 */
     Suffix,
     /** 全字匹配 */

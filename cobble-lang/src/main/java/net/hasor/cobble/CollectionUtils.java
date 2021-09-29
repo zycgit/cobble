@@ -97,6 +97,29 @@ public class CollectionUtils {
         };
     }
 
+    public static <T> List<T> asList(Enumeration<T> enumeration) {
+        if (enumeration == null) {
+            return Collections.emptyList();
+        }
+        ArrayList<T> arrayList = new ArrayList<>();
+        while (enumeration.hasMoreElements()) {
+            arrayList.add(enumeration.nextElement());
+        }
+        return arrayList;
+    }
+
+    public static <T> List<T> asList(Iterator<T> iterator) {
+        if (iterator == null) {
+            return Collections.emptyList();
+        }
+        ArrayList<T> arrayList = new ArrayList<>();
+        while (iterator.hasNext()) {
+            arrayList.add(iterator.next());
+        }
+        return arrayList;
+    }
+    //--------------------------------------------------------------------------
+
     /** 合并两个迭代器 */
     public static <T> Enumeration<T> mergeEnumeration(final Enumeration<T> enum1, final Enumeration<T> enum2) {
         final Enumeration<T> i1 = enum1 != null ? enum1 : CollectionUtils.asEnumeration(Collections.emptyIterator());
