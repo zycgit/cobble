@@ -61,6 +61,10 @@ class LoaderClassScanner implements ClassFinder {
     @Override
     public Set<Class<?>> getClassSet(String[] loadPackages, Class<?> featureType) {
         try {
+            String[] packages = new String[loadPackages.length];
+            for (int i = 0; i < loadPackages.length; i++) {
+                packages[i] = loadPackages[i].replace(".", "/");
+            }
             List<Class<?>> classes = this.resourceLoader.scanResources(MatchType.Prefix, event -> {
                 String className = event.getName();
                 if (!className.endsWith(".class")) {
@@ -68,16 +72,20 @@ class LoaderClassScanner implements ClassFinder {
                 } else {
                     className = className.substring(0, className.length() - 6);
                     className = className.replace("/", ".");
-                    return testAndLoad(className, featureType.getName());
+                    try {
+                        return testAndLoad(className, featureType.getName());
+                    } catch (ClassNotFoundException e) {
+                        throw new IOException(e);
+                    }
                 }
-            }, loadPackages);
+            }, packages);
             return new HashSet<>(classes);
         } catch (IOException e) {
             throw new IllegalStateException(ExceptionUtils.getRootCause(e));
         }
     }
 
-    protected Class<?> testAndLoad(String className, String featureType) throws IOException {
+    protected Class<?> testAndLoad(String className, String featureType) throws IOException, ClassNotFoundException {
         ClassInfo classInfo = null;
         if (this.classInfoMap.containsKey(className)) {
             classInfo = this.classInfoMap.get(className);
@@ -90,21 +98,17 @@ class LoaderClassScanner implements ClassFinder {
             this.classInfoMap.put(className, classInfo);
         }
         //
-        try {
-            for (String castType : classInfo.castType) {
-                if (castType.equals(featureType)) {
-                    return classLoader.loadClass(className);
-                }
+        for (String castType : classInfo.castType) {
+            if (castType.equals(featureType)) {
+                return classLoader.loadClass(className);
             }
-            for (String face : classInfo.annos) {
-                if (face.equals(featureType)) {
-                    return classLoader.loadClass(className);
-                }
-            }
-            return null;
-        } catch (ClassNotFoundException e) {
-            throw new IOException(e);
         }
+        for (String face : classInfo.annos) {
+            if (face.equals(featureType)) {
+                return classLoader.loadClass(className);
+            }
+        }
+        return null;
     }
 
     /**分析类的字节码，分析过程中会递归解析父类和实现的接口*/
@@ -125,15 +129,7 @@ class LoaderClassScanner implements ClassFinder {
             return this.classInfoMap.get(className);
         }
         /*二、使用 ClassReader 读取类的基本信息*/
-        ClassReader classReader = null;
-        try {
-            classReader = new ClassReader(inStream);
-        } catch (Exception e) {
-            if (e instanceof IOException) {
-                throw (IOException) e;
-            }
-            throw new IOException(e);
-        }
+        ClassReader classReader = new ClassReader(inStream);
         //className = classReader.getClassName().replace('/', '.');
         /*三、读取类的（名称、父类、接口、注解）信息*/
         final ClassInfo info = new ClassInfo();
@@ -191,10 +187,7 @@ class LoaderClassScanner implements ClassFinder {
         addCastTypeList(info, castTypeList);//this
         //
         if (superName != null) {
-            while (true) {
-                if (superName == null || !this.classInfoMap.containsKey(superName)) {
-                    break;
-                }
+            while (superName != null && this.classInfoMap.containsKey(superName)) {
                 ClassInfo superInfo = this.classInfoMap.get(superName);
                 addCastTypeList(superInfo, castTypeList);//super
                 superName = superInfo.superName;
