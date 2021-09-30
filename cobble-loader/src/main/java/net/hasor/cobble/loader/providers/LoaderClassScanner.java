@@ -15,9 +15,7 @@
  */
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ExceptionUtils;
-import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.loader.ClassFinder;
-import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ResourceLoader;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
@@ -45,27 +43,13 @@ class LoaderClassScanner implements ClassFinder {
     }
 
     @Override
-    public Set<Class<?>> getClassSet(Class<?> featureType) {
-        return this.getClassSet(new String[0], featureType);
-    }
-
-    @Override
-    public Set<Class<?>> getClassSet(final String packagePath, final Class<?> featureType) {
-        if (StringUtils.isEmpty(packagePath)) {
-            return this.getClassSet(new String[0], featureType);
-        } else {
-            return this.getClassSet(new String[] { packagePath }, featureType);
-        }
-    }
-
-    @Override
-    public Set<Class<?>> getClassSet(String[] loadPackages, Class<?> featureType) {
+    public Set<Class<?>> getClassSet(String[] loadPackages, ClassMatcher matcher) {
         try {
             String[] packages = new String[loadPackages.length];
             for (int i = 0; i < loadPackages.length; i++) {
                 packages[i] = loadPackages[i].replace(".", "/");
             }
-            List<Class<?>> classes = this.resourceLoader.scanResources(MatchType.Prefix, event -> {
+            List<Class<?>> classes = this.resourceLoader.scanResources(ResourceLoader.MatchType.Prefix, event -> {
                 String className = event.getName();
                 if (!className.endsWith(".class")) {
                     return null;
@@ -73,7 +57,7 @@ class LoaderClassScanner implements ClassFinder {
                     className = className.substring(0, className.length() - 6);
                     className = className.replace("/", ".");
                     try {
-                        return testAndLoad(className, featureType.getName());
+                        return testAndLoad(className, matcher);
                     } catch (ClassNotFoundException e) {
                         throw new IOException(e);
                     }
@@ -85,45 +69,46 @@ class LoaderClassScanner implements ClassFinder {
         }
     }
 
-    protected Class<?> testAndLoad(String className, String featureType) throws IOException, ClassNotFoundException {
+    protected Class<?> testAndLoad(String className, ClassMatcher matcher) throws IOException, ClassNotFoundException {
         ClassInfo classInfo = null;
         if (this.classInfoMap.containsKey(className)) {
             classInfo = this.classInfoMap.get(className);
         }
         if (classInfo == null) {
-            classInfo = loadClassInfo(className, this.classLoader);
+            classInfo = loadClassInfo(className);
             if (classInfo == null) {
                 return null;
             }
             this.classInfoMap.put(className, classInfo);
         }
         //
-        for (String castType : classInfo.castType) {
-            if (castType.equals(featureType)) {
-                return classLoader.loadClass(className);
+        ClassMatcherContext context = new ClassMatcherContext(classInfo) {
+            @Override
+            public ClassInfo loadClass(String className) throws IOException {
+                return loadClassInfo(className);
             }
+        };
+        if (matcher.matcher(context)) {
+            return classLoader.loadClass(className);
+        } else {
+            return null;
         }
-        for (String face : classInfo.annos) {
-            if (face.equals(featureType)) {
-                return classLoader.loadClass(className);
-            }
-        }
-        return null;
     }
 
     /**分析类的字节码，分析过程中会递归解析父类和实现的接口*/
-    public ClassInfo loadClassInfo(String className, ClassLoader loader) throws IOException {
-        try (InputStream classStream = loader.getResourceAsStream(className.replace('.', '/') + ".class")) {
+    @Override
+    public ClassInfo loadClassInfo(String className) throws IOException {
+        try (InputStream classStream = this.resourceLoader.getResourceAsStream(className.replace('.', '/') + ".class")) {
             if (classStream == null) {
                 return null;
             } else {
-                return loadClassInfo(className, classStream, loader);
+                return loadClassInfo(className, classStream);
             }
         }
     }
 
     /** 分析类的字节码，分析过程中会递归解析父类和实现的接口 */
-    private ClassInfo loadClassInfo(String className, final InputStream inStream, final ClassLoader loader) throws IOException {
+    private ClassInfo loadClassInfo(String className, final InputStream inStream) throws IOException {
         /*一、检查类是否已经被加载过，避免重复扫描同一个类*/
         if (this.classInfoMap.containsKey(className)) {
             return this.classInfoMap.get(className);
@@ -167,17 +152,17 @@ class LoaderClassScanner implements ClassFinder {
         }, ClassReader.SKIP_CODE);
         //四、递归解析父类
         if (info.superName != null) {
-            try (InputStream superStream = loader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
+            try (InputStream superStream = this.resourceLoader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
                 if (superStream != null) {
-                    this.loadClassInfo(info.superName, superStream, loader);//加载父类
+                    this.loadClassInfo(info.superName, superStream);//加载父类
                 }
             }
         }
         //五、递归解析接口
         for (String faces : info.interFaces) {
-            try (InputStream superStream = loader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
+            try (InputStream superStream = this.resourceLoader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
                 if (superStream != null) {
-                    this.loadClassInfo(faces, superStream, loader);//加载父类
+                    this.loadClassInfo(faces, superStream);//加载父类
                 }
             }
         }
@@ -213,14 +198,5 @@ class LoaderClassScanner implements ClassFinder {
                 this.addCastTypeList(this.classInfoMap.get(atFaces), addTo);
             }
         }
-    }
-
-    /** 类信息结构 */
-    static class ClassInfo {
-        public String   className  = null;
-        public String   superName  = null;
-        public String[] interFaces = new String[0];
-        public String[] castType   = new String[0];
-        public String[] annos      = new String[0];
     }
 }

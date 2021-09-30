@@ -32,8 +32,8 @@ import java.util.stream.Stream;
  * @version : 2013-8-20
  * @author 赵永春 (zyc@hasor.net)
  */
-public class Matchers {
-    private Matchers() {
+public class AopMatchers {
+    private AopMatchers() {
     }
 
     /** 匹配任意类型*/

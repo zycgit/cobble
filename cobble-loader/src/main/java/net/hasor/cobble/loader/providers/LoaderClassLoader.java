@@ -16,9 +16,7 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.loader.ScanEvent;
 
 import java.io.*;
 import java.net.URL;
@@ -141,7 +139,7 @@ class LoaderClassLoader extends ClassLoader {
      */
     private File findJarNativeEntry(String sLib) throws IOException {
         String sName = System.mapLibraryName(sLib);
-        return this.resourceLoader.scanOneResource(MatchType.Suffix, event -> {
+        return this.resourceLoader.scanOneResource(ResourceLoader.MatchType.Suffix, event -> {
             // Example: sName is "Native.dll"
             String sEntry = event.getName(); // "Native.dll" or "abc/xyz/Native.dll"
             // sName "Native.dll" could be found, for example
@@ -174,7 +172,7 @@ class LoaderClassLoader extends ClassLoader {
      * @param inf JAR entry information.
      * @return temporary file object presenting JAR entry.
      */
-    private File createTempFile(ScanEvent inf) throws IOException {
+    private File createTempFile(ResourceLoader.ScanEvent inf) throws IOException {
         // Temp files directory:
         //   WinXP: C:/Documents and Settings/username/Local Settings/Temp/LoaderClassLoader
         //   Unix: /var/tmp/LoaderClassLoader

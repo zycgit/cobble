@@ -15,7 +15,7 @@
  */
 package net.hasor.cobble.dynamic;
 import net.hasor.cobble.dynamic.aop.Aop;
-import net.hasor.cobble.dynamic.aop.Matchers;
+import net.hasor.cobble.dynamic.aop.AopMatchers;
 import net.hasor.cobble.dynamic.custom.MyAop;
 import net.hasor.cobble.dynamic.extends2.GrandFatherBean;
 import net.hasor.cobble.dynamic.extends2.JamesBean;
@@ -40,11 +40,11 @@ public class AopToosTest {
 
     @Test
     public void toosTest2() {
-        Predicate<Class<?>> annotatedWithClass = Matchers.annotatedWithClass(MyAop.class);
-        Predicate<Method> annotatedWithMethod = Matchers.annotatedWithMethod(MyAop.class);
-        Predicate<Class<?>> expressionClass = Matchers.expressionClass("net.test.hasor.*");
-        Predicate<Method> expressionMethod = Matchers.expressionMethod("java.lang.String *.*(*)");
-        Predicate<Class<?>> subClassesOf = Matchers.subClassesOf(JamesBean.class);
+        Predicate<Class<?>> annotatedWithClass = AopMatchers.annotatedWithClass(MyAop.class);
+        Predicate<Method> annotatedWithMethod = AopMatchers.annotatedWithMethod(MyAop.class);
+        Predicate<Class<?>> expressionClass = AopMatchers.expressionClass("net.test.hasor.*");
+        Predicate<Method> expressionMethod = AopMatchers.expressionMethod("java.lang.String *.*(*)");
+        Predicate<Class<?>> subClassesOf = AopMatchers.subClassesOf(JamesBean.class);
         //
         annotatedWithClass.hashCode();
         annotatedWithMethod.hashCode();
@@ -53,26 +53,26 @@ public class AopToosTest {
         subClassesOf.hashCode();
         //
         assert annotatedWithClass.toString().startsWith("ClassAnnotationOf");
-        assert annotatedWithClass.equals(Matchers.annotatedWithClass(MyAop.class));
-        assert !annotatedWithClass.equals(Matchers.annotatedWithClass(Aop.class));
+        assert annotatedWithClass.equals(AopMatchers.annotatedWithClass(MyAop.class));
+        assert !annotatedWithClass.equals(AopMatchers.annotatedWithClass(Aop.class));
         //
         assert annotatedWithMethod.toString().startsWith("MethodAnnotationOf");
-        assert annotatedWithMethod.equals(Matchers.annotatedWithMethod(MyAop.class));
-        assert !annotatedWithMethod.equals(Matchers.annotatedWithClass(Aop.class));
+        assert annotatedWithMethod.equals(AopMatchers.annotatedWithMethod(MyAop.class));
+        assert !annotatedWithMethod.equals(AopMatchers.annotatedWithClass(Aop.class));
         //
         assert expressionClass.toString().startsWith("ClassOf");
         assert expressionClass.equals(expressionClass);
         assert !expressionClass.equals(expressionMethod);
-        assert expressionClass.equals(Matchers.expressionClass("net.test.hasor.*"));
+        assert expressionClass.equals(AopMatchers.expressionClass("net.test.hasor.*"));
         //
         assert expressionMethod.toString().startsWith("MethodOf");
         assert expressionMethod.equals(expressionMethod);
         assert !expressionMethod.equals(expressionClass);
-        assert expressionMethod.equals(Matchers.expressionMethod("java.lang.String *.*(*)"));
+        assert expressionMethod.equals(AopMatchers.expressionMethod("java.lang.String *.*(*)"));
         //
         assert subClassesOf.toString().startsWith("SubClassesOf");
-        assert subClassesOf.equals(Matchers.subClassesOf(JamesBean.class));
-        assert !subClassesOf.equals(Matchers.subClassesOf(GrandFatherBean.class));
+        assert subClassesOf.equals(AopMatchers.subClassesOf(JamesBean.class));
+        assert !subClassesOf.equals(AopMatchers.subClassesOf(GrandFatherBean.class));
         //
     }
 

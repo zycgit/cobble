@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -24,24 +25,47 @@ import java.util.Set;
 public interface ClassFinder {
     /**
      * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
-     * @param packagePath 要扫描的包名。
-     * @param compareType 要查找的特征。
+     * @param matcher 匹配规则。
      * @return 返回扫描结果。
      */
-    public Set<Class<?>> getClassSet(final String packagePath, final Class<?> compareType);
+    public default Set<Class<?>> getClassSet(ClassMatcher matcher) {
+        return this.getClassSet(new String[0], matcher);
+    }
 
     /**
      * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
-     * @param loadPackages 要扫描的包名。
-     * @param featureType 要查找的特征。
+     * @param matcher 匹配规则。
      * @return 返回扫描结果。
      */
-    public Set<Class<?>> getClassSet(final String[] loadPackages, final Class<?> featureType);
+    public Set<Class<?>> getClassSet(String[] loadPackages, ClassMatcher matcher);
 
-    /**
-     * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
-     * @param compareType 要查找的特征。
-     * @return 返回扫描结果。
-     */
-    public Set<Class<?>> getClassSet(final Class<?> compareType);
+    public ClassInfo loadClassInfo(String className) throws IOException;
+
+    /** 类信息结构 */
+    public static class ClassInfo {
+        public String   className  = null;
+        public String   superName  = null;
+        public String[] interFaces = new String[0];
+        public String[] castType   = new String[0];
+        public String[] annos      = new String[0];
+    }
+
+    public static abstract class ClassMatcherContext {
+        private final ClassInfo classInfo;
+
+        public ClassMatcherContext(ClassInfo classInfo) {
+            this.classInfo = classInfo;
+        }
+
+        public ClassInfo getClassInfo() {
+            return this.classInfo;
+        }
+
+        public abstract ClassInfo loadClass(String className) throws IOException;
+    }
+
+    @FunctionalInterface
+    public static interface ClassMatcher {
+        public boolean matcher(ClassMatcherContext context) throws IOException;
+    }
 }

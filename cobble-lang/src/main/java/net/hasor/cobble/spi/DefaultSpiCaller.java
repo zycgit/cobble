@@ -161,7 +161,7 @@ public class DefaultSpiCaller implements SpiTrigger, Closeable {
         List<EventListener> listenerList = this.spiListener.computeIfAbsent(spiType, k -> {
             return new ArrayList<>(5);
         });
-        listenerList.add((EventListener) spiListener);
+        listenerList.add(spiListener);
     }
 
     /** 注册一个 SPI 仲裁 */

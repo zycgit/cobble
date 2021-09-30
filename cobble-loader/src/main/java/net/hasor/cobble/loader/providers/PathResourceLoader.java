@@ -16,9 +16,6 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
-import net.hasor.cobble.loader.MatchType;
-import net.hasor.cobble.loader.ScanEvent;
-import net.hasor.cobble.loader.Scanner;
 
 import java.io.File;
 import java.io.FileInputStream;

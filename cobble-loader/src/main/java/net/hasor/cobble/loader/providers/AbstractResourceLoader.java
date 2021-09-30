@@ -15,9 +15,7 @@
  */
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.loader.ClassFinder;
-import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,11 +37,12 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
     }
 
     public ClassFinder toClassFinder() {
-        return new LoaderClassScanner(this, this.toClassLoader());
+        return toClassFinder(this.toClassLoader());
     }
 
+    @Override
     public ClassFinder toClassFinder(ClassLoader parent) {
-        return new LoaderClassScanner(this, this.toClassLoader(parent));
+        return new LoaderClassScanner(this, parent);
     }
 
     public <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
