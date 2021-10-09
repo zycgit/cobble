@@ -18,6 +18,7 @@ package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.loader.ClassMatchers;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.jar.JarFile;
+import net.hasor.cobble.loader.visibility.VisibilityResourceLoader;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,21 +36,23 @@ public class ClassResourceLoaderTests {
         assert classLoader.getResource("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class") != null;
         assert classLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
         //
-        Set<Class<?>> classSet = classLoader.toClassFinder().getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
-        assert classSet.size() == 5;
-        assert classSet.contains(ClassPathResourceLoader.class);
-        assert classSet.contains(PathResourceLoader.class);
-        assert classSet.contains(JarResourceLoader.class);
-        assert classSet.contains(MultiResourceLoader.class);
-        assert classSet.contains(AbstractResourceLoader.class);
-        //
-        classSet = classLoader.toClassFinder().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
+        Set<Class<?>> classSet = classLoader.createClassFinder().getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
         assert classSet.size() == 6;
         assert classSet.contains(ClassPathResourceLoader.class);
         assert classSet.contains(PathResourceLoader.class);
         assert classSet.contains(JarResourceLoader.class);
         assert classSet.contains(MultiResourceLoader.class);
         assert classSet.contains(AbstractResourceLoader.class);
+        assert classSet.contains(VisibilityResourceLoader.class);
+        //
+        classSet = classLoader.createClassFinder().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
+        assert classSet.size() == 7;
+        assert classSet.contains(ClassPathResourceLoader.class);
+        assert classSet.contains(PathResourceLoader.class);
+        assert classSet.contains(JarResourceLoader.class);
+        assert classSet.contains(MultiResourceLoader.class);
+        assert classSet.contains(AbstractResourceLoader.class);
         assert classSet.contains(ResourceLoader.class);
+        assert classSet.contains(VisibilityResourceLoader.class);
     }
 }

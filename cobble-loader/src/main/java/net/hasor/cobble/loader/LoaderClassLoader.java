@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.loader.providers;
+package net.hasor.cobble.loader;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.*;
 import java.net.URL;

@@ -102,10 +102,10 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPackages, ZipEntry::getName);
-        Predicate<File>[] testDir = buildPredicate(matchType, scanPackages, File::getPath);
+        Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
+        Predicate<File>[] testDir = buildPredicate(matchType, scanPaths, File::getPath);
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
@@ -126,10 +126,10 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPackages, ZipEntry::getName);
-        Predicate<File>[] testDir = buildPredicate(matchType, scanPackages, File::getPath);
+        Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
+        Predicate<File>[] testDir = buildPredicate(matchType, scanPaths, File::getPath);
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {

@@ -153,11 +153,11 @@ public class JarResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    private <T> void scanJarFile(List<T> result, JarFile jarFile, Scanner<T> scanner, Predicate<JarEntry>[] scanPackages, boolean matchOnce) throws IOException {
+    private <T> void scanJarFile(List<T> result, JarFile jarFile, Scanner<T> scanner, Predicate<JarEntry>[] scanPaths, boolean matchOnce) throws IOException {
         Iterator<JarEntry> zipEntry = jarFile.stream().iterator();
         while (zipEntry.hasNext()) {
             JarEntry entry = zipEntry.next();
-            if (!testFound(entry, scanPackages)) {
+            if (!testFound(entry, scanPaths)) {
                 continue;
             }
             //
@@ -174,9 +174,9 @@ public class JarResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPackages, ZipEntry::getName);
+        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
         //
         this.scanJarFile(result, this.jarFile, scanner, tests, false);
         if (!this.nestedJarFile.isEmpty()) {
@@ -188,9 +188,9 @@ public class JarResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPackages, ZipEntry::getName);
+        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
         //
         this.scanJarFile(result, this.jarFile, scanner, tests, true);
         if (result.isEmpty() && !this.nestedJarFile.isEmpty()) {

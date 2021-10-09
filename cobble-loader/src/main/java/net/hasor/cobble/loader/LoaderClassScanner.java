@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.loader.providers;
+package net.hasor.cobble.loader;
 import net.hasor.cobble.ExceptionUtils;
-import net.hasor.cobble.loader.ClassFinder;
-import net.hasor.cobble.loader.ResourceLoader;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;

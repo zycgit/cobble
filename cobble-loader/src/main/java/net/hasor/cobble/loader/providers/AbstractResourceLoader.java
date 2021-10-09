@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.ClassFinder;
 import net.hasor.cobble.loader.ResourceLoader;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -28,46 +25,13 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-    public ClassLoader toClassLoader() {
-        return new LoaderClassLoader(this);
-    }
-
-    public ClassLoader toClassLoader(ClassLoader parent) {
-        return new LoaderClassLoader(this, parent);
-    }
-
-    public ClassFinder toClassFinder() {
-        return toClassFinder(this.toClassLoader());
-    }
-
-    @Override
-    public ClassFinder toClassFinder(ClassLoader parent) {
-        return new LoaderClassScanner(this, parent);
-    }
-
-    public <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
-        return scanResources(MatchType.None, scanner, new String[0]);
-    }
-
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanResources(matchType, scanner, new String[0]);
-    }
-
-    public <T> T scanOneResource(Scanner<T> scanner) throws IOException {
-        return scanOneResource(MatchType.None, scanner, new String[0]);
-    }
-
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanOneResource(matchType, scanner, new String[0]);
-    }
-
-    protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPackages, Function<T, String> nameFunc) {
+    protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPaths, Function<T, String> nameFunc) {
         if (matchType == null) {
             throw new IllegalStateException("missing matchType.");
         }
-        Predicate<T>[] tests = new Predicate[scanPackages.length];
-        for (int i = 0; i < scanPackages.length; i++) {
-            final String matchExpr = scanPackages[i];
+        Predicate<T>[] tests = new Predicate[scanPaths.length];
+        for (int i = 0; i < scanPaths.length; i++) {
+            final String matchExpr = scanPaths[i];
             switch (matchType) {
                 case None: {
                     tests[i] = e -> true;

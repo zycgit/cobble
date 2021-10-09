@@ -101,19 +101,19 @@ public class MultiResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         for (ResourceLoader loads : this.loaders) {
-            List<T> resources = loads.scanResources(matchType, scanner, scanPackages);
+            List<T> resources = loads.scanResources(matchType, scanner, scanPaths);
             result.addAll(resources);
         }
         return result;
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         for (ResourceLoader loads : this.loaders) {
-            T resources = loads.scanOneResource(matchType, scanner, scanPackages);
+            T resources = loads.scanOneResource(matchType, scanner, scanPaths);
             if (resources != null) {
                 return resources;
             }

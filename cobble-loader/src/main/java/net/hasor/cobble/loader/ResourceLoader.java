@@ -27,17 +27,25 @@ import java.util.List;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface ResourceLoader {
-    public <T> List<T> scanResources(Scanner<T> scanner) throws IOException;
+    public default <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
+        return scanResources(MatchType.None, scanner, new String[0]);
+    }
 
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException;
+    public default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
+        return scanResources(matchType, scanner, new String[0]);
+    }
 
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException;
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
-    public <T> T scanOneResource(Scanner<T> scanner) throws IOException;
+    public default <T> T scanOneResource(Scanner<T> scanner) throws IOException {
+        return scanOneResource(MatchType.None, scanner, new String[0]);
+    }
 
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException;
+    public default <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
+        return scanOneResource(matchType, scanner, new String[0]);
+    }
 
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException;
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
     public URL getResource(String resource) throws IOException;
 
@@ -49,13 +57,21 @@ public interface ResourceLoader {
 
     public boolean exist(String resource);
 
-    public ClassLoader toClassLoader();
+    public default ClassLoader createClassLoader() {
+        return new LoaderClassLoader(this);
+    }
 
-    public ClassLoader toClassLoader(ClassLoader parent);
+    public default ClassLoader createClassLoader(ClassLoader parent) {
+        return new LoaderClassLoader(this, parent);
+    }
 
-    public ClassFinder toClassFinder();
+    public default ClassFinder createClassFinder() {
+        return createClassFinder(this.createClassLoader());
+    }
 
-    public ClassFinder toClassFinder(ClassLoader parent);
+    public default ClassFinder createClassFinder(ClassLoader parent) {
+        return new LoaderClassScanner(this, parent);
+    }
 
     /** 扫描的资源 */
     public static class ScanEvent {

@@ -124,7 +124,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    private <T> void scanDirFile(File baseDir, List<T> result, File scanDir, Scanner<T> scanner, Predicate<File>[] scanPackages, boolean matchOnce) throws IOException {
+    private <T> void scanDirFile(File baseDir, List<T> result, File scanDir, Scanner<T> scanner, Predicate<File>[] scanPaths, boolean matchOnce) throws IOException {
         File[] listFiles = scanDir.listFiles();
         if (listFiles == null) {
             return;
@@ -139,11 +139,11 @@ public class PathResourceLoader extends AbstractResourceLoader {
             }
             if (fileItem.isDirectory()) {
                 // 目录继续向下搜索
-                scanDirFile(baseDir, result, fileItem, scanner, scanPackages, matchOnce);
+                scanDirFile(baseDir, result, fileItem, scanner, scanPaths, matchOnce);
                 continue;
             }
             String resourceName = fileItem.getAbsolutePath().substring(baseDir.getAbsolutePath().length() + 1);
-            if (!testFound(new File(resourceName), scanPackages)) {
+            if (!testFound(new File(resourceName), scanPaths)) {
                 // 匹配失败
                 continue;
             }
@@ -162,9 +162,9 @@ public class PathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<File>[] tests = buildPredicate(matchType, scanPackages, File::getPath);
+        Predicate<File>[] tests = buildPredicate(matchType, scanPaths, File::getPath);
         for (File baseDir : this.dirPathList) {
             if (baseDir.exists()) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests, false);
@@ -174,9 +174,9 @@ public class PathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPackages) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<File>[] tests = buildPredicate(matchType, scanPackages, File::getPath);
+        Predicate<File>[] tests = buildPredicate(matchType, scanPaths, File::getPath);
         for (File baseDir : this.dirPathList) {
             if (baseDir.exists()) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests, true);
