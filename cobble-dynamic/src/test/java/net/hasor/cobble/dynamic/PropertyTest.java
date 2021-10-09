@@ -20,6 +20,8 @@ import net.hasor.cobble.supplier.Provider;
 import org.junit.Test;
 
 public class PropertyTest {
+    private final JSON json = new JSON(false);
+
     @Test
     public void propertyTest1() throws Exception {
         SimplePropertyDelegate delegate = new SimplePropertyDelegate();
@@ -30,9 +32,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", "abc");
-        assert JSON.toString(instance).equals("{'name':'abc'}");
+        assert json.toJSON(instance).equals("{\"name\":\"abc\"}");
         BeanUtils.writeProperty(instance, "name", "def");
-        assert JSON.toString(instance).equals("{'name':'def'}");
+        assert json.toJSON(instance).equals("{\"name\":\"def\"}");
     }
 
     @Test
@@ -44,9 +46,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", true);
-        assert JSON.toString(instance).equals("{'name':true}");
+        assert json.toJSON(instance).equals("{\"name\":true}");
         BeanUtils.writeProperty(instance, "name", false);
-        assert JSON.toString(instance).equals("{'name':false}");
+        assert json.toJSON(instance).equals("{\"name\":false}");
     }
 
     @Test

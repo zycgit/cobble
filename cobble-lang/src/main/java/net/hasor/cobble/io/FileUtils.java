@@ -23,7 +23,7 @@ import java.util.List;
  * @version : 2011-6-3
  * @author 赵永春 (zyc@hasor.net)
  */
-public abstract class FileUtils {
+public class FileUtils {
     /**
      * Reads the contents of a file into a String.
      * The file is always closed.

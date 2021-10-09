@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * <p>
  * The interface {@link net.hasor.cobble.json.JSON.Convertor} may be implemented to provide static
  * convertors for objects that may be registered with
- * {@link #getConvertor(Class)}.
+ * {@link #getConvertor(Class, boolean)}.
  * </p>
  *
  *
@@ -78,9 +78,16 @@ public class JSON {
     public final static    JSON                   DEFAULT           = new JSON();
     private final          Map<String, Convertor> _convertors       = new ConcurrentHashMap<>();
     private                int                    _stringBufferSize = 1024;
+    private final          boolean                includeType;
 
     public JSON() {
+        this(true);
     }
+
+    public JSON(boolean includeType) {
+        this.includeType = includeType;
+    }
+
     /* ------------------------------------------------------------ */
 
     /** @return the initial stringBuffer size to use when creating JSON strings (default 1024) */
@@ -220,7 +227,7 @@ public class JSON {
             else if (object instanceof String)
                 appendString(buffer, (String) object);
             else {
-                Convertor convertor = getConvertor(object.getClass());
+                Convertor convertor = getConvertor(object.getClass(), this.includeType);
                 if (convertor != null)
                     appendJSON(buffer, convertor, object);
                 else
@@ -404,7 +411,7 @@ public class JSON {
                 throw new RuntimeException(e);
             }
         }
-        Convertor convertor = getConvertor(type);
+        Convertor convertor = getConvertor(type, this.includeType);
         if (convertor != null) {
             return convertor.fromJSON(map);
         }
@@ -433,26 +440,29 @@ public class JSON {
      * @param forClass The class
      * @return a {@link net.hasor.cobble.json.JSON.Convertor} or null if none were found.
      */
-    protected Convertor getConvertor(Class forClass) {
+    protected Convertor getConvertor(Class forClass, boolean includeType) {
         if (forClass == null) {
             return null;
         }
         Class cls = forClass;
         Convertor convertor = _convertors.get(cls.getName());
-        if (convertor == null && this != DEFAULT)
-            convertor = DEFAULT.getConvertor(cls);
-        while (convertor == null && cls != null && cls != Object.class) {
+        if (convertor == null && this != DEFAULT) {
+            convertor = DEFAULT.getConvertor(cls, includeType);
+        }
+        while (convertor == null && cls != Object.class) {
             Class[] ifs = cls.getInterfaces();
             int i = 0;
-            while (convertor == null && ifs != null && i < ifs.length)
+            while (convertor == null && i < ifs.length) {
                 convertor = _convertors.get(ifs[i++].getName());
+            }
             if (convertor == null) {
                 cls = cls.getSuperclass();
                 convertor = _convertors.get(cls.getName());
             }
         }
-        if (convertor == null)
-            return new JSONPojoConvertor(forClass);
+        if (convertor == null) {
+            return new JSONPojoConvertor(forClass, null, includeType);
+        }
         return convertor;
     }
     /* ------------------------------------------------------------ */
@@ -1199,7 +1209,7 @@ public class JSON {
      * registered with
      * {@link net.hasor.cobble.json.JSON#registerConvertor(Class, net.hasor.cobble.json.JSON.Convertor)}
      * . These convertors are looked up by class, interface and super class by
-     * {@link net.hasor.cobble.json.JSON#getConvertor(Class)}. Convertors should be used when the
+     * {@link net.hasor.cobble.json.JSON#getConvertor(Class, boolean)}. Convertors should be used when the
      * classes to be converted cannot implement {@link Convertible} or
      * {@link Generator}.
      */

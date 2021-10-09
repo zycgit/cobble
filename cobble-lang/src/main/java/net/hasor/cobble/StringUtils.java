@@ -906,26 +906,12 @@ public class StringUtils {
      *  -1 if no match or <code>null</code> string input
      * @since 2.5
      */
-    public static int indexOfIgnoreCase(final String str, final String searchStr, int startPos) {
+    public static int indexOfIgnoreCase(String str, String searchStr, int startPos) {
         if (str == null || searchStr == null) {
             return StringUtils.INDEX_NOT_FOUND;
+        } else {
+            return indexOf(str.toUpperCase(), searchStr.toUpperCase(), startPos);
         }
-        if (startPos < 0) {
-            startPos = 0;
-        }
-        int endLimit = str.length() - searchStr.length() + 1;
-        if (startPos > endLimit) {
-            return StringUtils.INDEX_NOT_FOUND;
-        }
-        if (searchStr.length() == 0) {
-            return startPos;
-        }
-        for (int i = startPos; i < endLimit; i++) {
-            if (str.regionMatches(true, i, searchStr, 0, searchStr.length())) {
-                return i;
-            }
-        }
-        return StringUtils.INDEX_NOT_FOUND;
     }
     // LastIndexOf
     //-----------------------------------------------------------------------
@@ -1151,22 +1137,9 @@ public class StringUtils {
     public static int lastIndexOfIgnoreCase(final String str, final String searchStr, int startPos) {
         if (str == null || searchStr == null) {
             return StringUtils.INDEX_NOT_FOUND;
+        } else {
+            return lastIndexOf(str.toUpperCase(), searchStr.toUpperCase(), startPos);
         }
-        if (startPos > str.length() - searchStr.length()) {
-            startPos = str.length() - searchStr.length();
-        }
-        if (startPos < 0) {
-            return StringUtils.INDEX_NOT_FOUND;
-        }
-        if (searchStr.length() == 0) {
-            return startPos;
-        }
-        for (int i = startPos; i >= 0; i--) {
-            if (str.regionMatches(true, i, searchStr, 0, searchStr.length())) {
-                return i;
-            }
-        }
-        return StringUtils.INDEX_NOT_FOUND;
     }
     // Contains
     //-----------------------------------------------------------------------
@@ -1251,15 +1224,9 @@ public class StringUtils {
     public static boolean containsIgnoreCase(final String str, final String searchStr) {
         if (str == null || searchStr == null) {
             return false;
+        } else {
+            return str.toUpperCase().contains(searchStr.toUpperCase());
         }
-        int len = searchStr.length();
-        int max = str.length() - len;
-        for (int i = 0; i <= max; i++) {
-            if (str.regionMatches(true, i, searchStr, 0, len)) {
-                return true;
-            }
-        }
-        return false;
     }
     // IndexOfAny chars
     //-----------------------------------------------------------------------
@@ -5818,7 +5785,11 @@ public class StringUtils {
         if (prefix.length() > str.length()) {
             return false;
         }
-        return str.regionMatches(ignoreCase, 0, prefix, 0, prefix.length());
+        if (ignoreCase) {
+            return str.toUpperCase().startsWith(prefix.toUpperCase());
+        } else {
+            return str.startsWith(prefix);
+        }
     }
 
     /**
@@ -5924,8 +5895,11 @@ public class StringUtils {
         if (suffix.length() > str.length()) {
             return false;
         }
-        int strOffset = str.length() - suffix.length();
-        return str.regionMatches(ignoreCase, strOffset, suffix, 0, suffix.length());
+        if (ignoreCase) {
+            return str.toUpperCase().endsWith(suffix.toUpperCase());
+        } else {
+            return str.endsWith(suffix);
+        }
     }
 
     /**
