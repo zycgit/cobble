@@ -26,6 +26,14 @@
 - 遵循双亲委派机制
 - 资源加载器可转化为等价的类加载器
 - 资源扫描可转化为等价的类扫描
-  - 类扫描仅加载匹配到的类，没有匹配的类不会触发类加载
+    - 类扫描仅加载匹配到的类，没有匹配的类不会触发类加载
 
-## 类隔离
+## 各种 Loader
+
+| 类名 | 作用 |
+| -------- | ------ |
+| ClassPathResourceLoader | |
+| ExportResourceLoader | |
+| JarResourceLoader | |
+| MultiResourceLoader | |
+| PathResourceLoader | |

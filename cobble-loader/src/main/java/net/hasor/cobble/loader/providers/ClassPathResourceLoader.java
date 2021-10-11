@@ -145,7 +145,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                 JarFile jarFile = jarc.getJarFile();
                 jarScan(result, jarFile, testJar, scanner, true);
             }
-            //
+
             if (!result.isEmpty()) {
                 return result.get(0);
             }
@@ -161,7 +161,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             if (!jarTestFound(entry, jarTest)) {
                 continue;
             }
-            //
+
             URL url = new URL("jar:" + content + "!/" + entry.getName());
             ESupplier<InputStream, IOException> inputStream = () -> jarFile.getInputStream(entry);
             T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
@@ -195,24 +195,21 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         if (listFiles == null) {
             return;
         }
-        //
+
         for (File fileItem : listFiles) {
             if (matchOnce && !result.isEmpty()) {
                 return;
             }
             if (fileItem.isHidden() || !fileItem.exists()) {
-                // 过滤掉：隐藏和不存在的
                 continue;
             }
             if (fileItem.isDirectory()) {
-                // 目录继续向下搜索
                 dirScan(result, contextDir, fileItem, testDir, scanner, matchOnce);
                 continue;
             }
-            //
+
             String resourceName = fileItem.getAbsolutePath().substring(contextDir.getAbsolutePath().length() + 1);
             if (!dirTestFound(new File(resourceName), testDir)) {
-                // 匹配失败
                 continue;
             }
             ESupplier<InputStream, IOException> inputStream = () -> {

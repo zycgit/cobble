@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.ClassFinder;
+import net.hasor.cobble.loader.LoaderClassLoader;
+import net.hasor.cobble.loader.LoaderClassScanner;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.util.function.Function;
@@ -25,6 +28,44 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
+    private ClassLoader bindParentLoader;
+    private ClassLoader bindClassLoader;
+    private ClassFinder bindClassFinder;
+
+    public void bindClassLoader(ClassLoader parent) {
+        if (this.bindClassLoader != null) {
+            throw new IllegalStateException("the bindClassLoader already exists.");
+        } else {
+            this.bindParentLoader = parent;
+        }
+    }
+
+    public ClassLoader toClassLoader() {
+        if (this.bindClassLoader == null) {
+            synchronized (this) {
+                if (this.bindClassLoader != null) {
+                    return this.bindClassLoader;
+                } else {
+                    this.bindClassLoader = new LoaderClassLoader(this, this.bindParentLoader);
+                }
+            }
+        }
+        return this.bindClassLoader;
+    }
+
+    public ClassFinder toClassFinder() {
+        if (this.bindClassFinder == null) {
+            synchronized (this) {
+                if (this.bindClassFinder != null) {
+                    return this.bindClassFinder;
+                } else {
+                    this.bindClassFinder = new LoaderClassScanner(this);
+                }
+            }
+        }
+        return this.bindClassFinder;
+    }
+
     protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPaths, Function<T, String> nameFunc) {
         if (matchType == null) {
             throw new IllegalStateException("missing matchType.");

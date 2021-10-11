@@ -23,6 +23,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 /**
  * Tests for {@link JarFile}.
@@ -30,81 +32,81 @@ import java.util.jar.JarEntry;
 public class JarFileTests {
     @Test
     public void jarFile_1_1() throws Exception {
-        String zipFile = ResourcesUtils.getResource("/jars/app.jar").getFile();
-        java.util.jar.JarFile jarFile = new java.util.jar.JarFile(new File(zipFile));
+        String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
+        java.util.jar.JarFile jarFile = new java.util.jar.JarFile(new File(file));
         Enumeration<JarEntry> entries = jarFile.entries();
         Set<String> names = new HashSet<>();
         while (entries.hasMoreElements()) {
             names.add(entries.nextElement().getName());
         }
         assert !names.isEmpty();
-        assert names.contains("demo/Application.class");
-        assert names.contains("app/Foo.java");
-        assert names.contains("app/");
-        assert names.contains("META-INF/spring.factories");
-        assert names.contains("app/Foo.class");
-        assert names.contains("demo/");
-        assert names.contains("META-INF/");
+        assert names.contains("app/FooImpl.class");
+        assert names.contains("app/FooImpl.java");
         assert names.contains("META-INF/MANIFEST.MF");
+        assert names.contains("META-INF/License.ASF20.txt");
     }
 
     @Test
     public void jarFile_1_2() throws Exception {
-        String zipFile = ResourcesUtils.getResource("/jars/app.jar").getFile();
-        net.hasor.cobble.loader.jar.JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(new File(zipFile));
+        String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
+        net.hasor.cobble.loader.jar.JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(new File(file));
         Enumeration<JarEntry> entries = jarFile.entries();
         Set<String> names = new HashSet<>();
         while (entries.hasMoreElements()) {
             names.add(entries.nextElement().getName());
         }
         assert !names.isEmpty();
-        assert names.contains("demo/Application.class");
-        assert names.contains("app/Foo.java");
-        assert names.contains("app/");
-        assert names.contains("META-INF/spring.factories");
-        assert names.contains("app/Foo.class");
-        assert names.contains("demo/");
-        assert names.contains("META-INF/");
+        assert names.contains("app/FooImpl.class");
+        assert names.contains("app/FooImpl.java");
         assert names.contains("META-INF/MANIFEST.MF");
+        assert names.contains("META-INF/License.ASF20.txt");
     }
 
     @Test
     public void jarFile_2_1() throws Exception {
-        String zipFile = ResourcesUtils.getResource("/jars/app.zip").getFile();
-        java.util.jar.JarFile jarFile = new java.util.jar.JarFile(new File(zipFile));
+        String file = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
+        java.util.jar.JarFile jarFile = new java.util.jar.JarFile(new File(file));
         Enumeration<JarEntry> entries = jarFile.entries();
         Set<String> names = new HashSet<>();
         while (entries.hasMoreElements()) {
             names.add(entries.nextElement().getName());
         }
         assert !names.isEmpty();
-        assert names.contains("demo/Application.class");
-        assert names.contains("app/Foo.java");
-        assert names.contains("app/");
-        assert names.contains("META-INF/spring.factories");
-        assert names.contains("app/Foo.class");
-        assert names.contains("demo/");
-        assert names.contains("META-INF/");
-        assert names.contains("META-INF/MANIFEST.MF");
+        assert names.contains("app/FooImpl.class");
+        assert names.contains("app/FooImpl.java");
+        assert names.contains("META-INF/License.ASF20.txt");
     }
 
     @Test
     public void jarFile_2_2() throws Exception {
-        String zipFile = ResourcesUtils.getResource("/jars/app.zip").getFile();
-        net.hasor.cobble.loader.jar.JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(new File(zipFile));
+        String file = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
+        net.hasor.cobble.loader.jar.JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(new File(file));
         Enumeration<JarEntry> entries = jarFile.entries();
         Set<String> names = new HashSet<>();
         while (entries.hasMoreElements()) {
             names.add(entries.nextElement().getName());
         }
         assert !names.isEmpty();
-        assert names.contains("demo/Application.class");
-        assert names.contains("app/Foo.java");
-        assert names.contains("app/");
-        assert names.contains("META-INF/spring.factories");
-        assert names.contains("app/Foo.class");
-        assert names.contains("demo/");
-        assert names.contains("META-INF/");
-        assert names.contains("META-INF/MANIFEST.MF");
+        assert names.contains("app/FooImpl.class");
+        assert names.contains("app/FooImpl.java");
+        assert names.contains("META-INF/License.ASF20.txt");
+    }
+
+    @Test
+    public void getManifest() throws Exception {
+        String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
+        net.hasor.cobble.loader.jar.JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(new File(file));
+
+        assert jarFile.getManifest().getMainAttributes().getValue("Created-By").equals("1.8.0_221 (Oracle Corporation)");
+    }
+
+    @Test
+    public void getManifestEntry() throws Exception {
+        String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
+        net.hasor.cobble.loader.jar.JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(new File(file));
+
+        ZipEntry entry = jarFile.getJarEntry("META-INF/MANIFEST.MF");
+        Manifest manifest = new Manifest(jarFile.getInputStream(entry));
+        assert manifest.getMainAttributes().getValue("Created-By").equals("1.8.0_221 (Oracle Corporation)");
     }
 }

@@ -57,21 +57,9 @@ public interface ResourceLoader {
 
     public boolean exist(String resource);
 
-    public default ClassLoader createClassLoader() {
-        return new LoaderClassLoader(this);
-    }
+    public ClassLoader toClassLoader();
 
-    public default ClassLoader createClassLoader(ClassLoader parent) {
-        return new LoaderClassLoader(this, parent);
-    }
-
-    public default ClassFinder createClassFinder() {
-        return createClassFinder(this.createClassLoader());
-    }
-
-    public default ClassFinder createClassFinder(ClassLoader parent) {
-        return new LoaderClassScanner(this, parent);
-    }
+    public ClassFinder toClassFinder();
 
     /** 扫描的资源 */
     public static class ScanEvent {

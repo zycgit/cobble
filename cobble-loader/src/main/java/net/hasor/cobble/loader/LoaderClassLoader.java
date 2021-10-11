@@ -27,17 +27,13 @@ import java.util.List;
  * @version : 2014年9月7日
  * @author 赵永春 (zyc@hasor.net)
  */
-class LoaderClassLoader extends ClassLoader {
+public class LoaderClassLoader extends ClassLoader {
     public static final String         tempDirectory = "LoaderClassLoader";
     private             File           tempDir;
     private final       ResourceLoader resourceLoader;
 
-    public LoaderClassLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
-    public LoaderClassLoader(ResourceLoader resourceLoader, ClassLoader parentLoader) {
-        super(parentLoader);
+    public LoaderClassLoader(ResourceLoader resourceLoader, ClassLoader parent) {
+        super(parent);
         this.resourceLoader = resourceLoader;
     }
 

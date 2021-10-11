@@ -30,14 +30,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version : 2014年9月7日
  * @author 赵永春 (zyc@hasor.net)
  */
-class LoaderClassScanner implements ClassFinder {
+public class LoaderClassScanner implements ClassFinder {
     private final ResourceLoader         resourceLoader;
     private final ClassLoader            classLoader;
     private final Map<String, ClassInfo> classInfoMap = new ConcurrentHashMap<>();
 
-    public LoaderClassScanner(ResourceLoader resourceLoader, ClassLoader classLoader) {
+    public LoaderClassScanner(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-        this.classLoader = classLoader;
+        this.classLoader = resourceLoader.toClassLoader();
     }
 
     @Override
@@ -79,7 +79,7 @@ class LoaderClassScanner implements ClassFinder {
             }
             this.classInfoMap.put(className, classInfo);
         }
-        //
+
         ClassMatcherContext context = new ClassMatcherContext(classInfo) {
             @Override
             public ClassInfo loadClass(String className) throws IOException {
@@ -113,18 +113,16 @@ class LoaderClassScanner implements ClassFinder {
         }
         /*二、使用 ClassReader 读取类的基本信息*/
         ClassReader classReader = new ClassReader(inStream);
-        //className = classReader.getClassName().replace('/', '.');
+
         /*三、读取类的（名称、父类、接口、注解）信息*/
         final ClassInfo info = new ClassInfo();
         classReader.accept(new ClassVisitor(Opcodes.ASM9) {
             @Override
             public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
-                //1.读取基本信息
                 info.className = name.replace('/', '.');
                 if (superName != null) {
                     info.superName = superName.replace('/', '.');
                 }
-                //2.读取接口
                 info.interFaces = interfaces;
                 for (int i = 0; i < info.interFaces.length; i++) {
                     info.interFaces[i] = info.interFaces[i].replace('/', '.');
@@ -134,21 +132,18 @@ class LoaderClassScanner implements ClassFinder {
 
             @Override
             public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-                //3.扫描类信息，获取标记的注解
                 /* 将一个Ljava/lang/Object;形式的字符串转化为java/lang/Object形式。*/
                 String[] annoArrays = info.annos == null ? new String[0] : info.annos;
-                //
                 String[] newAnnoArrays = new String[annoArrays.length + 1];
                 System.arraycopy(annoArrays, 0, newAnnoArrays, 0, annoArrays.length);
-                //
+
                 String annnoType = desc.substring(1, desc.length() - 1);
                 newAnnoArrays[newAnnoArrays.length - 1] = annnoType.replace('/', '.');
-                //
                 info.annos = newAnnoArrays;
                 return super.visitAnnotation(desc, visible);
             }
         }, ClassReader.SKIP_CODE);
-        //四、递归解析父类
+        /*四、递归解析父类*/
         if (info.superName != null) {
             try (InputStream superStream = this.resourceLoader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
                 if (superStream != null) {
@@ -156,7 +151,7 @@ class LoaderClassScanner implements ClassFinder {
                 }
             }
         }
-        //五、递归解析接口
+        /*五、递归解析接口*/
         for (String faces : info.interFaces) {
             try (InputStream superStream = this.resourceLoader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
                 if (superStream != null) {
@@ -164,11 +159,11 @@ class LoaderClassScanner implements ClassFinder {
                 }
             }
         }
-        //六、类型链
+        /*六、类型链*/
         Set<String> castTypeList = new TreeSet<>();/* 可转换的类型 */
         String superName = info.superName;
         addCastTypeList(info, castTypeList);//this
-        //
+
         if (superName != null) {
             while (superName != null && this.classInfoMap.containsKey(superName)) {
                 ClassInfo superInfo = this.classInfoMap.get(superName);
@@ -177,7 +172,7 @@ class LoaderClassScanner implements ClassFinder {
             }
         }
         info.castType = castTypeList.toArray(new String[0]);
-        //
+
         this.classInfoMap.put(info.className, info);
         return info;
     }

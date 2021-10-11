@@ -89,7 +89,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
     @Override
     public List<URL> getResources(String resource) throws IOException {
         List<URL> result = new ArrayList<>();
-        //
+
         ZipEntry zipEntry = this.jarFile.getEntry(resource);
         if (zipEntry != null) {
             result.add(new URL(this.jarFile.getUrl(), zipEntry.getName()));
@@ -108,7 +108,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
     @Override
     public List<InputStream> getResourcesAsStream(String resource) throws IOException {
         List<InputStream> result = new ArrayList<>();
-        //
+
         ZipEntry zipEntry = this.jarFile.getEntry(resource);
         if (zipEntry != null) {
             result.add(new AutoCloseInputStream(this.jarFile.getInputStream(zipEntry)));
@@ -160,7 +160,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             if (!testFound(entry, scanPaths)) {
                 continue;
             }
-            //
+
             URL url = new URL(jarFile.getUrl(), entry.getName());
             ESupplier<InputStream, IOException> inputStream = () -> jarFile.getInputStream(entry);
             T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
@@ -177,7 +177,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
-        //
+
         this.scanJarFile(result, this.jarFile, scanner, tests, false);
         if (!this.nestedJarFile.isEmpty()) {
             for (JarFile nestedJar : this.nestedJarFile) {
@@ -191,7 +191,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
-        //
+
         this.scanJarFile(result, this.jarFile, scanner, tests, true);
         if (result.isEmpty() && !this.nestedJarFile.isEmpty()) {
             for (JarFile nestedJar : this.nestedJarFile) {

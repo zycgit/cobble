@@ -35,17 +35,17 @@ public class MultiResourceLoader extends AbstractResourceLoader {
      * Creates a new multi resource Loader that will use the specified loaders.
      * @param loaders the loaders that are used to load resources.
      */
-    public MultiResourceLoader(ResourceLoader[] loaders) {
+    public MultiResourceLoader(ResourceLoader... loaders) {
         if (loaders == null) {
             return;
         }
         for (ResourceLoader loader : loaders) {
-            addResourceLoader(loader);
+            addLoader(loader);
         }
     }
 
     /**添加一个 {@link ResourceLoader} */
-    public void addResourceLoader(ResourceLoader loader) {
+    public void addLoader(ResourceLoader loader) {
         if (loader == null) {
             return;
         }
