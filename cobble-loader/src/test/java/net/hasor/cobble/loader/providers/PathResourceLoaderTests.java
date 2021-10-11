@@ -37,7 +37,7 @@ public class PathResourceLoaderTests {
         PathResourceLoader loader = new PathResourceLoader(new File(file));
         assert loader.exist("app/FooImpl.class");
         assert loader.exist("app/FooImpl.java");
-        assert loader.exist("META-INF/License.ASF20.txt");
+        assert loader.exist("META-INF/ReadMe.txt");
         assert !loader.exist("abc/abc.text");
     }
 
@@ -47,20 +47,20 @@ public class PathResourceLoaderTests {
         PathResourceLoader loader = new PathResourceLoader(new File(file));
         assert loader.getResource("app/FooImpl.class").toString().endsWith("dir/app-2.zip/app/FooImpl.class");
         assert loader.getResource("app/FooImpl.java").toString().endsWith("dir/app-2.zip/app/FooImpl.java");
-        assert loader.getResource("META-INF/License.ASF20.txt").toString().endsWith("dir/app-2.zip/META-INF/License.ASF20.txt");
+        assert loader.getResource("META-INF/ReadMe.txt").toString().endsWith("dir/app-2.zip/META-INF/ReadMe.txt");
     }
 
     @Test
     public void pathLoaderTest3() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.java"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/dir/app-2.zip").getFile();
         PathResourceLoader loader = new PathResourceLoader(new File(file));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.java")));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/License.ASF20.txt")));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/ReadMe.txt")));
         assert loader.getResourceAsStream("abc/abc.text") == null;
     }
 
@@ -70,33 +70,33 @@ public class PathResourceLoaderTests {
         PathResourceLoader loader = new PathResourceLoader(new File(file));
         assert loader.getResources("app/FooImpl.class").get(0).toString().endsWith("dir/app-2.zip/app/FooImpl.class");
         assert loader.getResources("app/FooImpl.java").get(0).toString().endsWith("dir/app-2.zip/app/FooImpl.java");
-        assert loader.getResources("META-INF/License.ASF20.txt").get(0).toString().endsWith("dir/app-2.zip/META-INF/License.ASF20.txt");
+        assert loader.getResources("META-INF/ReadMe.txt").get(0).toString().endsWith("dir/app-2.zip/META-INF/ReadMe.txt");
     }
 
     @Test
     public void pathLoaderTest5() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.java"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/dir/app-2.zip").getFile();
         PathResourceLoader loader = new PathResourceLoader(new File(file));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourcesAsStream("app/FooImpl.class").get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourcesAsStream("app/FooImpl.java").get(0)));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/License.ASF20.txt").get(0)));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/ReadMe.txt").get(0)));
     }
 
     @Test
     public void pathLoaderTest6() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.java"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/dir/app-2.zip").getFile();
         PathResourceLoader loader = new PathResourceLoader(new File(file));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/FooImpl.class").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/FooImpl.java").openStream()));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/License.ASF20.txt").openStream()));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/ReadMe.txt").openStream()));
     }
 
     @Test

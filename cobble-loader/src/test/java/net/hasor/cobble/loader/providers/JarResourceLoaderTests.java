@@ -38,7 +38,7 @@ public class JarResourceLoaderTests {
         assert loader.exist("app/FooImpl.class");
         assert loader.exist("app/FooImpl.java");
         assert loader.exist("META-INF/MANIFEST.MF");
-        assert loader.exist("META-INF/License.ASF20.txt");
+        assert loader.exist("META-INF/ReadMe.txt");
         assert !loader.exist("abc/abc.text");
     }
 
@@ -49,7 +49,7 @@ public class JarResourceLoaderTests {
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
         assert loader.getResource("app/FooImpl.java").toString().endsWith("jars/app-1.jar!/app/FooImpl.java");
         assert loader.getResource("META-INF/MANIFEST.MF").toString().endsWith("jars/app-1.jar!/META-INF/MANIFEST.MF");
-        assert loader.getResource("META-INF/License.ASF20.txt").toString().endsWith("jars/app-1.jar!/META-INF/License.ASF20.txt");
+        assert loader.getResource("META-INF/ReadMe.txt").toString().endsWith("jars/app-1.jar!/META-INF/ReadMe.txt");
     }
 
     @Test
@@ -57,14 +57,14 @@ public class JarResourceLoaderTests {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.java")));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/MANIFEST.MF")));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/License.ASF20.txt")));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/ReadMe.txt")));
         assert loader.getResourceAsStream("abc/abc.text") == null;
     }
 
@@ -75,7 +75,7 @@ public class JarResourceLoaderTests {
         assert loader.getResources("app/FooImpl.class").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
         assert loader.getResources("app/FooImpl.java").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.java");
         assert loader.getResources("META-INF/MANIFEST.MF").get(0).toString().endsWith("jars/app-1.jar!/META-INF/MANIFEST.MF");
-        assert loader.getResources("META-INF/License.ASF20.txt").get(0).toString().endsWith("jars/app-1.jar!/META-INF/License.ASF20.txt");
+        assert loader.getResources("META-INF/ReadMe.txt").get(0).toString().endsWith("jars/app-1.jar!/META-INF/ReadMe.txt");
     }
 
     @Test
@@ -83,14 +83,14 @@ public class JarResourceLoaderTests {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourcesAsStream("app/FooImpl.class").get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourcesAsStream("app/FooImpl.java").get(0)));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/MANIFEST.MF").get(0)));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/License.ASF20.txt").get(0)));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/ReadMe.txt").get(0)));
     }
 
     @Test
@@ -98,14 +98,14 @@ public class JarResourceLoaderTests {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/FooImpl.class").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/FooImpl.java").openStream()));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResource("META-INF/MANIFEST.MF").openStream()));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/License.ASF20.txt").openStream()));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/ReadMe.txt").openStream()));
     }
 
     @Test

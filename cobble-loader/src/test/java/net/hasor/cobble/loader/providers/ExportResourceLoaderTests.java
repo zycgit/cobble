@@ -50,7 +50,7 @@ public class ExportResourceLoaderTests {
         assert !loader.exist("app/FooImpl.class");
         assert !loader.exist("app/FooImpl.java");
         assert !loader.exist("META-INF/MANIFEST.MF");
-        assert !loader.exist("META-INF/License.ASF20.txt");
+        assert !loader.exist("META-INF/ReadMe.txt");
         assert !loader.exist("abc/abc.text");
 
         loader.addExport("app");
@@ -59,7 +59,7 @@ public class ExportResourceLoaderTests {
 
         loader.addExport("META-INF");
         assert loader.exist("META-INF/MANIFEST.MF");
-        assert loader.exist("META-INF/License.ASF20.txt");
+        assert loader.exist("META-INF/ReadMe.txt");
 
         loader.addExport("abc");
         assert !loader.exist("abc/abc.text");
@@ -71,35 +71,35 @@ public class ExportResourceLoaderTests {
         ExportResourceLoader loader = new ExportResourceLoader(new JarResourceLoader(new File(file)));
 
         assert loader.getResource("app/FooImpl.class") == null;
-        assert loader.getResource("META-INF/License.ASF20.txt") == null;
+        assert loader.getResource("META-INF/ReadMe.txt") == null;
 
         loader.addExport("app");
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
-        assert loader.getResource("META-INF/License.ASF20.txt") == null;
+        assert loader.getResource("META-INF/ReadMe.txt") == null;
 
         loader.addExport("META-INF");
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
-        assert loader.getResource("META-INF/License.ASF20.txt").toString().endsWith("jars/app-1.jar!/META-INF/License.ASF20.txt");
+        assert loader.getResource("META-INF/ReadMe.txt").toString().endsWith("jars/app-1.jar!/META-INF/ReadMe.txt");
     }
 
     @Test
     public void exportLoaderTest4() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         ExportResourceLoader loader = new ExportResourceLoader(new JarResourceLoader(new File(file)));
 
         assert loader.getResourceAsStream("app/FooImpl.class") == null;
-        assert loader.getResourceAsStream("META-INF/License.ASF20.txt") == null;
+        assert loader.getResourceAsStream("META-INF/ReadMe.txt") == null;
 
         loader.addExport("app");
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
-        assert loader.getResourceAsStream("META-INF/License.ASF20.txt") == null;
+        assert loader.getResourceAsStream("META-INF/ReadMe.txt") == null;
 
         loader.addExport("META-INF");
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/License.ASF20.txt")));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/ReadMe.txt")));
     }
 
     @Test
@@ -108,35 +108,35 @@ public class ExportResourceLoaderTests {
         ExportResourceLoader loader = new ExportResourceLoader(new JarResourceLoader(new File(file)));
 
         assert loader.getResources("app/FooImpl.class").isEmpty();
-        assert loader.getResources("META-INF/License.ASF20.txt").isEmpty();
+        assert loader.getResources("META-INF/ReadMe.txt").isEmpty();
 
         loader.addExport("app");
         assert loader.getResources("app/FooImpl.class").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
-        assert loader.getResources("META-INF/License.ASF20.txt").isEmpty();
+        assert loader.getResources("META-INF/ReadMe.txt").isEmpty();
 
         loader.addExport("META-INF");
         assert loader.getResources("app/FooImpl.class").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
-        assert loader.getResources("META-INF/License.ASF20.txt").get(0).toString().endsWith("jars/app-1.jar!/META-INF/License.ASF20.txt");
+        assert loader.getResources("META-INF/ReadMe.txt").get(0).toString().endsWith("jars/app-1.jar!/META-INF/ReadMe.txt");
     }
 
     @Test
     public void exportLoaderTest6() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/License.ASF20.txt"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         ExportResourceLoader loader = new ExportResourceLoader(new JarResourceLoader(new File(file)));
 
         assert loader.getResourcesAsStream("app/FooImpl.class").isEmpty();
-        assert loader.getResourcesAsStream("META-INF/License.ASF20.txt").isEmpty();
+        assert loader.getResourcesAsStream("META-INF/ReadMe.txt").isEmpty();
 
         loader.addExport("app");
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourcesAsStream("app/FooImpl.class").get(0)));
-        assert loader.getResources("META-INF/License.ASF20.txt").isEmpty();
+        assert loader.getResources("META-INF/ReadMe.txt").isEmpty();
 
         loader.addExport("META-INF");
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourcesAsStream("app/FooImpl.class").get(0)));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/License.ASF20.txt").get(0)));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/ReadMe.txt").get(0)));
 
     }
 

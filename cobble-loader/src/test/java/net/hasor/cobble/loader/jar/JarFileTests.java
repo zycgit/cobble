@@ -43,7 +43,7 @@ public class JarFileTests {
         assert names.contains("app/FooImpl.class");
         assert names.contains("app/FooImpl.java");
         assert names.contains("META-INF/MANIFEST.MF");
-        assert names.contains("META-INF/License.ASF20.txt");
+        assert names.contains("META-INF/ReadMe.txt");
     }
 
     @Test
@@ -59,7 +59,7 @@ public class JarFileTests {
         assert names.contains("app/FooImpl.class");
         assert names.contains("app/FooImpl.java");
         assert names.contains("META-INF/MANIFEST.MF");
-        assert names.contains("META-INF/License.ASF20.txt");
+        assert names.contains("META-INF/ReadMe.txt");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class JarFileTests {
         assert !names.isEmpty();
         assert names.contains("app/FooImpl.class");
         assert names.contains("app/FooImpl.java");
-        assert names.contains("META-INF/License.ASF20.txt");
+        assert names.contains("META-INF/ReadMe.txt");
     }
 
     @Test
@@ -89,7 +89,7 @@ public class JarFileTests {
         assert !names.isEmpty();
         assert names.contains("app/FooImpl.class");
         assert names.contains("app/FooImpl.java");
-        assert names.contains("META-INF/License.ASF20.txt");
+        assert names.contains("META-INF/ReadMe.txt");
     }
 
     @Test
