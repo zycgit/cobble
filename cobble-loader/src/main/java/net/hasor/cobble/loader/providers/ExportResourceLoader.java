@@ -60,7 +60,7 @@ public class ExportResourceLoader extends AbstractResourceLoader {
 
     private static String fmtDirPath(String dirPath) {
         dirPath = FilenameUtils.getPath(dirPath).replace("\\", "/");
-        if (dirPath.charAt(0) == '/') {
+        if (dirPath.length() > 0 && dirPath.charAt(0) == '/') {
             dirPath = dirPath.substring(1);
         }
         return dirPath;

@@ -17,6 +17,7 @@ package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
+import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,8 +38,9 @@ import java.util.zip.ZipEntry;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClassPathResourceLoader extends AbstractResourceLoader {
-    private       ClassLoader classLoader = null;
-    private final List<URL>   classpath;
+    public static ResourceLoader INSTANCE    = new ClassPathResourceLoader();
+    private       ClassLoader    classLoader = null;
+    private final List<URL>      classpath;
 
     public ClassPathResourceLoader() {
         this(Thread.currentThread().getContextClassLoader());
