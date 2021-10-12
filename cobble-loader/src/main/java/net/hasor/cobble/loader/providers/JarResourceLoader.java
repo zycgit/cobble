@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
@@ -52,6 +53,19 @@ public class JarResourceLoader extends AbstractResourceLoader {
                 this.nestedJarFile.add(this.jarFile.getNestedJarFile(jarEntry));
             }
         }
+    }
+
+    public Manifest getManifest() throws IOException {
+        return this.jarFile.getManifest();
+    }
+
+    public Manifest getManifest(String nestedJarName) throws IOException {
+        for (JarFile jarFile : this.nestedJarFile) {
+            if (jarFile.getName().equals(nestedJarName)) {
+                return jarFile.getManifest();
+            }
+        }
+        return null;
     }
 
     @Override
