@@ -33,7 +33,8 @@
 | 类名 | 作用 |
 | -------- | ------ |
 | ClassPathResourceLoader | |
-| ExportResourceLoader | |
 | JarResourceLoader | |
 | MultiResourceLoader | |
 | PathResourceLoader | |
+| ExportResourceLoader | |
+| ImportResourceLoader | |

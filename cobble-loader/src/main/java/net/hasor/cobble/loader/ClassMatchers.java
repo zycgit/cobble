@@ -17,24 +17,23 @@ package net.hasor.cobble.loader;
 import net.hasor.cobble.loader.ClassFinder.ClassInfo;
 import net.hasor.cobble.loader.ClassFinder.ClassMatcher;
 
-import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
 /**
- *
- * @version : 2013-8-20
+ * 扫描过程中的匹配器
+ * @version : 2021-10-01
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClassMatchers {
     private ClassMatchers() {
     }
 
-    /** 匹配任意类型*/
+    /** 任意类型 */
     public static Predicate<?> any() {
         return t -> true;
     }
 
-    /** 在类型中匹配注解 */
+    /** 类型 或 类上有 xx 注解 */
     public static ClassMatcher featureWith(final Class<?> annotationType) {
         String featureType = annotationType.getName();
         return context -> {
@@ -53,7 +52,8 @@ public class ClassMatchers {
         };
     }
 
-    public static ClassMatcher annotatedWith(final Class<? extends Annotation> annotationType) {
+    /** 类上需要有 xx 注解 */
+    public static ClassMatcher annotatedWith(final Class<?> annotationType) {
         String featureType = annotationType.getName();
         return context -> {
             ClassInfo classInfo = context.getClassInfo();
@@ -66,7 +66,7 @@ public class ClassMatchers {
         };
     }
 
-    /** 匹配给定类型的子类 */
+    /** 子类 */
     public static ClassMatcher subClassesOf(final Class<?> superclass) {
         String testType = superclass.getName();
         return context -> {

@@ -166,7 +166,6 @@ public class ImportResourceLoaderTests {
 
         ResourceLoader.Scanner<InputStream> scanner = event -> {
             if (event.getName().startsWith("app/only") && event.getName().endsWith(".java")) {
-                System.out.println(event.getName());
                 return event.getStream();
             } else {
                 return null;

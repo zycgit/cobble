@@ -17,14 +17,17 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.ClassMatchers;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Tests for {@link JarFile}.
@@ -120,33 +123,49 @@ public class ClassResourceLoaderTests {
         assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
         assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
     }
-    //    @Test
-    //    public void classpathTest_01() throws IOException {
-    //        ClassPathResourceLoader classLoader = new ClassPathResourceLoader();
-    //
-    //        assert classLoader.exist("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class");
-    //        assert classLoader.getResource("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class") != null;
-    //        assert classLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
-    //
-    //        Set<Class<?>> classSet = classLoader.toClassFinder().getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
-    //        assert classSet.size() == 7;
-    //        assert classSet.contains(ClassPathResourceLoader.class);
-    //        assert classSet.contains(PathResourceLoader.class);
-    //        assert classSet.contains(JarResourceLoader.class);
-    //        assert classSet.contains(MultiResourceLoader.class);
-    //        assert classSet.contains(AbstractResourceLoader.class);
-    //        assert classSet.contains(ImportResourceLoader.class);
-    //        assert classSet.contains(ExportResourceLoader.class);
-    //
-    //        classSet = classLoader.toClassFinder().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
-    //        assert classSet.size() == 8;
-    //        assert classSet.contains(ClassPathResourceLoader.class);
-    //        assert classSet.contains(PathResourceLoader.class);
-    //        assert classSet.contains(JarResourceLoader.class);
-    //        assert classSet.contains(MultiResourceLoader.class);
-    //        assert classSet.contains(AbstractResourceLoader.class);
-    //        assert classSet.contains(ImportResourceLoader.class);
-    //        assert classSet.contains(ExportResourceLoader.class);
-    //        assert classSet.contains(ResourceLoader.class);
-    //    }
+
+    @Test
+    public void classpathLoaderTest9() throws ClassNotFoundException {
+        // no bind parent, use self load class
+        ClassPathResourceLoader classLoader1 = new ClassPathResourceLoader();
+        Class<?> clazz1 = classLoader1.toClassLoader().loadClass(ClassPathResourceLoader.class.getName());
+        assert clazz1 != ClassPathResourceLoader.class;
+
+        // bind parent, load from the parent first
+        ClassPathResourceLoader classLoader2 = new ClassPathResourceLoader();
+        classLoader2.bindParentLoader(Thread.currentThread().getContextClassLoader());
+        Class<?> clazz2 = classLoader2.toClassLoader().loadClass(ClassPathResourceLoader.class.getName());
+        assert clazz2 == ClassPathResourceLoader.class;
+    }
+
+    @Test
+    public void classpathLoaderTest10() throws IOException {
+        ClassPathResourceLoader classLoader = new ClassPathResourceLoader();
+        classLoader.bindParentLoader(Thread.currentThread().getContextClassLoader());
+
+        assert classLoader.exist("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class");
+        assert classLoader.getResource("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class") != null;
+        assert classLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
+
+        Set<Class<?>> classSet = classLoader.toClassFinder().getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
+        assert classSet.size() == 7;
+        assert classSet.contains(ClassPathResourceLoader.class);
+        assert classSet.contains(MultiResourceLoader.class);
+        assert classSet.contains(ExportResourceLoader.class);
+        assert classSet.contains(ImportResourceLoader.class);
+        assert classSet.contains(AbstractResourceLoader.class);
+        assert classSet.contains(JarResourceLoader.class);
+        assert classSet.contains(PathResourceLoader.class);
+
+        classSet = classLoader.toClassFinder().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
+        assert classSet.size() == 8;
+        assert classSet.contains(ClassPathResourceLoader.class);
+        assert classSet.contains(PathResourceLoader.class);
+        assert classSet.contains(JarResourceLoader.class);
+        assert classSet.contains(MultiResourceLoader.class);
+        assert classSet.contains(AbstractResourceLoader.class);
+        assert classSet.contains(ImportResourceLoader.class);
+        assert classSet.contains(ExportResourceLoader.class);
+        assert classSet.contains(ResourceLoader.class);
+    }
 }

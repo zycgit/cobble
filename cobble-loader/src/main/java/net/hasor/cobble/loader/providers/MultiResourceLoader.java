@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- *
- * @version : 2015年7月1日
- * @author 赵永春 (zyc@byshell.org)
+ * 可以将不同的 ResourceLoader 汇聚到一起。
+ * @version : 2021-09-29
+ * @author 赵永春 (zyc@hasor.net)
  */
 public class MultiResourceLoader extends AbstractResourceLoader {
     private final List<ResourceLoader> loaders = new CopyOnWriteArrayList<>();

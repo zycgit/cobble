@@ -23,8 +23,8 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- *
- * @version : 2014年9月7日
+ * ResourceLoader 的 ClassLoader 能力实现
+ * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
 public class LoaderClassLoader extends ClassLoader {

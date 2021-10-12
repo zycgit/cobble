@@ -34,7 +34,7 @@ import java.util.zip.ZipEntry;
 
 /**
  * 用于创建一个可以从 classpath 中获取资源的 ResourceLoader
- * @version : 2013-6-6
+ * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClassPathResourceLoader extends AbstractResourceLoader {

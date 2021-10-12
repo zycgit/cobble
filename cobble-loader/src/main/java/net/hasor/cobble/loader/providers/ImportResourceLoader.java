@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 构造一个 ResourceLoader，该 ResourceLoader 允许 import 另外的资源加载器。
+ * 构造一个 ImportResourceLoader，该 ResourceLoader 允许 import 另外的资源加载器。
  *
  * 每个 import 的资源加载器可以配置一个访问路径，资源查找过程中只有路径匹配的情况下才会调用它。
  * @version : 2021-10-10

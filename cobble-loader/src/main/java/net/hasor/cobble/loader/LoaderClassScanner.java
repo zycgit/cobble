@@ -26,8 +26,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
- * @version : 2014年9月7日
+ * ResourceLoader 的 ClassFinder 接口实现
+ * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
 public class LoaderClassScanner implements ClassFinder {
@@ -107,14 +107,10 @@ public class LoaderClassScanner implements ClassFinder {
 
     /** 分析类的字节码，分析过程中会递归解析父类和实现的接口 */
     private ClassInfo loadClassInfo(String className, final InputStream inStream) throws IOException {
-        /*一、检查类是否已经被加载过，避免重复扫描同一个类*/
-        if (this.classInfoMap.containsKey(className)) {
-            return this.classInfoMap.get(className);
-        }
-        /*二、使用 ClassReader 读取类的基本信息*/
+        /* use ClassReader read basic info. */
         ClassReader classReader = new ClassReader(inStream);
 
-        /*三、读取类的（名称、父类、接口、注解）信息*/
+        /* read className, parentType, interfaces、annos */
         final ClassInfo info = new ClassInfo();
         classReader.accept(new ClassVisitor(Opcodes.ASM9) {
             @Override
@@ -132,7 +128,7 @@ public class LoaderClassScanner implements ClassFinder {
 
             @Override
             public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-                /* 将一个Ljava/lang/Object;形式的字符串转化为java/lang/Object形式。*/
+                /* convert "Ljava/lang/Object;" to "java/lang/Object" */
                 String[] annoArrays = info.annos == null ? new String[0] : info.annos;
                 String[] newAnnoArrays = new String[annoArrays.length + 1];
                 System.arraycopy(annoArrays, 0, newAnnoArrays, 0, annoArrays.length);
@@ -143,7 +139,8 @@ public class LoaderClassScanner implements ClassFinder {
                 return super.visitAnnotation(desc, visible);
             }
         }, ClassReader.SKIP_CODE);
-        /*四、递归解析父类*/
+
+        /* parents */
         if (info.superName != null) {
             try (InputStream superStream = this.resourceLoader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
                 if (superStream != null) {
@@ -151,11 +148,12 @@ public class LoaderClassScanner implements ClassFinder {
                 }
             }
         }
-        /*五、递归解析接口*/
+
+        /* interfaces */
         for (String faces : info.interFaces) {
             try (InputStream superStream = this.resourceLoader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
                 if (superStream != null) {
-                    this.loadClassInfo(faces, superStream);//加载父类
+                    this.loadClassInfo(faces, superStream);//load parent
                 }
             }
         }

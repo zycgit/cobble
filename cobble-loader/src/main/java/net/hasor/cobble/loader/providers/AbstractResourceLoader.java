@@ -32,7 +32,7 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
     private ClassLoader bindClassLoader;
     private ClassFinder bindClassFinder;
 
-    public void bindClassLoader(ClassLoader parent) {
+    public void bindParentLoader(ClassLoader parent) {
         if (this.bindClassLoader != null) {
             throw new IllegalStateException("the bindClassLoader already exists.");
         } else {

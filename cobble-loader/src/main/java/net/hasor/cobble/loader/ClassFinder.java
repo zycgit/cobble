@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- *
- * @version : 2021-09-12
+ * 资源扫描器
+ * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface ClassFinder {

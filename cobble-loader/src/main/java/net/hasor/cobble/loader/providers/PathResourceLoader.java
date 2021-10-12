@@ -28,8 +28,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * 将一个 File 对象所代表的路径作为根路径，资源获取相对于该路径下。
- * @version : 2011-9-17
+ * 将一个 File 对象所代表的路径作为根路径。
+ * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
 public class PathResourceLoader extends AbstractResourceLoader {
