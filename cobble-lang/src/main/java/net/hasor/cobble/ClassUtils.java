@@ -1031,8 +1031,6 @@ public class ClassUtils {
         return target.getName().startsWith("java.lang.");
     }
 
-    ;
-
     /**获取方法的标识代码，在不考虑其所属类的情况下。*/
     public static String getDescName(final Class<?> type) {
         if (type == Void.class) {
@@ -1071,7 +1069,6 @@ public class ClassUtils {
             }
         }
         str.append(")");
-        //
         return str.toString();
     }
 
@@ -1092,7 +1089,6 @@ public class ClassUtils {
             str.append("friendly ");
         }
         str.append(getDescNameWithOutModifiers(method));
-        //
         return str.toString();
     }
 
@@ -1133,7 +1129,6 @@ public class ClassUtils {
                 classLoader = classLoader.getParent();
             }
         }
-        //
         List<URL> resources = new ArrayList<>();
         for (ClassLoader loader : classLoaders) {
             if (loader instanceof URLClassLoader) {
