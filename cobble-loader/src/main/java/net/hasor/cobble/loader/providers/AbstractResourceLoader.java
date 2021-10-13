@@ -19,8 +19,6 @@ import net.hasor.cobble.loader.LoaderClassLoader;
 import net.hasor.cobble.loader.LoaderClassScanner;
 import net.hasor.cobble.loader.ResourceLoader;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -115,17 +113,5 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
             }
         }
         return tests;
-    }
-
-    protected static <T> Scanner<T> scannerProxy(Scanner<T> scanner) {
-        final Set<String> duplicate = new HashSet<>();
-        return event -> {
-            String eventName = event.getName();
-            if (duplicate.contains(eventName)) {
-                return null;
-            }
-            duplicate.add(eventName);
-            return scanner.found(event);
-        };
     }
 }

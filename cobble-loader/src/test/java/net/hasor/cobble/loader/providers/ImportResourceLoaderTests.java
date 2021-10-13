@@ -223,7 +223,10 @@ public class ImportResourceLoaderTests {
         loader.addImport("ApplicationForApp1.class", loader1);
         loader.addImport("ApplicationForApp2.class", loader2);
 
-        List<Object> objectList = loader.scanResources(ResourceLoader.ScanEvent::getName);
-        assert objectList.size() == 2;
+        List<Object> list1 = loader.scanResources(ResourceLoader.ScanEvent::getName);
+        assert list1.size() == 2;
+
+        List<Object> list2 = loader.scanResources(ResourceLoader.MatchType.Suffix, ResourceLoader.ScanEvent::getName, new String[] { "App1.class" });
+        assert list2.contains("ApplicationForApp1.class");
     }
 }

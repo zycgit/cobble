@@ -32,11 +32,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ImportResourceLoader extends AbstractResourceLoader {
-    private final List<String>                   packageList    = new CopyOnWriteArrayList<>();
-    private final List<LoaderWrap>               allLoaders     = new CopyOnWriteArrayList<>();
-    private final Map<String, List<LoaderWrap>>  packageLoaders = new ConcurrentHashMap<>();
-    private final Map<String, List<LoaderWrap>>  cacheLoaders   = new SimpleLRU<>(1024);
-    private final Map<String, List<LoaderGroup>> cacheGroups    = new SimpleLRU<>(1024);
+    private final List<String>                  packageList    = new CopyOnWriteArrayList<>();
+    private final List<LoaderWrap>              allLoaders     = new CopyOnWriteArrayList<>();
+    private final Map<String, List<LoaderWrap>> packageLoaders = new ConcurrentHashMap<>();
+    private final Map<String, List<LoaderWrap>> cacheLoaders   = new SimpleLRU<>(1024);
 
     /** import all path */
     public void addImport(ResourceLoader loader) {
@@ -72,7 +71,6 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
         Collections.sort(loaders);
         this.cacheLoaders.clear();
-        this.cacheGroups.clear();
     }
 
     private static String pathOrResource(String dirPath) {
@@ -188,49 +186,6 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    private List<LoaderGroup> getLoaderGroups(List<String> paths) {
-        if (paths == null || paths.isEmpty()) {
-            paths = this.packageList;
-        }
-
-        String cacheKey = "'" + StringUtils.join(paths.toArray(), "','") + "'";
-        if (this.cacheGroups.containsKey(cacheKey)) {
-            return this.cacheGroups.get(cacheKey);// try from cache found.
-        }
-
-        synchronized (this) {
-            if (this.cacheGroups.containsKey(cacheKey)) {
-                return this.cacheGroups.get(cacheKey);
-            }
-
-            Map<ResourceLoader, List<String>> groupData = new LinkedHashMap<>();
-            for (String pathNode : paths) {
-                List<LoaderWrap> loaders = this.getLoader(pathNode);
-                if (CollectionUtils.isNotEmpty(loaders)) {
-                    for (LoaderWrap loader : loaders) {
-                        groupData.computeIfAbsent(loader.loader, l -> new ArrayList<>()).add(pathNode);
-                    }
-                }
-            }
-
-            List<LoaderGroup> groupList = new ArrayList<>();
-            groupData.forEach((loader, groupPaths) -> {
-                LoaderGroup loaderGroup = new LoaderGroup();
-                loaderGroup.loader = loader;
-                loaderGroup.scanPaths = groupPaths.toArray(new String[0]);
-                groupList.add(loaderGroup);
-            });
-
-            this.cacheGroups.put(cacheKey, groupList);
-            return groupList;
-        }
-    }
-
-    private static class LoaderGroup {
-        private String[]       scanPaths;
-        private ResourceLoader loader;
-    }
-
     public ResourceLoader findLoader(String resource) {
         List<LoaderWrap> loaders = getLoader(resource);
         for (LoaderWrap wrap : loaders) {
@@ -250,10 +205,44 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         return null;
     }
 
+    private <T> Scanner<T> scannerProxy(Scanner<T> scanner) {
+        return event -> {
+            String name = event.getName();
+            for (String has : this.packageList) {
+                if (name.startsWith(has)) {
+                    return scanner.found(event);
+                }
+            }
+            return null;
+        };
+    }
+
+    private static List<String> paths(MatchType matchType, List<String> paths) {
+        if (paths == null) {
+            return null;
+        }
+        switch (matchType) {
+            case None:
+            case ContainsAny:
+            case Suffix:
+            case Regex: {
+                return Collections.emptyList();
+            }
+            case Match:
+            case Prefix: {
+                return paths;
+            }
+            default: {
+                throw new UnsupportedOperationException("Unsupported matchType " + matchType.name());
+            }
+        }
+    }
+
     @Override
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        for (LoaderGroup loader : getLoaderGroups(Arrays.asList(scanPaths))) {
-            T result = loader.loader.scanOneResource(matchType, scanner, loader.scanPaths);
+        Scanner<T> scannerProxy = scannerProxy(scanner);
+        for (LoaderWrap loader : this.allLoaders) {
+            T result = loader.loader.scanOneResource(matchType, scannerProxy, scanPaths);
             if (result != null) {
                 return result;
             }
@@ -263,9 +252,10 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        Scanner<T> scannerProxy = scannerProxy(scanner);
         List<T> result = new ArrayList<>();
-        for (LoaderGroup loader : getLoaderGroups(Arrays.asList(scanPaths))) {
-            List<T> foundResources = loader.loader.scanResources(matchType, scanner, loader.scanPaths);
+        for (LoaderWrap loader : this.allLoaders) {
+            List<T> foundResources = loader.loader.scanResources(matchType, scannerProxy, scanPaths);
             if (foundResources != null) {
                 result.addAll(foundResources);
             }

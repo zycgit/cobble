@@ -137,14 +137,14 @@ public class PathResourceLoader extends AbstractResourceLoader {
                 // 过滤掉：隐藏和不存在的
                 continue;
             }
-            if (fileItem.isDirectory()) {
-                // 目录继续向下搜索
-                scanDirFile(baseDir, result, fileItem, scanner, scanPaths, matchOnce);
-                continue;
-            }
             String resourceName = fileItem.getAbsolutePath().substring(baseDir.getAbsolutePath().length() + 1);
             if (!testFound(new File(resourceName), scanPaths)) {
                 // 匹配失败
+                continue;
+            }
+            if (fileItem.isDirectory()) {
+                // 目录继续向下搜索
+                scanDirFile(baseDir, result, fileItem, scanner, scanPaths, matchOnce);
                 continue;
             }
             ESupplier<InputStream, IOException> inputStream = () -> {

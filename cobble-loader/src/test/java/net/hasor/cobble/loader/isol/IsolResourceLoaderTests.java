@@ -41,7 +41,10 @@ public class IsolResourceLoaderTests {
 
     @Test
     public void isolLoaderTest2() throws Exception {
-        List<Object> objectList = this.loader.scanResources(ResourceLoader.ScanEvent::getName);
-        assert objectList.size() == 2;
+        List<Object> list1 = loader.scanResources(ResourceLoader.ScanEvent::getName);
+        assert list1.size() == 2;
+
+        List<Object> list2 = loader.scanResources(ResourceLoader.MatchType.Suffix, ResourceLoader.ScanEvent::getName, new String[] { "App1.class" });
+        assert list2.contains("ApplicationForApp1.class");
     }
 }
