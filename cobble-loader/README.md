@@ -1,6 +1,6 @@
 # Cobble Loader
 
-&emsp;&emsp; 资源加载、类加载、处理 Jar in Jar、类隔离工具框架。
+&emsp;&emsp; 提供资源加载、类加载、处理 Jar in Jar、类隔离的工具框架。
 
 ## 加载能力
 
@@ -28,7 +28,9 @@
 - 资源扫描可转化为等价的类扫描
     - 类扫描仅加载匹配到的类，没有匹配的类不会触发类加载
 
-## 各种 Loader
+## 类隔离
+
+## 各种 ResourceLoader
 
 | 类名 | 作用 |
 | -------- | ------ |
@@ -38,3 +40,4 @@
 | PathResourceLoader | |
 | ExportResourceLoader | |
 | ImportResourceLoader | |
+| IsolResourceLoader | |

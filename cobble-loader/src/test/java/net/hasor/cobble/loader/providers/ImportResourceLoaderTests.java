@@ -43,7 +43,6 @@ public class ImportResourceLoaderTests {
         this.loader.addImport(0, new PathResourceLoader(new File(file1)));
         this.loader.addImport(1, "app/onlyjar", new PathResourceLoader(new File(file2)));
         this.loader.addImport(2, "app/onlyzip", new PathResourceLoader(new File(file3)));
-
     }
 
     @Test
@@ -189,5 +188,42 @@ public class ImportResourceLoaderTests {
     public void importLoaderTest10() throws Exception {
         assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
         assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
+    }
+
+    @Test
+    public void importLoaderTest11() throws Exception {
+        String dir1 = ResourcesUtils.getResource("/dir/isol/app-1").getFile();
+        PathResourceLoader loader1 = new PathResourceLoader(new File(dir1));
+        String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
+        PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
+
+        ImportResourceLoader loader = new ImportResourceLoader();
+        loader.bindParentLoader(Thread.currentThread().getContextClassLoader());
+        loader.addImport("ApplicationForApp1.class", loader1);
+        loader.addImport("ApplicationForApp2.class", loader2);
+
+        try {
+            ClassLoader classLoaderRoot = loader.toClassLoader();
+            classLoaderRoot.loadClass("ApplicationForApp1").newInstance();
+            classLoaderRoot.loadClass("ApplicationForApp2").newInstance();
+            assert false;
+        } catch (NoClassDefFoundError e) {
+            assert e.getMessage().equals("lib/Foo"); // lib 包并未被导入，ImportResourceLoader 无法正确处理。
+        }
+    }
+
+    @Test
+    public void importLoaderTest12() throws Exception {
+        String dir1 = ResourcesUtils.getResource("/dir/isol/app-1").getFile();
+        PathResourceLoader loader1 = new PathResourceLoader(new File(dir1));
+        String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
+        PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
+
+        ImportResourceLoader loader = new ImportResourceLoader();
+        loader.addImport("ApplicationForApp1.class", loader1);
+        loader.addImport("ApplicationForApp2.class", loader2);
+
+        List<Object> objectList = loader.scanResources(ResourceLoader.ScanEvent::getName);
+        assert objectList.size() == 2;
     }
 }

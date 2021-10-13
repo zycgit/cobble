@@ -27,14 +27,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 构造一个 ImportResourceLoader，该 ResourceLoader 允许 import 另外的资源加载器。
- *
- * 每个 import 的资源加载器可以配置一个访问路径，资源查找过程中只有路径匹配的情况下才会调用它。
+ * 可以将不同的 ResourceLoader 汇聚到一起，在汇聚的时允许为每个 ResourceLoader 指定可见范围。
  * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ImportResourceLoader extends AbstractResourceLoader {
     private final List<String>                   packageList    = new CopyOnWriteArrayList<>();
+    private final List<LoaderWrap>               allLoaders     = new CopyOnWriteArrayList<>();
     private final Map<String, List<LoaderWrap>>  packageLoaders = new ConcurrentHashMap<>();
     private final Map<String, List<LoaderWrap>>  cacheLoaders   = new SimpleLRU<>(1024);
     private final Map<String, List<LoaderGroup>> cacheGroups    = new SimpleLRU<>(1024);
@@ -57,13 +56,14 @@ public class ImportResourceLoader extends AbstractResourceLoader {
     /** import specified path or resource */
     public synchronized void addImport(int order, String importPath, ResourceLoader loader) {
         importPath = pathOrResource(importPath);
+        List<LoaderWrap> loaders = this.packageLoaders.computeIfAbsent(importPath, s -> new CopyOnWriteArrayList<>());
+        LoaderWrap loaderWrap = new LoaderWrap(order, loader);
 
         if (!this.packageList.contains(importPath)) {
             this.packageList.add(importPath);
+            this.allLoaders.add(loaderWrap);
         }
 
-        List<LoaderWrap> loaders = this.packageLoaders.computeIfAbsent(importPath, s -> new CopyOnWriteArrayList<>());
-        LoaderWrap loaderWrap = new LoaderWrap(order, loader);
         if (!loaders.contains(loaderWrap)) {
             loaders.add(loaderWrap);
         } else {
@@ -229,6 +229,25 @@ public class ImportResourceLoader extends AbstractResourceLoader {
     private static class LoaderGroup {
         private String[]       scanPaths;
         private ResourceLoader loader;
+    }
+
+    public ResourceLoader findLoader(String resource) {
+        List<LoaderWrap> loaders = getLoader(resource);
+        for (LoaderWrap wrap : loaders) {
+            if (wrap.loader.exist(resource)) {
+                return wrap.loader;
+            }
+        }
+        return null;
+    }
+
+    protected ResourceLoader unsafeFindLoader(String resource) {
+        for (LoaderWrap wrap : this.allLoaders) {
+            if (wrap.loader.exist(resource)) {
+                return wrap.loader;
+            }
+        }
+        return null;
     }
 
     @Override

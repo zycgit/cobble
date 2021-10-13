@@ -71,10 +71,10 @@ public class LoaderClassLoader extends ClassLoader {
                     return resourceURL;
                 }
             }
+            return super.findResource(name);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return super.findResource(name);
     }
 
     @Override
@@ -86,10 +86,10 @@ public class LoaderClassLoader extends ClassLoader {
                     return CollectionUtils.asEnumeration(resourceURLs);
                 }
             }
+            return super.findResources(name);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return super.findResources(name);
     }
 
     public InputStream getResourceAsStream(String name) {
@@ -115,8 +115,9 @@ public class LoaderClassLoader extends ClassLoader {
             File tempLib = findJarNativeEntry(sLib);
             if (tempLib != null) {
                 return tempLib.getAbsolutePath();
+            } else {
+                return super.findLibrary(sLib);
             }
-            return super.findLibrary(sLib);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

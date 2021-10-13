@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Tests for {@link JarFile}.
@@ -272,5 +273,39 @@ public class MultiResourceLoaderTests {
 
         assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
         assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
+    }
+
+    @Test
+    public void multiLoaderTest9() throws Exception {
+        String dir1 = ResourcesUtils.getResource("/dir/isol/app-1").getFile();
+        PathResourceLoader loader1 = new PathResourceLoader(new File(dir1));
+
+        String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
+        PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
+
+        MultiResourceLoader loader = new MultiResourceLoader();
+        loader.addLoader(loader1);
+        loader.addLoader(loader2);
+
+        ClassLoader classLoaderRoot = loader.toClassLoader();
+        Object obj1 = classLoaderRoot.loadClass("ApplicationForApp1").newInstance();
+        Object obj2 = classLoaderRoot.loadClass("ApplicationForApp2").newInstance();
+
+        assert obj1 instanceof Function;
+        assert obj2 instanceof Function;
+
+        try {
+            Object result = ((Function) obj1).apply("hello");
+            assert result.toString().equals("FooForApp1 running...");
+        } catch (Exception e) {
+            assert false;
+        }
+
+        try {
+            Object result = ((Function) obj2).apply("hello");
+            assert false;
+        } catch (NoSuchMethodError e) {
+            assert e.getMessage().equals("lib.Foo.run([Ljava/lang/String;)Ljava/lang/String;");
+        }
     }
 }
