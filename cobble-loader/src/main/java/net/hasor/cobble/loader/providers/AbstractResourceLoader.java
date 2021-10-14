@@ -19,6 +19,7 @@ import net.hasor.cobble.loader.LoaderClassLoader;
 import net.hasor.cobble.loader.LoaderClassScanner;
 import net.hasor.cobble.loader.ResourceLoader;
 
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -33,7 +34,7 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
     private ClassFinder bindClassFinder;
 
     public void bindParentLoader(ClassLoader parent) {
-        if (this.bindClassLoader != null) {
+        if (this.bindClassLoader != null && this.bindClassLoader != ClassLoader.getSystemClassLoader()) {
             throw new IllegalStateException("the bindClassLoader already exists.");
         } else {
             this.bindParentLoader = parent;
@@ -50,7 +51,11 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
                 if (this.bindClassLoader != null) {
                     return this.bindClassLoader;
                 } else {
-                    this.bindClassLoader = this.createBindClassLoader(this.bindParentLoader);
+                    ClassLoader useBindLoader = this.bindParentLoader;
+                    if (useBindLoader == null) {
+                        useBindLoader = ClassLoader.getSystemClassLoader();
+                    }
+                    this.bindClassLoader = Objects.requireNonNull(this.createBindClassLoader(useBindLoader));
                 }
             }
         }
