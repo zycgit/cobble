@@ -20,6 +20,8 @@ package net.hasor.cobble.function;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface Property {
+    public boolean isReadOnly();
+
     public Object get(Object instance);
 
     public void set(Object instance, Object value);

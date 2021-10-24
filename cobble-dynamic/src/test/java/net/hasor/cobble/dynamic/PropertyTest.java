@@ -56,8 +56,8 @@ public class PropertyTest {
         AopClassConfig classConfig = new AopClassConfig();
         classConfig.addProperty("name", Boolean.TYPE, ReadWriteType.ReadOnly);
         Class<?> buildClass = classConfig.buildClass();
-        assert BeanUtils.canReadProperty("name", buildClass);
-        assert !BeanUtils.canWriteProperty("name", buildClass);
+        assert BeanUtils.canReadProperty(buildClass, "name");
+        assert !BeanUtils.canWriteProperty(buildClass, "name");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class PropertyTest {
         AopClassConfig classConfig = new AopClassConfig();
         classConfig.addProperty("name", Boolean.TYPE, ReadWriteType.ReadWrite);
         Class<?> buildClass = classConfig.buildClass();
-        assert BeanUtils.canReadProperty("name", buildClass);
-        assert BeanUtils.canWriteProperty("name", buildClass);
+        assert BeanUtils.canReadProperty(buildClass, "name");
+        assert BeanUtils.canWriteProperty(buildClass, "name");
     }
 }

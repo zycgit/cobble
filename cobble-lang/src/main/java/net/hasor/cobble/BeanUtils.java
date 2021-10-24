@@ -18,11 +18,10 @@ import net.hasor.cobble.convert.ConverterUtils;
 import net.hasor.cobble.function.Property;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  *
@@ -30,6 +29,8 @@ import java.util.*;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class BeanUtils {
+    private static final Annotation[] ANNOTATION_EMPTY = new Annotation[0];
+
     /**获取指定类型的默认值 */
     public static Object getDefaultValue(final Class<?> returnType) {
         if (returnType == null || !returnType.isPrimitive()) {
@@ -76,18 +77,30 @@ public class BeanUtils {
         return Arrays.asList(type.getFields());
     }
 
+    /** 查找字段 */
+    public static Map<String, Field> getFieldMap(final Class<?> target, final String field) {
+        if (field == null || target == null) {
+            return null;
+        }
+        Map<String, Field> result = new LinkedHashMap<>();
+        for (Field f : target.getFields()) {
+            result.put(f.getName(), f);
+        }
+        return result;
+    }
+
     /** 查找一个可操作的方法列表 */
     public static List<Method> getMethods(final Class<?> type) {
         return Arrays.asList(type.getMethods());
     }
 
     /** 查找一个可操作的字段 */
-    public static Field getField(final String fieldName, final Class<?> type) {
-        if (fieldName == null || type == null) {
+    public static Field getField(final Class<?> target, final String field) {
+        if (field == null || target == null) {
             return null;
         }
-        for (Field f : type.getFields()) {
-            if (f.getName().equals(fieldName)) {
+        for (Field f : target.getFields()) {
+            if (f.getName().equals(field)) {
                 return f;
             }
         }
@@ -95,9 +108,9 @@ public class BeanUtils {
     }
 
     /** 查找一个可操作的方法 */
-    public static Method getMethod(final Class<?> atClass, final String name, final Class<?>[] paramType) {
+    public static Method getMethod(final Class<?> target, final String name, final Class<?>[] paramType) {
         try {
-            return atClass.getMethod(name, paramType);
+            return target.getMethod(name, paramType);
         } catch (Exception e) {
             return null;
         }
@@ -106,10 +119,10 @@ public class BeanUtils {
     /**
      * 该方法的作用是反射的形式调用目标的方法。
      * @param target 被调用的对象
-     * @param methodName 要调用的反射方法名。
+     * @param name 要调用的反射方法名。
      * @param objects 参数列表
      */
-    public static Object invokeMethod(final Object target, final String methodName, final Object... objects) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    public static Object invokeMethod(final Object target, final String name, final Object... objects) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         if (target == null) {
             return null;
         }
@@ -119,7 +132,7 @@ public class BeanUtils {
         Method[] ms = targetType.getMethods();
         for (Method m : ms) {
             //1.名字不相等的忽略
-            if (!m.getName().equals(methodName)) {
+            if (!m.getName().equals(name)) {
                 continue;
             }
             //2.目标方法参数列表个数与types字段中存放的个数不一样的忽略。
@@ -148,7 +161,7 @@ public class BeanUtils {
             invokeMethod = m;
         }
         if (invokeMethod == null) {
-            throw new NullPointerException(methodName + " invokeMethod is null.");
+            throw new NullPointerException(name + " invokeMethod is null.");
         } else {
             return invokeMethod.invoke(target, objects);
         }
@@ -156,34 +169,37 @@ public class BeanUtils {
     /*----------------------------------------------------------------------------------------*/
 
     /** 获取类定义的字段和继承父类中定义的字段以及父类的父类（子类重新定义同名字段也会被列入集合） */
-    public static List<Field> findALLFields(final Class<?> target) {
+    public static Map<String, Field> getALLFields(final Class<?> target) {
         if (target == null) {
             return null;
         }
-        ArrayList<Field> fList = new ArrayList<>();
-        findALLFields(target, fList);
-        return fList;
+
+        Map<String, Field> fMap = new LinkedHashMap<>();
+        findALLFields(target, fMap);
+        return fMap;
     }
 
-    private static void findALLFields(final Class<?> target, final List<Field> fList) {
+    private static void findALLFields(final Class<?> target, final Map<String, Field> fMap) {
         if (target == null) {
             return;
         }
-        for (Field field : target.getDeclaredFields()) {
-            if (!fList.contains(field)) {
-                fList.add(field);
+
+        for (Field f : target.getDeclaredFields()) {
+            if (!fMap.containsKey(f.getName())) {
+                fMap.put(f.getName(), f);
             }
         }
-        for (Field field : target.getFields()) {
-            if (!fList.contains(field)) {
-                fList.add(field);
+        for (Field f : target.getFields()) {
+            if (!fMap.containsKey(f.getName())) {
+                fMap.put(f.getName(), f);
             }
         }
+
         Class<?> superType = target.getSuperclass();
         if (superType == null || superType == target) {
             return;
         }
-        findALLFields(superType, fList);
+        findALLFields(superType, fMap);
     }
 
     /** 获取类定义的方法和继承父类中定义的方法以及父类的父类（子类的重写方法也会被返回） */
@@ -246,6 +262,51 @@ public class BeanUtils {
     }
 
     /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
+    public static Annotation[] getPropertyAnnotation(final Class<?> target, final String property) {
+        Map<String, Property> propertyMap = getPropertyFunc(target, test -> test.getName().equals(property));
+        if (!propertyMap.containsKey(property)) {
+            return ANNOTATION_EMPTY;
+        }
+
+        return getPropertyAnnotation(propertyMap.get(property));
+    }
+
+    /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
+    public static Annotation[] getPropertyAnnotation(final Property property) {
+        if (!(property instanceof SimpleProperty)) {
+            return ANNOTATION_EMPTY;
+        }
+
+        SimpleProperty propertyFunc = (SimpleProperty) property;
+        AccessibleObject propertyField = propertyFunc.getField();
+        AccessibleObject readerHandler = propertyFunc.getReaderHandler();
+        AccessibleObject writerHandler = propertyFunc.getWriterHandler();
+
+        Annotation[] arrays1 = readerHandler == null ? ANNOTATION_EMPTY : propertyField.getAnnotations();
+        Annotation[] arrays2 = readerHandler == null ? ANNOTATION_EMPTY : readerHandler.getAnnotations();
+        Annotation[] arrays3 = writerHandler == null ? ANNOTATION_EMPTY : writerHandler.getAnnotations();
+
+        Annotation[] result = new Annotation[arrays1.length + arrays2.length + arrays3.length];
+
+        System.arraycopy(arrays1, 0, result, 0, arrays1.length);
+        System.arraycopy(arrays2, 0, result, arrays1.length, arrays2.length);
+        System.arraycopy(arrays3, 0, result, arrays1.length + arrays2.length, arrays3.length);
+        return result;
+    }
+
+    /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
+    public static Map<String, Annotation[]> getPropertyAnnotation(final Class<?> target) {
+        Map<String, Annotation[]> result = new LinkedHashMap<>();
+
+        Map<String, Property> propertyMap = getPropertyFunc(target, test -> true);
+        propertyMap.forEach((name, property) -> {
+            result.put(name, getPropertyAnnotation(property));
+        });
+
+        return result;
+    }
+
+    /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
     public static PropertyDescriptor[] getPropertyDescriptors(final Class<?> defineType) {
         List<PropertyDescriptor> mnames = new ArrayList<>();
         List<String> ms = getProperties(defineType);
@@ -259,7 +320,7 @@ public class BeanUtils {
     }
 
     /** 获取一个属性的读取方法 */
-    public static Method getReadMethod(final String property, final Class<?> target) {
+    public static Method getReadMethod(final Class<?> target, final String property) {
         if (property == null || target == null) {
             return null;
         }
@@ -285,7 +346,7 @@ public class BeanUtils {
     }
 
     /** 获取一个属性的写入方法 */
-    public static Method getWriteMethod(final String property, final Class<?> target) {
+    public static Method getWriteMethod(final Class<?> target, final String property) {
         if (property == null || target == null) {
             return null;
         }
@@ -301,24 +362,40 @@ public class BeanUtils {
     }
 
     /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
+    public static Property getPropertyFunc(final Class<?> target, final String property) {
+        Map<String, Property> propertyFunc = getPropertyFunc(target, test -> test.getName().equals(property));
+        return propertyFunc.get(property);
+    }
+
+    /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
     public static Map<String, Property> getPropertyFunc(final Class<?> target) {
+        return getPropertyFunc(target, test -> true);
+    }
+
+    private static Map<String, Property> getPropertyFunc(final Class<?> target, Predicate<Method> test) {
         Map<String, Property> propertyMap = new LinkedHashMap<>();
-        List<Method> ms = getMethods(target);
-        for (Method m : ms) {
-            if (m.getDeclaringClass() == Object.class) {
+        Map<String, Field> allFields = getALLFields(target);
+
+        for (Method m : target.getMethods()) {
+            if (m.getDeclaringClass() == Object.class || !test.test(m)) {
                 continue;
             }
 
             String name = m.getName();
             if (name.startsWith("get")) {
-                name = name.substring(3);
+                name = StringUtils.firstCharToLowerCase(name.substring(3));
                 ((SimpleProperty) propertyMap.computeIfAbsent(name, s -> new SimpleProperty())).setReader(m);
             } else if (name.startsWith("is")) {
-                name = name.substring(2);
+                name = StringUtils.firstCharToLowerCase(name.substring(2));
                 ((SimpleProperty) propertyMap.computeIfAbsent(name, s -> new SimpleProperty())).setReader(m);
             } else if (name.startsWith("set")) {
-                name = name.substring(3);
+                name = StringUtils.firstCharToLowerCase(name.substring(3));
                 ((SimpleProperty) propertyMap.computeIfAbsent(name, s -> new SimpleProperty())).setWriter(m);
+            }
+
+            Field field = allFields.get(name);
+            if (field != null) {
+                ((SimpleProperty) propertyMap.computeIfAbsent(name, s -> new SimpleProperty())).setField(field);
             }
         }
 
@@ -326,63 +403,71 @@ public class BeanUtils {
     }
 
     /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
+    public static Property getFieldFunc(final Class<?> target, final String property) {
+        Map<String, Property> fieldFunc = getFieldFunc(target, test -> test.getName().equals(property));
+        return fieldFunc.get(property);
+    }
+
+    /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
     public static Map<String, Property> getFieldFunc(final Class<?> target) {
+        return getFieldFunc(target, test -> true);
+    }
+
+    private static Map<String, Property> getFieldFunc(final Class<?> target, Predicate<Field> test) {
         Map<String, Property> propertyMap = new LinkedHashMap<>();
         for (Field f : target.getFields()) {
-            ((SimpleProperty) propertyMap.computeIfAbsent(f.getName(), s -> new SimpleProperty())).setReader(f);
-            if (!Modifier.isFinal(f.getModifiers())) {
-                ((SimpleProperty) propertyMap.computeIfAbsent(f.getName(), s -> new SimpleProperty())).setWriter(f);
+            if (!test.test(f)) {
+                continue;
             }
+            ((SimpleProperty) propertyMap.computeIfAbsent(f.getName(), s -> new SimpleProperty())).setField(f);
         }
-
         return propertyMap;
     }
 
     /** 测试是否支持 readProperty 方法, 返回 true 表示可以进行读取操作 */
-    public static boolean canReadProperty(final String property, final Class<?> target) {
-        Method readMethod = getReadMethod(property, target);
+    public static boolean canReadProperty(final Class<?> target, final String property) {
+        Method readMethod = getReadMethod(target, property);
         return readMethod != null;
     }
 
     /** 测试是否支持 writeProperty 方法, 返回 true 表示可以进行写入操作 */
-    public static boolean canWriteProperty(final String property, final Class<?> target) {
-        Method writeMethod = getWriteMethod(property, target);
+    public static boolean canWriteProperty(final Class<?> target, final String property) {
+        Method writeMethod = getWriteMethod(target, property);
         return writeMethod != null;
     }
 
     /** 测试是否支持 Field 方法写 */
-    public static boolean canWriteField(final String property, final Class<?> target) {
-        Field field = getField(property, target);
+    public static boolean canWriteField(final Class<?> target, final String property) {
+        Field field = getField(target, property);
         return field != null && !Modifier.isFinal(field.getModifiers());
     }
 
     /** 测试是否支持 Field 方法读 */
-    public static boolean canReadField(final String property, final Class<?> target) {
+    public static boolean canReadField(final Class<?> target, final String property) {
         return true;
     }
 
-    /** 测试是否具有 propertyName 所表示的属性, 无论是读或写方法只要存在一个就表示存在该属性 */
-    public static boolean hasProperty(final String propertyName, final Class<?> target) {
-        //get、set方法
-        if (getReadMethod(propertyName, target) == null) {
-            return getWriteMethod(propertyName, target) != null;
+    /** 测试是否具有 property 所表示的属性, 无论是读或写方法只要存在一个就表示存在该属性 */
+    public static boolean hasProperty(final Class<?> target, final String property) {
+        if (getReadMethod(target, property) == null) {
+            return getWriteMethod(target, property) != null;
         }
         return true;
     }
 
     /** 测试是否具有 fieldName 所表示的字段, 无论是读或写方法只要存在一个就表示存在该属性 */
-    public static boolean hasField(final String propertyName, final Class<?> target) {
-        return getField(propertyName, target) != null;
+    public static boolean hasField(final Class<?> target, final String property) {
+        return getField(target, property) != null;
     }
 
-    /**执行属性注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。返回值表示执行是否成功。注意：该方法会根据属性类型进行尝试类型转换。*/
-    public static boolean writeProperty(final Object object, final String attName, final Object value) {
-        if (object == null || attName == null) {
+    /**执行属性注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。返回值表示执行是否成功。注意：该方法会根据属性类型进行尝试类型转换 */
+    public static boolean writeProperty(final Object object, final String property, final Object value) {
+        if (object == null || property == null) {
             return false;
         }
         //1.查找方法
         Class<?> defineType = object.getClass();
-        Method writeMethod = getWriteMethod(attName, defineType);
+        Method writeMethod = getWriteMethod(defineType, property);
         if (writeMethod == null) {
             return false;
         }
@@ -398,14 +483,14 @@ public class BeanUtils {
         }
     }
 
-    /**执行字段注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。注意：该方法会根据属性类型进行尝试类型转换。*/
-    public static boolean writeField(final Object object, final String fieldName, final Object value) {
-        if (object == null || fieldName == null) {
+    /**执行字段注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。注意：该方法会根据属性类型进行尝试类型转换 */
+    public static boolean writeField(final Object object, final String property, final Object value) {
+        if (object == null || property == null) {
             return false;
         }
         //1.查找方法
         Class<?> defineType = object.getClass();
-        Field writeField = getField(fieldName, defineType);
+        Field writeField = getField(defineType, property);
         if (writeField == null) {
             return false;
         }
@@ -423,13 +508,13 @@ public class BeanUtils {
     }
 
     /** 执行属性读取 */
-    public static Object readProperty(final Object object, final String attName) {
-        if (object == null || attName == null) {
+    public static Object readProperty(final Object object, final String property) {
+        if (object == null || property == null) {
             return false;
         }
         //1.查找方法
         Class<?> defineType = object.getClass();
-        Method readMethod = getReadMethod(attName, defineType);
+        Method readMethod = getReadMethod(defineType, property);
         if (readMethod == null) {
             return null;
         }
@@ -442,13 +527,13 @@ public class BeanUtils {
     }
 
     /** 执行字段读取 */
-    public static Object readField(final Object object, final String fieldName) {
-        if (object == null || fieldName == null) {
+    public static Object readField(final Object object, final String property) {
+        if (object == null || property == null) {
             return null;
         }
         //1.查找方法
         Class<?> defineType = object.getClass();
-        Field readField = getField(fieldName, defineType);
+        Field readField = getField(defineType, property);
         if (readField == null) {
             return null;
         }
@@ -461,35 +546,57 @@ public class BeanUtils {
         }
     }
 
-    /***/
-    public static Class<?> getPropertyType(final Class<?> defineType, final String attName) {
-        try {
-            PropertyDescriptor pd = new PropertyDescriptor(attName, defineType);
-            return pd.getPropertyType();
-        } catch (Exception e) {
-            Method readMethod = getReadMethod(attName, defineType);
-            if (readMethod != null) {
-                return readMethod.getReturnType();
-            } else {
-                Method writeMethod = getWriteMethod(attName, defineType);
-                if (writeMethod != null) {
-                    return writeMethod.getParameterTypes()[0];
-                }
-            }
+    /** */
+    public static Class<?> getPropertyType(final Class<?> target, final String property) {
+        Property propertyFunc = getPropertyFunc(target, property);
+        if (propertyFunc == null) {
+            return null;
+        }
+
+        return getPropertyType(propertyFunc);
+    }
+
+    public static Map<String, Class<?>> getPropertyType(final Class<?> target) {
+        Map<String, Class<?>> result = new LinkedHashMap<>();
+
+        Map<String, Property> propertyMap = getPropertyFunc(target, test -> true);
+        propertyMap.forEach((name, property) -> {
+            result.put(name, getPropertyType(property));
+        });
+
+        return result;
+    }
+
+    public static Class<?> getPropertyType(Property property) {
+        if (property == null) {
+            return null;
+        }
+
+        AccessibleObject readerHandler = ((SimpleProperty) property).getReaderHandler();
+        AccessibleObject writerHandler = ((SimpleProperty) property).getWriterHandler();
+        if (readerHandler instanceof Method) {
+            return ((Method) readerHandler).getReturnType();
+        } else if (readerHandler instanceof Field) {
+            return ((Field) readerHandler).getType();
+        } else if (writerHandler instanceof Method) {
+            return ((Method) writerHandler).getParameterTypes()[0];
+        } else if (writerHandler instanceof Field) {
+            return ((Field) writerHandler).getType();
+        } else {
             return null;
         }
     }
 
-    /***/
-    public static Class<?> getFieldType(final Class<?> defineType, final String attName) {
-        Field readField = getField(attName, defineType);
+    /** */
+    public static Class<?> getFieldType(final Class<?> target, final String property) {
+        Field readField = getField(target, property);
         if (readField != null) {
             return readField.getType();
         }
         return null;
     }
- 
-    /***/
+
+    /** */
     public static void copyProperties(final Object dest, final Object orig) {
         if (dest == null) {
             throw new IllegalArgumentException("dest is null");
@@ -511,48 +618,47 @@ public class BeanUtils {
         }
     }
 
-    /***/
-    public static void copyProperty(final Object dest, final Object orig, final String propertyName) {
+    /** */
+    public static void copyProperty(final Object dest, final Object orig, final String property) {
         if (dest == null) {
             throw new IllegalArgumentException("dest is null");
         }
         if (orig == null) {
             throw new IllegalArgumentException("orig is null");
         }
-        if (StringUtils.isBlank(propertyName)) {
-            throw new IllegalArgumentException("propertyName is null");
+        if (StringUtils.isBlank(property)) {
+            throw new IllegalArgumentException("property is null");
         }
 
         if (!(orig instanceof Map)) {
-            if (!canReadProperty(propertyName, orig.getClass())) {
+            if (!canReadProperty(orig.getClass(), property)) {
                 return;
             }
         }
         if (!(dest instanceof Map)) {
-            if (!canWriteProperty(propertyName, dest.getClass())) {
+            if (!canWriteProperty(dest.getClass(), property)) {
                 return;
             }
         }
 
         Object val = null;
         if (!(orig instanceof Map)) {
-            val = readProperty(orig, propertyName);
+            val = readProperty(orig, property);
         } else {
-            val = ((Map) orig).get(propertyName);
+            val = ((Map) orig).get(property);
         }
 
         if (!(dest instanceof Map)) {
-            writeProperty(dest, propertyName, val);
+            writeProperty(dest, property, val);
         } else {
-            ((Map) dest).put(propertyName, val);
+            ((Map) dest).put(property, val);
         }
     }
 
 }
 
 class SimpleProperty implements Property {
-    private Field  readerField;
-    private Field  writerField;
+    private Field  field;
     private Method readerMethod;
     private Method writerMethod;
 
@@ -560,16 +666,41 @@ class SimpleProperty implements Property {
         this.readerMethod = readerMethod;
     }
 
-    public void setReader(Field readerField) {
-        this.readerField = readerField;
+    public void setField(Field field) {
+        this.field = field;
     }
 
     public void setWriter(Method writerMethod) {
         this.writerMethod = writerMethod;
     }
 
-    public void setWriter(Field writerField) {
-        this.writerField = writerField;
+    public Field getField() {
+        return this.field;
+    }
+
+    public AccessibleObject getReaderHandler() {
+        if (this.readerMethod != null) {
+            return this.readerMethod;
+        } else if (this.field != null) {
+            return this.field;
+        } else {
+            return null;
+        }
+    }
+
+    public AccessibleObject getWriterHandler() {
+        if (this.writerMethod != null) {
+            return this.writerMethod;
+        } else if (this.field != null) {
+            return this.field;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.writerMethod == null && this.field == null;
     }
 
     @Override
@@ -577,8 +708,8 @@ class SimpleProperty implements Property {
         try {
             if (this.readerMethod != null) {
                 return this.readerMethod.invoke(instance);
-            } else if (this.readerField != null) {
-                return this.readerField.get(instance);
+            } else if (this.field != null) {
+                return this.field.get(instance);
             } else {
                 return null;
             }
@@ -592,8 +723,8 @@ class SimpleProperty implements Property {
         try {
             if (this.writerMethod != null) {
                 this.writerMethod.invoke(instance, value);
-            } else if (this.writerField != null) {
-                this.writerField.set(instance, value);
+            } else if (this.field != null) {
+                this.field.set(instance, value);
             }
         } catch (Exception e) {
         }

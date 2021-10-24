@@ -122,7 +122,7 @@ public class AopClassConfig {
             throw new IllegalArgumentException("args propertyType is null.");
         }
         // 如果存在这个属性，则抛出异常
-        if (BeanUtils.hasProperty(propertyName, this.getSuperClass())) {
+        if (BeanUtils.hasProperty(this.getSuperClass(), propertyName)) {
             throw new IllegalStateException(propertyName + " get/set already exists");
         }
         this.delegatePropertyMap.put(propertyName, new DelegateInfo(propertyType, delegate, rwType));
