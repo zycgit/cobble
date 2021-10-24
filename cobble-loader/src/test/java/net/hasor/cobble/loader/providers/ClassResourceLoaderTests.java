@@ -127,12 +127,10 @@ public class ClassResourceLoaderTests {
 
     @Test
     public void classpathLoaderTest9() throws ClassNotFoundException {
-        // no bind parent, use self load class
         ClassPathResourceLoader classLoader1 = new ClassPathResourceLoader();
         Class<?> clazz1 = classLoader1.toClassLoader().loadClass(ClassPathResourceLoader.class.getName());
-        assert clazz1 != ClassPathResourceLoader.class;
+        assert clazz1 == ClassPathResourceLoader.class;
 
-        // bind parent, load from the parent first
         ClassPathResourceLoader classLoader2 = new ClassPathResourceLoader();
         classLoader2.bindParentLoader(Thread.currentThread().getContextClassLoader());
         Class<?> clazz2 = classLoader2.toClassLoader().loadClass(ClassPathResourceLoader.class.getName());
