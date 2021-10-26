@@ -16,6 +16,8 @@
 package net.hasor.cobble;
 import net.hasor.cobble.convert.ConverterUtils;
 import net.hasor.cobble.function.Property;
+import net.hasor.cobble.reflect.MethodUtils;
+import net.hasor.cobble.reflect.SFunction;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
@@ -595,6 +597,29 @@ public class BeanUtils {
         }
         return null;
     }
+
+    /*----------------------------------------------------------------------------------------*/
+
+    public static String toProperty(SFunction<?> property) {
+        if (property == null) {
+            return null;
+        }
+
+        Method targetMethod = MethodUtils.lambdaMethodName(property);
+        String methodName = targetMethod.getName();
+        String attr;
+        if (methodName.startsWith("get") || methodName.startsWith("set")) {
+            attr = methodName.substring(3);
+        } else if (methodName.startsWith("is")) {
+            attr = methodName.substring(2);
+        } else {
+            return null;
+        }
+
+        return StringUtils.firstCharToLowerCase(attr);
+    }
+
+    /*----------------------------------------------------------------------------------------*/
 
     /** */
     public static void copyProperties(final Object dest, final Object orig) {
