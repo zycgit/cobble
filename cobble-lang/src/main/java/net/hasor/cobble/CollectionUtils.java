@@ -168,4 +168,8 @@ public class CollectionUtils {
             }
         };
     }
+
+    public static boolean isEmpty(Object[] args) {
+        return args == null || args.length == 0;
+    }
 }

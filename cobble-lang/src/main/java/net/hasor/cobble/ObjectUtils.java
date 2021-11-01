@@ -36,6 +36,8 @@ import java.io.Serializable;
  * @version $Id: ObjectUtils.java 1057434 2011-01-11 01:27:37Z niallp $
  */
 public class ObjectUtils {
+    private static final int  INITIAL_HASH = 7;
+    private static final int  MULTIPLIER   = 31;
     /**
      * <p>Singleton used as a <code>null</code> placeholder where
      * <code>null</code> has another meaning.</p>
@@ -52,7 +54,7 @@ public class ObjectUtils {
      *
      * <p>This instance is Serializable.</p>
      */
-    public static final Null NULL = new Null();
+    public static final  Null NULL         = new Null();
 
     /**
      * <p><code>ObjectUtils</code> instances should NOT be constructed in
@@ -326,6 +328,230 @@ public class ObjectUtils {
         }
         return c1.compareTo(c2);
     }
+
+    // hashCode
+    //-----------------------------------------------------------------------
+
+    /**
+     * Return as hash code for the given object; typically the value of
+     * {@code Object#hashCode()}}. If the object is an array,
+     * this method will delegate to any of the {@code nullSafeHashCode}
+     * methods for arrays in this class. If the object is {@code null},
+     * this method returns 0.
+     * @see Object#hashCode()
+     * @see #nullSafeHashCode(Object[])
+     * @see #nullSafeHashCode(boolean[])
+     * @see #nullSafeHashCode(byte[])
+     * @see #nullSafeHashCode(char[])
+     * @see #nullSafeHashCode(double[])
+     * @see #nullSafeHashCode(float[])
+     * @see #nullSafeHashCode(int[])
+     * @see #nullSafeHashCode(long[])
+     * @see #nullSafeHashCode(short[])
+     */
+    public static int nullSafeHashCode(Object obj) {
+        if (obj == null) {
+            return 0;
+        }
+        if (obj.getClass().isArray()) {
+            if (obj instanceof Object[]) {
+                return nullSafeHashCode((Object[]) obj);
+            }
+            if (obj instanceof boolean[]) {
+                return nullSafeHashCode((boolean[]) obj);
+            }
+            if (obj instanceof byte[]) {
+                return nullSafeHashCode((byte[]) obj);
+            }
+            if (obj instanceof char[]) {
+                return nullSafeHashCode((char[]) obj);
+            }
+            if (obj instanceof double[]) {
+                return nullSafeHashCode((double[]) obj);
+            }
+            if (obj instanceof float[]) {
+                return nullSafeHashCode((float[]) obj);
+            }
+            if (obj instanceof int[]) {
+                return nullSafeHashCode((int[]) obj);
+            }
+            if (obj instanceof long[]) {
+                return nullSafeHashCode((long[]) obj);
+            }
+            if (obj instanceof short[]) {
+                return nullSafeHashCode((short[]) obj);
+            }
+        }
+        return obj.hashCode();
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(Object[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (Object element : array) {
+            hash = MULTIPLIER * hash + nullSafeHashCode(element);
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(boolean[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (boolean element : array) {
+            hash = MULTIPLIER * hash + Boolean.hashCode(element);
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(byte[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (byte element : array) {
+            hash = MULTIPLIER * hash + element;
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(char[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (char element : array) {
+            hash = MULTIPLIER * hash + element;
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(double[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (double element : array) {
+            hash = MULTIPLIER * hash + Double.hashCode(element);
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(float[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (float element : array) {
+            hash = MULTIPLIER * hash + Float.hashCode(element);
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(int[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (int element : array) {
+            hash = MULTIPLIER * hash + element;
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(long[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (long element : array) {
+            hash = MULTIPLIER * hash + Long.hashCode(element);
+        }
+        return hash;
+    }
+
+    /**
+     * Return a hash code based on the contents of the specified array.
+     * If {@code array} is {@code null}, this method returns 0.
+     */
+    public static int nullSafeHashCode(short[] array) {
+        if (array == null) {
+            return 0;
+        }
+        int hash = INITIAL_HASH;
+        for (short element : array) {
+            hash = MULTIPLIER * hash + element;
+        }
+        return hash;
+    }
+
+    /**
+     * Return the same value as {@link Boolean#hashCode(boolean)}}.
+     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
+     */
+    public static int hashCode(boolean bool) {
+        return Boolean.hashCode(bool);
+    }
+
+    /**
+     * Return the same value as {@link Double#hashCode(double)}}.
+     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
+     */
+    public static int hashCode(double dbl) {
+        return Double.hashCode(dbl);
+    }
+
+    /**
+     * Return the same value as {@link Float#hashCode(float)}}.
+     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
+     */
+    public static int hashCode(float flt) {
+        return Float.hashCode(flt);
+    }
+
+    /**
+     * Return the same value as {@link Long#hashCode(long)}}.
+     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
+     */
+    public static int hashCode(long lng) {
+        return Long.hashCode(lng);
+    }
+
     // Null
     //-----------------------------------------------------------------------
 
@@ -346,7 +572,6 @@ public class ObjectUtils {
     public static class Null implements Serializable {
         /**
          * Required for serialization support. Declare serialization compatibility with Commons Lang 1.0
-         *
          * @see Serializable
          */
         private static final long serialVersionUID = 7092611880189329093L;

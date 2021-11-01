@@ -18,7 +18,6 @@ package net.hasor.cobble.reflect;
 import net.hasor.cobble.ArrayUtils;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.ClassUtils;
-import net.hasor.cobble.ExceptionUtils;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
@@ -659,7 +658,7 @@ public class MethodUtils {
                 writeLock.unlock();
             }
         } catch (ReflectiveOperationException e) {
-            throw ExceptionUtils.toRuntime(e);
+            return null;
         }
     }
 

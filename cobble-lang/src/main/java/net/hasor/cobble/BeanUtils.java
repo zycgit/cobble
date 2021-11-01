@@ -606,6 +606,10 @@ public class BeanUtils {
         }
 
         Method targetMethod = MethodUtils.lambdaMethodName(property);
+        if (targetMethod == null) {
+            return null;
+        }
+
         String methodName = targetMethod.getName();
         String attr;
         if (methodName.startsWith("get") || methodName.startsWith("set")) {
