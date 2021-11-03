@@ -84,10 +84,9 @@ public class ClassUtils {
 
     static {
         for (Class<?> aClass : ClassUtils.primitiveWrapperMap.keySet()) {
-            Class<?> primitiveClass = (Class<?>) aClass;
-            Class<?> wrapperClass = ClassUtils.primitiveWrapperMap.get(primitiveClass);
-            if (!primitiveClass.equals(wrapperClass)) {
-                ClassUtils.wrapperPrimitiveMap.put(wrapperClass, primitiveClass);
+            Class<?> wrapperClass = ClassUtils.primitiveWrapperMap.get(aClass);
+            if (!aClass.equals(wrapperClass)) {
+                ClassUtils.wrapperPrimitiveMap.put(wrapperClass, aClass);
             }
         }
     }

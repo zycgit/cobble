@@ -42,7 +42,7 @@ public class DefaultSettings extends MergedSettings {
             if (oriResource == null) {
                 logger.info("create Settings, settingsType is [" + mode + "] mode, mainSettings is not specified.");
             } else {
-                logger.severe("create Settings, settingsType is [" + mode + "] mode, mainSettings = " + oriResource + ", not found.");
+                logger.error("create Settings, settingsType is [" + mode + "] mode, mainSettings = " + oriResource + ", not found.");
             }
         }
     }
@@ -107,7 +107,7 @@ public class DefaultSettings extends MergedSettings {
                     logger.info("addConfig '" + settingConfig + "'");
                     _addStream(settingConfig.toURL());
                 } else {
-                    logger.severe("not found " + settingConfig);
+                    logger.error("not found " + settingConfig);
                 }
             }
         }

@@ -12,13 +12,13 @@
 // ========================================================================
 package net.hasor.cobble.json;
 import net.hasor.cobble.json.JSON.Output;
+import net.hasor.cobble.logging.Logger;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * Converts POJOs to JSON and vice versa.
@@ -166,7 +166,7 @@ public class JSONPojoConvertor implements JSON.Convertor {
                     setter.invoke(obj, entry.getValue());
                     count++;
                 } catch (Exception e) {
-                    logger.warning(_pojoClass.getName() + "#" + setter.getPropertyName() + " not set from " + (entry.getValue().getClass().getName()) + "=" + entry.getValue().toString());
+                    logger.warn(_pojoClass.getName() + "#" + setter.getPropertyName() + " not set from " + (entry.getValue().getClass().getName()) + "=" + entry.getValue().toString());
                     log(e);
                 }
             }
@@ -182,7 +182,7 @@ public class JSONPojoConvertor implements JSON.Convertor {
             try {
                 out.add(entry.getKey(), entry.getValue().invoke(obj, GETTER_ARG));
             } catch (Exception e) {
-                logger.warning(_pojoClass.getName() + " property '" + entry.getKey() + "' excluded. (errors)");
+                logger.warn(_pojoClass.getName() + " property '" + entry.getKey() + "' excluded. (errors)");
                 log(e);
             }
         }
@@ -190,7 +190,7 @@ public class JSONPojoConvertor implements JSON.Convertor {
 
     /* ------------------------------------------------------------ */
     protected void log(Throwable t) {
-        logger.fine(t.getMessage());
+        logger.trace(t.getMessage());
     }
 
     /* ------------------------------------------------------------ */
@@ -261,7 +261,7 @@ public class JSONPojoConvertor implements JSON.Convertor {
                         System.arraycopy(value, 0, array, 0, len);
                     } catch (Exception e) {
                         // unusual array with multiple types
-                        logger.fine(e.getMessage());
+                        logger.trace(e.getMessage());
                         _setter.invoke(obj, value);
                         return;
                     }
@@ -274,7 +274,7 @@ public class JSONPojoConvertor implements JSON.Convertor {
                             Array.set(array, i, _numberType.getActualValue((Number) old[i]));
                     } catch (Exception e) {
                         // unusual array with multiple types
-                        logger.fine(e.getMessage());
+                        logger.trace(e.getMessage());
                         _setter.invoke(obj, value);
                         return;
                     }

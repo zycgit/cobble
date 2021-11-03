@@ -25,5 +25,4 @@ public interface Property {
     public Object get(Object instance);
 
     public void set(Object instance, Object value);
-
 }

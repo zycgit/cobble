@@ -11,13 +11,14 @@
 // You may elect to redistribute this code under either of these licenses. 
 // ========================================================================
 package net.hasor.cobble.json;
+import net.hasor.cobble.logging.Logger;
+
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Logger;
 /* ------------------------------------------------------------ */
 
 /**
@@ -64,7 +65,7 @@ public class JSONDateConvertor implements JSON.Convertor {
                 return _format.parseObject((String) map.get("value"));
             }
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            logger.warn(e.getMessage());
         }
         return null;
     }

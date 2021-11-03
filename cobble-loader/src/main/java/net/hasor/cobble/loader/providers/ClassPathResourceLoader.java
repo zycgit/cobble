@@ -51,6 +51,10 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         this.classpath = ClassUtils.getClassPath(classLoader);
     }
 
+    public ClassLoader toClassLoader() {
+        return this.classLoader;
+    }
+
     private String formatResourcePath(String resourcePath) {
         resourcePath = resourcePath.replaceAll("/{2}", "/");
         if (resourcePath.charAt(0) == '/') {

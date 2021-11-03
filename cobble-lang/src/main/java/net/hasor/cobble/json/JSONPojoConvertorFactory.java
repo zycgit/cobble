@@ -56,7 +56,7 @@ public class JSONPojoConvertorFactory implements Convertor {
                 convertor = new JSONPojoConvertor(cls, _fromJson);
                 _json.addConvertorFor(clsName, convertor);
             } catch (ClassNotFoundException e) {
-                JSON.logger.warning(e.getMessage());
+                JSON.logger.warn(e.getMessage());
             }
         }
         if (convertor != null) {
@@ -75,7 +75,7 @@ public class JSONPojoConvertorFactory implements Convertor {
                     convertor = new JSONPojoConvertor(cls, _fromJson);
                     _json.addConvertorFor(clsName, convertor);
                 } catch (ClassNotFoundException e) {
-                    JSON.logger.warning(e.getMessage());
+                    JSON.logger.warn(e.getMessage());
                 }
             }
             if (convertor != null) {

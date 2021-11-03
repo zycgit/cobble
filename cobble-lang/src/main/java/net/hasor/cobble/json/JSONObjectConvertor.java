@@ -23,9 +23,6 @@ import java.util.Set;
 
 /**
  * Convert an Object to JSON using reflection on getters methods.
- *
- *
- *
  */
 public class JSONObjectConvertor implements JSON.Convertor {
     private boolean _fromJSON;

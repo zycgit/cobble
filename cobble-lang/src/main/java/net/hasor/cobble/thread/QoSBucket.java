@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.thread;
+import net.hasor.cobble.logging.Logger;
+
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 /**
  * 描述：线程安全的令牌桶限流器，时间窗刷新误差为毫秒级。 定义有效的限流器需要满足：
@@ -70,7 +71,7 @@ public class QoSBucket {
                 if (tokens.compareAndSet(currentValue, newValue)) {
                     lastRefreshTime = now;// 更新成功后，设置新的刷新时间
                     leftDouble = addedPlusDouble - addPlus;
-                    logger.fine("[QoSBucket] Updated done: [" + currentValue + "] -> [" + newValue + "], refresh time: " + now + ".");
+                    logger.trace("[QoSBucket] Updated done: [" + currentValue + "] -> [" + newValue + "], refresh time: " + now + ".");
                 }
             }
         }
@@ -81,7 +82,7 @@ public class QoSBucket {
             value = tokens.get();
         }
         if (!flag) {
-            logger.fine("QoSBucket: get token failed, tokens[" + tokens.get() + "]");
+            logger.trace("QoSBucket: get token failed, tokens[" + tokens.get() + "]");
         }
         return flag;
     }

@@ -11,6 +11,8 @@
 // You may elect to redistribute this code under either of these licenses.
 // ========================================================================
 package net.hasor.cobble.json;
+import net.hasor.cobble.logging.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -22,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 /* ------------------------------------------------------------ */
 
 /**
@@ -415,7 +416,7 @@ class TypeUtil {
             if (s.startsWith("jar:file:"))
                 return new URL(s.substring(4, s.indexOf("!/")));
         } catch (Exception e) {
-            logger.fine(e.getMessage());
+            logger.trace(e.getMessage());
         }
         return null;
     }
@@ -434,10 +435,8 @@ class TypeUtil {
                 continue;
             try {
                 return methods[c].invoke(obj, arg);
-            } catch (IllegalAccessException e) {
-                logger.fine(e.getMessage());
-            } catch (IllegalArgumentException e) {
-                logger.fine(e.getMessage());
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                logger.trace(e.getMessage());
             }
         }
         throw new NoSuchMethodException(method);

@@ -26,7 +26,6 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
-import java.util.logging.Level;
 
 /***
  * 传入{@link InputStream}的方式获取{@link Settings}接口的支持。
@@ -99,7 +98,7 @@ public class MergedSettings extends BasicSettings implements IOSettings {
         //构建装载环境
         ConfigSource entity = null;
         try {
-            logger.fine("parsing...");
+            logger.trace("parsing...");
             while ((entity = this.pendingConfigSource.removeFirst()) != null) {
                 loadCount++;
                 Reader dataReader = null;
@@ -133,7 +132,7 @@ public class MergedSettings extends BasicSettings implements IOSettings {
                     }
                     settingsReader.readSetting(null, entity, this);
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "load Config " + entity + " failed.", e);
+                    logger.error("load Config " + entity + " failed.", e);
                     throw e;
                 } finally {
                     if (dataReader != null) {
@@ -146,16 +145,16 @@ public class MergedSettings extends BasicSettings implements IOSettings {
             }
         } catch (Throwable e) {
             String errorMessage = "parsing failed -> ";
-            logger.log(Level.SEVERE, "parsing failed -> " + e.getMessage(), e);
+            logger.error("parsing failed -> " + e.getMessage(), e);
             if (e instanceof IOException) {
                 throw (IOException) e;
             } else {
                 throw new IOException(errorMessage + e.getMessage(), e);
             }
         }
-        logger.fine("parsing finish.");
+        logger.trace("parsing finish.");
         this.loadFinish();//完成装载
-        logger.fine("loadSettings finish.");
+        logger.trace("loadSettings finish.");
         return loadCount;
     }
 

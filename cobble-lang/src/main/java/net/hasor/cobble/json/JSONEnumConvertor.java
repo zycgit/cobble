@@ -11,9 +11,10 @@
 // You may elect to redistribute this code under either of these licenses. 
 // ========================================================================
 package net.hasor.cobble.json;
+import net.hasor.cobble.logging.Logger;
+
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.logging.Logger;
 /* ------------------------------------------------------------ */
 
 /**
@@ -51,7 +52,7 @@ public class JSONEnumConvertor implements JSON.Convertor {
             Class c = Loader.loadClass(getClass(), (String) map.get("class"));
             return _valueOf.invoke(null, new Object[] { c, map.get("value") });
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            logger.warn(e.getMessage());
         }
         return null;
     }

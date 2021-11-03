@@ -12,9 +12,9 @@ dependency-reduced-pom.xml
 package-lock.json
 node_modules
 dist
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+npm-debug.logger*
+yarn-debug.logger*
+yarn-error.logger*
 
 # Editor directories and files
 .settings

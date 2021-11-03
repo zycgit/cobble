@@ -12,6 +12,7 @@
 // ========================================================================
 package net.hasor.cobble.json;
 import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.logging.Logger;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -19,8 +20,6 @@ import java.io.Reader;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * JSON Parser and Generator.
@@ -74,7 +73,7 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class JSON {
-    protected final static Logger                 logger            = Logger.getLogger(JSON.class.getName());
+    protected final static Logger                 logger            = Logger.getLogger(JSON.class);
     public final static    JSON                   DEFAULT           = new JSON();
     private final          Map<String, Convertor> _convertors       = new ConcurrentHashMap<>();
     private                int                    _stringBufferSize = 1024;
@@ -680,7 +679,7 @@ public class JSON {
                 Class c = Loader.loadClass(JSON.class, classname);
                 return convertTo(c, map);
             } catch (ClassNotFoundException e) {
-                logger.warning(e.getMessage());
+                logger.warn(e.getMessage());
             }
         }
         return map;
@@ -1243,8 +1242,6 @@ public class JSON {
          * @param json A literal JSON string.
          */
         public Literal(String json) {
-            if (logger.isLoggable(Level.FINE)) // TODO: Make this a configurable option on JSON instead!
-                parse(json);
             _json = json;
         }
 
