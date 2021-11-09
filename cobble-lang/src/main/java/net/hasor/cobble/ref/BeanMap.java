@@ -16,6 +16,7 @@
  */
 package net.hasor.cobble.ref;
 import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.convert.ConverterBean;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -35,11 +36,13 @@ import java.util.*;
  *
  * @version $Revision: 812176 $ $Date: 2009-09-07 15:59:25 +0100 (Mon, 07 Sep 2009) $
  *
+ * @author yongchun.zyc
  * @author James Strachan
  * @author Stephen Colebourne
  */
 public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
     private transient    Object                     bean;
+    private transient    ConverterBean              transformConvert;
     private transient    Map<String, Method>        readMethods      = new LinkedHashMap<>();
     private transient    Map<String, Method>        writeMethods     = new LinkedHashMap<>();
     private transient    Map<String, Class<?>>      types            = new LinkedHashMap<>();
@@ -80,6 +83,18 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         this.bean = bean;
         initialise();
     }
+
+    // Attribute method
+    //-------------------------------------------------------------------------
+
+    public ConverterBean getTransformConvert() {
+        return this.transformConvert;
+    }
+
+    public void setTransformConvert(ConverterBean transformConvert) {
+        this.transformConvert = transformConvert;
+    }
+
     // Map interface
     //-------------------------------------------------------------------------
 
@@ -543,7 +558,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         try {
             if (value != null) {
                 Class<?>[] types = method.getParameterTypes();
-                if (types != null && types.length > 0) {
+                if (types.length > 0) {
                     Class<?> paramType = types[0];
                     if (!paramType.isAssignableFrom(value.getClass())) {
                         value = convertType(paramType, value);
@@ -600,8 +615,11 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
             Transformer transformer = getTypeTransformer(newType);
             if (transformer != null) {
                 return transformer.transform(value);
+            } else if (this.transformConvert != null) {
+                return transformConvert.convert(value, newType);
+            } else {
+                return value;
             }
-            return value;
         }
     }
 

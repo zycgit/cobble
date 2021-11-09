@@ -119,7 +119,7 @@ public class ConverterBean {
      * Get singleton instance
      * @return The singleton instance
      */
-    protected static ConverterBean getInstance() {
+    public static ConverterBean getInstance() {
         return ConverterBean.BEANS_BY_CLASSLOADER.get();
     }
     // ------------------------------------------------------- Variables
