@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.hasor.cobble.resolvable;
+package net.hasor.cobble.reflect.resolvable;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.ObjectUtils;

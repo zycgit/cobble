@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.resolvable;
+package net.hasor.cobble.reflect.resolvable;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ObjectUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.ref.ConcurrentReferenceHashMap;
-import net.hasor.cobble.resolvable.SerializableTypeWrapper.FieldTypeProvider;
-import net.hasor.cobble.resolvable.SerializableTypeWrapper.MethodParameterTypeProvider;
-import net.hasor.cobble.resolvable.SerializableTypeWrapper.TypeProvider;
+import net.hasor.cobble.reflect.resolvable.SerializableTypeWrapper.FieldTypeProvider;
+import net.hasor.cobble.reflect.resolvable.SerializableTypeWrapper.MethodParameterTypeProvider;
+import net.hasor.cobble.reflect.resolvable.SerializableTypeWrapper.TypeProvider;
 
 import java.io.Serializable;
 import java.lang.reflect.*;
