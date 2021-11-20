@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * {@link LinkedHashMap} variant that stores String keys in a case-insensitive
@@ -92,6 +92,88 @@ public class LinkedCaseInsensitiveMap<V> extends LinkedHashMap<String, V> {
     public V put(final String key, final V value) {
         this.caseInsensitiveKeys.put(this.convertKey(key), key);
         return super.put(key, value);
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends V> m) {
+        m.forEach((BiConsumer<String, V>) this::put);
+    }
+
+    @Override
+    public V putIfAbsent(String key, V value) {
+        String newKey = this.convertKey(key);
+        V v = get(newKey);
+        if (v == null) {
+            v = this.put(newKey, value);
+        }
+        return v;
+    }
+
+    @Override
+    public V computeIfAbsent(String key, Function<? super String, ? extends V> mappingFunction) {
+        V v;
+        if ((v = get(key)) == null) {
+            V newValue;
+            if ((newValue = mappingFunction.apply(key)) != null) {
+                put(key, newValue);
+                return newValue;
+            }
+        }
+        return v;
+    }
+
+    @Override
+    public V computeIfPresent(String key, BiFunction<? super String, ? super V, ? extends V> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        V oldValue;
+        if ((oldValue = get(key)) != null) {
+            V newValue = remappingFunction.apply(key, oldValue);
+            if (newValue != null) {
+                put(key, newValue);
+                return newValue;
+            } else {
+                remove(key);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public V compute(String key, BiFunction<? super String, ? super V, ? extends V> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        V oldValue = get(key);
+        V newValue = remappingFunction.apply(key, oldValue);
+        if (newValue == null) {
+            // delete mapping
+            if (oldValue != null || containsKey(key)) {
+                // something to remove
+                remove(key);
+                return null;
+            } else {
+                // nothing to do. Leave things as they were.
+                return null;
+            }
+        } else {
+            // add or replace old mapping
+            put(key, newValue);
+            return newValue;
+        }
+    }
+
+    @Override
+    public V merge(String key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        Objects.requireNonNull(value);
+        V oldValue = get(key);
+        V newValue = (oldValue == null) ? value : remappingFunction.apply(oldValue, value);
+        if (newValue == null) {
+            remove(key);
+        } else {
+            put(key, newValue);
+        }
+        return newValue;
     }
 
     @Override
