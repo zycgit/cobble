@@ -16,9 +16,9 @@
         <!--<maven.test.skip>true</maven.test.skip>-->
         <!--<skipTests>true</skipTests>-->
         <powermock.version>2.0.6</powermock.version>
-        <project.shortname>Hasor-</project.shortname>
+        <project.shortname>Cobble-</project.shortname>
         <project.website>http://www.hasor.net/</project.website>
-        <project.inceptionYear>2020</project.inceptionYear>
+        <project.inceptionYear>2021</project.inceptionYear>
         <javadocs.bottom><![CDATA[  ]]></javadocs.bottom>
     </properties>
 
@@ -38,9 +38,9 @@
 
     <!-- SCM -->
     <scm>
-        <connection>scm:git:git@git.oschina.net:zycgit/hasor.git</connection>
-        <developerConnection>scm:git:git@git.oschina.net:zycgit/hasor.git</developerConnection>
-        <url>git@git.oschina.net:zycgit/hasor.git</url>
+        <connection>scm:git:git@git.oschina.net:zycgit/hasor-cobble.git</connection>
+        <developerConnection>scm:git:git@git.oschina.net:zycgit/hasor-cobble.git</developerConnection>
+        <url>git@git.oschina.net:zycgit/hasor-cobble.git</url>
         <tag>HEAD</tag>
     </scm>
 
