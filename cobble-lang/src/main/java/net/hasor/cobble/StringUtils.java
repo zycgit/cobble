@@ -637,7 +637,15 @@ public class StringUtils {
      *  both <code>null</code>
      */
     public static boolean equalsIgnoreCase(final String str1, final String str2) {
-        return str1 == null ? str2 == null : str1.equalsIgnoreCase(str2);
+        if (str1 == null) {
+            return str2 == null;
+        } else {
+            if (str2 == null) {
+                return false;
+            } else {
+                return equals(str1.toUpperCase(), str2.toUpperCase());
+            }
+        }
     }
     // IndexOf
     //-----------------------------------------------------------------------
