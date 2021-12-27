@@ -16,18 +16,12 @@
  *
  */
 package net.hasor.cobble.setting.provider.properties;
-import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.provider.ConfigSource;
+import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
-import net.hasor.cobble.setting.provider.StreamType;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -37,28 +31,11 @@ import java.util.Properties;
  */
 public class PropertiesSettingsReader implements SettingsReader {
     @Override
-    public void readSetting(ClassLoader classLoader, ConfigSource configSource, Settings readTo) throws IOException {
-        if (configSource == null || configSource.getStreamType() != StreamType.Properties) {
-            return;
-        }
-        //
-        Reader resourceReader = configSource.getResourceReader();
-        if (resourceReader != null) {
-            Properties properties = new Properties();
-            properties.load(resourceReader);
-            loadProperties(readTo, properties);
-            return;
-        }
-        //
-        URL resourceUrl = configSource.getResourceUrl();
-        if (resourceUrl != null) {
-            InputStream asStream = ResourcesUtils.getResourceAsStream(classLoader, resourceUrl);
-            if (asStream != null) {
-                Properties properties = new Properties();
-                properties.load(new InputStreamReader(asStream, StandardCharsets.UTF_8));
-                loadProperties(readTo, properties);
-            }
-        }
+    public void readSetting(ResourceReader resourceReader, Settings readTo) throws IOException {
+        Reader reader = resourceReader.getReader();
+        Properties properties = new Properties();
+        properties.load(reader);
+        loadProperties(readTo, properties);
     }
 
     protected void loadProperties(Settings readTo, Properties properties) {

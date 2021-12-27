@@ -16,11 +16,9 @@
  *
  */
 package net.hasor.cobble.setting.provider.xml;
-import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.provider.ConfigSource;
+import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
-import net.hasor.cobble.setting.provider.StreamType;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -28,10 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 
 /**
  *
@@ -40,24 +35,9 @@ import java.net.URL;
  */
 public class XmlSettingsReader implements SettingsReader {
     @Override
-    public void readSetting(ClassLoader classLoader, ConfigSource configSource, Settings readTo) throws IOException {
-        if (configSource == null || configSource.getStreamType() != StreamType.Xml) {
-            return;
-        }
-        //
-        Reader resourceReader = configSource.getResourceReader();
-        if (resourceReader != null) {
-            readXml(resourceReader, readTo);
-            return;
-        }
-        //
-        URL resourceUrl = configSource.getResourceUrl();
-        if (resourceUrl != null) {
-            InputStream asStream = ResourcesUtils.getResourceAsStream(classLoader, resourceUrl);
-            if (asStream != null) {
-                readXml(new InputStreamReader(asStream, Settings.DefaultCharset), readTo);
-            }
-        }
+    public void readSetting(ResourceReader resourceReader, Settings readTo) throws IOException {
+        Reader reader = resourceReader.getReader();
+        readXml(reader, readTo);
     }
 
     protected void readXml(Reader dataReader, Settings readTo) throws IOException {

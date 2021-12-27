@@ -25,7 +25,6 @@ import java.util.Date;
  */
 public interface Settings {
     String DefaultNameSpace = "http://www.hasor.net/sechma/main";
-    String DefaultCharset   = "UTF-8";
 
     /** @return 已解析的命名空间列表 */
     String[] getSettingArray();

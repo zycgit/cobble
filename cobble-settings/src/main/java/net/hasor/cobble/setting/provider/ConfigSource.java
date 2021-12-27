@@ -16,28 +16,17 @@
  *
  */
 package net.hasor.cobble.setting.provider;
-import java.io.Reader;
-import java.net.URL;
-
 /***
  *
  * @version : 16/7/4
  * @author 赵永春 (zyc@byshell.org)
  */
 public class ConfigSource {
-    private final StreamType streamType;
-    private final URL        resourceUrl;
-    private final Reader     resourceReader;
+    private final StreamType     streamType;
+    private final ResourceReader resourceReader;
 
-    public ConfigSource(StreamType streamType, URL resourceUrl) {
+    public ConfigSource(StreamType streamType, ResourceReader resourceReader) {
         this.streamType = streamType;
-        this.resourceUrl = resourceUrl;
-        this.resourceReader = null;
-    }
-
-    public ConfigSource(StreamType streamType, Reader resourceReader) {
-        this.streamType = streamType;
-        this.resourceUrl = null;
         this.resourceReader = resourceReader;
     }
 
@@ -45,22 +34,12 @@ public class ConfigSource {
         return streamType;
     }
 
-    public URL getResourceUrl() {
-        return resourceUrl;
-    }
-
-    public Reader getResourceReader() {
+    public ResourceReader getResourceReader() {
         return resourceReader;
     }
 
     public String toString() {
-        if (resourceUrl != null) {
-            return this.streamType.name() + "@" + resourceUrl.toString();
-        }
-        if (resourceReader != null) {
-            return this.streamType.name() + "@Reader-" + resourceReader.toString();
-        }
-        return this.streamType.name() + "@none";
+        return this.streamType.name() + "@" + resourceReader.toString();
     }
 
     public boolean equals(Object obj) {

@@ -16,6 +16,7 @@
 package net.hasor.cobble.setting;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.provider.ConfigSource;
+import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
 import net.hasor.cobble.setting.provider.StreamType;
 import net.hasor.cobble.setting.provider.properties.PropertiesSettingsReader;
@@ -41,41 +42,41 @@ public class MergedSettings extends BasicSettings implements IOSettings {
 
     /** 将一个配置源添加到列表，后面会通过 load 方法加载这些数据。
      * 注意：待处理列表中的数据一旦装载完毕将会从待处理列表中清除出去。*/
-    public synchronized boolean addResource(String mainSettings, StreamType type) throws IOException {
-        return this.addStream(ResourcesUtils.getResourceAsStream(mainSettings), StandardCharsets.UTF_8, type);
+    public boolean addResource(String mainSettings, StreamType type) {
+        return this.addConfigSource(new ConfigSource(type, () -> {
+            InputStream stream = ResourcesUtils.getResourceAsStream(mainSettings);
+            return new InputStreamReader(stream, StandardCharsets.UTF_8);
+        }));
     }
 
     /** 将一个配置源添加到列表，后面会通过 load 方法加载这些数据。
      * 注意：待处理列表中的数据一旦装载完毕将会从待处理列表中清除出去。*/
-    public synchronized boolean addStream(InputStream mainSettings, StreamType type) {
-        return this.addStream(mainSettings, StandardCharsets.UTF_8, type);
+    public boolean addStream(InputStream mainSettings, StreamType type) {
+        return this.addConfigSource(new ConfigSource(type, () -> new InputStreamReader(mainSettings, StandardCharsets.UTF_8)));
     }
 
     /** 将一个配置源添加到列表，后面会通过 load 方法加载这些数据。
      * 注意：待处理列表中的数据一旦装载完毕将会从待处理列表中清除出去。*/
-    public synchronized boolean addStream(InputStream mainSettings, Charset charset, StreamType type) {
-        return this.addReader(new InputStreamReader(mainSettings, charset), type);
+    public boolean addStream(InputStream mainSettings, Charset charset, StreamType type) {
+        return this.addConfigSource(new ConfigSource(type, () -> new InputStreamReader(mainSettings, charset)));
     }
 
     /** 将一个配置源添加到列表，后面会通过 load 方法加载这些数据。
      * 注意：待处理列表中的数据一旦装载完毕将会从待处理列表中清除出去。*/
-    public synchronized boolean addStringBody(String mainSettings, StreamType type) {
-        return this.addReader(new StringReader(mainSettings), type);
+    public boolean addStringBody(String mainSettings, StreamType type) {
+        return this.addConfigSource(new ConfigSource(type, () -> new StringReader(mainSettings)));
     }
 
     /** 将一个配置源添加到列表，后面会通过 load 方法加载这些数据。
      * 注意：待处理列表中的数据一旦装载完毕将会从待处理列表中清除出去。*/
-    public synchronized boolean addReader(Reader mainSettings, StreamType type) {
-        return this.addConfigSource(new ConfigSource(type, mainSettings));
+    public boolean addReader(Reader mainSettings, StreamType type) {
+        return this.addConfigSource(new ConfigSource(type, () -> mainSettings));
     }
 
     /** 将一个配置源添加到列表，后面会通过 load 方法加载这些数据。
      * 注意：待处理列表中的数据一旦装载完毕将会从待处理列表中清除出去。*/
-    protected synchronized boolean addConfigSource(ConfigSource configSource) {
-        if (configSource == null || configSource.getStreamType() == null) {
-            return false;
-        }
-        if (configSource.getResourceUrl() == null && configSource.getResourceReader() == null) {
+    protected boolean addConfigSource(ConfigSource configSource) {
+        if (configSource == null || configSource.getStreamType() == null || configSource.getResourceReader() == null) {
             return false;
         }
         for (ConfigSource cs : this.pendingConfigSource) {
@@ -88,30 +89,20 @@ public class MergedSettings extends BasicSettings implements IOSettings {
 
     /**load装载所有待处理的流，如果没有待处理流则直接return。*/
     @Override
-    public synchronized int loadSettings() throws IOException {
+    public int loadSettings() throws IOException {
         this.readyLoad();//准备装载
         int loadCount = 0;
         if (this.pendingConfigSource.isEmpty()) {
-            logger.info("loadSettings finish -> there is no need to be load.");
             return 0;
         }
         //构建装载环境
         ConfigSource entity = null;
         try {
-            logger.trace("parsing...");
             while ((entity = this.pendingConfigSource.removeFirst()) != null) {
                 loadCount++;
-                Reader dataReader = null;
                 try {
                     // 拿到Reader
-                    dataReader = entity.getResourceReader();
-                    if (dataReader == null && entity.getResourceUrl() != null) {
-                        InputStream asStream = ResourcesUtils.getResourceAsStream(entity.getResourceUrl());
-                        if (asStream != null) {
-                            dataReader = new InputStreamReader(asStream, Settings.DefaultCharset);
-                        }
-                    }
-                    //
+                    ResourceReader dataReader = entity.getResourceReader();
                     if (dataReader == null) {
                         continue;
                     }
@@ -130,14 +121,9 @@ public class MergedSettings extends BasicSettings implements IOSettings {
                         default:
                             throw new UnsupportedOperationException(entity.getStreamType() + " Unsupported.");
                     }
-                    settingsReader.readSetting(null, entity, this);
+                    settingsReader.readSetting(dataReader, this);
                 } catch (Exception e) {
-                    logger.error("load Config " + entity + " failed.", e);
                     throw e;
-                } finally {
-                    if (dataReader != null) {
-                        dataReader.close();
-                    }
                 }
                 if (this.pendingConfigSource.isEmpty()) {
                     break;
@@ -145,16 +131,13 @@ public class MergedSettings extends BasicSettings implements IOSettings {
             }
         } catch (Throwable e) {
             String errorMessage = "parsing failed -> ";
-            logger.error("parsing failed -> " + e.getMessage(), e);
             if (e instanceof IOException) {
                 throw (IOException) e;
             } else {
                 throw new IOException(errorMessage + e.getMessage(), e);
             }
         }
-        logger.trace("parsing finish.");
         this.loadFinish();//完成装载
-        logger.trace("loadSettings finish.");
         return loadCount;
     }
 

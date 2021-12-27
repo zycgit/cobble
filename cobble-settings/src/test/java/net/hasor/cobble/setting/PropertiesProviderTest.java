@@ -15,25 +15,24 @@
  */
 package net.hasor.cobble.setting;
 import net.hasor.cobble.ResourcesUtils;
-import net.hasor.cobble.setting.provider.ConfigSource;
-import net.hasor.cobble.setting.provider.StreamType;
 import net.hasor.cobble.setting.provider.properties.PropertiesSettingsReader;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class PropertiesProviderTest {
     @Test
     public void propertiesTest() throws IOException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL conf = ResourcesUtils.getResource("/net_hasor_core_settings/simple-config.properties");
-        ConfigSource configSource = new ConfigSource(StreamType.Properties, conf);
-        //
+        InputStream conf = ResourcesUtils.getResourceAsStream("/net_hasor_core_settings/simple-config.properties");
+        InputStreamReader settingReader = new InputStreamReader(conf, StandardCharsets.UTF_8);
+
         PropertiesSettingsReader reader = new PropertiesSettingsReader();
         BasicSettings settings = new BasicSettings();
-        reader.readSetting(classLoader, configSource, settings);
-        //
+        reader.readSetting(() -> settingReader, settings);
+
         assert settings.getString("mySelf.myName").equals("赵永春");
         assert settings.getString("myself.myname") == null;
         assert settings.getInteger("mySelf.myAge") == 12;

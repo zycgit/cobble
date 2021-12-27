@@ -16,7 +16,7 @@
 package net.hasor.cobble.setting;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.setting.provider.ConfigSource;
+import net.hasor.cobble.io.input.AutoCloseInputStream;
 import net.hasor.cobble.setting.provider.StreamType;
 
 import java.io.File;
@@ -35,18 +35,6 @@ import java.net.URL;
 public class DefaultSettings extends MergedSettings {
     private URI settingURI;
 
-    protected void outInitLog(String mode, Object oriResource) {
-        if (this.settingURI != null) {
-            logger.info("create Settings, settingsType is [" + mode + "] mode, mainSettings = " + this.settingURI);
-        } else {
-            if (oriResource == null) {
-                logger.info("create Settings, settingsType is [" + mode + "] mode, mainSettings is not specified.");
-            } else {
-                logger.error("create Settings, settingsType is [" + mode + "] mode, mainSettings = " + oriResource + ", not found.");
-            }
-        }
-    }
-
     /**创建{@link DefaultSettings}类型对象。*/
     public DefaultSettings() throws IOException, URISyntaxException {
         this("");
@@ -54,10 +42,7 @@ public class DefaultSettings extends MergedSettings {
 
     /**创建{@link DefaultSettings}类型对象。*/
     public DefaultSettings(Reader mainSettings, StreamType type) throws IOException {
-        if (mainSettings != null) {
-            outInitLog("stream", mainSettings);
-        }
-        this.addConfigSource(new ConfigSource(type, mainSettings));
+        this.addReader(mainSettings, type);
         refresh();
     }
 
@@ -67,7 +52,6 @@ public class DefaultSettings extends MergedSettings {
             URL url = ResourcesUtils.getResource(mainSettings);
             if (url != null) {
                 this.settingURI = url.toURI();
-                outInitLog("string", mainSettings);
             }
         }
         refresh();
@@ -77,7 +61,6 @@ public class DefaultSettings extends MergedSettings {
     public DefaultSettings(final File mainSettings) throws IOException {
         if (mainSettings != null) {
             this.settingURI = mainSettings.toURI();
-            outInitLog("file", mainSettings);
         }
         refresh();
     }
@@ -86,7 +69,6 @@ public class DefaultSettings extends MergedSettings {
     public DefaultSettings(final URI mainSettings) throws IOException {
         if (mainSettings != null) {
             this.settingURI = mainSettings;
-            outInitLog("uri", mainSettings);
         }
         refresh();
     }
@@ -99,7 +81,6 @@ public class DefaultSettings extends MergedSettings {
     @Override
     protected void readyLoad() throws IOException {
         super.readyLoad();
-        //2.装载 hconfig.xml
         URI settingConfig = getSettingURI();
         if (settingConfig != null) {
             try (InputStream stream = ResourcesUtils.getResourceAsStream(settingConfig)) {
@@ -113,14 +94,16 @@ public class DefaultSettings extends MergedSettings {
         }
     }
 
-    private void _addStream(URL resourceUrl) {
+    private void _addStream(URL resourceUrl) throws IOException {
+        AutoCloseInputStream inputStream = new AutoCloseInputStream(resourceUrl.openStream());
         String lowerCase = resourceUrl.toString().toLowerCase();
+
         if (lowerCase.endsWith(".xml")) {
-            this.addConfigSource(new ConfigSource(StreamType.Xml, resourceUrl));
+            this.addStream(inputStream, StreamType.Xml);
         } else if (lowerCase.endsWith(".yaml") || lowerCase.endsWith(".yml")) {
-            this.addConfigSource(new ConfigSource(StreamType.Yaml, resourceUrl));
+            this.addStream(inputStream, StreamType.Yaml);
         } else {
-            this.addConfigSource(new ConfigSource(StreamType.Properties, resourceUrl));
+            this.addStream(inputStream, StreamType.Properties);
         }
     }
 

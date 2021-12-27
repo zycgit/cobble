@@ -16,19 +16,15 @@
  *
  */
 package net.hasor.cobble.setting.provider.yaml;
-import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.SettingNode;
 import net.hasor.cobble.setting.Settings;
 import net.hasor.cobble.setting.data.TreeNode;
-import net.hasor.cobble.setting.provider.ConfigSource;
+import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
-import net.hasor.cobble.setting.provider.StreamType;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,39 +36,23 @@ import java.util.stream.Collectors;
  */
 public class YamlSettingsReader implements SettingsReader {
     @Override
-    public void readSetting(ClassLoader classLoader, ConfigSource configSource, Settings readTo) throws IOException {
-        if (configSource == null || configSource.getStreamType() != StreamType.Yaml) {
-            return;
-        }
-        //
-        Reader resourceReader = configSource.getResourceReader();
-        if (resourceReader != null) {
-            Object yamlConfig = new Yaml().load(resourceReader);
-            loadYaml(readTo, yamlConfig);
-            return;
-        }
-        //
-        URL resourceUrl = configSource.getResourceUrl();
-        if (resourceUrl != null) {
-            InputStream asStream = ResourcesUtils.getResourceAsStream(classLoader, resourceUrl);
-            if (asStream != null) {
-                Object yamlData = new Yaml().load(asStream);
-                loadYaml(readTo, yamlData);
-            }
-        }
+    public void readSetting(ResourceReader resourceReader, Settings readTo) throws IOException {
+        Reader reader = resourceReader.getReader();
+        Object yamlConfig = new Yaml().load(reader);
+        loadYaml(readTo, yamlConfig);
     }
 
     protected void loadYaml(Settings readTo, Object yamlConfig) throws IOException {
         if (!(yamlConfig instanceof Map)) {
             throw new IOException("The first level of YAML must be Map.");
         }
-        //
+
         String namespace = Settings.DefaultNameSpace;
         TreeNode parentNode = new TreeNode("", namespace);
-        //
+
         TreeNode loadMap = loadMap((Map<String, Object>) yamlConfig);
         copyTreeNode(loadMap, parentNode);
-        //
+
         for (SettingNode node : parentNode.getSubNodes()) {
             readTo.addSetting(node.getName(), node, namespace);
         }

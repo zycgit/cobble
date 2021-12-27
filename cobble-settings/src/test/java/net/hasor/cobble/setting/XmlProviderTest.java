@@ -15,25 +15,25 @@
  */
 package net.hasor.cobble.setting;
 import net.hasor.cobble.ResourcesUtils;
-import net.hasor.cobble.setting.provider.ConfigSource;
 import net.hasor.cobble.setting.provider.StreamType;
 import net.hasor.cobble.setting.provider.xml.XmlSettingsReader;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class XmlProviderTest {
     @Test
     public void xmlTest_1() throws IOException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL conf = ResourcesUtils.getResource("/net_hasor_core_settings/simple-config.xml");
-        ConfigSource configSource = new ConfigSource(StreamType.Xml, conf);
-        //
+        InputStream conf = ResourcesUtils.getResourceAsStream("/net_hasor_core_settings/simple-config.xml");
+        InputStreamReader settingReader = new InputStreamReader(conf, StandardCharsets.UTF_8);
+
         XmlSettingsReader reader = new XmlSettingsReader();
         BasicSettings settings = new BasicSettings();
-        reader.readSetting(classLoader, configSource, settings);
-        //
+        reader.readSetting(() -> settingReader, settings);
+
         assert settings.getString("mySelf.myName").equals("赵永春");
         assert settings.getString("myself.myname") == null;
         assert settings.getInteger("mySelf.myAge") == 12;
@@ -52,11 +52,11 @@ public class XmlProviderTest {
                 "        <debug>true</debug>\n" +//
                 "    </hasor>\n" +//
                 "</config>";
-        //
+
         MergedSettings settings = new MergedSettings();
         settings.addStringBody(data, StreamType.Xml);
         settings.loadSettings();
-        //
+
         Boolean aBoolean = settings.getBoolean("hasor.debug");
         Boolean[] aBooleanArray = settings.getBooleanArray("hasor.debug");
         assert aBoolean;
@@ -71,10 +71,10 @@ public class XmlProviderTest {
         settings.addResource("classpath:/net_hasor_core_settings/ns1-config.xml", StreamType.Xml);
         settings.addResource("classpath:/net_hasor_core_settings/ns2-config.xml", StreamType.Xml);
         settings.loadSettings();
-        //
+
         Settings ns1 = settings.getSettings("http://mode1.myProject.net");
         Settings ns2 = settings.getSettings("http://mode2.myProject.net");
-        //
+
         assert ns1.getString("appSettings.serverLocal.url").equals("www.126.com");
         assert ns2.getString("appSettings.serverLocal.url").equals("www.souhu.com");
     }
@@ -84,10 +84,10 @@ public class XmlProviderTest {
         MergedSettings settings = new MergedSettings();
         settings.addResource("classpath:/net_hasor_core_settings/ns-all-config.xml", StreamType.Xml);
         settings.loadSettings();
-        //
+
         Settings ns1 = settings.getSettings("http://mode1.myProject.net");
         Settings ns2 = settings.getSettings("http://mode2.myProject.net");
-        //
+
         assert ns1.getString("appSettings.serverLocal.url").equals("www.126.com");
         assert ns2.getString("appSettings.serverLocal.url").equals("www.souhu.com");
     }
@@ -97,7 +97,7 @@ public class XmlProviderTest {
         MergedSettings settings = new MergedSettings();
         settings.addResource("classpath:/net_hasor_core_settings/main-ns-config.xml", StreamType.Xml);
         settings.loadSettings();
-        //
+
         assert settings.getString("appSettings.serverLocal.url").equals("www.google.com");
     }
 }

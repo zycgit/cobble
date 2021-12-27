@@ -26,5 +26,5 @@ import java.io.IOException;
  * @author 赵永春 (zyc@byshell.org)
  */
 public interface SettingsReader {
-    void readSetting(ClassLoader classLoader, ConfigSource configSource, Settings readTo) throws IOException;
+    void readSetting(ResourceReader configSource, Settings readTo) throws IOException;
 }
