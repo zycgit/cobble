@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
+import com.alibaba.fastjson.JSON;
 import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.json.JSON;
 import net.hasor.cobble.supplier.Provider;
 import org.junit.Test;
 
 public class PropertyTest {
-    private final JSON json = new JSON(false);
 
     @Test
     public void propertyTest1() throws Exception {
@@ -32,9 +31,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", "abc");
-        assert json.toJSON(instance).equals("{\"name\":\"abc\"}");
+        assert JSON.toJSONString(instance).equals("{\"name\":\"abc\"}");
         BeanUtils.writeProperty(instance, "name", "def");
-        assert json.toJSON(instance).equals("{\"name\":\"def\"}");
+        assert JSON.toJSONString(instance).equals("{\"name\":\"def\"}");
     }
 
     @Test
@@ -46,9 +45,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", true);
-        assert json.toJSON(instance).equals("{\"name\":true}");
+        assert JSON.toJSONString(instance).equals("{\"name\":true}");
         BeanUtils.writeProperty(instance, "name", false);
-        assert json.toJSON(instance).equals("{\"name\":false}");
+        assert JSON.toJSONString(instance).equals("{\"name\":false}");
     }
 
     @Test
