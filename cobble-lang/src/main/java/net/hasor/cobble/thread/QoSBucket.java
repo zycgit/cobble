@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.thread;
-import net.hasor.cobble.logging.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * </ol>
  */
 public class QoSBucket {
-    protected static     Logger        logger             = Logger.getLogger(QoSBucket.class.getName());
     private static final int           DEFAULT_RATE       = 50;
     private static final int           DEFAULT_PEAK       = 100;
     private static final int           DEFAULT_TIMEWINDOW = 1000;
@@ -71,7 +69,6 @@ public class QoSBucket {
                 if (tokens.compareAndSet(currentValue, newValue)) {
                     lastRefreshTime = now;// 更新成功后，设置新的刷新时间
                     leftDouble = addedPlusDouble - addPlus;
-                    logger.trace("[QoSBucket] Updated done: [" + currentValue + "] -> [" + newValue + "], refresh time: " + now + ".");
                 }
             }
         }
@@ -80,9 +77,6 @@ public class QoSBucket {
         while (value > 0 && !flag) {
             flag = tokens.compareAndSet(value, value - 1);
             value = tokens.get();
-        }
-        if (!flag) {
-            logger.trace("QoSBucket: get token failed, tokens[" + tokens.get() + "]");
         }
         return flag;
     }

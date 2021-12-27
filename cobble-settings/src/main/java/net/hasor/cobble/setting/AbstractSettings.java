@@ -16,7 +16,6 @@
 package net.hasor.cobble.setting;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.io.FilenameUtils;
-import net.hasor.cobble.logging.Logger;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -32,8 +31,6 @@ import java.util.Date;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractSettings implements Settings {
-    protected static Logger logger = Logger.getLogger(AbstractSettings.class);
-
     /** 解析全局配置参数，并且返回toType参数指定的类型。 */
     public abstract <T> T getToType(final String name, final Class<T> toType, final T defaultValue);
 

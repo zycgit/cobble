@@ -32,6 +32,11 @@
             <artifactId>cobble-loader</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>net.hasor</groupId>
+            <artifactId>cobble-logging</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -232,9 +237,9 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <delete dir="${basedir}/target/src" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar" />
+                                <delete dir="${basedir}/target/src"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar"/>
                             </target>
                         </configuration>
                         <goals>

@@ -85,10 +85,7 @@ public class DefaultSettings extends MergedSettings {
         if (settingConfig != null) {
             try (InputStream stream = ResourcesUtils.getResourceAsStream(settingConfig)) {
                 if (stream != null) {
-                    logger.info("addConfig '" + settingConfig + "'");
                     _addStream(settingConfig.toURL());
-                } else {
-                    logger.error("not found " + settingConfig);
                 }
             }
         }
@@ -109,7 +106,6 @@ public class DefaultSettings extends MergedSettings {
 
     @Override
     public void refresh() throws IOException {
-        logger.info("refresh -> cleanData and loadSettings...");
         this.cleanData();
         this.loadSettings();
     }
