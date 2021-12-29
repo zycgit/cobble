@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.CommonCodeUtils;
+import net.hasor.cobble.codec.MD5;
 import net.hasor.cobble.dynamic.beans.ConstructorBean;
 import net.hasor.cobble.dynamic.beans.PropertyBean;
 import net.hasor.cobble.dynamic.beans.SelectEnum;
@@ -252,8 +252,8 @@ public class AopTest {
         byte[] byteArray1 = out.toByteArray();
         byte[] byteArray2 = classConfig.getBytes();
         //
-        String encodeMD51 = CommonCodeUtils.MD5.encodeMD5(byteArray1);
-        String encodeMD52 = CommonCodeUtils.MD5.encodeMD5(byteArray2);
+        String encodeMD51 = MD5.encodeMD5(byteArray1);
+        String encodeMD52 = MD5.encodeMD5(byteArray2);
         assert encodeMD51.equals(encodeMD52);
         //
         assert buildClass.getName().equals(instance.getClass().getName());
@@ -282,8 +282,8 @@ public class AopTest {
         byte[] byteArray1 = out.toByteArray();
         byte[] byteArray2 = classConfig.getBytes();
         //
-        String encodeMD51 = CommonCodeUtils.MD5.encodeMD5(byteArray1);
-        String encodeMD52 = CommonCodeUtils.MD5.encodeMD5(byteArray2);
+        String encodeMD51 = MD5.encodeMD5(byteArray1);
+        String encodeMD52 = MD5.encodeMD5(byteArray2);
         assert encodeMD51.equals(encodeMD52);
         //
         assert buildClass.getName().equals(instance.getClass().getName());

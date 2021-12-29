@@ -1,93 +1,20 @@
-# Cobble Lang
-## 分为三个组成部分：
+# Cobble Logging
 
-- 各类 Utils
-- 小组建
-- 辅助接口和类
+&emsp;&emsp; 来自于 Apache MyBatis3 中对于 logging 的封装，自动选择输出的日志框架
 
-## 常用 Utils
+## 支持下列日志框架
 
-| Util 名称 | 作用 |
-| -------- | ------ |
-| ArrayUtils | |
-| BeanUtils | |
-| BitUtils | |
-| BooleanUtils | |
-| ByteUtils | |
-| CharUtils | |
-| CollectionUtils | |
-| CommonCodeUtils | |
-| ExceptionUtils | |
-| MatchUtils | |
-| NetworkUtils | |
-| NumberUtils | |
-| ObjectUtils | |
-| ResourcesUtils | |
-| StringUtils | |
-| ConstructorUtils | |
-| FieldUtils | |
-| MethodUtils | |
-| ClassUtils | |
-| FilenameUtils | |
-| FileUtils | |
-| IOUtils | |
+- jdk14
+- log4j
+- log4j2
+- nologging
+- slf4j
+- stdout
 
-## 工具类
-| 类名 | 作用 |
-| -------- | ------ |
-| WeakArrayList | |
-| WeakHashSet | |
-| SpaceHashMap | |
-| SimpleLRU | |
-| LinkedCaseInsensitiveMap | |
-| BeanMap | |
-| Charsets | |
-| LineIterator | |
-| RandomFile | |
+## 顺序
 
-## IO Streams
-| 类名 | 作用 |
-| -------- | ------ |
-| Base64InputStream、Base64OutputStream | |
-| AutoCloseInputStream | |
-| ClosedInputStream | |
-| ReaderInputStream | |
-| Base64OutputStream | |
-| ByteArrayOutputStream | |
-| DeferredFileOutputStream | |
-| StringBuilderWriter | |
-| ThresholdingOutputStream | |
-| WriterOutputStream | |
-
-黑洞系列
-
-| 类名 | 作用 |
-| -------- | ------ |
-| BlackHoleAppendable | |
-| BlackHoleDataOutput | |
-| BlackHoleObjectOutput | |
-| BlackHoleOutputStream | |
-| BlackHolePrintWriter | |
-| BlackHoleWriter | |
-
-## 小组建
-| 类名 | 作用 |
-| -------- | ------ |
-| convert | |
-| future | |
-| json | |
-| scope【Prototype、Singleton、Chain】 | |
-| spi | |
-| supplier | |
-| thread【NameThreadFactory、QoSBucket】 | |
-
-
-
-## 辅助接口和类
-| 类名 | 作用 |
-| -------- | ------ |
-| SFunction | |
-| TypeReference | |
-| EConsumer | |
-| EFunction | |
-| ESupplier | |
+- Slf4j
+- Log4J2
+- Log4J
+- Jdk
+- No
