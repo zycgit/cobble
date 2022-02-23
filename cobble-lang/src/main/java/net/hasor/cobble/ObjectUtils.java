@@ -16,6 +16,7 @@
  */
 package net.hasor.cobble;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>Operations on <code>Object</code>.</p>
@@ -520,38 +521,6 @@ public class ObjectUtils {
         return hash;
     }
 
-    /**
-     * Return the same value as {@link Boolean#hashCode(boolean)}}.
-     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
-     */
-    public static int hashCode(boolean bool) {
-        return Boolean.hashCode(bool);
-    }
-
-    /**
-     * Return the same value as {@link Double#hashCode(double)}}.
-     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
-     */
-    public static int hashCode(double dbl) {
-        return Double.hashCode(dbl);
-    }
-
-    /**
-     * Return the same value as {@link Float#hashCode(float)}}.
-     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
-     */
-    public static int hashCode(float flt) {
-        return Float.hashCode(flt);
-    }
-
-    /**
-     * Return the same value as {@link Long#hashCode(long)}}.
-     * @deprecated as of Spring Framework 5.0, in favor of the native JDK 8 variant
-     */
-    public static int hashCode(long lng) {
-        return Long.hashCode(lng);
-    }
-
     // Null
     //-----------------------------------------------------------------------
 
@@ -591,5 +560,82 @@ public class ObjectUtils {
         private Object readResolve() {
             return ObjectUtils.NULL;
         }
+    }
+
+    // Check form Netty common
+    //-----------------------------------------------------------------------
+
+    /**
+     * Checks that the given argument is not null. If it is, throws {@link NullPointerException}.
+     * Otherwise, returns the argument.
+     */
+    public static <T> T checkNotNull(T arg, String text) {
+        return Objects.requireNonNull(arg, text);
+    }
+
+    /**
+     * Checks that the given argument is strictly positive. If it is not, throws {@link IllegalArgumentException}.
+     * Otherwise, returns the argument.
+     */
+    public static int checkPositive(int i, String name) {
+        if (i <= 0) {
+            throw new IllegalArgumentException(name + ": " + i + " (expected: > 0)");
+        }
+        return i;
+    }
+
+    /**
+     * Checks that the given argument is strictly positive. If it is not, throws {@link IllegalArgumentException}.
+     * Otherwise, returns the argument.
+     */
+    public static long checkPositive(long l, String name) {
+        if (l <= 0) {
+            throw new IllegalArgumentException(name + ": " + l + " (expected: > 0)");
+        }
+        return l;
+    }
+
+    /**
+     * Checks that the given argument is positive or zero. If it is not , throws {@link IllegalArgumentException}.
+     * Otherwise, returns the argument.
+     */
+    public static int checkPositiveOrZero(int i, String name) {
+        if (i < 0) {
+            throw new IllegalArgumentException(name + ": " + i + " (expected: >= 0)");
+        }
+        return i;
+    }
+
+    /**
+     * Checks that the given argument is positive or zero. If it is not, throws {@link IllegalArgumentException}.
+     * Otherwise, returns the argument.
+     */
+    public static long checkPositiveOrZero(long l, String name) {
+        if (l < 0) {
+            throw new IllegalArgumentException(name + ": " + l + " (expected: >= 0)");
+        }
+        return l;
+    }
+
+    /**
+     * Checks that the given argument is in range. If it is not, throws {@link IllegalArgumentException}.
+     * Otherwise, returns the argument.
+     */
+    public static int checkInRange(int i, int start, int end, String name) {
+        if (i < start || i > end) {
+            throw new IllegalArgumentException(name + ": " + i + " (expected: " + start + "-" + end + ")");
+        }
+        return i;
+    }
+
+    /**
+     * Checks that the given argument is in range. If it is not, throws {@link IllegalArgumentException}.
+     * Otherwise, returns the argument.
+     */
+    public static long checkInRange(long l, long start, long end, String name) {
+        if (l < start || l > end) {
+            throw new IllegalArgumentException(name + ": " + l + " (expected: " + start + "-" + end + ")");
+        }
+        return l;
     }
 }

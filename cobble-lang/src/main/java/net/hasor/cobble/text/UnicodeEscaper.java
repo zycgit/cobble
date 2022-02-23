@@ -27,9 +27,9 @@ import java.io.Writer;
 public class UnicodeEscaper extends CodePointTranslator {
 
     /** int value representing the lowest codepoint boundary. */
-    private final int below;
+    private final int     below;
     /** int value representing the highest codepoint boundary. */
-    private final int above;
+    private final int     above;
     /** whether to escape between the boundaries or outside them. */
     private final boolean between;
 
@@ -117,11 +117,11 @@ public class UnicodeEscaper extends CodePointTranslator {
         if (codepoint > 0xffff) {
             out.write(toUtf16Escape(codepoint));
         } else {
-          out.write("\\u");
-          out.write(HEX_DIGITS[(codepoint >> 12) & 15]);
-          out.write(HEX_DIGITS[(codepoint >> 8) & 15]);
-          out.write(HEX_DIGITS[(codepoint >> 4) & 15]);
-          out.write(HEX_DIGITS[(codepoint) & 15]);
+            out.write("\\u");
+            out.write(HEX_DIGITS[(codepoint >> 12) & 15]);
+            out.write(HEX_DIGITS[(codepoint >> 8) & 15]);
+            out.write(HEX_DIGITS[(codepoint >> 4) & 15]);
+            out.write(HEX_DIGITS[(codepoint) & 15]);
         }
         return true;
     }

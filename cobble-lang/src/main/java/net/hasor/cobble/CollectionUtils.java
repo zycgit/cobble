@@ -32,6 +32,22 @@ public class CollectionUtils {
     public static boolean isEmpty(List<?> tables) {
         return tables == null || tables.isEmpty();
     }
+
+    public static boolean isNotEmpty(Map<?, ?> maps) {
+        return maps != null && !maps.isEmpty();
+    }
+
+    public static boolean isEmpty(Map<?, ?> maps) {
+        return maps == null || maps.isEmpty();
+    }
+
+    public static int size(List<?> list) {
+        return (list == null || list.isEmpty()) ? 0 : list.size();
+    }
+
+    public static int size(Map<?, ?> map) {
+        return (map == null || map.isEmpty()) ? 0 : map.size();
+    }
     // split utilities
     //--------------------------------------------------------------------------
 

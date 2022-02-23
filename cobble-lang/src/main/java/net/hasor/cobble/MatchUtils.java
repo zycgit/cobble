@@ -60,7 +60,7 @@ public class MatchUtils {
         }
         return str.matches(MatchUtils.wildToRegex(pattern));
     }
-    
+
     /**将通配符转换成正则表达式。*/
     public static boolean wildToRegex(final String pattern, final String str, MatchTypeEnum matchType) {
         if (MatchTypeEnum.Regex == matchType) {

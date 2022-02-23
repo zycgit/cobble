@@ -56,9 +56,7 @@ public class UnicodeUnescaper extends CharSequenceTranslator {
                 }
                 return i + 4;
             }
-            throw new IllegalArgumentException("Less than 4 hex digits in unicode value: '"
-                    + input.subSequence(index, input.length())
-                    + "' due to end of CharSequence");
+            throw new IllegalArgumentException("Less than 4 hex digits in unicode value: '" + input.subSequence(index, input.length()) + "' due to end of CharSequence");
         }
         return 0;
     }
