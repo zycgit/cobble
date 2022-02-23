@@ -19,6 +19,7 @@ import net.hasor.cobble.io.IOUtils;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -37,41 +38,46 @@ public class LoaderClassLoader extends ClassLoader {
         this.resourceLoader = resourceLoader;
     }
 
+    protected ResourceLoader findResourceLoader(String resourceName) {
+        return this.resourceLoader;
+    }
+
     @Override
     protected Class<?> findClass(String className) throws ClassNotFoundException {
-        if (LoaderClassLoader.class.getName().equals(className)) {
-            return LoaderClassLoader.class;
-        }
-        if (this.resourceLoader != null) {
-            String resourceName = className.replace(".", "/") + ".class";
-            InputStream inStream = this.getResourceAsStream(resourceName);
-            if (inStream == null) {
-                throw new ClassNotFoundException(className);
-            } else {
-                try {
+        String resourceName = className.replace(".", "/") + ".class";
+        ResourceLoader loader = findResourceLoader(resourceName);
+        if (loader != null) {
+            try {
+                InputStream inStream = loader.getResourceAsStream(resourceName);
+                if (inStream == null) {
+                    return super.findClass(className);
+                } else {
                     ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
                     IOUtils.copy(inStream, byteOutput);
                     byte[] bs = byteOutput.toByteArray();
                     return this.defineClass(className, bs, 0, bs.length);
-                } catch (IOException e) {
-                    throw new ClassNotFoundException(className, e);
                 }
+            } catch (IOException e) {
+                throw new ClassNotFoundException(className, e);
             }
-        } else {
-            return super.findClass(className);
         }
+        return super.findClass(className);
     }
 
     @Override
     protected URL findResource(String name) {
         try {
-            if (this.resourceLoader != null) {
-                URL resourceURL = this.resourceLoader.getResource(name);
-                if (resourceURL != null) {
-                    return resourceURL;
-                }
+            ResourceLoader loader = findResourceLoader(name);
+            if (loader == null) {
+                return null;
             }
-            return super.findResource(name);
+
+            URL resourceURL = loader.getResource(name);
+            if (resourceURL != null) {
+                return resourceURL;
+            } else {
+                return super.findResource(name);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -79,20 +85,26 @@ public class LoaderClassLoader extends ClassLoader {
 
     @Override
     public Enumeration<URL> findResources(String name) throws IOException {
-        try {
-            if (this.resourceLoader != null) {
-                List<URL> resourceURLs = this.resourceLoader.getResources(name);
-                if (resourceURLs != null && !resourceURLs.isEmpty()) {
-                    return CollectionUtils.asEnumeration(resourceURLs);
-                }
-            }
-            return super.findResources(name);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        ResourceLoader loader = findResourceLoader(name);
+        if (loader == null) {
+            return Collections.emptyEnumeration();
         }
+
+        List<URL> resourceURLs = loader.getResources(name);
+        if (resourceURLs != null && !resourceURLs.isEmpty()) {
+            return CollectionUtils.asEnumeration(resourceURLs);
+        } else {
+            return super.findResources(name);
+        }
+
     }
 
     public InputStream getResourceAsStream(String name) {
+        ResourceLoader loader = findResourceLoader(name);
+        if (loader == null) {
+            return null;
+        }
+
         InputStream inputStream = super.getResourceAsStream(name);
         if (inputStream != null) {
             return inputStream;

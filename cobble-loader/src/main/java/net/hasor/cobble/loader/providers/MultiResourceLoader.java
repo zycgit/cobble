@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 可以将不同的 ResourceLoader 汇聚到一起。
+ * 可以将不同的 ResourceLoader 汇聚到一起，不具备 '可见性' 控制。实现更加简单、效率更高。
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */

@@ -24,9 +24,10 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * 构造一个 ExportResourceLoader，该 ResourceLoader 可以指定允许访问的资源。
+ * 仅允许将 ResourceLoader 的中的一部分资源设置为 '可见'
  *
- * 可以通过 setExportAll 方法开放所有资源被访问。
+ * -- 与 ImportResourceLoader 不同的是 ExportResourceLoader 是对某个特定 ResourceLoader 的增强。
+ * -- 可以通过 setExportAll 方法开放所有资源被访问。
  * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
  */

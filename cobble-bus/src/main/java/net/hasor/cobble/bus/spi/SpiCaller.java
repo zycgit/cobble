@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.spi;
+package net.hasor.cobble.bus.spi;
 /**
  * 执行 Spi 调用，扩展 SpiResultCaller 接口。并提供了可以无返回值的形式。
  * @version : 2019年06月20日

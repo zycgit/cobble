@@ -25,8 +25,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Tests for {@link JarFile}.
@@ -52,34 +51,33 @@ public class ImportResourceLoaderTests {
         JarResourceLoader jar2 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-1.jar").getFile()));
         JarResourceLoader jar3 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-2.zip").getFile()));
         PathResourceLoader path1 = new PathResourceLoader(new File(""));
-        loader.addImport(jar1);
-        loader.addImport("app/onlyjar", jar2);
-        loader.addImport("app/onlyzip", jar3);
-        loader.addImport(ClassPathResourceLoader.INSTANCE);
-        loader.addImport(2, ClassPathResourceLoader.INSTANCE);
-        loader.addImport(1, path1);
+        loader.addImport(0, jar1);
+        loader.addImport(1, "app/onlyjar", jar2);
+        loader.addImport(2, "app/onlyzip", jar3);
+        loader.addImport(3, ClassPathResourceLoader.INSTANCE);
+        loader.addImport(4, ClassPathResourceLoader.INSTANCE);
+        loader.addImport(5, path1);
 
-        assert loader.getLoader("app").size() == 3;
-        assert loader.getLoader("app").get(0).loader == jar1;
-        assert loader.getLoader("app").get(1).loader == path1;
-        assert loader.getLoader("app").get(2).loader == ClassPathResourceLoader.INSTANCE;
+        Iterator<ImportResourceLoader.LoaderWrap> wrapLoaders1 = loader.getLoader("app");
+        assert wrapLoaders1.next().loader == jar1;
+        assert wrapLoaders1.next().loader == ClassPathResourceLoader.INSTANCE;
+        assert wrapLoaders1.next().loader == path1;
 
-        assert loader.getLoader("app/onlyzip").size() == 4;
-        assert loader.getLoader("app/onlyzip").get(0).loader == jar1 || loader.getLoader("app/onlyzip").get(1).loader == jar2;
-        assert loader.getLoader("app/onlyzip").get(2).loader == path1;
-        assert loader.getLoader("app/onlyzip").get(3).loader == ClassPathResourceLoader.INSTANCE;
+        Iterator<ImportResourceLoader.LoaderWrap> wrapLoaders2 = loader.getLoader("app/onlyzip");
+        assert wrapLoaders2.next().loader == jar1;
+        assert wrapLoaders2.next().loader == jar3;
+        assert wrapLoaders2.next().loader == ClassPathResourceLoader.INSTANCE;
+        assert wrapLoaders2.next().loader == path1;
 
-        assert loader.getLoader("app/onlyzip/FooOnlyZip.java").size() == 4;
-        assert loader.getLoader("app/onlyzip/FooOnlyZip.java").get(0).loader == jar1 || loader.getLoader("app/onlyzip/FooOnlyZip.java").get(1).loader == jar2;
-        assert loader.getLoader("app/onlyzip/FooOnlyZip.java").get(2).loader == path1;
-        assert loader.getLoader("app/onlyzip/FooOnlyZip.java").get(3).loader == ClassPathResourceLoader.INSTANCE;
-
-        assert loader.getLoader("app") == loader.getLoader("app");
-        assert loader.getLoader("app/onlyjar") == loader.getLoader("app/onlyjar");
+        Iterator<ImportResourceLoader.LoaderWrap> wrapLoaders3 = loader.getLoader("app/onlyzip/FooOnlyZip.java");
+        assert wrapLoaders3.next().loader == jar1;
+        assert wrapLoaders3.next().loader == jar3;
+        assert wrapLoaders3.next().loader == ClassPathResourceLoader.INSTANCE;
+        assert wrapLoaders3.next().loader == path1;
     }
 
     @Test
-    public void importLoaderTest2() throws Exception {
+    public void importLoaderTest2() {
         assert !loader.exist("app/FooImpl.java");
         assert loader.exist("app/onlybasic/FooOnlyBasic.java");
         assert loader.exist("app/onlyjar/FooOnlyJar.java");
@@ -163,25 +161,38 @@ public class ImportResourceLoaderTests {
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-1.jar/app/onlyjar/FooOnlyJar.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-2.zip/app/onlyzip/FooOnlyZip.java"));
 
-        ResourceLoader.Scanner<InputStream> scanner = event -> {
+        class Info {
+            public final String      name;
+            public final InputStream stream;
+
+            public Info(String name, InputStream stream) {
+                this.name = name;
+                this.stream = stream;
+            }
+        }
+
+        ResourceLoader.Scanner<Info> scanner = event -> {
             if (event.getName().startsWith("app/only") && event.getName().endsWith(".java")) {
-                return event.getStream();
+                return new Info(event.getName(), event.getStream());
             } else {
                 return null;
             }
         };
 
         assert Objects.deepEquals(//
-                IOUtils.toByteArray(loader.scanOneResource(scanner)), //
-                IOUtils.toByteArray(loader.scanOneResource(scanner))//
+                IOUtils.toByteArray(loader.scanOneResource(scanner).stream), //
+                IOUtils.toByteArray(loader.scanOneResource(scanner).stream)//
         );
-        InputStream inputStream = loader.scanOneResource(scanner);
-        assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
 
-        List<InputStream> inputStreams = loader.scanResources(scanner);
-        assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(0)));
-        assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(inputStreams.get(1)));
-        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(inputStreams.get(2)));
+        Map<String, InputStream> objects = new LinkedHashMap<>();
+        List<Info> inputInfos = loader.scanResources(scanner);
+        for (Info info : inputInfos) {
+            objects.put(info.name, info.stream);
+        }
+
+        assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(objects.get("app/onlybasic/FooOnlyBasic.java")));
+        assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(objects.get("app/onlyjar/FooOnlyJar.java")));
+        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(objects.get("app/onlyzip/FooOnlyZip.java")));
     }
 
     @Test

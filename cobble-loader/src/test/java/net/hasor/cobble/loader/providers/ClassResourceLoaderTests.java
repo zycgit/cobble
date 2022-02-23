@@ -20,7 +20,7 @@ import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.ClassMatchers;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
-import net.hasor.cobble.loader.isol.IsolResourceLoader;
+import net.hasor.cobble.loader.isol.IsolImportResourceLoader;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Test;
 
@@ -155,7 +155,7 @@ public class ClassResourceLoaderTests {
         assert classSet.contains(AbstractResourceLoader.class);
         assert classSet.contains(JarResourceLoader.class);
         assert classSet.contains(PathResourceLoader.class);
-        assert classSet.contains(IsolResourceLoader.class);
+        assert classSet.contains(IsolImportResourceLoader.class);
 
         classSet = classLoader.toClassFinder().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
         assert classSet.size() == 9;
@@ -167,6 +167,6 @@ public class ClassResourceLoaderTests {
         assert classSet.contains(ImportResourceLoader.class);
         assert classSet.contains(ExportResourceLoader.class);
         assert classSet.contains(ResourceLoader.class);
-        assert classSet.contains(IsolResourceLoader.class);
+        assert classSet.contains(IsolImportResourceLoader.class);
     }
 }

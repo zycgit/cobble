@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package net.hasor.cobble.spi;
-import net.hasor.cobble.spi.SpiCaller.SpiCallerWithoutResult;
+package net.hasor.cobble.bus.spi;
+import net.hasor.cobble.bus.spi.SpiCaller.SpiCallerWithoutResult;
 
 import java.util.EventListener;
 

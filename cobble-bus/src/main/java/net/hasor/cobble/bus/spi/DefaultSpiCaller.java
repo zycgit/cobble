@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.spi;
+package net.hasor.cobble.bus.spi;
 import net.hasor.cobble.ExceptionUtils;
 
 import java.io.Closeable;

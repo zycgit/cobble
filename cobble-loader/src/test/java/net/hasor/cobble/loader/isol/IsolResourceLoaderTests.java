@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class IsolResourceLoaderTests {
-    private IsolResourceLoader loader;
+    private IsolImportResourceLoader loader;
 
     @Before
     public void beforeImport() throws IOException {
@@ -20,7 +20,7 @@ public class IsolResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        this.loader = new IsolResourceLoader();
+        this.loader = new IsolImportResourceLoader();
         this.loader.bindParentLoader(Thread.currentThread().getContextClassLoader());
         this.loader.addImport("ApplicationForApp1.class", loader1);
         this.loader.addImport("ApplicationForApp2.class", loader2);

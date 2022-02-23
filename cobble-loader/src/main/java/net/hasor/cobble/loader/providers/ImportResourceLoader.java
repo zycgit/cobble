@@ -17,25 +17,22 @@ package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.ref.SimpleLRU;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 可以将不同的 ResourceLoader 汇聚到一起，在汇聚的时允许为每个 ResourceLoader 指定可见范围。
+ * 允许将 ResourceLoader 的中的一部分资源设置为 '可见'，并将不同的 ResourceLoader 之间 '可见' 部分汇聚为一个新的 ResourceLoader。
+ *
+ * -- ExportResourceLoader 强调的是对外部分可见、ImportResourceLoader 强调的是按需汇聚。
  * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ImportResourceLoader extends AbstractResourceLoader {
-    private final List<String>                  packageList    = new CopyOnWriteArrayList<>();
-    private final List<LoaderWrap>              allLoaders     = new CopyOnWriteArrayList<>();
     private final Map<String, List<LoaderWrap>> packageLoaders = new ConcurrentHashMap<>();
-    private final Map<String, List<LoaderWrap>> cacheLoaders   = new SimpleLRU<>(1024);
 
     /** import all path */
     public void addImport(ResourceLoader loader) {
@@ -55,22 +52,15 @@ public class ImportResourceLoader extends AbstractResourceLoader {
     /** import specified path or resource */
     public synchronized void addImport(int order, String importPath, ResourceLoader loader) {
         importPath = pathOrResource(importPath);
-        List<LoaderWrap> loaders = this.packageLoaders.computeIfAbsent(importPath, s -> new CopyOnWriteArrayList<>());
-        LoaderWrap loaderWrap = new LoaderWrap(order, loader);
-
-        if (!this.packageList.contains(importPath)) {
-            this.packageList.add(importPath);
-            this.allLoaders.add(loaderWrap);
+        List<LoaderWrap> loaders = this.packageLoaders.computeIfAbsent(importPath, s -> new ArrayList<>());
+        LoaderWrap wrap = new LoaderWrap(order, loader);
+        if (!loaders.contains(wrap)) {
+            loaders.add(wrap);
         }
+    }
 
-        if (!loaders.contains(loaderWrap)) {
-            loaders.add(loaderWrap);
-        } else {
-            loaders.get(loaders.indexOf(loaderWrap)).order = order;
-        }
-
-        Collections.sort(loaders);
-        this.cacheLoaders.clear();
+    protected ClassLoader createBindClassLoader(ClassLoader bindParentLoader) {
+        return super.createBindClassLoader(bindParentLoader);
     }
 
     private static String pathOrResource(String dirPath) {
@@ -81,123 +71,65 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         return dirPath;
     }
 
-    private List<LoaderWrap> rootPackageLoaders() {
-        if (this.cacheLoaders.containsKey("")) {
-            return this.cacheLoaders.get("");
-        }
-        synchronized (this) {
-            if (this.cacheLoaders.containsKey("")) {
-                return this.cacheLoaders.get("");
-            }
+    public Set<String> getAllPackages() {
+        return this.packageLoaders.keySet();
+    }
 
-            List<LoaderWrap> loaderList = this.packageLoaders.get("");
-            if (loaderList != null) {
-                Collections.sort(loaderList);
-                loaderList = Collections.unmodifiableList(loaderList);
-            } else {
-                loaderList = Collections.emptyList();
+    protected Iterator<LoaderWrap> getAllLoader() {
+        return this.packageLoaders.values().stream().flatMap(Collection::stream).iterator();
+    }
+
+    private void mergeInto(List<LoaderWrap> form, List<LoaderWrap> into) {
+        if (form == null || form.isEmpty()) {
+            return;
+        }
+
+        for (LoaderWrap wrap : form) {
+            if (!into.contains(wrap)) {
+                into.add(wrap);
             }
-            this.cacheLoaders.put("", loaderList);
-            return loaderList;
         }
     }
 
-    private List<LoaderWrap> asResourcePackageLoaders(String resource) {
-        if (this.cacheLoaders.containsKey(resource)) {
-            return this.cacheLoaders.get(resource);
-        }
-        synchronized (this) {
-            if (this.cacheLoaders.containsKey(resource)) {
-                return this.cacheLoaders.get(resource);
-            }
-
-            List<LoaderWrap> loaders = new ArrayList<>(rootPackageLoaders());
-            List<LoaderWrap> resLoaders = this.packageLoaders.get(resource);
-
-            if (resLoaders != null) {
-                for (LoaderWrap wrap : resLoaders) {
-                    if (!loaders.contains(wrap)) {
-                        loaders.add(wrap);
-                    }
-                }
-            }
-
-            Collections.sort(loaders);
-            this.cacheLoaders.put(resource, Collections.unmodifiableList(loaders));
-            return this.cacheLoaders.get(resource);
-        }
-    }
-
-    protected List<LoaderWrap> getLoader(String resource) {
-        final String fmtResource = pathOrResource(resource);
+    protected Iterator<LoaderWrap> getLoader(String resource) {
+        String fmtResource = pathOrResource(resource);
         if (StringUtils.isEmpty(fmtResource)) {
-            return rootPackageLoaders();
+            return getAllLoader();
         }
 
-        // try cache found.
-        if (this.cacheLoaders.containsKey(fmtResource)) {
-            return this.cacheLoaders.get(fmtResource);
-        }
+        List<LoaderWrap> loaders = new ArrayList<>();
 
-        //maybe is resource
-        if (this.packageLoaders.containsKey(fmtResource)) {
-            return asResourcePackageLoaders(fmtResource);
-        }
-
-        int index = fmtResource.lastIndexOf("/");
-        if (index == -1) {
-            return rootPackageLoaders();
-        }
-
-        //try by path find
-        final String fmtDirPath = fmtResource.substring(0, index);
-        if (this.cacheLoaders.containsKey(fmtDirPath)) {
-            return this.cacheLoaders.get(fmtDirPath);// try from cache found.
-        }
-
-        synchronized (this) {
-            if (this.cacheLoaders.containsKey(fmtDirPath)) {
-                return this.cacheLoaders.get(fmtDirPath);
+        for (String resourceItem : this.packageLoaders.keySet()) {
+            if (StringUtils.isEmpty(resourceItem) || !resource.startsWith(resourceItem)) {
+                continue;
             }
 
-            List<LoaderWrap> loaders = new ArrayList<>();
-            String tmpDirPath = fmtDirPath;
+            String tmpResourceItem = resourceItem;
+            int index = tmpResourceItem.lastIndexOf("/");
+
             while (true) {
-                List<LoaderWrap> loaderList = this.packageLoaders.get(tmpDirPath);
-                if (loaderList != null) {
-                    loaders.addAll(loaderList);
-                }
+                mergeInto(this.packageLoaders.get(tmpResourceItem), loaders);
 
-                index = tmpDirPath.lastIndexOf("/", index);
+                index = tmpResourceItem.lastIndexOf("/", index);
                 if (index == -1) {
-                    loaderList = this.packageLoaders.get("");
-                    if (loaderList != null) {
-                        loaders.addAll(loaderList);
-                    }
+                    mergeInto(this.packageLoaders.get(tmpResourceItem), loaders);
                     break;
+                } else {
+                    tmpResourceItem = tmpResourceItem.substring(0, index);
                 }
-
-                tmpDirPath = tmpDirPath.substring(0, index);
             }
-
-            Collections.sort(loaders);
-            this.cacheLoaders.put(fmtDirPath, Collections.unmodifiableList(loaders));
-            return loaders;
         }
+
+        mergeInto(this.packageLoaders.get(""), loaders);
+        Collections.sort(loaders);
+
+        return loaders.iterator();
     }
 
     public ResourceLoader findLoader(String resource) {
-        List<LoaderWrap> loaders = getLoader(resource);
-        for (LoaderWrap wrap : loaders) {
-            if (wrap.loader.exist(resource)) {
-                return wrap.loader;
-            }
-        }
-        return null;
-    }
-
-    protected ResourceLoader unsafeFindLoader(String resource) {
-        for (LoaderWrap wrap : this.allLoaders) {
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            LoaderWrap wrap = loaders.next();
             if (wrap.loader.exist(resource)) {
                 return wrap.loader;
             }
@@ -206,10 +138,10 @@ public class ImportResourceLoader extends AbstractResourceLoader {
     }
 
     private <T> Scanner<T> scannerProxy(Scanner<T> scanner) {
+        final Set<String> allPackages = this.getAllPackages();
         return event -> {
-            String name = event.getName();
-            for (String has : this.packageList) {
-                if (name.startsWith(has)) {
+            for (String has : allPackages) {
+                if (event.getName().startsWith(has)) {
                     return scanner.found(event);
                 }
             }
@@ -217,32 +149,12 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         };
     }
 
-    private static List<String> paths(MatchType matchType, List<String> paths) {
-        if (paths == null) {
-            return null;
-        }
-        switch (matchType) {
-            case None:
-            case ContainsAny:
-            case Suffix:
-            case Regex: {
-                return Collections.emptyList();
-            }
-            case Match:
-            case Prefix: {
-                return paths;
-            }
-            default: {
-                throw new UnsupportedOperationException("Unsupported matchType " + matchType.name());
-            }
-        }
-    }
-
     @Override
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         Scanner<T> scannerProxy = scannerProxy(scanner);
-        for (LoaderWrap loader : this.allLoaders) {
-            T result = loader.loader.scanOneResource(matchType, scannerProxy, scanPaths);
+        Iterator<LoaderWrap> loaders = getAllLoader();
+        while (loaders.hasNext()) {
+            T result = loaders.next().loader.scanOneResource(matchType, scannerProxy, scanPaths);
             if (result != null) {
                 return result;
             }
@@ -252,9 +164,12 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        Iterator<LoaderWrap> loaders = getAllLoader();
         Scanner<T> scannerProxy = scannerProxy(scanner);
         List<T> result = new ArrayList<>();
-        for (LoaderWrap loader : this.allLoaders) {
+
+        while (loaders.hasNext()) {
+            LoaderWrap loader = loaders.next();
             List<T> foundResources = loader.loader.scanResources(matchType, scannerProxy, scanPaths);
             if (foundResources != null) {
                 result.addAll(foundResources);
@@ -265,9 +180,9 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
     @Override
     public URL getResource(String resource) throws IOException {
-        List<LoaderWrap> loaders = getLoader(resource);
-        for (LoaderWrap wrap : loaders) {
-            URL resourceURL = wrap.loader.getResource(resource);
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            URL resourceURL = loaders.next().loader.getResource(resource);
             if (resourceURL != null) {
                 return resourceURL;
             }
@@ -277,9 +192,9 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
     @Override
     public InputStream getResourceAsStream(String resource) throws IOException {
-        List<LoaderWrap> loaders = getLoader(resource);
-        for (LoaderWrap wrap : loaders) {
-            InputStream resourceStream = wrap.loader.getResourceAsStream(resource);
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            InputStream resourceStream = loaders.next().loader.getResourceAsStream(resource);
             if (resourceStream != null) {
                 return resourceStream;
             }
@@ -290,9 +205,9 @@ public class ImportResourceLoader extends AbstractResourceLoader {
     @Override
     public List<URL> getResources(String resource) throws IOException {
         List<URL> result = new ArrayList<>();
-        List<LoaderWrap> loaders = getLoader(resource);
-        for (LoaderWrap wrap : loaders) {
-            List<URL> resourceURLs = wrap.loader.getResources(resource);
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            List<URL> resourceURLs = loaders.next().loader.getResources(resource);
             if (CollectionUtils.isNotEmpty(resourceURLs)) {
                 result.addAll(resourceURLs);
             }
@@ -303,9 +218,9 @@ public class ImportResourceLoader extends AbstractResourceLoader {
     @Override
     public List<InputStream> getResourcesAsStream(String resource) throws IOException {
         List<InputStream> result = new ArrayList<>();
-        List<LoaderWrap> loaders = getLoader(resource);
-        for (LoaderWrap wrap : loaders) {
-            List<InputStream> resourceStreams = wrap.loader.getResourcesAsStream(resource);
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            List<InputStream> resourceStreams = loaders.next().loader.getResourcesAsStream(resource);
             if (CollectionUtils.isNotEmpty(resourceStreams)) {
                 result.addAll(resourceStreams);
             }
@@ -315,9 +230,9 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
     @Override
     public boolean exist(String resource) {
-        List<LoaderWrap> loaders = getLoader(resource);
-        for (LoaderWrap wrap : loaders) {
-            boolean result = wrap.loader.exist(resource);
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            boolean result = loaders.next().loader.exist(resource);
             if (result) {
                 return true;
             }
@@ -346,7 +261,7 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
         @Override
         public String toString() {
-            return "ResourceLoaderWrap{" + "order=" + order + ", loader=" + loader + '}';
+            return "{" + "order=" + order + ", loader=" + loader + '}';
         }
 
         @Override
