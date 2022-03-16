@@ -23,6 +23,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Settings接口的抽象实现。
@@ -31,6 +32,8 @@ import java.util.Date;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractSettings implements Settings {
+    protected abstract Map<String, String> envMap();
+
     /** 解析全局配置参数，并且返回toType参数指定的类型。 */
     public abstract <T> T getToType(final String name, final Class<T> toType, final T defaultValue);
 
@@ -383,6 +386,26 @@ public abstract class AbstractSettings implements Settings {
 
     public SettingNode[] getNodeArray(final String name) {
         return this.getToTypeArray(name, SettingNode.class, null);
+    }
+
+    @Override
+    public String[] getEnvNames() {
+        return this.envMap().keySet().toArray(new String[0]);
+    }
+
+    @Override
+    public String getEnv(String name) {
+        return this.envMap().get(name);
+    }
+
+    @Override
+    public void addEnv(String name, String value) {
+        this.envMap().put(name, value);
+    }
+
+    @Override
+    public void removeEnv(String name) {
+        this.envMap().remove(name);
     }
 
     public String toString() {

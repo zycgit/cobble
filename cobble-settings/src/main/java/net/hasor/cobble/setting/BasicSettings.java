@@ -17,11 +17,17 @@ package net.hasor.cobble.setting;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.convert.ConverterUtils;
+import net.hasor.cobble.logging.Logger;
+import net.hasor.cobble.logging.LoggerFactory;
 import net.hasor.cobble.setting.data.TreeNode;
+import net.hasor.cobble.text.token.GenericTokenParser;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Settings接口的抽象实现。
@@ -29,26 +35,112 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class BasicSettings extends AbstractSettings implements Settings {
-    private final Map<String, TreeNode> dataMap = new ConcurrentHashMap<>();
+    protected static Logger                logger  = LoggerFactory.getLogger(BasicSettings.class);
+    private final    Map<String, TreeNode> dataMap = new ConcurrentHashMap<>();
+    private final    Map<String, String>   envMap  = new ConcurrentHashMap<>();
 
     protected Map<String, TreeNode> allSettingValue() {
         return this.dataMap;
     }
 
-    /**使用UpdateValue接口,遍历所有属性值,将它们重新计算并设置新的参数值。<p>
-     * 注意:该过程不可逆,一旦重新设置了属性值,那么原有从配置文件中读取的属性值将会被替换。
-     * 一个典型的应用场景是配置文件模版化。*/
-    public void resetValues(UpdateValue updateValue) {
-        if (updateValue == null) {
-            return;
+    @Override
+    protected Map<String, String> envMap() {
+        return this.envMap;
+    }
+
+    @Override
+    public void refresh() throws IOException {
+        // 1st，System.getProperties()
+        Properties prop = System.getProperties();
+        for (Object propKey : prop.keySet()) {
+            String k = propKey.toString();
+            Object v = prop.get(propKey);
+            if (v != null) {
+                this.envMap.put(k.toUpperCase(), v.toString());
+            }
         }
+
+        // .2st，System.getenv()
+        Map<String, String> envMap = System.getenv();
+        for (String key : envMap.keySet()) {
+            this.envMap.put(key.toUpperCase(), envMap.get(key));
+        }
+
+        // replace environment variable in config
         Collection<TreeNode> valueSet = this.allSettingValue().values();
         for (TreeNode sv : valueSet) {
-            sv.update(updateValue, this);
+            sv.update((dataNode, context) -> {
+                String[] values = dataNode.getValues();
+                for (int index = 0; index < values.length; index++) {
+                    String oldVar = values[index];
+                    String newVal = evalSettingString(oldVar);
+                    if (!StringUtils.equals(oldVar, newVal)) {
+                        dataNode.replace(index, newVal);
+                    }
+                }
+            }, this);
         }
     }
 
-    /** 获取可用的命名空间。 */
+    private String evalSettingString(String evalString) {
+        if (StringUtils.isBlank(evalString)) {
+            return "";
+        }
+
+        String newEvalString = new GenericTokenParser(new String[] { "${" }, "}", (builder, token, content) -> {
+            String varKey = content;
+            String varDefault = "";
+            int defaultIndexOf = content.indexOf(":");
+            if (defaultIndexOf != -1) {
+                varDefault = content.substring(defaultIndexOf + 1);
+                varKey = content.substring(0, defaultIndexOf);
+            }
+            //
+            String envKey = "%" + varKey.toUpperCase() + "%";
+            String var = this.evalString(envKey);
+            if (StringUtils.isBlank(var) && StringUtils.isNotBlank(varDefault)) {
+                var = varDefault;
+            }
+            //
+            if (envKey.equalsIgnoreCase(var)) {
+                return envKey;
+            } else {
+                return var;
+            }
+        }).parse(evalString);
+        //
+        if (!evalString.equalsIgnoreCase(newEvalString)) {
+            logger.debug("replace settingValue '" + evalString + "' to '" + newEvalString + "'.");
+        }
+        return newEvalString;
+    }
+
+    private String evalString(String evalString) {
+        if (StringUtils.isBlank(evalString)) {
+            return "";
+        }
+        Pattern keyPattern = Pattern.compile("(?:%([\\w\\._-]+)%){1,1}");//  (?:%([\w\._-]+)%)
+        Matcher keyM = keyPattern.matcher(evalString);
+        Map<String, String> data = new HashMap<>();
+        while (keyM.find()) {
+            String varKeyOri = keyM.group(1);
+            String keyName = "%" + varKeyOri + "%";
+            String var = this.envMap.get(varKeyOri.toUpperCase());
+            if (var == null) {
+                data.put(keyName, "");
+            } else {
+                data.put(keyName, evalString(var));
+            }
+        }
+        String newEvalString = evalString;
+        for (String key : data.keySet()) {
+            newEvalString = newEvalString.replace(key, data.get(key));
+        }
+        logger.debug("evalString '" + evalString + "' eval to '" + newEvalString + "'.");
+        return newEvalString;
+    }
+
+    /** 获取可用的命名空间 */
     public String[] getSettingArray() {
         Set<String> nsSet = this.allSettingValue().keySet();
         return nsSet.toArray(new String[0]);
@@ -58,13 +150,11 @@ public class BasicSettings extends AbstractSettings implements Settings {
         return false;
     }
 
-    /** 获取指在某个特定命名空间下的Settings接口对象。 */
+    /** 获取指在某个特定命名空间下的Settings接口对象 */
     public final BasicSettings getSettings(final String namespace) {
-        final Map<String, TreeNode> localData = Collections.unmodifiableMap(new HashMap<String, TreeNode>() {
-            {
-                put(namespace, allSettingValue().get(namespace));
-            }
-        });
+        final Map<String, TreeNode> localData = Collections.unmodifiableMap(new HashMap<String, TreeNode>() {{
+            put(namespace, allSettingValue().get(namespace));
+        }});
         return new BasicSettings() {
             public Map<String, TreeNode> allSettingValue() {
                 return localData;
@@ -76,7 +166,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         };
     }
 
-    /** 将整个配置项的多个值全部删除。 */
+    /** 将整个配置项的多个值全部删除 */
     public void removeSetting(String key) {
         if (StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("namespace or key is blank.");
@@ -87,7 +177,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         }
     }
 
-    /** 将整个配置项的多个值全部删除。 */
+    /** 将整个配置项的多个值全部删除 */
     public void removeSetting(String key, String namespace) {
         if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("namespace or key is blank.");
@@ -98,7 +188,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         }
     }
 
-    /** 设置参数，如果出现多个值，则会覆盖。 */
+    /** 设置参数，如果出现多个值，则会覆盖 */
     public void setSetting(String key, Object value, String namespace) {
         if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("namespace or key is blank.");
@@ -123,7 +213,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         }
     }
 
-    /** 添加参数，如果参数名称相同则追加一项。 */
+    /** 添加参数，如果参数名称相同则追加一项 */
     public void addSetting(String key, Object value, String namespace) {
         if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("namespace or key is blank.");
@@ -148,7 +238,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         }
     }
 
-    /**清空已经装载的所有数据。*/
+    /** 清空已经装载的所有数据 */
     protected void cleanData() {
         for (TreeNode dataNode : this.allSettingValue().values()) {
             dataNode.clear();

@@ -108,5 +108,6 @@ public class DefaultSettings extends MergedSettings {
     public void refresh() throws IOException {
         this.cleanData();
         this.loadSettings();
+        super.refresh();
     }
 }

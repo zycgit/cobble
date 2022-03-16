@@ -306,6 +306,26 @@ public class SettingsWrap implements Settings {
     }
 
     @Override
+    public String[] getEnvNames() {
+        return this.settings.getEnvNames();
+    }
+
+    @Override
+    public String getEnv(String name) {
+        return this.settings.getString(name);
+    }
+
+    @Override
+    public void addEnv(String name, String value) {
+        this.settings.addEnv(name, value);
+    }
+
+    @Override
+    public void removeEnv(String name) {
+        this.settings.removeEnv(name);
+    }
+
+    @Override
     public String toString() {
         return "SettingsWarp -> " + this.settings.toString();
     }

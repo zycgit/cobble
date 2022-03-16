@@ -188,4 +188,32 @@ public class CollectionUtils {
     public static boolean isEmpty(Object[] args) {
         return args == null || args.length == 0;
     }
+
+    /**
+     * Returns <code>true</code> iff at least one element is in both collections.
+     * <p>
+     * In other words, this method returns <code>true</code> iff the
+     * intersection of <i>coll1</i> and <i>coll2</i> is not empty.
+     *
+     * @param coll1  the first collection, must not be null
+     * @param coll2  the first collection, must not be null
+     * @return <code>true</code> iff the intersection of the collections is non-empty
+     * @since 2.1
+     */
+    public static boolean containsAny(final Collection<?> coll1, final Collection<?> coll2) {
+        if (coll1.size() < coll2.size()) {
+            for (Object o : coll1) {
+                if (coll2.contains(o)) {
+                    return true;
+                }
+            }
+        } else {
+            for (Object o : coll2) {
+                if (coll1.contains(o)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.setting;
-import net.hasor.cobble.setting.data.DataNode;
+package net.hasor.cobble.setting.data;
+import net.hasor.cobble.setting.Settings;
 
 /**
  * @version : 2014年10月11日

@@ -106,7 +106,6 @@ public class MergedSettings extends BasicSettings implements IOSettings {
                     if (dataReader == null) {
                         continue;
                     }
-                    //
                     SettingsReader settingsReader;
                     switch (entity.getStreamType()) {
                         case Xml:

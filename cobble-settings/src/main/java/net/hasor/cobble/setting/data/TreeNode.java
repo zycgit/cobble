@@ -18,7 +18,6 @@ import net.hasor.cobble.ArrayUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.setting.SettingNode;
 import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.UpdateValue;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

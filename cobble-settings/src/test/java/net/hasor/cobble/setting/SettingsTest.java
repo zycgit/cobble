@@ -50,6 +50,15 @@ public class SettingsTest {
     }
 
     @Test
+    public void envTest() throws Exception {
+        Settings settings = new DefaultSettings("/net_hasor_core_settings/env-config.xml");
+        settings = new SettingsWrap(settings);
+
+        String string = settings.getString("hasor.debug");
+        System.out.println(string);
+    }
+
+    @Test
     public void valueTest() throws Exception {
         Settings settings = new DefaultSettings("/net_hasor_core_settings/value-config.xml");
         settings = new SettingsWrap(settings);

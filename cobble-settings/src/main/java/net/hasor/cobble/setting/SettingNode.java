@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
+import net.hasor.cobble.setting.data.UpdateValue;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;

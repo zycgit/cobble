@@ -16,7 +16,6 @@
 package net.hasor.cobble.setting.data;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.UpdateValue;
 
 import java.util.Arrays;
 import java.util.List;
