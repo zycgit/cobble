@@ -20,6 +20,6 @@ package net.hasor.cobble.concurrent.future;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface Cancellable {
-    /**取消调用。*/
+    /** 取消调用 */
     public boolean cancel();
 }

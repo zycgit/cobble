@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.bus.spi;
+package net.hasor.cobble.bus;
+
 /**
- * 执行 Spi 调用，扩展 SpiResultCaller 接口。并提供了可以无返回值的形式。
  * @version : 2019年06月20日
  * @author 赵永春 (zyc@hasor.net)
  */
-public interface SpiCaller<T, R> {
-    public R doResultSpi(T listener, R lastResult) throws Throwable;
+public interface BusCaller {
 
-    public interface SpiCallerWithoutResult<T> extends SpiCaller<T, Object> {
-        public default Object doResultSpi(T listener, Object lastResult) throws Throwable {
-            this.doSpi(listener);
-            return null;
-        }
+    public Object doEvent(BusListener listener, Object lastResult) throws Throwable;
 
-        public void doSpi(T listener) throws Throwable;
-    }
 }

@@ -135,8 +135,8 @@ public class BasicFuture<T> implements Future<T>, Cancellable {
             notifyAll();
         }
         if (this.callback != null) {
-            if (this.callback instanceof CancellFutureCallback) {
-                ((CancellFutureCallback) this.callback).cancelled();
+            if (this.callback instanceof CancelFutureCallback) {
+                ((CancelFutureCallback) this.callback).cancelled();
             } else {
                 this.failed(new CancellationException());
             }

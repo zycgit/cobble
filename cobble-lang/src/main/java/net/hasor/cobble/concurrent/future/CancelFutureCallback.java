@@ -19,7 +19,7 @@ package net.hasor.cobble.concurrent.future;
  * @version : 2014年11月15日
  * @author 赵永春 (zyc@hasor.net)
  */
-public interface CancellFutureCallback<T> extends FutureCallback<T> {
-    /**执行被取消。*/
+public interface CancelFutureCallback<T> extends FutureCallback<T> {
+    /** 执行被取消 */
     public void cancelled();
 }

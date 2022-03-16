@@ -1,0 +1,119 @@
+/*
+ * Copyright 2008-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.hasor.cobble.bus;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+/**
+ *
+ * @version : 2014年5月22日
+ * @author 赵永春 (zyc@byshell.org)
+ */
+public interface BusContext {
+    /**
+     * pushPhaseEvent方法注册的事件监听器当收到一次事件之后会被自动删除。
+     * @param event 事件
+     * @param eventListener 事件监听器。
+     */
+    public boolean pushListener(String event, BusListener eventListener);
+
+    /**
+     * 添加一种类型事件的事件监听器。
+     * @param event 事件
+     * @param eventListener 事件监听器。
+     */
+    public boolean addListener(String event, BusListener eventListener);
+
+    /**
+     * 删除某个监听器的注册。
+     * @param event 事件
+     * @param eventListener 事件监听器。
+     */
+    public boolean removeListener(String event, BusListener eventListener);
+
+    /**
+     * 删除某个监听器的注册。
+     * @param event 事件
+     */
+    public boolean clearListener(String event);
+
+    /**
+     * 触发事件。
+     * @param event 事件
+     * @param args 事件参数
+     */
+    public void fireEvent(String event, Object args) throws Throwable;
+
+    /**
+     * 触发事件。
+     * @param event 事件
+     * @param args 事件参数
+     * @param caller 决定怎样处理对 Event 监听器的调用，并且可以处理 event 的返回值。
+     */
+    public Object fireEvent(String event, Object args, BusCaller caller) throws Throwable;
+
+    /**
+     * 触发事件，不会被任何异常打断。
+     * @param event 事件
+     * @param args 事件参数
+     */
+    public void fireEventWithoutThrow(String event, Object args);
+
+    /**
+     * 触发事件，不会被任何异常打断。
+     * @param event 事件
+     * @param args 事件参数
+     * @param caller 决定怎样处理对 Event 监听器的调用，并且可以处理 event 的返回值。
+     */
+    public Object fireEventWithoutThrow(String event, Object args, BusCaller caller);
+
+    /**
+     * 以全新的线程触发事件。
+     * @param executor 异步执行的线程
+     * @param event 事件
+     * @param args 事件参数
+     */
+    public Future<Void> asyncFireEvent(Executor executor, String event, Object args);
+
+    /**
+     * 以全新的线程触发事件。
+     * @param executor 异步执行的线程
+     * @param event 事件
+     * @param args 事件参数
+     */
+    public Future<Object> asyncFireEvent(Executor executor, String event, Object args, BusCaller caller);
+
+    /**
+     * 延迟触发事件。
+     * @param executor 异步执行的线程
+     * @param event 事件
+     * @param args 事件参数
+     * @param timeout 延迟的超时时间
+     * @param timeUnit 超时时间间隔
+     */
+    public Future<Void> lazyFireEvent(Executor executor, String event, Object args, long timeout, TimeUnit timeUnit);
+
+    /**
+     * 延迟触发事件。
+     * @param executor 异步执行的线程
+     * @param event 事件
+     * @param args 事件参数
+     * @param timeout 延迟的超时时间
+     * @param timeUnit 超时时间间隔
+     */
+    public Future<Object> lazyFireEvent(Executor executor, String event, Object args, BusCaller caller, long timeout, TimeUnit timeUnit);
+}
