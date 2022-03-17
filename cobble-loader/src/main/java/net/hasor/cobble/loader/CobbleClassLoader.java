@@ -43,10 +43,11 @@ public class CobbleClassLoader extends ClassLoader {
 
     public CobbleClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
         super(parent);
-        this.addResourceLoader(resourceLoader);
+        this.addResourceLoader(resourceLoader);//new String[0],
     }
 
     public void addResourceLoader(ResourceLoader loader) {
+        //isol? String[] packages,
         if (loader != null && !this.loaders.contains(loader)) {
             this.loaders.add(loader);
         }
