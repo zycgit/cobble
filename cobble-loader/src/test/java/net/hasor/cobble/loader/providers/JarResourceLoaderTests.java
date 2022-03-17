@@ -17,6 +17,7 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.CobbleClassLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
@@ -159,7 +160,7 @@ public class JarResourceLoaderTests {
         String file = ResourcesUtils.getResource("/nested-jars/nested-package-all.jar").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file), Arrays.asList("basic.jar", "app-1.jar", "app-2.zip"));
 
-        ClassLoader classLoader = loader.toClassLoader();
+        ClassLoader classLoader = new CobbleClassLoader(null, loader);
         Class<?> aClass1 = classLoader.loadClass("app.lib.Foo");
         Class<?> aClass2 = classLoader.loadClass("app.onlyjar.FooOnlyJar");
         Class<?> aClass3 = classLoader.loadClass("app.onlyzip.FooOnlyZip");

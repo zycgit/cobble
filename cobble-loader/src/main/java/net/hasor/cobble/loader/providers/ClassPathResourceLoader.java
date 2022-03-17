@@ -38,8 +38,8 @@ import java.util.zip.ZipEntry;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClassPathResourceLoader extends AbstractResourceLoader {
-    public static ResourceLoader INSTANCE    = new ClassPathResourceLoader();
-    private       ClassLoader    classLoader = null;
+    public static ResourceLoader INSTANCE = new ClassPathResourceLoader();
+    private final ClassLoader    classLoader;
     private final List<URL>      classpath;
 
     public ClassPathResourceLoader() {
@@ -49,10 +49,6 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     public ClassPathResourceLoader(ClassLoader classLoader) {
         this.classLoader = Objects.requireNonNull(classLoader);
         this.classpath = ClassUtils.getClassPath(classLoader);
-    }
-
-    public ClassLoader toClassLoader() {
-        return this.classLoader;
     }
 
     private String formatResourcePath(String resourcePath) {

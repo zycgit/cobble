@@ -17,6 +17,7 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.CobbleClassLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Before;
@@ -209,12 +210,11 @@ public class ImportResourceLoaderTests {
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
         ImportResourceLoader loader = new ImportResourceLoader();
-        loader.bindParentLoader(Thread.currentThread().getContextClassLoader());
         loader.addImport("ApplicationForApp1.class", loader1);
         loader.addImport("ApplicationForApp2.class", loader2);
 
         try {
-            ClassLoader classLoaderRoot = loader.toClassLoader();
+            ClassLoader classLoaderRoot = new CobbleClassLoader(Thread.currentThread().getContextClassLoader(), loader);
             classLoaderRoot.loadClass("ApplicationForApp1").newInstance();
             classLoaderRoot.loadClass("ApplicationForApp2").newInstance();
             assert false;

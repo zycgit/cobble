@@ -17,6 +17,7 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.CobbleClassLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
@@ -287,7 +288,7 @@ public class MultiResourceLoaderTests {
         loader.addLoader(loader1);
         loader.addLoader(loader2);
 
-        ClassLoader classLoaderRoot = loader.toClassLoader();
+        ClassLoader classLoaderRoot = new CobbleClassLoader(null, loader);
         Object obj1 = classLoaderRoot.loadClass("ApplicationForApp1").newInstance();
         Object obj2 = classLoaderRoot.loadClass("ApplicationForApp2").newInstance();
 

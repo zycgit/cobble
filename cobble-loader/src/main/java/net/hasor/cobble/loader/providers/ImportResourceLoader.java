@@ -59,10 +59,6 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    protected ClassLoader createBindClassLoader(ClassLoader bindParentLoader) {
-        return super.createBindClassLoader(bindParentLoader);
-    }
-
     private static String pathOrResource(String dirPath) {
         dirPath = dirPath.replace("\\", "/");
         if (dirPath.length() > 0 && dirPath.charAt(0) == '/') {

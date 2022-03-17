@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.ExceptionUtils;
+import net.hasor.cobble.loader.ClassMatcher.ClassInfo;
+import net.hasor.cobble.loader.ClassMatcher.ClassMatcherContext;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -30,41 +31,48 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public class LoaderClassScanner implements ClassFinder {
-    private final ResourceLoader         resourceLoader;
-    private final ClassLoader            classLoader;
+public class CobbleClassScanner {
+    private final CobbleClassLoader      classLoader;
     private final Map<String, ClassInfo> classInfoMap = new ConcurrentHashMap<>();
 
-    public LoaderClassScanner(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-        this.classLoader = resourceLoader.toClassLoader();
+    public CobbleClassScanner(CobbleClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
-    @Override
+    /**
+     * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
+     * @param matcher 匹配规则。
+     * @return 返回扫描结果。
+     */
+    public Set<Class<?>> getClassSet(ClassMatcher matcher) {
+        return this.getClassSet(new String[0], matcher);
+    }
+
+    /**
+     * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
+     * @param matcher 匹配规则。
+     * @return 返回扫描结果。
+     */
     public Set<Class<?>> getClassSet(String[] loadPackages, ClassMatcher matcher) {
-        try {
-            String[] packages = new String[loadPackages.length];
-            for (int i = 0; i < loadPackages.length; i++) {
-                packages[i] = loadPackages[i].replace(".", "/");
-            }
-            List<Class<?>> classes = this.resourceLoader.scanResources(ResourceLoader.MatchType.Prefix, event -> {
-                String className = event.getName();
-                if (!className.endsWith(".class")) {
-                    return null;
-                } else {
-                    className = className.substring(0, className.length() - 6);
-                    className = className.replace("/", ".");
-                    try {
-                        return testAndLoad(className, matcher);
-                    } catch (ClassNotFoundException e) {
-                        throw new IOException(e);
-                    }
-                }
-            }, packages);
-            return new HashSet<>(classes);
-        } catch (IOException e) {
-            throw new IllegalStateException(ExceptionUtils.getRootCause(e));
+        String[] packages = new String[loadPackages.length];
+        for (int i = 0; i < loadPackages.length; i++) {
+            packages[i] = loadPackages[i].replace(".", "/");
         }
+        List<Class<?>> classes = this.classLoader.scanResources(ResourceLoader.MatchType.Prefix, event -> {
+            String className = event.getName();
+            if (!className.endsWith(".class")) {
+                return null;
+            } else {
+                className = className.substring(0, className.length() - 6);
+                className = className.replace("/", ".");
+                try {
+                    return testAndLoad(className, matcher);
+                } catch (ClassNotFoundException e) {
+                    throw new IOException(e);
+                }
+            }
+        }, packages);
+        return new HashSet<>(classes);
     }
 
     protected Class<?> testAndLoad(String className, ClassMatcher matcher) throws IOException, ClassNotFoundException {
@@ -93,10 +101,9 @@ public class LoaderClassScanner implements ClassFinder {
         }
     }
 
-    /**分析类的字节码，分析过程中会递归解析父类和实现的接口*/
-    @Override
+    /** 分析类的字节码，分析过程中会递归解析父类和实现的接口 */
     public ClassInfo loadClassInfo(String className) throws IOException {
-        try (InputStream classStream = this.resourceLoader.getResourceAsStream(className.replace('.', '/') + ".class")) {
+        try (InputStream classStream = this.classLoader.getResourceAsStream(className.replace('.', '/') + ".class")) {
             if (classStream == null) {
                 return null;
             } else {
@@ -142,7 +149,7 @@ public class LoaderClassScanner implements ClassFinder {
 
         /* parents */
         if (info.superName != null) {
-            try (InputStream superStream = this.resourceLoader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
+            try (InputStream superStream = this.classLoader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
                 if (superStream != null) {
                     this.loadClassInfo(info.superName, superStream);//加载父类
                 }
@@ -151,13 +158,13 @@ public class LoaderClassScanner implements ClassFinder {
 
         /* interfaces */
         for (String faces : info.interFaces) {
-            try (InputStream superStream = this.resourceLoader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
+            try (InputStream superStream = this.classLoader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
                 if (superStream != null) {
                     this.loadClassInfo(faces, superStream);//load parent
                 }
             }
         }
-        /*六、类型链*/
+        /* 六、类型链 */
         Set<String> castTypeList = new TreeSet<>();/* 可转换的类型 */
         String superName = info.superName;
         addCastTypeList(info, castTypeList);//this

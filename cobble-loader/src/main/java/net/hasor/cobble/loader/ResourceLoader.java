@@ -57,10 +57,6 @@ public interface ResourceLoader {
 
     public boolean exist(String resource);
 
-    public ClassLoader toClassLoader();
-
-    public ClassFinder toClassFinder();
-
     /** 扫描的资源 */
     public static class ScanEvent {
         private final String                              name;

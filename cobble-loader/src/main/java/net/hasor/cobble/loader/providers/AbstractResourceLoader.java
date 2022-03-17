@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.ClassFinder;
-import net.hasor.cobble.loader.LoaderClassLoader;
-import net.hasor.cobble.loader.LoaderClassScanner;
 import net.hasor.cobble.loader.ResourceLoader;
 
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -29,56 +25,7 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-    private ClassLoader bindParentLoader;
-    private ClassLoader bindClassLoader;
-    private ClassFinder bindClassFinder;
-
-    public void bindParentLoader(ClassLoader parent) {
-        if (this.bindClassLoader != null && this.bindClassLoader != ClassLoader.getSystemClassLoader()) {
-            throw new IllegalStateException("the bindClassLoader already exists.");
-        } else {
-            this.bindParentLoader = parent;
-        }
-    }
-
-    protected ClassLoader createBindClassLoader(ClassLoader bindParentLoader) {
-        return new LoaderClassLoader(this, bindParentLoader);
-    }
-
-    public ClassLoader toClassLoader() {
-        if (this.bindClassLoader == null) {
-            synchronized (this) {
-                if (this.bindClassLoader != null) {
-                    return this.bindClassLoader;
-                } else {
-                    ClassLoader useBindLoader = this.bindParentLoader;
-                    if (useBindLoader == null) {
-                        useBindLoader = ClassLoader.getSystemClassLoader();
-                    }
-                    this.bindClassLoader = Objects.requireNonNull(this.createBindClassLoader(useBindLoader));
-                }
-            }
-        }
-        return this.bindClassLoader;
-    }
-
-    protected ClassFinder createBindClassFinder() {
-        return new LoaderClassScanner(this);
-    }
-
-    public ClassFinder toClassFinder() {
-        if (this.bindClassFinder == null) {
-            synchronized (this) {
-                if (this.bindClassFinder != null) {
-                    return this.bindClassFinder;
-                } else {
-                    this.bindClassFinder = this.createBindClassFinder();
-                }
-            }
-        }
-        return this.bindClassFinder;
-    }
-
+   
     protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPaths, Function<T, String> nameFunc) {
         if (matchType == null) {
             throw new IllegalStateException("missing matchType.");

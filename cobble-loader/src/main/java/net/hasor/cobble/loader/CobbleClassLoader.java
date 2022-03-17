@@ -16,105 +16,139 @@
 package net.hasor.cobble.loader;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.ResourceLoader.MatchType;
+import net.hasor.cobble.loader.ResourceLoader.Scanner;
+import net.hasor.cobble.logging.Logger;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
 /**
- * ResourceLoader 的 ClassLoader 能力实现
+ * ResourceLoader 转 ClassLoader
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public class LoaderClassLoader extends ClassLoader {
-    public static final String         tempDirectory = "LoaderClassLoader";
-    private             File           tempDir;
-    private final       ResourceLoader resourceLoader;
+public class CobbleClassLoader extends ClassLoader {
+    private static final Logger               logger        = Logger.getLogger(CobbleClassLoader.class);
+    private final        String               tempDirectory = "cobbleLoader_" + System.currentTimeMillis();
+    private              File                 tempDir;
+    private final        List<ResourceLoader> loaders       = new ArrayList<>();
 
-    public LoaderClassLoader(ResourceLoader resourceLoader, ClassLoader parent) {
+    public CobbleClassLoader(ClassLoader parent) {
         super(parent);
-        this.resourceLoader = resourceLoader;
     }
 
-    protected ResourceLoader findResourceLoader(String resourceName) {
-        return this.resourceLoader;
+    public CobbleClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
+        super(parent);
+        this.addResourceLoader(resourceLoader);
+    }
+
+    public void addResourceLoader(ResourceLoader loader) {
+        if (loader != null && !this.loaders.contains(loader)) {
+            this.loaders.add(loader);
+        }
+    }
+
+    protected <T> T scanOneResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) {
+        for (ResourceLoader loader : this.loaders) {
+            try {
+                T result = loader.scanOneResource(matchType, scanner, scanPaths);
+                if (result != null) {
+                    return result;
+                }
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
+        }
+        return null;
+    }
+
+    protected <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) {
+        List<T> result = new ArrayList<>();
+        for (ResourceLoader loader : this.loaders) {
+            try {
+                List<T> itemList = loader.scanResources(matchType, scanner, scanPaths);
+                if (itemList != null) {
+                    result.addAll(itemList);
+                }
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
+        }
+        return result;
+    }
+
+    protected ResourceLoader findResourceLoader(String resource) {
+        for (ResourceLoader loader : this.loaders) {
+            if (loader.exist(resource)) {
+                return loader;
+            }
+        }
+        return null;
     }
 
     @Override
     protected Class<?> findClass(String className) throws ClassNotFoundException {
-        String resourceName = className.replace(".", "/") + ".class";
-        ResourceLoader loader = findResourceLoader(resourceName);
+        String resource = className.replace(".", "/") + ".class";
+        ResourceLoader loader = findResourceLoader(resource);
         if (loader != null) {
             try {
-                InputStream inStream = loader.getResourceAsStream(resourceName);
-                if (inStream == null) {
-                    return super.findClass(className);
-                } else {
+                InputStream inStream = loader.getResourceAsStream(resource);
+                if (inStream != null) {
                     ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
                     IOUtils.copy(inStream, byteOutput);
                     byte[] bs = byteOutput.toByteArray();
                     return this.defineClass(className, bs, 0, bs.length);
                 }
-            } catch (IOException e) {
-                throw new ClassNotFoundException(className, e);
+            } catch (IOException e2) {
+                throw new ClassNotFoundException(className, e2);
             }
         }
         return super.findClass(className);
     }
 
     @Override
-    protected URL findResource(String name) {
-        try {
-            ResourceLoader loader = findResourceLoader(name);
-            if (loader == null) {
+    protected URL findResource(String resource) {
+        ResourceLoader loader = findResourceLoader(resource);
+        if (loader != null) {
+            try {
+                return loader.getResource(resource);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
                 return null;
             }
-
-            URL resourceURL = loader.getResource(name);
-            if (resourceURL != null) {
-                return resourceURL;
-            } else {
-                return super.findResource(name);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return null;
     }
 
     @Override
-    public Enumeration<URL> findResources(String name) throws IOException {
-        ResourceLoader loader = findResourceLoader(name);
-        if (loader == null) {
-            return Collections.emptyEnumeration();
-        }
+    public Enumeration<URL> findResources(String resource) throws IOException {
+        List<URL> resultList = new ArrayList<>();
 
-        List<URL> resourceURLs = loader.getResources(name);
-        if (resourceURLs != null && !resourceURLs.isEmpty()) {
-            return CollectionUtils.asEnumeration(resourceURLs);
-        } else {
-            return super.findResources(name);
-        }
-
-    }
-
-    public InputStream getResourceAsStream(String name) {
-        ResourceLoader loader = findResourceLoader(name);
-        if (loader == null) {
-            return null;
-        }
-
-        InputStream inputStream = super.getResourceAsStream(name);
-        if (inputStream != null) {
-            return inputStream;
-        } else {
-            try {
-                return this.resourceLoader != null ? this.resourceLoader.getResourceAsStream(name) : null;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        for (ResourceLoader loader : this.loaders) {
+            List<URL> resources = loader.getResources(resource);
+            if (resources != null) {
+                resultList.addAll(resources);
             }
         }
+
+        return CollectionUtils.asEnumeration(resultList);
+    }
+
+    public InputStream getResourceAsStream(String resource) {
+        ResourceLoader loader = findResourceLoader(resource);
+        if (loader != null) {
+            try {
+                return loader.getResourceAsStream(resource);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -147,20 +181,28 @@ public class LoaderClassLoader extends ClassLoader {
      */
     private File findJarNativeEntry(String sLib) throws IOException {
         String sName = System.mapLibraryName(sLib);
-        return this.resourceLoader.scanOneResource(ResourceLoader.MatchType.Suffix, event -> {
-            // Example: sName is "Native.dll"
-            String sEntry = event.getName(); // "Native.dll" or "abc/xyz/Native.dll"
-            // sName "Native.dll" could be found, for example
-            //   - in the path: abc/Native.dll/xyz/my.dll <-- do not load this one!
-            //   - in the partial name: abc/aNative.dll   <-- do not load this one!
-            String[] token = sEntry.split("/"); // the last token is library name
-            if (token.length > 0 && token[token.length - 1].equals(sName)) {
-                File fileTmp = createTempFile(event);
-                fileTmp.deleteOnExit();
-                return fileTmp;
+
+        for (ResourceLoader loader : this.loaders) {
+            File foundFile = loader.scanOneResource(MatchType.Suffix, event -> {
+                // Example: sName is "Native.dll"
+                String sEntry = event.getName(); // "Native.dll" or "abc/xyz/Native.dll"
+                // sName "Native.dll" could be found, for example
+                //   - in the path: abc/Native.dll/xyz/my.dll <-- do not load this one!
+                //   - in the partial name: abc/aNative.dll   <-- do not load this one!
+                String[] token = sEntry.split("/"); // the last token is library name
+                if (token.length > 0 && token[token.length - 1].equals(sName)) {
+                    File fileTmp = createTempFile(event);
+                    fileTmp.deleteOnExit();
+                    return fileTmp;
+                }
+                return null;
+            }, new String[] { sName });
+
+            if (foundFile != null && foundFile.exists()) {
+                return foundFile;
             }
-            return null;
-        }, new String[] { sName });
+        }
+        return null;
     }
 
     /**
