@@ -19,7 +19,6 @@ import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.ClassMatchers;
 import net.hasor.cobble.loader.CobbleClassLoader;
-import net.hasor.cobble.loader.CobbleClassScanner;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
@@ -150,7 +149,7 @@ public class ClassResourceLoaderTests {
         assert resourceLoader.getResource("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class") != null;
         assert resourceLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
 
-        Set<Class<?>> classSet = new CobbleClassScanner(cobbleClassLoader).getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
+        Set<Class<?>> classSet = cobbleClassLoader.toScanner().getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
         assert classSet.size() == 7;
         assert classSet.contains(ClassPathResourceLoader.class);
         assert classSet.contains(MultiResourceLoader.class);
@@ -160,7 +159,7 @@ public class ClassResourceLoaderTests {
         assert classSet.contains(JarResourceLoader.class);
         assert classSet.contains(PathResourceLoader.class);
 
-        classSet = new CobbleClassScanner(cobbleClassLoader).getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
+        classSet = cobbleClassLoader.toScanner().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
         assert classSet.size() == 8;
         assert classSet.contains(ClassPathResourceLoader.class);
         assert classSet.contains(PathResourceLoader.class);
