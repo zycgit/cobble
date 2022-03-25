@@ -24,17 +24,22 @@ public class HexUtils {
 
     /** bytes转换成十六进制字符串 */
     public static String bytes2hex(final byte[] b) {
-        String hs = "";
-        String stmp = "";
-        for (byte element : b) {
-            stmp = Integer.toHexString(element & 0XFF);
+        StringBuilder hs = new StringBuilder();
+        byte[] var2 = b;
+        int var3 = b.length;
+
+        for (int var4 = 0; var4 < var3; ++var4) {
+            byte element = var2[var4];
+            String stmp = Integer.toHexString(element & 255).toUpperCase();
             if (stmp.length() == 1) {
-                hs = hs + "0" + stmp;
+                hs.append("0");
+                hs.append(stmp);
             } else {
-                hs = hs + stmp;
+                hs.append(stmp);
             }
         }
-        return hs.toUpperCase();
+
+        return hs.toString();
     }
 
     /** hexString to bytes */
