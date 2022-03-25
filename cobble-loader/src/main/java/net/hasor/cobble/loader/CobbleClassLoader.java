@@ -36,14 +36,16 @@ public class CobbleClassLoader extends ClassLoader {
     private final        String               tempDirectory = "cobbleLoader_" + System.currentTimeMillis();
     private              File                 tempDir;
     private final        List<ResourceLoader> loaders       = new ArrayList<>();
+    private final        CobbleClassScanner   scanner;
 
     public CobbleClassLoader(ClassLoader parent) {
-        super(parent);
+        this(parent, null);
     }
 
     public CobbleClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
         super(parent);
         this.addResourceLoader(resourceLoader);//new String[0],
+        this.scanner = new CobbleClassScanner(this);
     }
 
     public void addResourceLoader(ResourceLoader loader) {
@@ -51,6 +53,10 @@ public class CobbleClassLoader extends ClassLoader {
         if (loader != null && !this.loaders.contains(loader)) {
             this.loaders.add(loader);
         }
+    }
+
+    public CobbleClassScanner toScanner() {
+        return this.scanner;
     }
 
     protected <T> T scanOneResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) {

@@ -35,7 +35,7 @@ public class CobbleClassScanner {
     private final CobbleClassLoader      classLoader;
     private final Map<String, ClassInfo> classInfoMap = new ConcurrentHashMap<>();
 
-    public CobbleClassScanner(CobbleClassLoader classLoader) {
+    protected CobbleClassScanner(CobbleClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
