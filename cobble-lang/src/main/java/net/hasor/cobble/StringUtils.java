@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>Operations on {@link String} that are
@@ -6099,5 +6101,45 @@ public class StringUtils {
     /** Object to String ,when null object then null else return toString(); */
     public static String toString(Object object) {
         return (object == null) ? null : object.toString();
+    }
+
+    // Hump
+    //-----------------------------------------------------------------------
+    private static final Pattern linePattern = Pattern.compile("_(\\w)");
+    private static final Pattern humpPattern = Pattern.compile("[A-Z]");
+
+    /** 下划线转驼峰 */
+    public static String lineToHump(String str) {
+        if (str == null) {
+            return null;
+        }
+        str = str.toLowerCase();
+        Matcher matcher = linePattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    /** 驼峰转下划线 */
+    public static String humpToLine(String str) {
+        if (str == null) {
+            return null;
+        }
+        Matcher matcher = humpPattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
+        }
+        matcher.appendTail(sb);
+        //
+        String strString = sb.toString();
+        strString = strString.replaceAll("_{2,}", "_");
+        if (strString.charAt(0) == '_') {
+            strString = strString.substring(1);
+        }
+        return strString;
     }
 }

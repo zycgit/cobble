@@ -282,6 +282,39 @@ public class IOUtils {
     }
 
     /**
+     * Unconditionally close a <code>Closeable</code>.
+     * <p>
+     * Equivalent to {@link AutoCloseable#close()}, except any exceptions will be ignored.
+     * This is typically used in finally blocks.
+     * <p>
+     * Example code:
+     * <pre>
+     *   ResultSet closeable = null;
+     *   try {
+     *       closeable = ...;
+     *       // process closeable
+     *       closeable.close();
+     *   } catch (Exception e) {
+     *       // error handling
+     *   } finally {
+     *       IOUtils.closeQuietly(closeable);
+     *   }
+     * </pre>
+     *
+     * @param closeable the object to close, may be null or already closed
+     * @since 2.0
+     */
+    public static void closeQuietly(final AutoCloseable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (Exception ioe) {
+            // ignore
+        }
+    }
+
+    /**
      * Unconditionally close a <code>Socket</code>.
      * <p>
      * Equivalent to {@link Socket#close()}, except any exceptions will be ignored.
