@@ -369,6 +369,14 @@ public class BeanUtils {
         return propertyFunc.get(property);
     }
 
+    public static Property createMapPropertyFunc(final String property) {
+        if (StringUtils.isBlank(property)) {
+            throw new IllegalArgumentException("property isBlank.");
+        } else {
+            return new MapProperty(property);
+        }
+    }
+
     /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
     public static Map<String, Property> getPropertyFunc(final Class<?> target) {
         return getPropertyFunc(target, test -> true);
@@ -757,5 +765,28 @@ class SimpleProperty implements Property {
             }
         } catch (Exception e) {
         }
+    }
+}
+
+class MapProperty implements Property {
+    private final String property;
+
+    public MapProperty(String property) {
+        this.property = property;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
+
+    @Override
+    public Object get(Object instance) {
+        return ((Map) instance).get(this.property);
+    }
+
+    @Override
+    public void set(Object instance, Object value) {
+        ((Map) instance).put(this.property, value);
     }
 }
