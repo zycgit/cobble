@@ -365,8 +365,12 @@ public class BeanUtils {
 
     /** 获取属性名集合，被包含的属性可能有些只是只读属性，有些是只写属性。也有读写属性 */
     public static Property getPropertyFunc(final Class<?> target, final String property) {
-        Map<String, Property> propertyFunc = getPropertyFunc(target, test -> test.getName().equals(property));
-        return propertyFunc.get(property);
+        if (Map.class.isAssignableFrom(target)) {
+            return new MapProperty(property);
+        } else {
+            Map<String, Property> propertyFunc = getPropertyFunc(target, test -> test.getName().equals(property));
+            return propertyFunc.get(property);
+        }
     }
 
     public static Property createMapPropertyFunc(final String property) {
