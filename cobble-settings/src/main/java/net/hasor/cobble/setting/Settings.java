@@ -72,6 +72,9 @@ public interface Settings {
     /** 添加参数，如果参数名称相同则追加一项 */
     void addSetting(String key, Object var, String namespace);
 
+    /** 计算字符串，并替换环境变量等信息 */
+    String evalSetting(String evalString);
+
     /** 解析全局配置参数，并且返回其{@link Character}形式对象 */
     Character getChar(String name);
 

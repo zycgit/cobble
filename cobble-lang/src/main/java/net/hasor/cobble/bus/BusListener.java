@@ -27,17 +27,6 @@ public interface BusListener extends java.util.EventListener {
      * @param data 事件参数
      * @throws Throwable 执行事件期间引发的异常。
      */
-    public Object onEvent(String event, Object data) throws Throwable;
+    Object onEvent(String event, Object data) throws Throwable;
 
 }
-
-//
-//public interface SpiCallerWithoutResult<T> extends BusCaller<T, Object> {
-//
-//    public default Object doResultSpi(T listener, Object lastResult) throws Throwable {
-//        this.doSpi(listener);
-//        return null;
-//    }
-//
-//    public void doSpi(T listener) throws Throwable;
-//}

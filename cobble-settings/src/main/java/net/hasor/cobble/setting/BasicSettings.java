@@ -73,7 +73,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
                 String[] values = dataNode.getValues();
                 for (int index = 0; index < values.length; index++) {
                     String oldVar = values[index];
-                    String newVal = evalSettingString(oldVar);
+                    String newVal = evalSetting(oldVar);
                     if (!StringUtils.equals(oldVar, newVal)) {
                         dataNode.replace(index, newVal);
                     }
@@ -82,7 +82,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         }
     }
 
-    private String evalSettingString(String evalString) {
+    public String evalSetting(String evalString) {
         if (StringUtils.isBlank(evalString)) {
             return "";
         }
@@ -95,27 +95,27 @@ public class BasicSettings extends AbstractSettings implements Settings {
                 varDefault = content.substring(defaultIndexOf + 1);
                 varKey = content.substring(0, defaultIndexOf);
             }
-            //
+
             String envKey = "%" + varKey.toUpperCase() + "%";
-            String var = this.evalString(envKey);
+            String var = this.evalEnv(envKey);
             if (StringUtils.isBlank(var) && StringUtils.isNotBlank(varDefault)) {
                 var = varDefault;
             }
-            //
+
             if (envKey.equalsIgnoreCase(var)) {
                 return envKey;
             } else {
                 return var;
             }
         }).parse(evalString);
-        //
+
         if (!evalString.equalsIgnoreCase(newEvalString)) {
             logger.debug("replace settingValue '" + evalString + "' to '" + newEvalString + "'.");
         }
         return newEvalString;
     }
 
-    private String evalString(String evalString) {
+    private String evalEnv(String evalString) {
         if (StringUtils.isBlank(evalString)) {
             return "";
         }
@@ -129,7 +129,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
             if (var == null) {
                 data.put(keyName, "");
             } else {
-                data.put(keyName, evalString(var));
+                data.put(keyName, evalEnv(var));
             }
         }
         String newEvalString = evalString;
@@ -193,7 +193,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("namespace or key is blank.");
         }
-        //
+
         Map<String, TreeNode> treeNodeMap = this.allSettingValue();
         TreeNode dataNode = treeNodeMap.get(namespace);
         if (dataNode == null) {
@@ -203,7 +203,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
             dataNode = new TreeNode("", namespace);
             treeNodeMap.put(namespace, dataNode);
         }
-        //
+
         if (value instanceof SettingNode) {
             SettingNode node = (SettingNode) value;
             dataNode.setNode(key.trim(), node);
@@ -218,7 +218,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
             throw new IllegalArgumentException("namespace or key is blank.");
         }
-        //
+
         Map<String, TreeNode> treeNodeMap = this.allSettingValue();
         TreeNode dataNode = treeNodeMap.get(namespace);
         if (dataNode == null) {
@@ -228,7 +228,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
             dataNode = new TreeNode("", namespace);
             treeNodeMap.put(namespace, dataNode);
         }
-        //
+
         if (value instanceof SettingNode) {
             SettingNode node = (SettingNode) value;
             dataNode.addNode(key.trim(), node);
@@ -249,7 +249,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
         if (StringUtils.isBlank(name)) {
             return new SettingNode[0];
         }
-        //
+
         List<SettingNode> dataNodeList = new ArrayList<>();
         String lowerCase = name.trim();
         for (TreeNode dataNode : this.allSettingValue().values()) {

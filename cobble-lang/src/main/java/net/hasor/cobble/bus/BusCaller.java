@@ -21,6 +21,6 @@ package net.hasor.cobble.bus;
  */
 public interface BusCaller {
 
-    public Object doEvent(BusListener listener, Object lastResult) throws Throwable;
+    Object doEvent(BusListener listener, Object lastResult) throws Throwable;
 
 }

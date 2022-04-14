@@ -29,34 +29,34 @@ public interface BusContext {
      * @param event 事件
      * @param eventListener 事件监听器。
      */
-    public boolean pushListener(String event, BusListener eventListener);
+    boolean pushListener(String event, BusListener eventListener);
 
     /**
      * 添加一种类型事件的事件监听器。
      * @param event 事件
      * @param eventListener 事件监听器。
      */
-    public boolean addListener(String event, BusListener eventListener);
+    boolean addListener(String event, BusListener eventListener);
 
     /**
      * 删除某个监听器的注册。
      * @param event 事件
      * @param eventListener 事件监听器。
      */
-    public boolean removeListener(String event, BusListener eventListener);
+    boolean removeListener(String event, BusListener eventListener);
 
     /**
      * 删除某个监听器的注册。
      * @param event 事件
      */
-    public boolean clearListener(String event);
+    boolean clearListener(String event);
 
     /**
      * 触发事件。
      * @param event 事件
      * @param args 事件参数
      */
-    public void fireEvent(String event, Object args) throws Throwable;
+    void fireEvent(String event, Object args) throws Throwable;
 
     /**
      * 触发事件。
@@ -64,14 +64,14 @@ public interface BusContext {
      * @param args 事件参数
      * @param caller 决定怎样处理对 Event 监听器的调用，并且可以处理 event 的返回值。
      */
-    public Object fireEvent(String event, Object args, BusCaller caller) throws Throwable;
+    Object fireEvent(String event, Object args, BusCaller caller) throws Throwable;
 
     /**
      * 触发事件，不会被任何异常打断。
      * @param event 事件
      * @param args 事件参数
      */
-    public void fireEventWithoutThrow(String event, Object args);
+    void fireEventWithoutThrow(String event, Object args);
 
     /**
      * 触发事件，不会被任何异常打断。
@@ -79,7 +79,7 @@ public interface BusContext {
      * @param args 事件参数
      * @param caller 决定怎样处理对 Event 监听器的调用，并且可以处理 event 的返回值。
      */
-    public Object fireEventWithoutThrow(String event, Object args, BusCaller caller);
+    Object fireEventWithoutThrow(String event, Object args, BusCaller caller);
 
     /**
      * 以全新的线程触发事件。
@@ -87,7 +87,7 @@ public interface BusContext {
      * @param event 事件
      * @param args 事件参数
      */
-    public Future<Void> asyncFireEvent(Executor executor, String event, Object args);
+    Future<Void> asyncFireEvent(Executor executor, String event, Object args);
 
     /**
      * 以全新的线程触发事件。
@@ -95,7 +95,7 @@ public interface BusContext {
      * @param event 事件
      * @param args 事件参数
      */
-    public Future<Object> asyncFireEvent(Executor executor, String event, Object args, BusCaller caller);
+    Future<Object> asyncFireEvent(Executor executor, String event, Object args, BusCaller caller);
 
     /**
      * 延迟触发事件。
@@ -105,7 +105,7 @@ public interface BusContext {
      * @param timeout 延迟的超时时间
      * @param timeUnit 超时时间间隔
      */
-    public Future<Void> lazyFireEvent(Executor executor, String event, Object args, long timeout, TimeUnit timeUnit);
+    Future<Void> lazyFireEvent(Executor executor, String event, Object args, long timeout, TimeUnit timeUnit);
 
     /**
      * 延迟触发事件。
@@ -115,5 +115,5 @@ public interface BusContext {
      * @param timeout 延迟的超时时间
      * @param timeUnit 超时时间间隔
      */
-    public Future<Object> lazyFireEvent(Executor executor, String event, Object args, BusCaller caller, long timeout, TimeUnit timeUnit);
+    Future<Object> lazyFireEvent(Executor executor, String event, Object args, BusCaller caller, long timeout, TimeUnit timeUnit);
 }

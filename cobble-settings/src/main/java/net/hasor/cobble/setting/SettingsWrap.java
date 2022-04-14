@@ -73,6 +73,11 @@ public class SettingsWrap implements Settings {
         this.settings.addSetting(key, var);
     }
 
+    @Override
+    public String evalSetting(String evalString) {
+        return this.settings.evalSetting(evalString);
+    }
+
     public Character getChar(String name) {
         return this.settings.getChar(name);
     }
