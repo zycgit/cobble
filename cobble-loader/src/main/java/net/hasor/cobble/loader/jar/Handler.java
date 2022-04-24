@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.hasor.cobble.loader.jar;
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class Handler extends URLStreamHandler {
     private static final String                            CURRENT_DIR             = "/./";
     private static final Pattern                           CURRENT_DIR_PATTERN     = Pattern.compile(CURRENT_DIR, Pattern.LITERAL);
     private static final String                            PARENT_DIR              = "/../";
-    private static final String                            PROTOCOL_HANDLER        = "java.protocol.handler.pkgs";
+    public static final  String                            PROTOCOL_HANDLER        = "java.protocol.handler.pkgs";
     private static final String[]                          FALLBACK_HANDLERS       = { "sun.net.www.protocol.jar.Handler" };
     private static       URL                               jarContextUrl;
     private static       SoftReference<Map<File, JarFile>> rootFileCache;
@@ -194,7 +193,7 @@ public class Handler extends URLStreamHandler {
 
     @Override
     protected void parseURL(URL context, String spec, int start, int limit) {
-        if (spec.regionMatches(true, 0, JAR_PROTOCOL, 0, JAR_PROTOCOL.length())) {
+        if (spec.toLowerCase().startsWith(JAR_PROTOCOL)) {
             setFile(context, getFileFromSpec(spec.substring(start, limit)));
         } else {
             setFile(context, getFileFromContext(context, spec.substring(start, limit)));

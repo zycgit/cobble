@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.function.ESupplier;
-import net.hasor.cobble.io.input.AutoCloseInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,7 +68,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
         List<File> resourcePaths = formatResourcePath(resource);
         for (File file : resourcePaths) {
             if (file.exists() && file.isFile()) {
-                return new AutoCloseInputStream(new FileInputStream(file));
+                return new FileInputStream(file);
             }
         }
         return null;
@@ -94,7 +92,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
         List<File> resourcePaths = formatResourcePath(resource);
         for (File file : resourcePaths) {
             if (file.exists() && file.isFile()) {
-                result.add(new AutoCloseInputStream(new FileInputStream(file)));
+                result.add(new FileInputStream(file));
             }
         }
         return result;
@@ -147,9 +145,9 @@ public class PathResourceLoader extends AbstractResourceLoader {
                 scanDirFile(baseDir, result, fileItem, scanner, scanPaths, matchOnce);
                 continue;
             }
-            ESupplier<InputStream, IOException> inputStream = () -> {
+            InputStreamGet inputStream = () -> {
                 if (fileItem.canRead()) {
-                    return new AutoCloseInputStream(new FileInputStream(fileItem));
+                    return new FileInputStream(fileItem);
                 } else {
                     throw new IOException("file cannot be read :" + fileItem);
                 }

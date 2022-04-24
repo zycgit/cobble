@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.CollectionUtils;
-import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.ResourceLoader.MatchType;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
-import net.hasor.cobble.logging.Logger;
 
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,11 +30,10 @@ import java.util.List;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class CobbleClassLoader extends ClassLoader {
-    private static final Logger               logger        = Logger.getLogger(CobbleClassLoader.class);
-    private final        String               tempDirectory = "cobbleLoader_" + System.currentTimeMillis();
-    private              File                 tempDir;
-    private final        List<ResourceLoader> loaders       = new ArrayList<>();
-    private final        CobbleClassScanner   scanner;
+    private final String               tempDirectory = "cobbleLoader_" + System.currentTimeMillis();
+    private       File                 tempDir;
+    private final List<ResourceLoader> loaders       = new ArrayList<>();
+    private final CobbleClassScanner   scanner;
 
     public CobbleClassLoader(ClassLoader parent) {
         this(parent, null);
@@ -59,30 +56,22 @@ public class CobbleClassLoader extends ClassLoader {
         return this.scanner;
     }
 
-    protected <T> T scanOneResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) {
+    protected <T> T scanOneResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         for (ResourceLoader loader : this.loaders) {
-            try {
-                T result = loader.scanOneResource(matchType, scanner, scanPaths);
-                if (result != null) {
-                    return result;
-                }
-            } catch (Exception e) {
-                logger.warn(e.getMessage(), e);
+            T result = loader.scanOneResource(matchType, scanner, scanPaths);
+            if (result != null) {
+                return result;
             }
         }
         return null;
     }
 
-    protected <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) {
+    protected <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         for (ResourceLoader loader : this.loaders) {
-            try {
-                List<T> itemList = loader.scanResources(matchType, scanner, scanPaths);
-                if (itemList != null) {
-                    result.addAll(itemList);
-                }
-            } catch (Exception e) {
-                logger.warn(e.getMessage(), e);
+            List<T> itemList = loader.scanResources(matchType, scanner, scanPaths);
+            if (itemList != null) {
+                result.addAll(itemList);
             }
         }
         return result;
@@ -106,7 +95,7 @@ public class CobbleClassLoader extends ClassLoader {
                 InputStream inStream = loader.getResourceAsStream(resource);
                 if (inStream != null) {
                     ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                    IOUtils.copy(inStream, byteOutput);
+                    ioCopy(inStream, byteOutput);
                     byte[] bs = byteOutput.toByteArray();
                     return this.defineClass(className, bs, 0, bs.length);
                 }
@@ -123,9 +112,7 @@ public class CobbleClassLoader extends ClassLoader {
         if (loader != null) {
             try {
                 return loader.getResource(resource);
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                return null;
+            } catch (IOException ignored) {
             }
         }
         return null;
@@ -142,7 +129,16 @@ public class CobbleClassLoader extends ClassLoader {
             }
         }
 
-        return CollectionUtils.asEnumeration(resultList);
+        Iterator<URL> urlIterator = resultList.iterator();
+        return new Enumeration<URL>() {
+            public boolean hasMoreElements() {
+                return urlIterator.hasNext();
+            }
+
+            public URL nextElement() {
+                return urlIterator.next();
+            }
+        };
     }
 
     public InputStream getResourceAsStream(String resource) {
@@ -150,9 +146,7 @@ public class CobbleClassLoader extends ClassLoader {
         if (loader != null) {
             try {
                 return loader.getResourceAsStream(resource);
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                return null;
+            } catch (IOException ignored) {
             }
         }
         return null;
@@ -249,9 +243,17 @@ public class CobbleClassLoader extends ClassLoader {
         chmod777(fileTmp); // Unix - allow temp file deletion by any user
         //
         try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileTmp)); InputStream in = inf.getStream()) {
-            IOUtils.copy(in, out);
+            ioCopy(in, out);
         }
         return fileTmp;
+    }
+
+    private static void ioCopy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int n = 0;
+        while (-1 != (n = in.read(buffer))) {
+            out.write(buffer, 0, n);
+        }
     }
 
     private void chmod777(File file) {

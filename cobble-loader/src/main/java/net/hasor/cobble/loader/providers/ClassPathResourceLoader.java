@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.ClassUtils;
-import net.hasor.cobble.function.ESupplier;
-import net.hasor.cobble.io.input.AutoCloseInputStream;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.File;
@@ -25,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Predicate;
@@ -48,7 +46,34 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
     public ClassPathResourceLoader(ClassLoader classLoader) {
         this.classLoader = Objects.requireNonNull(classLoader);
-        this.classpath = ClassUtils.getClassPath(classLoader);
+        this.classpath = getClassPath(classLoader);
+    }
+
+    /** 获取ClassPath路径 */
+    private static List<URL> getClassPath(ClassLoader classLoader) {
+        List<ClassLoader> classLoaders = new ArrayList<>();
+        while (true) {
+            if (classLoader == null) {
+                break;
+            } else {
+                classLoaders.add(classLoader);
+                classLoader = classLoader.getParent();
+            }
+        }
+        List<URL> resources = new ArrayList<>();
+        for (ClassLoader loader : classLoaders) {
+            if (loader instanceof URLClassLoader) {
+                URL[] urLs = ((URLClassLoader) loader).getURLs();
+                if (urLs != null) {
+                    for (URL url : urLs) {
+                        if (!resources.contains(url)) {
+                            resources.add(url);
+                        }
+                    }
+                }
+            }
+        }
+        return resources;
     }
 
     private String formatResourcePath(String resourcePath) {
@@ -90,7 +115,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         Enumeration<URL> urlEnumeration = this.classLoader.getResources(resource);
         while (urlEnumeration.hasMoreElements()) {
             URL url = urlEnumeration.nextElement();
-            InputStream in = (url != null) ? new AutoCloseInputStream(url.openStream()) : null;
+            InputStream in = (url != null) ? url.openStream() : null;
             if (in != null) {
                 ins.add(in);
             }
@@ -165,7 +190,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             }
 
             URL url = new URL("jar:" + content + "!/" + entry.getName());
-            ESupplier<InputStream, IOException> inputStream = () -> jarFile.getInputStream(entry);
+            InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
             T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
             if (res != null) {
                 result.add(res);
@@ -214,9 +239,9 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             if (!dirTestFound(new File(resourceName), testDir)) {
                 continue;
             }
-            ESupplier<InputStream, IOException> inputStream = () -> {
+            InputStreamGet inputStream = () -> {
                 if (fileItem.canRead()) {
-                    return new AutoCloseInputStream(new FileInputStream(fileItem));
+                    return new FileInputStream(fileItem);
                 } else {
                     throw new IOException("file cannot be read :" + fileItem);
                 }

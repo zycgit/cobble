@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-   
+
     protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPaths, Function<T, String> nameFunc) {
         if (matchType == null) {
             throw new IllegalStateException("missing matchType.");

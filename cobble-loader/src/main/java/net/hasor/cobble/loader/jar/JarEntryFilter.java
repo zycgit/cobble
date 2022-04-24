@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.hasor.cobble.loader.jar;
 /**
  * Interface that can be used to filter and optionally rename jar entries.

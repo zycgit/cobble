@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.hasor.cobble.loader.jar;
 import java.io.*;
 import java.net.*;
@@ -38,8 +37,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
             EMPTY_JAR_URL = new URL("jar:", null, 0, "file:!/", new URLStreamHandler() {
                 @Override
                 protected URLConnection openConnection(URL u) throws IOException {
-                    // Stub URLStreamHandler to prevent the wrong JAR Handler from being
-                    // Instantiated and cached.
+                    // Stub URLStreamHandler to prevent the wrong JAR Handler from being Instantiated and cached.
                     return null;
                 }
             });

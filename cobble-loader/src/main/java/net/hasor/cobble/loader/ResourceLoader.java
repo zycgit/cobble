@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.function.ESupplier;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,48 +26,52 @@ import java.util.List;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface ResourceLoader {
-    public default <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
+    default <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
         return scanResources(MatchType.None, scanner, new String[0]);
     }
 
-    public default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
+    default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
         return scanResources(matchType, scanner, new String[0]);
     }
 
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
+    <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
-    public default <T> T scanOneResource(Scanner<T> scanner) throws IOException {
+    default <T> T scanOneResource(Scanner<T> scanner) throws IOException {
         return scanOneResource(MatchType.None, scanner, new String[0]);
     }
 
-    public default <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
+    default <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
         return scanOneResource(matchType, scanner, new String[0]);
     }
 
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
+    <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
-    public URL getResource(String resource) throws IOException;
+    URL getResource(String resource) throws IOException;
 
-    public InputStream getResourceAsStream(String resource) throws IOException;
+    InputStream getResourceAsStream(String resource) throws IOException;
 
-    public List<URL> getResources(String resource) throws IOException;
+    List<URL> getResources(String resource) throws IOException;
 
-    public List<InputStream> getResourcesAsStream(String resource) throws IOException;
+    List<InputStream> getResourcesAsStream(String resource) throws IOException;
 
-    public boolean exist(String resource);
+    boolean exist(String resource);
+
+    interface InputStreamGet {
+        InputStream getStream() throws IOException;
+    }
 
     /** 扫描的资源 */
-    public static class ScanEvent {
-        private final String                              name;
-        private final long                                size;
-        private final URL                                 resource;
-        private final ESupplier<InputStream, IOException> stream;
+    class ScanEvent {
+        private final String         name;
+        private final long           size;
+        private final URL            resource;
+        private final InputStreamGet streamGeter;
 
-        public ScanEvent(String name, long size, URL resource, ESupplier<InputStream, IOException> stream) {
+        public ScanEvent(String name, long size, URL resource, InputStreamGet streamGetter) {
             this.name = name;
             this.size = size;
             this.resource = resource;
-            this.stream = stream;
+            this.streamGeter = streamGetter;
         }
 
         public String getName() {
@@ -84,21 +87,21 @@ public interface ResourceLoader {
         }
 
         public InputStream getStream() throws IOException {
-            return this.stream.eGet();
+            return this.streamGeter.getStream();
         }
     }
 
     /** 扫描classpath时找到资源的回调接口方法 */
-    public static interface Scanner<T> {
+    interface Scanner<T> {
         /**
          * 找到资源(返回值为true表示找到预期的资源结束扫描，false表示继续扫描剩下的资源)
          * @param event 找到资源事件。
          */
-        public T found(ScanEvent event) throws IOException;
+        T found(ScanEvent event) throws IOException;
     }
 
     /** 扫描器资源匹配类型 */
-    public static enum MatchType {
+    enum MatchType {
         /** 扫描所有资源 */
         None,
         /** 前缀匹配 */

@@ -58,21 +58,25 @@ public class CobbleClassScanner {
         for (int i = 0; i < loadPackages.length; i++) {
             packages[i] = loadPackages[i].replace(".", "/");
         }
-        List<Class<?>> classes = this.classLoader.scanResources(ResourceLoader.MatchType.Prefix, event -> {
-            String className = event.getName();
-            if (!className.endsWith(".class")) {
-                return null;
-            } else {
-                className = className.substring(0, className.length() - 6);
-                className = className.replace("/", ".");
-                try {
-                    return testAndLoad(className, matcher);
-                } catch (ClassNotFoundException e) {
-                    throw new IOException(e);
+        try {
+            List<Class<?>> classes = this.classLoader.scanResources(ResourceLoader.MatchType.Prefix, event -> {
+                String className = event.getName();
+                if (!className.endsWith(".class")) {
+                    return null;
+                } else {
+                    className = className.substring(0, className.length() - 6);
+                    className = className.replace("/", ".");
+                    try {
+                        return testAndLoad(className, matcher);
+                    } catch (ClassNotFoundException e) {
+                        throw new IOException(e);
+                    }
                 }
-            }
-        }, packages);
-        return new HashSet<>(classes);
+            }, packages);
+            return new HashSet<>(classes);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected Class<?> testAndLoad(String className, ClassMatcher matcher) throws IOException, ClassNotFoundException {

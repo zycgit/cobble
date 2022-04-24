@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.hasor.cobble.loader.jar;
 import java.util.zip.ZipEntry;
 

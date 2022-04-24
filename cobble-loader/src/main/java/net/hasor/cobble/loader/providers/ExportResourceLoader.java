@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.io.FilenameUtils;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.IOException;
@@ -49,7 +47,7 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     }
 
     public void addExport(String exportPath) {
-        if (StringUtils.isNotEmpty(exportPath)) {
+        if (exportPath != null && exportPath.length() > 0) {
             if (exportPath.charAt(exportPath.length() - 1) != '/') {
                 exportPath = exportPath + '/';
             }
@@ -62,7 +60,27 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     }
 
     private static String fmtDirPath(String dirPath) {
-        dirPath = FilenameUtils.getPath(dirPath).replace("\\", "/");
+        if (dirPath.startsWith("/")) {
+            dirPath = dirPath.substring(1);
+        }
+        // Looking for org/codehaus/werkflow/personality/basic/../common/core-idioms.xml
+        //                                               |    i  |
+        //                                               +-------+ remove
+        int i = dirPath.indexOf("/..");
+        // Can't be at the beginning because we have no root to refer to so we start at 1.
+        if (i > 0) {
+            int j = dirPath.lastIndexOf("/", i - 1);
+            if (j >= 0) {
+                dirPath = dirPath.substring(0, j) + dirPath.substring(i + 3);
+            }
+        }
+
+        int j = dirPath.lastIndexOf("/");
+        if (j > 0) {
+            dirPath = dirPath.substring(0, j);
+        }
+
+        dirPath = dirPath.replace("\\", "/");
         if (dirPath.length() > 0 && dirPath.charAt(0) == '/') {
             dirPath = dirPath.substring(1);
         }

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.function.ESupplier;
-import net.hasor.cobble.io.input.AutoCloseInputStream;
 import net.hasor.cobble.loader.jar.JarFile;
 
 import java.io.File;
@@ -88,12 +86,12 @@ public class JarResourceLoader extends AbstractResourceLoader {
     public InputStream getResourceAsStream(String resource) throws IOException {
         ZipEntry zipEntry = this.jarFile.getEntry(resource);
         if (zipEntry != null) {
-            return new AutoCloseInputStream(this.jarFile.getInputStream(zipEntry));
+            return this.jarFile.getInputStream(zipEntry);
         } else if (!this.nestedJarFile.isEmpty()) {
             for (JarFile nestedJar : this.nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    return new AutoCloseInputStream(nestedJar.getInputStream(nestedZipEntry));
+                    return nestedJar.getInputStream(nestedZipEntry);
                 }
             }
         }
@@ -125,13 +123,13 @@ public class JarResourceLoader extends AbstractResourceLoader {
 
         ZipEntry zipEntry = this.jarFile.getEntry(resource);
         if (zipEntry != null) {
-            result.add(new AutoCloseInputStream(this.jarFile.getInputStream(zipEntry)));
+            result.add(this.jarFile.getInputStream(zipEntry));
         }
         if (!this.nestedJarFile.isEmpty()) {
             for (JarFile nestedJar : nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    result.add(new AutoCloseInputStream(nestedJar.getInputStream(nestedZipEntry)));
+                    result.add(nestedJar.getInputStream(nestedZipEntry));
                 }
             }
         }
@@ -176,7 +174,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             }
 
             URL url = new URL(jarFile.getUrl(), entry.getName());
-            ESupplier<InputStream, IOException> inputStream = () -> jarFile.getInputStream(entry);
+            InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
             T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
             if (res != null) {
                 result.add(res);

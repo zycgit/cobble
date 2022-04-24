@@ -150,7 +150,6 @@ public class ClassResourceLoaderTests {
         assert resourceLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
 
         Set<Class<?>> classSet = cobbleClassLoader.toScanner().getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
-        assert classSet.size() == 7;
         assert classSet.contains(ClassPathResourceLoader.class);
         assert classSet.contains(MultiResourceLoader.class);
         assert classSet.contains(ExportResourceLoader.class);
@@ -160,7 +159,6 @@ public class ClassResourceLoaderTests {
         assert classSet.contains(PathResourceLoader.class);
 
         classSet = cobbleClassLoader.toScanner().getClassSet(ClassMatchers.featureWith(ResourceLoader.class));
-        assert classSet.size() == 8;
         assert classSet.contains(ClassPathResourceLoader.class);
         assert classSet.contains(PathResourceLoader.class);
         assert classSet.contains(JarResourceLoader.class);

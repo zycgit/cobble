@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.hasor.cobble.loader.jar;
-import net.hasor.cobble.io.RandomFile;
-
 import java.io.File;
 import java.io.FilePermission;
 import java.io.IOException;
@@ -24,6 +21,8 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 import java.security.Permission;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -50,6 +49,8 @@ import java.util.zip.ZipEntry;
  * @since 1.0.0
  */
 public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.JarEntry> {
+    private static final String                  PROTOCOL_HANDLER         = "java.protocol.handler.pkgs";
+    private static final String                  HANDLERS_PACKAGE         = "net.hasor.cobble.loader";
     private static final String                  MANIFEST_NAME            = "META-INF/MANIFEST.MF";
     private static final AsciiBytes              META_INF                 = new AsciiBytes("META-INF/");
     private static final AsciiBytes              SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
@@ -383,6 +384,30 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
         @Override
         public java.util.jar.JarEntry nextElement() {
             return this.iterator.next();
+        }
+    }
+
+    /**
+     * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
+     * {@link URLStreamHandler} will be located to deal with jar URLs.
+     */
+    public static void registerUrlProtocolHandler() {
+        Handler.captureJarContextUrl();
+        String handlers = System.getProperty(PROTOCOL_HANDLER, "");
+        System.setProperty(PROTOCOL_HANDLER, ((handlers == null || handlers.isEmpty()) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));
+        resetCachedUrlHandlers();
+    }
+
+    /**
+     * Reset any cached handlers just in case a jar protocol has already been used. We
+     * reset the handler by trying to set a null {@link URLStreamHandlerFactory} which
+     * should have no effect other than clearing the handlers cache.
+     */
+    private static void resetCachedUrlHandlers() {
+        try {
+            URL.setURLStreamHandlerFactory(null);
+        } catch (Error ex) {
+            // Ignore
         }
     }
 }

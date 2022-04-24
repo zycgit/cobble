@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.CollectionUtils;
-import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.IOException;
@@ -89,14 +87,14 @@ public class ImportResourceLoader extends AbstractResourceLoader {
 
     protected Iterator<LoaderWrap> getLoader(String resource) {
         String fmtResource = pathOrResource(resource);
-        if (StringUtils.isEmpty(fmtResource)) {
+        if (fmtResource.length() == 0) {
             return getAllLoader();
         }
 
         List<LoaderWrap> loaders = new ArrayList<>();
 
         for (String resourceItem : this.packageLoaders.keySet()) {
-            if (StringUtils.isEmpty(resourceItem) || !resource.startsWith(resourceItem)) {
+            if (resourceItem == null || !resource.startsWith(resourceItem)) {
                 continue;
             }
 
@@ -204,7 +202,7 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         Iterator<LoaderWrap> loaders = getLoader(resource);
         while (loaders.hasNext()) {
             List<URL> resourceURLs = loaders.next().loader.getResources(resource);
-            if (CollectionUtils.isNotEmpty(resourceURLs)) {
+            if (resourceURLs != null && !resourceURLs.isEmpty()) {
                 result.addAll(resourceURLs);
             }
         }
@@ -217,7 +215,7 @@ public class ImportResourceLoader extends AbstractResourceLoader {
         Iterator<LoaderWrap> loaders = getLoader(resource);
         while (loaders.hasNext()) {
             List<InputStream> resourceStreams = loaders.next().loader.getResourcesAsStream(resource);
-            if (CollectionUtils.isNotEmpty(resourceStreams)) {
+            if (resourceStreams != null && !resourceStreams.isEmpty()) {
                 result.addAll(resourceStreams);
             }
         }
