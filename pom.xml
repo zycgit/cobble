@@ -7,26 +7,11 @@
     <version>4.3.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <!-- 配置属性 -->
-    <properties>
-        <wtpversion>2.0</wtpversion>
-        <downloadSources>true</downloadSources>
-        <downloadJavadocs>true</downloadJavadocs>
-        <jacoco.version>0.8.5</jacoco.version>
-        <!--<maven.test.skip>true</maven.test.skip>-->
-        <!--<skipTests>true</skipTests>-->
-        <powermock.version>2.0.6</powermock.version>
-        <project.shortname>Cobble-</project.shortname>
-        <project.website>http://www.hasor.net/</project.website>
-        <project.inceptionYear>2021</project.inceptionYear>
-        <javadocs.bottom><![CDATA[  ]]></javadocs.bottom>
-    </properties>
-
     <!-- 项目信息 -->
     <name>Cobble Parent</name>
     <description>java utils</description>
-    <url>${project.website}</url>
-    <inceptionYear>${project.inceptionYear}</inceptionYear>
+    <url>https://www.hasor.net/</url>
+    <inceptionYear>2022</inceptionYear>
 
     <!-- 授权协议 -->
     <licenses>
@@ -136,8 +121,8 @@
                     <excludePackageNames>net.hasor.cobble.asm.*,net.hasor.cobble.setting.provider.yaml.lib.*</excludePackageNames>
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
-                    <header><![CDATA[ [<a target="_blank" href="http://www.hasor.net">Web Site</a>] ]]></header>
-                    <bottom>${javadocs.bottom}</bottom>
+                    <!-- <header><![CDATA[ [<a target="_blank" href="http://www.hasor.net">Web Site</a>] ]]></header>-->
+                    <!-- <bottom>${javadocs.bottom}</bottom>-->
                 </configuration>
                 <executions>
                     <execution>
@@ -157,17 +142,6 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <!-- eclipse 插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.10</version>
-                <configuration>
-                    <workspace>${basedir}</workspace>
-                    <downloadSources>${downloadSources}</downloadSources>
-                    <downloadJavadocs>${downloadJavadocs}</downloadJavadocs>
-                </configuration>
-            </plugin>
             <!-- Test 失败继续 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -181,7 +155,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
+                <version>0.8.5</version>
                 <executions>
                     <execution>
                         <goals>
@@ -247,7 +221,7 @@
                             <autoVersionSubmodules>true</autoVersionSubmodules>
                             <useReleaseProfile>false</useReleaseProfile>
                             <releaseProfiles>release</releaseProfiles>
-                            <tagNameFormat>Release.${project.shortname}@{project.version}</tagNameFormat>
+                            <tagNameFormat>Release.Cobble-@{project.version}</tagNameFormat>
                             <goals>deploy</goals>
                         </configuration>
                     </plugin>

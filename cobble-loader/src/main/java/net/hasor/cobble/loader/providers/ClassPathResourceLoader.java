@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.File;
@@ -41,12 +42,15 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     private final List<URL>      classpath;
 
     public ClassPathResourceLoader() {
-        this(Thread.currentThread().getContextClassLoader());
+        super(Thread.currentThread().getContextClassLoader());
+        this.classLoader = Thread.currentThread().getContextClassLoader();
+        this.classpath = getClassPath(this.classLoader);
     }
 
-    public ClassPathResourceLoader(ClassLoader classLoader) {
-        this.classLoader = Objects.requireNonNull(classLoader);
-        this.classpath = getClassPath(classLoader);
+    public ClassPathResourceLoader(ClassLoader parent) {
+        super(parent);
+        this.classLoader = Objects.requireNonNull(parent);
+        this.classpath = getClassPath(this.classLoader);
     }
 
     /** 获取ClassPath路径 */

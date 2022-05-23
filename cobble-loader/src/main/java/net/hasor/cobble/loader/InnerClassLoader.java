@@ -15,7 +15,6 @@
  */
 package net.hasor.cobble.loader;
 import net.hasor.cobble.loader.ResourceLoader.MatchType;
-import net.hasor.cobble.loader.ResourceLoader.Scanner;
 
 import java.io.*;
 import java.net.URL;
@@ -29,91 +28,39 @@ import java.util.List;
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public class CobbleClassLoader extends ClassLoader {
-    private final String               tempDirectory = "cobbleLoader_" + System.currentTimeMillis();
-    private       File                 tempDir;
-    private final List<ResourceLoader> loaders       = new ArrayList<>();
-    private final CobbleClassScanner   scanner;
+class InnerClassLoader extends ClassLoader {
+    private final String         tempDirectory = "cobbleLoader/" + System.currentTimeMillis();
+    private       File           tempDir;
+    private final ResourceLoader resourceLoader;
 
-    public CobbleClassLoader(ClassLoader parent) {
-        this(parent, null);
-    }
-
-    public CobbleClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
+    public InnerClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
         super(parent);
-        this.addResourceLoader(resourceLoader);//new String[0],
-        this.scanner = new CobbleClassScanner(this);
-    }
-
-    public void addResourceLoader(ResourceLoader loader) {
-        //isol? String[] packages,
-        if (loader != null && !this.loaders.contains(loader)) {
-            this.loaders.add(loader);
-        }
-    }
-
-    public CobbleClassScanner toScanner() {
-        return this.scanner;
-    }
-
-    protected <T> T scanOneResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        for (ResourceLoader loader : this.loaders) {
-            T result = loader.scanOneResource(matchType, scanner, scanPaths);
-            if (result != null) {
-                return result;
-            }
-        }
-        return null;
-    }
-
-    protected <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        List<T> result = new ArrayList<>();
-        for (ResourceLoader loader : this.loaders) {
-            List<T> itemList = loader.scanResources(matchType, scanner, scanPaths);
-            if (itemList != null) {
-                result.addAll(itemList);
-            }
-        }
-        return result;
-    }
-
-    protected ResourceLoader findResourceLoader(String resource) {
-        for (ResourceLoader loader : this.loaders) {
-            if (loader.exist(resource)) {
-                return loader;
-            }
-        }
-        return null;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
     protected Class<?> findClass(String className) throws ClassNotFoundException {
         String resource = className.replace(".", "/") + ".class";
-        ResourceLoader loader = findResourceLoader(resource);
-        if (loader != null) {
-            try {
-                InputStream inStream = loader.getResourceAsStream(resource);
-                if (inStream != null) {
-                    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                    ioCopy(inStream, byteOutput);
-                    byte[] bs = byteOutput.toByteArray();
-                    return this.defineClass(className, bs, 0, bs.length);
-                }
-            } catch (IOException e2) {
-                throw new ClassNotFoundException(className, e2);
+
+        try {
+            InputStream inStream = this.resourceLoader.getResourceAsStream(resource);
+            if (inStream != null) {
+                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                ioCopy(inStream, byteOutput);
+                byte[] bs = byteOutput.toByteArray();
+                return this.defineClass(className, bs, 0, bs.length);
             }
+        } catch (IOException e2) {
+            throw new ClassNotFoundException(className, e2);
         }
         return super.findClass(className);
     }
 
     @Override
     protected URL findResource(String resource) {
-        ResourceLoader loader = findResourceLoader(resource);
-        if (loader != null) {
-            try {
-                return loader.getResource(resource);
-            } catch (IOException ignored) {
-            }
+        try {
+            return this.resourceLoader.getResource(resource);
+        } catch (IOException ignored) {
         }
         return null;
     }
@@ -122,11 +69,9 @@ public class CobbleClassLoader extends ClassLoader {
     public Enumeration<URL> findResources(String resource) throws IOException {
         List<URL> resultList = new ArrayList<>();
 
-        for (ResourceLoader loader : this.loaders) {
-            List<URL> resources = loader.getResources(resource);
-            if (resources != null) {
-                resultList.addAll(resources);
-            }
+        List<URL> resources = this.resourceLoader.getResources(resource);
+        if (resources != null) {
+            resultList.addAll(resources);
         }
 
         Iterator<URL> urlIterator = resultList.iterator();
@@ -142,18 +87,15 @@ public class CobbleClassLoader extends ClassLoader {
     }
 
     public InputStream getResourceAsStream(String resource) {
-        ResourceLoader loader = findResourceLoader(resource);
-        if (loader != null) {
-            try {
-                return loader.getResourceAsStream(resource);
-            } catch (IOException ignored) {
-            }
+        try {
+            return this.resourceLoader.getResourceAsStream(resource);
+        } catch (IOException ignored) {
         }
         return null;
     }
 
     /**
-     * @see java.lang.ClassLoader#findLibrary(java.lang.String)
+     * @see ClassLoader#findLibrary(String)
      * @return The absolute path of the native library.
      */
     @Override
@@ -182,26 +124,23 @@ public class CobbleClassLoader extends ClassLoader {
      */
     private File findJarNativeEntry(String sLib) throws IOException {
         String sName = System.mapLibraryName(sLib);
-
-        for (ResourceLoader loader : this.loaders) {
-            File foundFile = loader.scanOneResource(MatchType.Suffix, event -> {
-                // Example: sName is "Native.dll"
-                String sEntry = event.getName(); // "Native.dll" or "abc/xyz/Native.dll"
-                // sName "Native.dll" could be found, for example
-                //   - in the path: abc/Native.dll/xyz/my.dll <-- do not load this one!
-                //   - in the partial name: abc/aNative.dll   <-- do not load this one!
-                String[] token = sEntry.split("/"); // the last token is library name
-                if (token.length > 0 && token[token.length - 1].equals(sName)) {
-                    File fileTmp = createTempFile(event);
-                    fileTmp.deleteOnExit();
-                    return fileTmp;
-                }
-                return null;
-            }, new String[] { sName });
-
-            if (foundFile != null && foundFile.exists()) {
-                return foundFile;
+        File foundFile = this.resourceLoader.scanOneResource(MatchType.Suffix, event -> {
+            // Example: sName is "Native.dll"
+            String sEntry = event.getName(); // "Native.dll" or "abc/xyz/Native.dll"
+            // sName "Native.dll" could be found, for example
+            //   - in the path: abc/Native.dll/xyz/my.dll <-- do not load this one!
+            //   - in the partial name: abc/aNative.dll   <-- do not load this one!
+            String[] token = sEntry.split("/"); // the last token is library name
+            if (token.length > 0 && token[token.length - 1].equals(sName)) {
+                File fileTmp = createTempFile(event);
+                fileTmp.deleteOnExit();
+                return fileTmp;
             }
+            return null;
+        }, new String[] { sName });
+
+        if (foundFile != null && foundFile.exists()) {
+            return foundFile;
         }
         return null;
     }
@@ -225,8 +164,8 @@ public class CobbleClassLoader extends ClassLoader {
      */
     private File createTempFile(ResourceLoader.ScanEvent inf) throws IOException {
         // Temp files directory:
-        //   WinXP: C:/Documents and Settings/username/Local Settings/Temp/LoaderClassLoader
-        //   Unix: /var/tmp/LoaderClassLoader
+        //   WinXP: C:/Documents and Settings/username/Local Settings/Temp/cobbleLoader/xxxxx
+        //   Unix: /var/tmp/cobbleLoader/xxxxx
         if (tempDir == null) {
             File dir = new File(System.getProperty("java.io.tmpdir"), tempDirectory);
             if (!dir.exists()) {
@@ -237,9 +176,11 @@ public class CobbleClassLoader extends ClassLoader {
                 throw new IOException("Cannot create temp directory " + dir.getAbsolutePath());
             }
             tempDir = dir;
+            tempDir.deleteOnExit();
         }
         File fileTmp = File.createTempFile(inf.getName() + ".", null, tempDir);
         fileTmp.deleteOnExit();
+
         chmod777(fileTmp); // Unix - allow temp file deletion by any user
         //
         try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileTmp)); InputStream in = inf.getStream()) {

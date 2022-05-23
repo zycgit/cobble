@@ -17,7 +17,6 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.CobbleClassLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
@@ -288,9 +287,8 @@ public class MultiResourceLoaderTests {
         loader.addLoader(loader1);
         loader.addLoader(loader2);
 
-        ClassLoader classLoaderRoot = new CobbleClassLoader(null, loader);
-        Object obj1 = classLoaderRoot.loadClass("ApplicationForApp1").newInstance();
-        Object obj2 = classLoaderRoot.loadClass("ApplicationForApp2").newInstance();
+        Object obj1 = loader.getClass("ApplicationForApp1").newInstance();
+        Object obj2 = loader.getClass("ApplicationForApp2").newInstance();
 
         assert obj1 instanceof Function;
         assert obj2 instanceof Function;
@@ -304,7 +302,7 @@ public class MultiResourceLoaderTests {
 
         try {
             Object result = ((Function) obj2).apply("hello");
-            assert false;
+            assert result.toString().equals("FooForApp2 running...");
         } catch (NoSuchMethodError e) {
             assert e.getMessage().equals("lib.Foo.run([Ljava/lang/String;)Ljava/lang/String;");
         }

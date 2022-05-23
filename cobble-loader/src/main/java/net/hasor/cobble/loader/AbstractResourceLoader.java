@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.ResourceLoader;
+package net.hasor.cobble.loader;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,6 +24,20 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
+
+    private final InnerClassLoader innerClassLoader;
+
+    public AbstractResourceLoader() {
+        this(null);
+    }
+
+    public AbstractResourceLoader(ClassLoader parent) {
+        this.innerClassLoader = new InnerClassLoader(parent, this);
+    }
+
+    public Class<?> getClass(String className) throws ClassNotFoundException {
+        return this.innerClassLoader.loadClass(className);
+    }
 
     protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPaths, Function<T, String> nameFunc) {
         if (matchType == null) {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.IOException;
@@ -35,7 +36,18 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     private final ResourceLoader resourceLoader;
 
     public ExportResourceLoader(ResourceLoader resourceLoader) {
+        super();
         this.resourceLoader = resourceLoader;
+    }
+
+    public Class<?> getClass(String className) throws ClassNotFoundException {
+        String resource = className.replace(".", "/") + ".class";
+
+        if (this.exist(resource)) {
+            return resourceLoader.getClass(className);
+        } else {
+            throw new ClassNotFoundException(className);
+        }
     }
 
     public boolean isExportAll() {

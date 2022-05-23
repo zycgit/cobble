@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.jar.JarFile;
 
 import java.io.File;
@@ -39,10 +40,15 @@ public class JarResourceLoader extends AbstractResourceLoader {
     private final List<JarFile> nestedJarFile;
 
     public JarResourceLoader(File file) throws IOException {
-        this(file, Collections.emptyList());
+        this(null, file, Collections.emptyList());
     }
 
-    public JarResourceLoader(File file, List<String> nestedList) throws IOException {
+    public JarResourceLoader(ClassLoader parent, File file) throws IOException {
+        this(parent, file, Collections.emptyList());
+    }
+
+    public JarResourceLoader(ClassLoader parent, File file, List<String> nestedList) throws IOException {
+        super(parent);
         this.jarFile = new JarFile(file);
         this.nestedJarFile = new ArrayList<>();
         for (String nestedJar : nestedList) {

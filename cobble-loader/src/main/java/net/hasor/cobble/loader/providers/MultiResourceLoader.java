@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.IOException;
@@ -41,6 +42,16 @@ public class MultiResourceLoader extends AbstractResourceLoader {
         }
         for (ResourceLoader loader : loaders) {
             addLoader(loader);
+        }
+    }
+
+    public Class<?> getClass(String className) throws ClassNotFoundException {
+        String resource = className.replace(".", "/") + ".class";
+        ResourceLoader loader = findLoader(resource);
+        if (loader == null) {
+            throw new ClassNotFoundException(className);
+        } else {
+            return loader.getClass(className);
         }
     }
 

@@ -15,6 +15,8 @@
  */
 package net.hasor.cobble.loader.providers;
 
+import net.hasor.cobble.loader.AbstractResourceLoader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,12 +36,23 @@ public class PathResourceLoader extends AbstractResourceLoader {
     private final List<File> dirPathList;
 
     public PathResourceLoader() {
-        this.dirPathList = new ArrayList<>();
+        this(null, null);
     }
 
     public PathResourceLoader(File dirFile) {
+        this(null, dirFile);
+    }
+
+    public PathResourceLoader(ClassLoader parent) {
+        this(parent, null);
+    }
+
+    public PathResourceLoader(ClassLoader parent, File dirFile) {
+        super(parent);
         this.dirPathList = new ArrayList<>();
-        this.addPath(dirFile);
+        if (dirFile != null) {
+            this.addPath(dirFile);
+        }
     }
 
     public void addPath(File dirFile) {

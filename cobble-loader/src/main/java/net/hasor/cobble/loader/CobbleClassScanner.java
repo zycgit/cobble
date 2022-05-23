@@ -32,10 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class CobbleClassScanner {
-    private final CobbleClassLoader      classLoader;
+    private final ResourceLoader         classLoader;
     private final Map<String, ClassInfo> classInfoMap = new ConcurrentHashMap<>();
 
-    protected CobbleClassScanner(CobbleClassLoader classLoader) {
+    public CobbleClassScanner(ResourceLoader classLoader) {
         this.classLoader = classLoader;
     }
 
@@ -99,7 +99,7 @@ public class CobbleClassScanner {
             }
         };
         if (matcher.matcher(context)) {
-            return classLoader.loadClass(className);
+            return this.classLoader.getClass(className);
         } else {
             return null;
         }

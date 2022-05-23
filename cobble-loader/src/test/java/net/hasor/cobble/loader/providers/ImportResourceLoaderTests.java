@@ -17,7 +17,6 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.CobbleClassLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Before;
@@ -27,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Tests for {@link JarFile}.
@@ -213,14 +213,10 @@ public class ImportResourceLoaderTests {
         loader.addImport("ApplicationForApp1.class", loader1);
         loader.addImport("ApplicationForApp2.class", loader2);
 
-        try {
-            ClassLoader classLoaderRoot = new CobbleClassLoader(Thread.currentThread().getContextClassLoader(), loader);
-            classLoaderRoot.loadClass("ApplicationForApp1").newInstance();
-            classLoaderRoot.loadClass("ApplicationForApp2").newInstance();
-            assert false;
-        } catch (NoClassDefFoundError e) {
-            assert e.getMessage().equals("lib/Foo"); // lib 包并未被导入，ImportResourceLoader 无法正确处理。
-        }
+        Object applicationForApp1 = loader.getClass("ApplicationForApp1").newInstance();
+        Object applicationForApp2 = loader.getClass("ApplicationForApp2").newInstance();
+        assert applicationForApp1 != null;
+        assert applicationForApp2 != null;
     }
 
     @Test
@@ -239,5 +235,47 @@ public class ImportResourceLoaderTests {
 
         List<Object> list2 = loader.scanResources(ResourceLoader.MatchType.Suffix, ResourceLoader.ScanEvent::getName, new String[] { "App1.class" });
         assert list2.contains("ApplicationForApp1.class");
+    }
+
+    @Test
+    public void importLoaderTest13() throws Exception {
+        String dir1 = ResourcesUtils.getResource("/dir/isol/app-1").getFile();
+        PathResourceLoader loader1 = new PathResourceLoader(new File(dir1));
+        String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
+        PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
+
+        ImportResourceLoader loader = new ImportResourceLoader();
+        loader.addImport("ApplicationForApp1.class", loader1);
+        loader.addImport("Application.class", loader1);
+        loader.addImport("ApplicationForApp2.class", loader2);
+
+        Object obj1 = loader.getClass("Application").newInstance();
+        try {
+            Object result = ((Function) obj1).apply("hello");
+            assert result.toString().equals("FooForApp1 running...");
+        } catch (Exception e) {
+            assert false;
+        }
+    }
+
+    @Test
+    public void importLoaderTest14() throws Exception {
+        String dir1 = ResourcesUtils.getResource("/dir/isol/app-1").getFile();
+        PathResourceLoader loader1 = new PathResourceLoader(new File(dir1));
+        String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
+        PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
+
+        ImportResourceLoader loader = new ImportResourceLoader();
+        loader.addImport("ApplicationForApp1.class", loader1);
+        loader.addImport("ApplicationForApp2.class", loader2);
+        loader.addImport("Application.class", loader2);
+
+        Object obj1 = loader.getClass("Application").newInstance();
+        try {
+            Object result = ((Function) obj1).apply("hello");
+            assert result.toString().equals("FooForApp2 running...");
+        } catch (Exception e) {
+            assert false;
+        }
     }
 }

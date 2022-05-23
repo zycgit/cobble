@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.IOException;
@@ -31,6 +32,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ImportResourceLoader extends AbstractResourceLoader {
     private final Map<String, List<LoaderWrap>> packageLoaders = new ConcurrentHashMap<>();
+
+    public Class<?> getClass(String className) throws ClassNotFoundException {
+        String resource = className.replace(".", "/") + ".class";
+
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            ResourceLoader loader = loaders.next().loader;
+            if (loader.exist(resource)) {
+                return loader.getClass(className);
+            }
+        }
+        throw new ClassNotFoundException(className);
+    }
 
     /** import all path */
     public void addImport(ResourceLoader loader) {
