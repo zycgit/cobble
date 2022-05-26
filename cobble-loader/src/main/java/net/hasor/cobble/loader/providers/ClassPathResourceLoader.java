@@ -53,6 +53,10 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         this.classpath = getClassPath(this.classLoader);
     }
 
+    public Class<?> getClass(String className) throws ClassNotFoundException {
+        return this.classLoader.loadClass(className);
+    }
+
     /** 获取ClassPath路径 */
     private static List<URL> getClassPath(ClassLoader classLoader) {
         List<ClassLoader> classLoaders = new ArrayList<>();

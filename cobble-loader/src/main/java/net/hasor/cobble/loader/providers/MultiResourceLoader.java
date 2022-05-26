@@ -29,23 +29,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public class MultiResourceLoader extends AbstractResourceLoader {
+public class MultiResourceLoader extends AbstractResourceLoader implements MultiStrategy {
     private final List<ResourceLoader> loaders = new CopyOnWriteArrayList<>();
+    private final int                  classLoadMode;
 
     /**
      * Creates a new multi resource Loader that will use the specified loaders.
      * @param loaders the loaders that are used to load resources.
      */
-    public MultiResourceLoader(ResourceLoader... loaders) {
-        this(null, loaders);
+    public MultiResourceLoader(int mode, ResourceLoader... loaders) {
+        this(mode, null, loaders);
     }
 
     /**
      * Creates a new multi resource Loader that will use the specified loaders.
      * @param loaders the loaders that are used to load resources.
      */
-    public MultiResourceLoader(ClassLoader parent, ResourceLoader... loaders) {
+    public MultiResourceLoader(int mode, ClassLoader parent, ResourceLoader... loaders) {
         super(parent);
+        this.classLoadMode = mode;
 
         if (loaders == null) {
             return;
@@ -56,6 +58,18 @@ public class MultiResourceLoader extends AbstractResourceLoader {
     }
 
     public Class<?> getClass(String className) throws ClassNotFoundException {
+        if (classLoadMode == ISOLATION_MODE) {
+            return this.loadClassByIsolation(className);
+        } else {
+            return this.loadClassByMerge(className);
+        }
+    }
+
+    private Class<?> loadClassByMerge(String className) throws ClassNotFoundException {
+        return super.getClass(className);
+    }
+
+    private Class<?> loadClassByIsolation(String className) throws ClassNotFoundException {
         String resource = className.replace(".", "/") + ".class";
         ResourceLoader loader = findLoader(resource);
         if (loader == null) {

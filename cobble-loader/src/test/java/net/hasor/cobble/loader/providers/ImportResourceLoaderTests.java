@@ -28,6 +28,9 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 
+import static net.hasor.cobble.loader.providers.ImportResourceLoader.ISOLATION_MODE;
+import static net.hasor.cobble.loader.providers.ImportResourceLoader.MERGE_MODE;
+
 /**
  * Tests for {@link JarFile}.
  */
@@ -39,7 +42,7 @@ public class ImportResourceLoaderTests {
         String file1 = ResourcesUtils.getResource("/dir/basic.jar").getFile();
         String file2 = ResourcesUtils.getResource("/dir/app-1.jar").getFile();
         String file3 = ResourcesUtils.getResource("/dir/app-2.zip").getFile();
-        this.loader = new ImportResourceLoader();
+        this.loader = new ImportResourceLoader(ISOLATION_MODE);
         this.loader.importResources(0, new PathResourceLoader(new File(file1)));
         this.loader.importResources(1, "app/onlyjar", new PathResourceLoader(new File(file2)));
         this.loader.importResources(2, "app/onlyzip", new PathResourceLoader(new File(file3)));
@@ -47,7 +50,7 @@ public class ImportResourceLoaderTests {
 
     @Test
     public void importLoaderTest1() throws Exception {
-        ImportResourceLoader loader = new ImportResourceLoader();
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
         JarResourceLoader jar1 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/basic.jar").getFile()));
         JarResourceLoader jar2 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-1.jar").getFile()));
         JarResourceLoader jar3 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-2.zip").getFile()));
@@ -209,7 +212,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader();
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
 
@@ -226,7 +229,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader();
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
 
@@ -244,7 +247,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader();
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("Application.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
@@ -265,7 +268,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader();
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
         loader.importResources("Application.class", loader2);
@@ -276,6 +279,34 @@ public class ImportResourceLoaderTests {
             assert result.toString().equals("FooForApp2 running...");
         } catch (Exception e) {
             assert false;
+        }
+    }
+
+    @Test
+    public void importLoaderTest15() throws Exception {
+        String dir1 = ResourcesUtils.getResource("/dir/isol/app-1").getFile();
+        PathResourceLoader loader1 = new PathResourceLoader(new File(dir1));
+        String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
+        PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
+
+        ImportResourceLoader loader = new ImportResourceLoader(MERGE_MODE);
+        loader.importResources("ApplicationForApp1.class", loader1);
+        loader.importResources("ApplicationForApp2.class", loader2);
+        loader.importResources("Application.class", loader2);
+
+        Object obj1 = loader.getClass("Application").newInstance();
+        try {
+            Object result = ((Function) obj1).apply("hello");
+            assert result.toString().equals("FooForApp1 running...");
+        } catch (Exception e) {
+            assert false;
+        }
+
+        try {
+            loader.getClass("lib/Foo");
+            assert false;
+        } catch (Exception e) {
+            assert e instanceof ClassNotFoundException;
         }
     }
 }

@@ -53,6 +53,7 @@ class InnerClassLoader extends ClassLoader {
         } catch (IOException e2) {
             throw new ClassNotFoundException(className, e2);
         }
+
         return super.findClass(className);
     }
 

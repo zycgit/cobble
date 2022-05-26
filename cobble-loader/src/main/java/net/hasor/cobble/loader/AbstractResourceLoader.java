@@ -25,17 +25,29 @@ import java.util.function.Predicate;
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
 
-    private final InnerClassLoader innerClassLoader;
+    protected final  ClassLoader      parentClassLoader;
+    private volatile InnerClassLoader innerClassLoader;
 
     public AbstractResourceLoader() {
-        this(null);
+        this.parentClassLoader = null;
     }
 
     public AbstractResourceLoader(ClassLoader parent) {
-        this.innerClassLoader = new InnerClassLoader(parent, this);
+        this.parentClassLoader = parent;
+    }
+
+    protected ResourceLoader loaderForClassLoader() {
+        return this;
     }
 
     public Class<?> getClass(String className) throws ClassNotFoundException {
+        if (this.innerClassLoader == null) {
+            synchronized (this) {
+                if (this.innerClassLoader == null) {
+                    this.innerClassLoader = new InnerClassLoader(this.parentClassLoader, loaderForClassLoader());
+                }
+            }
+        }
         return this.innerClassLoader.loadClass(className);
     }
 
