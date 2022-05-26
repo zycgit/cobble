@@ -36,7 +36,11 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     private final ResourceLoader resourceLoader;
 
     public ExportResourceLoader(ResourceLoader resourceLoader) {
-        super();
+        this(null, resourceLoader);
+    }
+
+    public ExportResourceLoader(ClassLoader parent, ResourceLoader resourceLoader) {
+        super(parent);
         this.resourceLoader = resourceLoader;
     }
 
@@ -58,12 +62,12 @@ public class ExportResourceLoader extends AbstractResourceLoader {
         this.exportAll = exportAll;
     }
 
-    public void addExport(String exportPath) {
-        if (exportPath != null && exportPath.length() > 0) {
-            if (exportPath.charAt(exportPath.length() - 1) != '/') {
-                exportPath = exportPath + '/';
+    public void addExport(String exportResources) {
+        if (exportResources != null && exportResources.length() > 0) {
+            if (exportResources.charAt(exportResources.length() - 1) != '/') {
+                exportResources = exportResources + '/';
             }
-            this.exportPathSet.add(fmtDirPath(exportPath));
+            this.exportPathSet.add(fmtDirPath(exportResources));
         }
     }
 

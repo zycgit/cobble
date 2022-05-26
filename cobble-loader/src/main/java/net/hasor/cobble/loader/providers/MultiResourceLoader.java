@@ -37,6 +37,16 @@ public class MultiResourceLoader extends AbstractResourceLoader {
      * @param loaders the loaders that are used to load resources.
      */
     public MultiResourceLoader(ResourceLoader... loaders) {
+        this(null, loaders);
+    }
+
+    /**
+     * Creates a new multi resource Loader that will use the specified loaders.
+     * @param loaders the loaders that are used to load resources.
+     */
+    public MultiResourceLoader(ClassLoader parent, ResourceLoader... loaders) {
+        super(parent);
+
         if (loaders == null) {
             return;
         }

@@ -33,36 +33,52 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ImportResourceLoader extends AbstractResourceLoader {
     private final Map<String, List<LoaderWrap>> packageLoaders = new ConcurrentHashMap<>();
 
+    public ImportResourceLoader() {
+        super();
+    }
+
+    public ImportResourceLoader(ClassLoader parent) {
+        super(parent);
+    }
+
     public Class<?> getClass(String className) throws ClassNotFoundException {
-        String resource = className.replace(".", "/") + ".class";
-
-        Iterator<LoaderWrap> loaders = getLoader(resource);
-        while (loaders.hasNext()) {
-            ResourceLoader loader = loaders.next().loader;
-            if (loader.exist(resource)) {
-                return loader.getClass(className);
+        try {
+            Class<?> aClass = super.getClass(className);
+            if (aClass != null) {
+                return aClass;
+            } else {
+                throw new ClassNotFoundException(className);
             }
+        } catch (ClassNotFoundException e) {
+            String resource = className.replace(".", "/") + ".class";
+            Iterator<LoaderWrap> loaders = getLoader(resource);
+            while (loaders.hasNext()) {
+                ResourceLoader loader = loaders.next().loader;
+                if (loader.exist(resource)) {
+                    return loader.getClass(className);
+                }
+            }
+            throw e;
         }
-        throw new ClassNotFoundException(className);
     }
 
     /** import all path */
-    public void addImport(ResourceLoader loader) {
-        this.addImport(0, "", loader);
+    public void importResources(ResourceLoader loader) {
+        this.importResources(0, "", loader);
     }
 
     /** import all path */
-    public void addImport(int order, ResourceLoader loader) {
-        this.addImport(order, "", loader);
+    public void importResources(int order, ResourceLoader loader) {
+        this.importResources(order, "", loader);
     }
 
     /** import specified path or resource */
-    public void addImport(String importPath, ResourceLoader loader) {
-        this.addImport(0, importPath, loader);
+    public void importResources(String importPath, ResourceLoader loader) {
+        this.importResources(0, importPath, loader);
     }
 
     /** import specified path or resource */
-    public synchronized void addImport(int order, String importPath, ResourceLoader loader) {
+    public synchronized void importResources(int order, String importPath, ResourceLoader loader) {
         importPath = pathOrResource(importPath);
         List<LoaderWrap> loaders = this.packageLoaders.computeIfAbsent(importPath, s -> new ArrayList<>());
         LoaderWrap wrap = new LoaderWrap(order, loader);

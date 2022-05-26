@@ -40,9 +40,9 @@ public class ImportResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/dir/app-1.jar").getFile();
         String file3 = ResourcesUtils.getResource("/dir/app-2.zip").getFile();
         this.loader = new ImportResourceLoader();
-        this.loader.addImport(0, new PathResourceLoader(new File(file1)));
-        this.loader.addImport(1, "app/onlyjar", new PathResourceLoader(new File(file2)));
-        this.loader.addImport(2, "app/onlyzip", new PathResourceLoader(new File(file3)));
+        this.loader.importResources(0, new PathResourceLoader(new File(file1)));
+        this.loader.importResources(1, "app/onlyjar", new PathResourceLoader(new File(file2)));
+        this.loader.importResources(2, "app/onlyzip", new PathResourceLoader(new File(file3)));
     }
 
     @Test
@@ -52,12 +52,12 @@ public class ImportResourceLoaderTests {
         JarResourceLoader jar2 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-1.jar").getFile()));
         JarResourceLoader jar3 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-2.zip").getFile()));
         PathResourceLoader path1 = new PathResourceLoader(new File(""));
-        loader.addImport(0, jar1);
-        loader.addImport(1, "app/onlyjar", jar2);
-        loader.addImport(2, "app/onlyzip", jar3);
-        loader.addImport(3, ClassPathResourceLoader.INSTANCE);
-        loader.addImport(4, ClassPathResourceLoader.INSTANCE);
-        loader.addImport(5, path1);
+        loader.importResources(0, jar1);
+        loader.importResources(1, "app/onlyjar", jar2);
+        loader.importResources(2, "app/onlyzip", jar3);
+        loader.importResources(3, ClassPathResourceLoader.INSTANCE);
+        loader.importResources(4, ClassPathResourceLoader.INSTANCE);
+        loader.importResources(5, path1);
 
         Iterator<ImportResourceLoader.LoaderWrap> wrapLoaders1 = loader.getLoader("app");
         assert wrapLoaders1.next().loader == jar1;
@@ -210,8 +210,8 @@ public class ImportResourceLoaderTests {
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
         ImportResourceLoader loader = new ImportResourceLoader();
-        loader.addImport("ApplicationForApp1.class", loader1);
-        loader.addImport("ApplicationForApp2.class", loader2);
+        loader.importResources("ApplicationForApp1.class", loader1);
+        loader.importResources("ApplicationForApp2.class", loader2);
 
         Object applicationForApp1 = loader.getClass("ApplicationForApp1").newInstance();
         Object applicationForApp2 = loader.getClass("ApplicationForApp2").newInstance();
@@ -227,8 +227,8 @@ public class ImportResourceLoaderTests {
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
         ImportResourceLoader loader = new ImportResourceLoader();
-        loader.addImport("ApplicationForApp1.class", loader1);
-        loader.addImport("ApplicationForApp2.class", loader2);
+        loader.importResources("ApplicationForApp1.class", loader1);
+        loader.importResources("ApplicationForApp2.class", loader2);
 
         List<Object> list1 = loader.scanResources(ResourceLoader.ScanEvent::getName);
         assert list1.size() == 2;
@@ -245,9 +245,9 @@ public class ImportResourceLoaderTests {
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
         ImportResourceLoader loader = new ImportResourceLoader();
-        loader.addImport("ApplicationForApp1.class", loader1);
-        loader.addImport("Application.class", loader1);
-        loader.addImport("ApplicationForApp2.class", loader2);
+        loader.importResources("ApplicationForApp1.class", loader1);
+        loader.importResources("Application.class", loader1);
+        loader.importResources("ApplicationForApp2.class", loader2);
 
         Object obj1 = loader.getClass("Application").newInstance();
         try {
@@ -266,9 +266,9 @@ public class ImportResourceLoaderTests {
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
         ImportResourceLoader loader = new ImportResourceLoader();
-        loader.addImport("ApplicationForApp1.class", loader1);
-        loader.addImport("ApplicationForApp2.class", loader2);
-        loader.addImport("Application.class", loader2);
+        loader.importResources("ApplicationForApp1.class", loader1);
+        loader.importResources("ApplicationForApp2.class", loader2);
+        loader.importResources("Application.class", loader2);
 
         Object obj1 = loader.getClass("Application").newInstance();
         try {
