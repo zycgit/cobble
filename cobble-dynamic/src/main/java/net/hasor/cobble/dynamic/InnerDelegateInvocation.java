@@ -24,26 +24,26 @@ import java.util.function.Supplier;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class InnerDelegateInvocation {
-    private final static Map<String, PropertyDelegate> methodMapping = new ConcurrentHashMap<>();
+    private final static Map<String, DynamicProperty> methodMapping = new ConcurrentHashMap<>();
 
     static class DelegateInfo {
-        Supplier<? extends PropertyDelegate> delegateSupplier;
-        Class<?>                             propertyType;
+        Supplier<? extends DynamicProperty> delegateSupplier;
+        Class<?>                            propertyType;
         ReadWriteType                        rwType;
 
-        public DelegateInfo(Class<?> propertyType, Supplier<? extends PropertyDelegate> delegateSupplier, ReadWriteType rwType) {
+        public DelegateInfo(Class<?> propertyType, Supplier<? extends DynamicProperty> delegateSupplier, ReadWriteType rwType) {
             this.propertyType = propertyType;
             this.delegateSupplier = delegateSupplier;
             this.rwType = rwType;
         }
     }
 
-    private static PropertyDelegate init(String cacheKey, Object target, String name) {
+    private static DynamicProperty init(String cacheKey, Object target, String name) {
         return methodMapping.computeIfAbsent(cacheKey, s -> {
             Class<?> targetClass = target.getClass();
             ClassLoader loader = targetClass.getClassLoader();
-            if (loader instanceof AopClassLoader) {
-                AopClassConfig cc = ((AopClassLoader) loader).findClassConfig(targetClass.getName());
+            if (loader instanceof DynamicClassLoader) {
+                DynamicClassConfig cc = ((DynamicClassLoader) loader).findClassConfig(targetClass.getName());
                 return cc.findPropertyDelegate(name).get();
             } else {
                 throw new IllegalArgumentException(cacheKey + " missing Delegate.");

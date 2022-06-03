@@ -24,19 +24,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version : 2014年9月7日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class AopClassLoader extends ClassLoader {
+public class DynamicClassLoader extends ClassLoader {
     private final Map<String, InnerClassInfo> classMap   = new ConcurrentHashMap<>();
     private final ThreadLocal<BasicObject>    localLocal = ThreadLocal.withInitial(BasicObject::new);
 
-    public AopClassLoader() {
+    public DynamicClassLoader() {
         super(Thread.currentThread().getContextClassLoader());
     }
 
-    public AopClassLoader(ClassLoader parentLoader) {
+    public DynamicClassLoader(ClassLoader parentLoader) {
         super(parentLoader);
     }
 
-    public AopClassConfig findClassConfig(String className) {
+    public DynamicClassConfig findClassConfig(String className) {
         InnerClassInfo ci = this.classMap.get(className);
         return ci == null ? null : ci.classConfig;
     }
@@ -68,8 +68,7 @@ public class AopClassLoader extends ClassLoader {
         return super.getResourceAsStream(classResource);
     }
 
-    /***/
-    void addClassConfig(AopClassConfig config) {
+    void addClassConfig(DynamicClassConfig config) {
         String cname = config.getClassName();
         if (!this.classMap.containsKey(cname)) {
             InnerClassInfo ci = new InnerClassInfo();
@@ -84,8 +83,8 @@ public class AopClassLoader extends ClassLoader {
     }
 
     public static Class<?> getPrototypeType(Class<?> aopType) {
-        if (aopType.getClassLoader() instanceof AopClassLoader) {
-            AopClassConfig classConfig = ((AopClassLoader) aopType.getClassLoader()).findClassConfig(aopType.getName());
+        if (aopType.getClassLoader() instanceof DynamicClassLoader) {
+            DynamicClassConfig classConfig = ((DynamicClassLoader) aopType.getClassLoader()).findClassConfig(aopType.getName());
             return classConfig.getSuperClass();
         }
         return aopType;
@@ -96,6 +95,6 @@ public class AopClassLoader extends ClassLoader {
     }
 
     public static boolean isDynamic(Class<?> aopType) {
-        return aopType.getClassLoader() instanceof AopClassLoader;
+        return aopType.getClassLoader() instanceof DynamicClassLoader;
     }
 }

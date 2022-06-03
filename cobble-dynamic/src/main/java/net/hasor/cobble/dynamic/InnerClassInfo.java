@@ -20,6 +20,6 @@ package net.hasor.cobble.dynamic;
  * @author 赵永春 (zyc@hasor.net)
  */
 class InnerClassInfo {
-    public volatile AopClassConfig classConfig;
-    public volatile Class<?>       classInfo;
+    public volatile DynamicClassConfig classConfig;
+    public volatile Class<?>           classInfo;
 }

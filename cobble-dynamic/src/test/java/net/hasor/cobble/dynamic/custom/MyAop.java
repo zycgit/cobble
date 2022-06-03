@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic.custom;
-import net.hasor.cobble.dynamic.aop.Aop;
+import net.hasor.cobble.dynamic.Aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -21,16 +21,14 @@ import java.util.Observable;
  * @version : 2020-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public class SimplePropertyDelegate extends Observable implements PropertyDelegate {
+public class SimpleDynamicProperty extends Observable implements DynamicProperty {
     private Object value = null;
 
-    /**  */
-    public SimplePropertyDelegate() {
+    public SimpleDynamicProperty() {
         this(null);
     }
 
-    /**  */
-    public SimplePropertyDelegate(Object defaultValue) {
+    public SimpleDynamicProperty(Object defaultValue) {
         this.value = defaultValue;
     }
 

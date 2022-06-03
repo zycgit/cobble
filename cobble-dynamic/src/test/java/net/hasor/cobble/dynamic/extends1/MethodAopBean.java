@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic.extends1;
-import net.hasor.cobble.dynamic.aop.Aop;
+import net.hasor.cobble.dynamic.Aop;
 import net.hasor.cobble.dynamic.custom.MyAopInterceptor;
 
 /**

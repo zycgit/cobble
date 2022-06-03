@@ -23,8 +23,8 @@ public class PropertyTest {
 
     @Test
     public void propertyTest1() throws Exception {
-        SimplePropertyDelegate delegate = new SimplePropertyDelegate();
-        AopClassConfig classConfig = new AopClassConfig();
+        SimpleDynamicProperty delegate = new SimpleDynamicProperty();
+        DynamicClassConfig classConfig = new DynamicClassConfig();
         classConfig.addProperty("name", String.class, Provider.of(delegate));
         //
         Class<?> buildClass = classConfig.buildClass();
@@ -38,7 +38,7 @@ public class PropertyTest {
 
     @Test
     public void propertyTest2() throws Exception {
-        AopClassConfig classConfig = new AopClassConfig();
+        DynamicClassConfig classConfig = new DynamicClassConfig();
         classConfig.addProperty("name", Boolean.TYPE);
         //
         Class<?> buildClass = classConfig.buildClass();
@@ -52,7 +52,7 @@ public class PropertyTest {
 
     @Test
     public void propertyTest3() throws Exception {
-        AopClassConfig classConfig = new AopClassConfig();
+        DynamicClassConfig classConfig = new DynamicClassConfig();
         classConfig.addProperty("name", Boolean.TYPE, ReadWriteType.ReadOnly);
         Class<?> buildClass = classConfig.buildClass();
         assert BeanUtils.canReadProperty(buildClass, "name");
@@ -61,7 +61,7 @@ public class PropertyTest {
 
     @Test
     public void propertyTest4() throws Exception {
-        AopClassConfig classConfig = new AopClassConfig();
+        DynamicClassConfig classConfig = new DynamicClassConfig();
         classConfig.addProperty("name", Boolean.TYPE, ReadWriteType.ReadWrite);
         Class<?> buildClass = classConfig.buildClass();
         assert BeanUtils.canReadProperty(buildClass, "name");

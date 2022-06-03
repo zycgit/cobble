@@ -14,6 +14,7 @@
 // * limitations under the License.
 // */
 //package net.hasor.utils.proxy;
+//import net.hasor.cobble.dynamic.DynamicClass;
 //import net.hasor.cobble.dynamic.anno.AopBean;
 //import net.hasor.cobble.dynamic.anno.ClassAnnoInterceptor;
 //import net.hasor.cobble.dynamic.anno.MethodAnnoInterceptor;
