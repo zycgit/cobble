@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

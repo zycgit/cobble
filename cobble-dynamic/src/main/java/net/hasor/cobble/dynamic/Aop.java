@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -35,6 +35,11 @@ import java.util.function.BiFunction;
 
 import static org.objectweb.asm.Opcodes.*;
 
+/**
+ *
+ * @version : 2022-06-05
+ * @author 赵永春 (zyc@hasor.net)
+ */
 public final class Proxy {
     private static final AtomicLong spinIndex       = new AtomicLong(0);
     private static final String     aopClassSuffix  = "$proxy$";

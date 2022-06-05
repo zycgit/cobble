@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-/***
+/**
  * 动态代理的标记接口，可以简单的通过 bean2 instanceof DynamicClass 形式来判断对象是否是一个 Aop 类。
  * @version : 2017年07月28日
  * @author 赵永春 (zyc@hasor.net)
