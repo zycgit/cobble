@@ -22,6 +22,9 @@ import java.lang.reflect.Method;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface MethodInvocation {
+
+    boolean isProxy();
+
     /**
      * Gets the method being called.
      * @return the method being called.

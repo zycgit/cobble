@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-/***
- *
- * @version : 2014年11月29日
+
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * 标记在类或方法上，为类或方法指定拦截器。
+ * @version : 2013-3-20
  * @author 赵永春 (zyc@hasor.net)
  */
-class InnerClassInfo {
-    public volatile DynamicClassConfig classConfig;
-    public volatile Class<?>           classInfo;
+@Repeatable(AopSet.class)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Aop {
+    Class<? extends MethodInterceptor>[] value();
 }

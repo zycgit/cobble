@@ -29,7 +29,7 @@ import java.util.*;
  * @version 2009-10-16
  * @author 赵永春 (zyc@hasor.net)
  */
-class AsmTools implements Opcodes {
+public class AsmTools implements Opcodes {
     /** 根据类型获取其Return指令 */
     public static int getReturn(final String asmType) {
         char t = asmType.charAt(0);
@@ -151,7 +151,6 @@ class AsmTools implements Opcodes {
         for (Class<?> c : classType) {
             returnString += AsmTools.toAsmType(c);
         }
-        ;
         return returnString;
     }
 
@@ -415,16 +414,6 @@ class AsmTools implements Opcodes {
             return asmType.substring(1, asmType.length() - 1);
         } else {
             return asmType;
-        }
-    }
-
-    /** 父类是否支持 */
-    public static boolean isSupport(Class<?> superClass) {
-        String resName = superClass.getName().replace(".", "/") + ".class";
-        if (resName.startsWith("java/") || resName.startsWith("javax/")) {
-            return false;
-        } else {
-            return !AsmTools.checkAnd(superClass.getModifiers(), Modifier.PRIVATE);
         }
     }
 

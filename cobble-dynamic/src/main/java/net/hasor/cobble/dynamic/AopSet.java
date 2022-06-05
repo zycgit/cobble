@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.aop;
-import net.hasor.cobble.dynamic.MethodInterceptor;
-
-import java.lang.annotation.Repeatable;
+package net.hasor.cobble.dynamic;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 标记在类或方法上，为类或方法指定拦截器。
  * @version : 2013-3-20
  * @author 赵永春 (zyc@hasor.net)
  */
-@Repeatable(AopSet.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Aop {
-    Class<? extends MethodInterceptor>[] value();
+@Target({ ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+public @interface AopSet {
+    Aop[] value();
 }

@@ -1,261 +1,184 @@
-/*
- * Copyright 2008-2009 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.dynamic.InnerDelegateInvocation.DelegateInfo;
-import net.hasor.cobble.supplier.Provider;
+import net.hasor.cobble.dynamic.DynamicConfig.DynamicPropertyInfo;
 import org.objectweb.asm.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 
 import static org.objectweb.asm.Opcodes.*;
 
-/**
- *
- * @version : 2014年9月7日
- * @author 赵永春 (zyc@hasor.net)
- */
-public class DynamicClassConfig {
-    /** 默认超类java.lang.Object */
-    private final          Class<?>                           superClass;
-    private final          DynamicClassLoader                 parentLoader;
-    private final          String                             className;
-    private                byte[]                             classBytes;
-    private                Class<?>                           classType;
+public final class Proxy {
+    private static final AtomicLong spinIndex       = new AtomicLong(0);
+    private static final String     aopClassSuffix  = "$proxy$";
+    private static final String     aopMethodSuffix = "redirect$";
+
+    private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> proxyClassCache   = new JdkWeakCache<>(new KeyFactory(), new ProxyClassFactory());
+    private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> dynamicClassCache = new JdkWeakCache<>(new KeyFactory(), new DynamicClassFactory());
+    private static final Method                                             defineClassMethod;
+
+    private static final class KeyFactory implements BiFunction<ClassLoader, DynamicConfig, Object> {
+        @Override
+        public Object apply(ClassLoader classLoader, DynamicConfig dynamicConfig) {
+            return new Key(dynamicConfig);
+        }
+    }
+
+    /* a key used for proxy class with any number of implemented interfaces (used here for 3 or more only) */
+    private static final class Key extends WeakReference<DynamicConfig> {
+        private final int hash;
+
+        Key(DynamicConfig config) {
+            super(config);
+            this.hash = config.hashCode();
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            DynamicConfig intf;
+            return this == obj || //
+                    obj != null && obj.getClass() == Key.class && (intf = get()) != null && intf == ((Key) obj).get();
+        }
+    }
+
+    private static class ProxyInvocationException extends RuntimeException {
+
+        public ProxyInvocationException(Exception e) {
+            super(e);
+        }
+    }
+
+    private static final class ProxyClassFactory implements BiFunction<ClassLoader, DynamicConfig, Class<?>> {
+
+        @Override
+        public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
+            try {
+                return buildAndLoadClass(config, true, classLoader);
+            } catch (Exception e) {
+                throw new ProxyInvocationException(e);
+            }
+        }
+    }
+
+    private static final class DynamicClassFactory implements BiFunction<ClassLoader, DynamicConfig, Class<?>> {
+
+        @Override
+        public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
+            try {
+                return buildAndLoadClass(config, false, classLoader);
+            } catch (Exception e) {
+                throw new ProxyInvocationException(e);
+            }
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------------------------------------
+
+    static {
+        try {
+            defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            defineClassMethod.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    //    /** 调用ClassLoader，生成字节码并装载它 */
+    //    public static synchronized Class<?> buildProxyClass(ClassLoader loader, Class<?>... interfaces) throws IOException, ReflectiveOperationException {
     //
-    private final          Map<String, DelegateInfo>          dynamicPropertyMap = new HashMap<>();
-    private final          List<InnerMethodInterceptorDefine> interceptorList    = new ArrayList<>();
-    private final          Map<String, MethodInterceptor[]>   interceptorMap     = new HashMap<>();
-    private final          Map<String, Method>                interceptorMethod  = new HashMap<>();
-    private static final   AtomicLong                         spinIndex          = new AtomicLong(0);
-    protected static final String                             aopMethodSuffix    = "redirect$";
-    protected static final String                             aopClassSuffix     = "$auto$";
-    private                File                               classWritePath;
+    //    }
+    //    public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) throws IllegalArgumentException {
+    //
+    //    }
 
-    /** 创建{@link DynamicClassConfig}类型对象 */
-    public DynamicClassConfig() {
-        this(BasicObject.class);
+    /** 创建一个给定对象的代理对象 */
+    public static synchronized Object newProxyInstance(ClassLoader loader, DynamicConfig config, Object original) throws ReflectiveOperationException {
+        Class<?> buildClass = newProxyClass(loader, config);
+        Constructor<?> constructor = buildClass.getConstructors()[0];
+        return constructor.newInstance(original);
     }
 
-    /** 创建{@link DynamicClassConfig}类型对象 */
-    public DynamicClassConfig(Class<?> superClass) {
-        this(superClass, superClass.getClassLoader());
-    }
-
-    /** 创建{@link DynamicClassConfig}类型对象 */
-    public DynamicClassConfig(Class<?> superClass, ClassLoader parentLoader) {
-        this.superClass = superClass == null ? BasicObject.class : superClass;
-        this.className = this.superClass.getName() + aopClassSuffix + spinIndex.getAndIncrement();
-        this.classBytes = null;
-        if (parentLoader instanceof DynamicClassLoader) {
-            this.parentLoader = (DynamicClassLoader) parentLoader;
-        } else {
-            this.parentLoader = new DynamicClassLoader(parentLoader);
-        }
-    }
-    // --------------------------------------------------------------------------------------------
-
-    /** 动态添加一个属性，并且生成可以属性的get/set方法 */
-    public void addProperty(String propertyName, Class<?> propertyType) {
-        this.addProperty(propertyName, propertyType, ReadWriteType.ReadWrite);
-    }
-
-    /**
-     * 动态添加一个属性，并且生成可以属性的get/set方法
-     * @param propertyName 属性名
-     * @param propertyType 属性类型
-     * @param rwType 读写权限
-     */
-    public void addProperty(String propertyName, Class<?> propertyType, ReadWriteType rwType) {
-        Object defaultValue = BeanUtils.getDefaultValue(propertyType);
-        SimpleDynamicProperty dynamic = new SimpleDynamicProperty(defaultValue);
-        this.addProperty(propertyName, propertyType, Provider.of(dynamic), rwType);
-    }
-
-    /**
-     * 动态添加一个属性，并且生成可以属性的get/set方法
-     * @param propertyName 属性名
-     * @param propertyType 属性类型
-     * @param delegate 属性默认值
-     */
-    public void addProperty(String propertyName, Class<?> propertyType, Supplier<? extends DynamicProperty> delegate) {
-        this.addProperty(propertyName, propertyType, delegate, ReadWriteType.ReadWrite);
-    }
-
-    /**
-     * 动态添加一个属性，并且生成可以属性的get/set方法
-     * @param propertyName 属性名
-     * @param propertyType 属性类型
-     * @param delegate 属性默认值
-     * @param rwType 读写权限
-     */
-    public void addProperty(String propertyName, Class<?> propertyType, Supplier<? extends DynamicProperty> delegate, ReadWriteType rwType) {
-        if (StringUtils.isBlank(propertyName)) {
-            throw new IllegalArgumentException("args propertyName is null.");
-        }
-        if (propertyType == null) {
-            throw new IllegalArgumentException("args propertyType is null.");
-        }
-        // 如果存在这个属性，则抛出异常
-        if (BeanUtils.hasProperty(this.getSuperClass(), propertyName)) {
-            throw new IllegalStateException(propertyName + " get/set already exists");
-        }
-        this.dynamicPropertyMap.put(propertyName, new DelegateInfo(propertyType, delegate, rwType));
-    }
-
-    Supplier<? extends DynamicProperty> findPropertyDelegate(String name) {
-        return this.dynamicPropertyMap.get(name).delegateSupplier;
-    }
-    // --------------------------------------------------------------------------------------------
-
-    /** 添加Aop拦截器 */
-    public void addAopInterceptors(Predicate<Method> aopMatcher, MethodInterceptor... aopInterceptor) {
-        for (MethodInterceptor aop : aopInterceptor) {
-            this.addAopInterceptor(aopMatcher, aop);
-        }
-    }
-
-    /** 添加Aop拦截器 */
-    public void addAopInterceptor(MethodInterceptor aopInterceptor) {
-        this.addAopInterceptor(target -> true, aopInterceptor);
-    }
-
-    /** 添加Aop拦截器 */
-    public void addAopInterceptor(Predicate<Method> aopMatcher, MethodInterceptor aopInterceptor) {
-        if (aopMatcher == null) {
-            throw new IllegalArgumentException("args aopMatcher is null.");
-        }
-        if (aopInterceptor == null) {
-            throw new IllegalArgumentException("args aopInterceptor is null.");
-        }
-        this.interceptorList.add(new InnerMethodInterceptorDefine(aopMatcher, aopInterceptor));
-    }
-    // --------------------------------------------------------------------------------------------
-
-    /** 根据方法查找这个方法的所有拦截器 */
-    MethodInterceptor[] findInterceptor(String tmDesc) {
-        return this.interceptorMap.get(tmDesc);
-    }
-
-    /** 是否支持Aop */
-    public boolean isSupport() {
-        return AsmTools.isSupport(this.getSuperClass());
-    }
-
-    /** 取得字节码信息 */
-    public byte[] getBytes() {
-        return this.classBytes;
-    }
-
-    /** 父类类型 */
-    public Class<?> getSuperClass() {
-        return superClass;
-    }
-
-    /** 新类类名 */
-    public String getClassName() {
-        return this.className;
-    }
-
-    /** 新类类名 */
-    public String getSimpleName() {
-        if (this.className == null) {
-            return null;
-        }
-        return this.className.substring(this.className.lastIndexOf(".") + 1);
-    }
-
-    /**是否包含改变*/
-    public boolean hasChange() {
-        return !this.interceptorList.isEmpty() || !this.dynamicPropertyMap.isEmpty();
-    }
-
-    protected void initBuild() {
-        // . 构建 interceptorMap
-        Method[] targetMethodArrays = this.getSuperClass().getMethods();
-        for (Method targetMethod : targetMethodArrays) {
-            int dataModifiers = targetMethod.getModifiers();
-            if (AsmTools.checkOr(dataModifiers, Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)) {
-                continue;
-            }
-
-            List<MethodInterceptor> interceptorList = new ArrayList<>();
-            for (InnerMethodInterceptorDefine define : this.interceptorList) {
-                if (!define.test(targetMethod)) {
-                    continue;
-                }
-                interceptorList.add(define);
-            }
-
-            if (!interceptorList.isEmpty()) {
-                String interceptorMethodDesc = AsmTools.toAsmFullDesc(targetMethod);
-                MethodInterceptor[] aopArrays = interceptorList.toArray(new MethodInterceptor[0]);
-                this.interceptorMap.put(interceptorMethodDesc, aopArrays);
-                this.interceptorMethod.put(interceptorMethodDesc, targetMethod);
-            }
-        }
-    }
-
-    /** 调用ClassLoader，生成字节码并装载它 */
-    public synchronized <T> T buildProxy(T original) throws IOException, ReflectiveOperationException {
-        ProxyFactory<T> factory = buildProxyFactory();
-        return factory.apply(original);
-    }
-
-    /** 调用ClassLoader，生成字节码并装载它 */
-    public synchronized <T> ProxyFactory<T> buildProxyFactory() throws IOException, ReflectiveOperationException {
-        final Class<?> buildClass = buildClass(true);
-        return original -> {
+    /** 创建对象代理工厂 */
+    public static synchronized <T> ProxyFactory<T> newProxyFactory(ClassLoader loader, DynamicConfig config) {
+        Class<?> buildClass = newProxyClass(loader, config);
+        return o -> {
             Constructor<?> constructor = buildClass.getConstructors()[0];
-            return (T) constructor.newInstance(original);
+            return (T) constructor.newInstance(o);
         };
     }
 
-    /** 调用ClassLoader，生成字节码并装载它 */
-    public synchronized <T> Class<? extends T> buildClass() throws IOException, ReflectiveOperationException {
-        return buildClass(false);
+    /** 生成代理类型，并使用给定的 ClassLoader 装载它 */
+    public static synchronized Class<?> newProxyClass(ClassLoader loader, DynamicConfig config) {
+        return proxyClassCache.get(loader, config);
+    }
+
+    /** 生成增强类型，并使用给定的 ClassLoader 装载它 */
+    public static synchronized Class<?> newDynamicClass(ClassLoader loader, DynamicConfig config) {
+        return dynamicClassCache.get(loader, config);
+    }
+
+    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy, ClassLoader loader) throws IOException, ReflectiveOperationException {
+        String className = getClassName(config);
+        byte[] classBytes = buildClassBytes(config, className, isProxy);
+
+        // load class
+        try {
+            Class<?> buildType = (Class<?>) defineClassMethod.invoke(loader, new Object[] { className, classBytes, 0, classBytes.length });
+            Field dynamicConfig = buildType.getDeclaredField("dynamicConfig");
+            dynamicConfig.setAccessible(true);
+            dynamicConfig.set(null, config);
+            return buildType;
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            logClassBytes(className, classBytes);
+        }
+    }
+
+    private static void logClassBytes(String className, byte[] classBytes) {
+        //        File outFile = new File("target/proxy_" + System.currentTimeMillis(), config.getClassName() + ".class");
+        //        outFile.getParentFile().mkdirs();
+        //        try (FileOutputStream fos = new FileOutputStream(outFile, false);) {
+        //            fos.write(classBytes);
+        //            fos.flush();
+        //        } catch (Throwable e) {
+        //            e.printStackTrace();
+        //        }
+    }
+
+    private static String getClassName(DynamicConfig config) {
+        return config.getSuperClass().getName() + aopClassSuffix + spinIndex.getAndIncrement();
     }
 
     /** 调用ClassLoader，生成字节码并装载它 */
-    private synchronized <T> Class<? extends T> buildClass(boolean isProxy) throws IOException, ReflectiveOperationException {
-        if (this.classType != null) {
-            return (Class<? extends T>) this.classType;
-        }
-        if (!this.hasChange()) {
-            return (Class<? extends T>) this.superClass;
-        }
-        if (!isSupport()) {
+    private static byte[] buildClassBytes(DynamicConfig config, String newClassName, boolean isProxy) throws IOException, ReflectiveOperationException {
+        //        if (this.classType != null) {
+        //            return (Class<? extends T>) this.classType;
+        //        }
+        //        if (!this.hasChange()) {
+        //            return (Class<? extends T>) this.superClass;
+        //        }
+        if (!config.isSupport()) {
             throw new IOException("class in package java or javax , does not support.");
         }
 
-        this.initBuild();
-        String thisClassName = AsmTools.replaceClassName(this.getClassName());
-        String superClassName = AsmTools.replaceClassName(this.getSuperClass());
+        String thisClassName = AsmTools.replaceClassName(newClassName);
+        String superClassName = AsmTools.replaceClassName(config.getSuperClass());
         String exceptionUtilsName = AsmTools.replaceClassName(ExceptionUtils.class);
         String[] interfaces = isProxy ?//
                 new String[] { AsmTools.replaceClassName(DynamicClass.class), AsmTools.replaceClassName(DynamicObject.class) } ://
@@ -264,13 +187,20 @@ public class DynamicClassConfig {
         //
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(V1_6, ACC_PUBLIC + ACC_SUPER, thisClassName, null, superClassName, interfaces);
+
+        // .dynamicConfig 字段
+        FieldVisitor fdc = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class), null, null);
+        fdc.visitEnd();
+
         // .构造方法
         if (isProxy) {
-            this.buildConstructorForProxy(classWriter, thisClassName, superClassName);
+            buildConstructorForProxy(config, classWriter, thisClassName, superClassName);
         } else {
-            this.buildConstructorForBuild(classWriter, thisClassName, superClassName);
+            buildConstructorForBuild(config, classWriter, thisClassName, superClassName);
         }
-        {//.静态代码块 static
+
+        //.静态代码块 static
+        {
             if (!isProxy) {
                 FieldVisitor fv1 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "proxyMethod", AsmTools.toAsmType(Method[].class), null, null);
                 fv1.visitEnd();
@@ -291,34 +221,35 @@ public class DynamicClassConfig {
             //
             mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
             mv.visitLabel(tryStartLabel);
-            mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(this.getSuperClass())));
+            mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(config.getSuperClass())));
             mv.visitVarInsn(ASTORE, superClassIndex);
             mv.visitLdcInsn(Type.getType("L" + thisClassName + ";"));
             mv.visitVarInsn(ASTORE, thisClassIndex);
             //
             mv.visitLabel(tryStartCodeLabel);
-            mv.visitIntInsn(BIPUSH, this.interceptorMethod.size());
+            mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
             mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
             mv.visitFieldInsn(PUTSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
             if (!isProxy) {
-                mv.visitIntInsn(BIPUSH, this.interceptorMethod.size());
+                mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
                 mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
                 mv.visitFieldInsn(PUTSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
             }
             //
             int i = -1;
             String getMethodDesc = AsmTools.toAsmDesc(Class.class.getMethod("getMethod", String.class, Class[].class));
-            for (Map.Entry<String, Method> ent : this.interceptorMethod.entrySet()) {
+            for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
                 Method aopMethod = ent.getValue();
-                Class<?>[] parameterTypes = aopMethod.getParameterTypes();
+                String asmMethodName = aopMethod.getName();
+                String[] parameterTypes = AsmTools.splitAsmType(AsmTools.toAsmType(aopMethod.getParameterTypes()));
                 indexMap.put(AsmTools.toAsmFullDesc(aopMethod), ++i);
                 //
                 // targetMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
                 mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
                 mv.visitIntInsn(BIPUSH, i);
                 mv.visitVarInsn(ALOAD, superClassIndex); // superClass
-                mv.visitLdcInsn(interceptorMethod.get(ent.getKey()).getName());
-                AsmTools.codeBuilder_2(mv, AsmTools.splitAsmType(AsmTools.toAsmType(parameterTypes)));
+                mv.visitLdcInsn(asmMethodName);
+                AsmTools.codeBuilder_2(mv, parameterTypes);
                 mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getMethod", getMethodDesc, false);
                 mv.visitInsn(AASTORE);
                 //
@@ -334,8 +265,8 @@ public class DynamicClassConfig {
                     mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
                     mv.visitIntInsn(BIPUSH, i);
                     mv.visitVarInsn(ALOAD, thisClassIndex); // superClass
-                    mv.visitLdcInsn(aopMethodSuffix + interceptorMethod.get(ent.getKey()).getName());
-                    AsmTools.codeBuilder_2(mv, AsmTools.splitAsmType(AsmTools.toAsmType(parameterTypes)));
+                    mv.visitLdcInsn(aopMethodSuffix + asmMethodName);
+                    AsmTools.codeBuilder_2(mv, parameterTypes);
                     mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getDeclaredMethod", getMethodDesc, false);
                     mv.visitInsn(AASTORE);
                     //
@@ -366,7 +297,9 @@ public class DynamicClassConfig {
             mv.visitMaxs(8, 1);
             mv.visitEnd();
         }
-        for (Map.Entry<String, Method> ent : this.interceptorMethod.entrySet()) {
+
+        // .代理方法
+        for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
             Method aopMethod = ent.getValue();
             String[] asmParams = AsmTools.splitAsmType(AsmTools.toAsmType(aopMethod.getParameterTypes()));//"IIIILjava/lang/Integer;F[[[ILjava/lang.Boolean;"
             String[] throwStrArray = AsmTools.replaceClassName(aopMethod.getExceptionTypes());
@@ -425,8 +358,9 @@ public class DynamicClassConfig {
             mv.visitLabel(paramObjectsLabel);
             //
             // Object obj = new InnerAopInvocation("checkBaseType1", targetMethod[0], this, pObjects).proceed();
-            mv.visitTypeInsn(NEW, AsmTools.replaceClassName(InnerInvocation.class));
+            mv.visitTypeInsn(NEW, AsmTools.replaceClassName(InvokerMethodInvocation.class));
             mv.visitInsn(DUP);
+            mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
             mv.visitLdcInsn(ent.getKey());
             mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
             mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
@@ -438,11 +372,12 @@ public class DynamicClassConfig {
             } else {
                 mv.visitInsn(ACONST_NULL);
             }
+            mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
             mv.visitVarInsn(ALOAD, paramIndexMap.get("this"));
             mv.visitVarInsn(ALOAD, paramIndexMap.get("paramObjects"));
-            String initDesc = AsmTools.toAsmType(InnerInvocation.class.getConstructor(String.class, Method.class, Method.class, Object.class, Object[].class).getParameterTypes());
-            mv.visitMethodInsn(INVOKESPECIAL, AsmTools.replaceClassName(InnerInvocation.class), "<init>", "(" + initDesc + ")V", false);
-            mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(InnerInvocation.class), "proceed", "()Ljava/lang/Object;", false);
+            String initDesc = AsmTools.toAsmType(InvokerMethodInvocation.class.getConstructor(boolean.class, String.class, Method.class, Method.class, DynamicConfig.class, Object.class, Object[].class).getParameterTypes());
+            mv.visitMethodInsn(INVOKESPECIAL, AsmTools.replaceClassName(InvokerMethodInvocation.class), "<init>", "(" + initDesc + ")V", false);
+            mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(InvokerMethodInvocation.class), "proceed", "()Ljava/lang/Object;", false);
             mv.visitVarInsn(ASTORE, paramIndexMap.get("returnData"));
             mv.visitLabel(returnDataLabel);
             // return (List) obj;
@@ -501,28 +436,31 @@ public class DynamicClassConfig {
             mv.visitMaxs(-1, -1);
             mv.visitEnd();
         }
+
         // .代理属性
-        for (Map.Entry<String, DelegateInfo> ent : this.dynamicPropertyMap.entrySet()) {
+        for (Map.Entry<String, DynamicPropertyInfo> ent : config.getDynamicPropertyMap().entrySet()) {
             String propertyName = ent.getKey();
-            DelegateInfo propertyInfo = ent.getValue();
+            DynamicPropertyInfo propertyInfo = ent.getValue();
             String asmType = AsmTools.toAsmType(propertyInfo.propertyType);
             {
                 Label sLabel = new Label();
                 Label eLabel = new Label();
                 String methodName = ((propertyInfo.propertyType == Boolean.TYPE) ? "is" : "get") + StringUtils.firstCharToUpperCase(propertyName);
                 String methodDescriptor = "()" + asmType;
-                Method propertyMethod = InnerDelegateInvocation.class.getMethod("getProperty", String.class, Object.class, String.class);
+                Method propertyMethod = InvokerDynamicProperty.class.getMethod("getProperty", boolean.class, DynamicConfig.class, String.class, Object.class, String.class);
                 //
                 MethodVisitor mv = classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, methodDescriptor, null, new String[] { "java/lang/Throwable" });
                 mv.visitLabel(sLabel);
-                mv.visitLdcInsn(getClassName() + "_get_" + propertyName);
+                mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
+                mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
+                mv.visitLdcInsn(newClassName + "_get_" + propertyName);
                 mv.visitVarInsn(ALOAD, 0);// this
                 mv.visitLdcInsn(propertyName);
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InnerDelegateInvocation.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InvokerDynamicProperty.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
                 AsmTools.codeBuilder_Cast(mv, asmType, null);
                 mv.visitInsn(AsmTools.getReturn(asmType));
                 mv.visitLabel(eLabel);
-                mv.visitLocalVariable("this", AsmTools.toAsmType(InnerDelegateInvocation.class), null, sLabel, eLabel, 0);
+                mv.visitLocalVariable("this", AsmTools.toAsmType(InvokerDynamicProperty.class), null, sLabel, eLabel, 0);
                 mv.visitMaxs(3, 1);
                 mv.visitEnd();
             }
@@ -531,45 +469,34 @@ public class DynamicClassConfig {
                 Label eLabel = new Label();
                 String methodName = "set" + StringUtils.firstCharToUpperCase(propertyName);
                 String methodDescriptor = "(" + asmType + ")V";
-                Method propertyMethod = InnerDelegateInvocation.class.getMethod("setProperty", String.class, Object.class, String.class, Object.class);
+                Method propertyMethod = InvokerDynamicProperty.class.getMethod("setProperty", boolean.class, DynamicConfig.class, String.class, Object.class, String.class, Object.class);
                 //
                 MethodVisitor mv = classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, methodDescriptor, null, new String[] { "java/lang/Throwable" });
                 mv.visitCode();
                 mv.visitLabel(sLabel);
-                mv.visitLdcInsn(getClassName() + "_set_" + propertyName);
+                mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
+                mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
+                mv.visitLdcInsn(newClassName + "_set_" + propertyName);
                 mv.visitVarInsn(ALOAD, 0);// this
                 mv.visitLdcInsn(propertyName);
                 mv.visitVarInsn(AsmTools.getLoad(asmType), 1);
                 AsmTools.codeBuilder_valueOf(mv, AsmTools.toAsmType(propertyInfo.propertyType));
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InnerDelegateInvocation.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InvokerDynamicProperty.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
                 mv.visitInsn(Opcodes.RETURN);
                 mv.visitLabel(eLabel);
-                mv.visitLocalVariable("this", AsmTools.toAsmType(InnerDelegateInvocation.class), null, sLabel, eLabel, 0);
+                mv.visitLocalVariable("this", AsmTools.toAsmType(InvokerDynamicProperty.class), null, sLabel, eLabel, 0);
                 mv.visitLocalVariable(propertyName, AsmTools.toAsmType(Object.class), null, sLabel, eLabel, 1);
                 mv.visitMaxs(4, 2);
                 mv.visitEnd();
             }
         }
-        //
+
         classWriter.visitEnd();
-        this.classBytes = classWriter.toByteArray();
-        if (this.classWritePath != null) {
-            File outFile = new File(this.classWritePath, thisClassName + ".class");
-            outFile.getParentFile().mkdirs();
-            try (FileOutputStream fos = new FileOutputStream(outFile, false);) {
-                fos.write(this.classBytes);
-                fos.flush();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-        this.parentLoader.addClassConfig(this);
-        this.classType = this.parentLoader.findClass(getClassName());
-        return (Class<? extends T>) this.classType;
+        return classWriter.toByteArray();
     }
 
-    private void buildConstructorForBuild(ClassWriter classWriter, String thisClassName, String superClassName) {
-        Constructor<?>[] constructorArray = this.getSuperClass().getConstructors();
+    private static void buildConstructorForBuild(DynamicConfig config, ClassWriter classWriter, String thisClassName, String superClassName) {
+        Constructor<?>[] constructorArray = config.getSuperClass().getConstructors();
         for (Constructor<?> constructor : constructorArray) {
             String[] asmParams = AsmTools.splitAsmType(AsmTools.toAsmType(constructor.getParameterTypes()));//"IIIILjava/lang/Integer;F[[[ILjava/lang.Boolean;"
             String[] throwStrArray = AsmTools.replaceClassName(constructor.getExceptionTypes());
@@ -612,7 +539,7 @@ public class DynamicClassConfig {
         }
     }
 
-    private void buildConstructorForProxy(ClassWriter classWriter, String thisClassName, String superClassName) {
+    private static void buildConstructorForProxy(DynamicConfig config, ClassWriter classWriter, String thisClassName, String superClassName) {
         String superClassRef = "L" + superClassName + ";";
         String thisClassRef = "L" + thisClassName + ";";
 
@@ -656,37 +583,36 @@ public class DynamicClassConfig {
         }
     }
 
-    /** 把生成的字节码数据写入到这个目录中。 */
-    public void classWriteToPath(File classWritePath) throws IOException {
-        Objects.requireNonNull(classWritePath);
-        if (!classWritePath.canWrite()) {
-            throw new IOException("path cannot be written.");
-        }
-        this.classWritePath = classWritePath;
-    }
-
-    public File getClassWriteFile() {
-        if (this.classWritePath == null) {
+    public static Class<?> getPrototypeType(Object instance) {
+        if (instance == null) {
             return null;
+        } else {
+            Class<?> instanceClass = instance.getClass();
+            return isDynamicObject(instance) ? instanceClass.getSuperclass() : instanceClass;
         }
-        return new File(this.classWritePath, AsmTools.replaceClassName(this.getClassName()) + ".class");
     }
 
-    private static class InnerMethodInterceptorDefine implements MethodInterceptor, Predicate<Method> {
-        private Predicate<Method> aopMatcher     = null;
-        private MethodInterceptor aopInterceptor = null;
-
-        public InnerMethodInterceptorDefine(Predicate<Method> aopMatcher, MethodInterceptor aopInterceptor) {
-            this.aopMatcher = aopMatcher;
-            this.aopInterceptor = aopInterceptor;
+    public static Class<?> getPrototypeType(Class<?> targetType) {
+        if (targetType == null) {
+            return null;
+        } else {
+            return isDynamicClass(targetType) ? targetType.getSuperclass() : targetType;
         }
+    }
 
-        public boolean test(Method target) {
-            return this.aopMatcher.test(target);
-        }
+    public static boolean isProxyObject(Object instance) {
+        return instance instanceof DynamicObject;
+    }
 
-        public Object invoke(MethodInvocation invocation) throws Throwable {
-            return this.aopInterceptor.invoke(invocation);
-        }
+    public static boolean isDynamicObject(Object instance) {
+        return instance instanceof DynamicClass;
+    }
+
+    public static boolean isProxyClass(Class<?> targetType) {
+        return targetType != null && DynamicObject.class.isAssignableFrom(targetType);
+    }
+
+    public static boolean isDynamicClass(Class<?> targetType) {
+        return targetType != null && DynamicClass.class.isAssignableFrom(targetType);
     }
 }

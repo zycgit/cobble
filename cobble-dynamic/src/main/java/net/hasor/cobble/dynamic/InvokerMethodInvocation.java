@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -22,23 +23,20 @@ import java.lang.reflect.Method;
  * @version : 2013-4-13
  * @author 赵永春 (zyc@hasor.net)
  */
-public class InnerInvocation implements MethodInvocation {
+public class InvokerMethodInvocation implements MethodInvocation {
     private final MethodInterceptor[] interceptorDefinitions;
     private final MethodInvocation    proceedingChain;
     private       int                 index = -1;
 
-    public InnerInvocation(String targetMethodDesc, final Method targetMethod, final Method proxyMethod, final Object targetObject, Object[] methodParams) {
-        Class<?> targetClass = targetObject.getClass();
-        ClassLoader loader = targetClass.getClassLoader();
-
-        MethodInterceptor[] interceptors = null;
-        if (loader instanceof DynamicClassLoader) {
-            DynamicClassConfig cc = ((DynamicClassLoader) loader).findClassConfig(targetClass.getName());
-            interceptors = cc.findInterceptor(targetMethodDesc);
-        }
-
+    public InvokerMethodInvocation(boolean isProxy, String targetMethodDesc, final Method targetMethod, final Method proxyMethod, final DynamicConfig dynamicConfig, final Object targetObject, Object[] methodParams) {
+        MethodInterceptor[] interceptors = dynamicConfig.findInterceptor(targetMethodDesc);
         this.interceptorDefinitions = interceptors == null ? new MethodInterceptor[0] : interceptors;
-        this.proceedingChain = new InnerChainMethodInvocation(proxyMethod, targetMethod, targetObject, methodParams);
+        this.proceedingChain = new InnerChainMethodInvocation(isProxy, proxyMethod, targetMethod, targetObject, methodParams);
+    }
+
+    @Override
+    public boolean isProxy() {
+        return this.proceedingChain.isProxy();
     }
 
     public Method getMethod() {
@@ -63,12 +61,14 @@ public class InnerInvocation implements MethodInvocation {
     }
 
     private static class InnerChainMethodInvocation implements MethodInvocation {
-        private Method   proxyMethod  = null;
-        private Method   targetMethod = null;
-        private Object   targetObject = null;
-        private Object[] paramObjects = null;
+        private final boolean  isProxy;
+        private final Method   proxyMethod;
+        private final Method   targetMethod;
+        private final Object   targetObject;
+        private final Object[] paramObjects;
 
-        InnerChainMethodInvocation(Method proxyMethod, Method targetMethod, Object targetObject, Object[] paramObjects) {
+        InnerChainMethodInvocation(boolean isProxy, Method proxyMethod, Method targetMethod, Object targetObject, Object[] paramObjects) {
+            this.isProxy = isProxy;
             if (proxyMethod == null) {
                 // proxy
                 this.proxyMethod = targetMethod;
@@ -80,6 +80,11 @@ public class InnerInvocation implements MethodInvocation {
             }
             this.targetMethod = targetMethod;
             this.paramObjects = paramObjects;
+        }
+
+        @Override
+        public boolean isProxy() {
+            return this.isProxy;
         }
 
         public Method getMethod() {

@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.aop;
-import net.hasor.cobble.dynamic.MethodInterceptor;
-import net.hasor.cobble.dynamic.MethodInvocation;
+package net.hasor.cobble.dynamic;
 import net.hasor.cobble.supplier.TypeSupplier;
 
 import java.lang.reflect.AnnotatedElement;
@@ -33,11 +31,11 @@ import java.util.stream.Stream;
  * @version : 2013-11-8
  * @author 赵永春 (zyc@hasor.net)
  */
-public class AopInterceptor implements MethodInterceptor {
+class InvokerAopInterceptor implements MethodInterceptor {
     private final WeakHashMap<Method, List<Class<? extends MethodInterceptor>>> methodInterceptorMap = new WeakHashMap<>();
     private       TypeSupplier                                                  typeSupplier         = null;
 
-    public AopInterceptor(TypeSupplier typeSupplier) {
+    public InvokerAopInterceptor(TypeSupplier typeSupplier) {
         this.typeSupplier = typeSupplier;
     }
 
@@ -66,5 +64,52 @@ public class AopInterceptor implements MethodInterceptor {
         return Arrays.stream(annoSet).flatMap(//
                 (Function<Aop, Stream<Class<? extends MethodInterceptor>>>) aop -> Arrays.stream(aop.value())//
         ).collect(Collectors.toList());
+    }
+
+    private static class AopChainInvocation implements MethodInvocation {
+        private final MethodInterceptor[] beforeInterceptor;
+        private final MethodInvocation    invocation;
+        private       int                 index = -1;
+
+        public AopChainInvocation(TypeSupplier appContext, List<Class<? extends MethodInterceptor>> interTypeList, MethodInvocation invocation) {
+            List<MethodInterceptor> beforeList = new ArrayList<>();
+            for (Class<? extends MethodInterceptor> interType : interTypeList) {
+                if (interType != null) {
+                    beforeList.add(appContext.get(interType));
+                }
+            }
+            this.beforeInterceptor = beforeList.toArray(new MethodInterceptor[0]);
+            this.invocation = invocation;
+        }
+
+        public Object invoke(MethodInvocation invocation) throws Throwable {
+            index++;
+            if (index < beforeInterceptor.length) {
+                return beforeInterceptor[index].invoke(this);
+            } else {
+                return invocation.proceed();
+            }
+        }
+
+        public Object[] getArguments() {
+            return invocation.getArguments();
+        }
+
+        public Object proceed() throws Throwable {
+            return this.invoke(this.invocation);
+        }
+
+        public Object getThis() {
+            return invocation.getThis();
+        }
+
+        @Override
+        public boolean isProxy() {
+            return invocation.isProxy();
+        }
+
+        public Method getMethod() {
+            return invocation.getMethod();
+        }
     }
 }
