@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
+import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
 import net.hasor.cobble.dynamic.beans.PropertyBean;
 import org.junit.Test;
 
@@ -21,7 +22,7 @@ public class ProxyTest {
     @Test
     public void aopTest1() throws Exception {
         PropertyBean propertyBean = new PropertyBean();
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(PropertyBean.class);
         classConfig.addAopInterceptor(aopInterceptor);
 
@@ -112,4 +113,5 @@ public class ProxyTest {
         instance.setStringValue("abc");
         assert propertyBean.getStringValue().equals("abc");
     }
+
 }

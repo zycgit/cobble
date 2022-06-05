@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.extends1;
+package net.hasor.cobble.dynamic.anno.extend;
+import net.hasor.cobble.dynamic.Aop;
+import net.hasor.cobble.dynamic.anno.custom.MyAopInterceptor;
+
 /**
- * 继承
+ * 方法级别
  * @version : 2014-1-3
  * @author 赵永春 (zyc@hasor.net)
  */
-public class SuperMethodAopBean extends MethodAopBean {
+public class MethodAopBean {
+    @Aop(MyAopInterceptor.class)
+    public String fooCall(String string) {
+        System.out.println("fooCall");
+        return "call back : " + string;
+    }
 }

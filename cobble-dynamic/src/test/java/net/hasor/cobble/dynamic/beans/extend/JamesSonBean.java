@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.extends2;
+package net.hasor.cobble.dynamic.beans.extend;
 /**
  * 詹姆斯的孩子
  * @version : 2015年1月12日

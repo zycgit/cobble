@@ -1,9 +1,26 @@
+/*
+ * Copyright 2008-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.hasor.cobble.dynamic;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.dynamic.DynamicConfig.DynamicPropertyInfo;
 import org.objectweb.asm.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -59,7 +76,7 @@ public final class Proxy {
     private static class ProxyInvocationException extends RuntimeException {
 
         public ProxyInvocationException(Exception e) {
-            super(e);
+            super(e.getMessage(), e);
         }
     }
 
@@ -98,6 +115,13 @@ public final class Proxy {
         }
     }
 
+    public static synchronized Class<?> newDynamicClass(ClassLoader loader, Class<?> superType) {
+        DynamicConfig config = new DynamicConfig(superType);
+        if (!config.hasChange()) {
+            return superType;
+        }
+        return dynamicClassCache.get(loader, config);
+    }
     //    /** 调用ClassLoader，生成字节码并装载它 */
     //    public static synchronized Class<?> buildProxyClass(ClassLoader loader, Class<?>... interfaces) throws IOException, ReflectiveOperationException {
     //
@@ -146,19 +170,22 @@ public final class Proxy {
         } catch (Exception e) {
             throw e;
         } finally {
-            logClassBytes(className, classBytes);
+            logClassBytes(className, classBytes, config.getDebugOutputDir());
         }
     }
 
-    private static void logClassBytes(String className, byte[] classBytes) {
-        //        File outFile = new File("target/proxy_" + System.currentTimeMillis(), config.getClassName() + ".class");
-        //        outFile.getParentFile().mkdirs();
-        //        try (FileOutputStream fos = new FileOutputStream(outFile, false);) {
-        //            fos.write(classBytes);
-        //            fos.flush();
-        //        } catch (Throwable e) {
-        //            e.printStackTrace();
-        //        }
+    private static void logClassBytes(String className, byte[] classBytes, File debugOutputFile) throws IOException {
+        if (debugOutputFile == null) {
+            return;
+        }
+
+        String classFullPath = className.replace(".", String.valueOf(File.separatorChar)) + ".class";
+        File outFile = new File(debugOutputFile, classFullPath);
+        outFile.getParentFile().mkdirs();
+        try (FileOutputStream fos = new FileOutputStream(outFile, false)) {
+            fos.write(classBytes);
+            fos.flush();
+        }
     }
 
     private static String getClassName(DynamicConfig config) {

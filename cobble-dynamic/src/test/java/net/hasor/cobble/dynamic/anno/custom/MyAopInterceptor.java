@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.custom;
+package net.hasor.cobble.dynamic.anno.custom;
 import net.hasor.cobble.dynamic.MethodInterceptor;
 import net.hasor.cobble.dynamic.MethodInvocation;
 

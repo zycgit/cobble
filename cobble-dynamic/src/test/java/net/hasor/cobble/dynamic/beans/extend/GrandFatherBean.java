@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.extends2;
+package net.hasor.cobble.dynamic.beans.extend;
 /**
- * 威廉
+ * 祖父
  * @version : 2015年1月12日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class WilliamBean extends GrandFatherBean {
+public class GrandFatherBean implements FooFunction {
 }

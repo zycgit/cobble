@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.anno;
+package net.hasor.cobble.dynamic.anno.aop;
 import net.hasor.cobble.dynamic.Aop;
 
 import java.util.*;

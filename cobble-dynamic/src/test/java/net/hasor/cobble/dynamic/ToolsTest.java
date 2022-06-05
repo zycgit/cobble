@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.dynamic.custom.MyAop;
-import net.hasor.cobble.dynamic.extends2.GrandFatherBean;
-import net.hasor.cobble.dynamic.extends2.JamesBean;
+import net.hasor.cobble.dynamic.anno.custom.MyAop;
+import net.hasor.cobble.dynamic.beans.extend.GrandFatherBean;
+import net.hasor.cobble.dynamic.beans.extend.JamesBean;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 
-public class AopToosTest {
+public class ToolsTest {
     @Test
-    public void toosTest1() {
+    public void toolsTest1() {
         String[] asmType1 = AsmTools.splitAsmType("IIIILLjava/lang/Integer;");
         assert asmType1[0].equals("I");
         assert asmType1[1].equals("I");
@@ -37,7 +37,7 @@ public class AopToosTest {
     }
 
     @Test
-    public void toosTest2() {
+    public void toolsTest2() {
         Predicate<Class<?>> annotatedWithClass = AopMatchers.annotatedWithClass(MyAop.class);
         Predicate<Method> annotatedWithMethod = AopMatchers.annotatedWithMethod(MyAop.class);
         //        Predicate<Class<?>> expressionClass = AopMatchers.expressionClass("net.test.hasor.*");
@@ -74,24 +74,15 @@ public class AopToosTest {
         //
     }
 
-    //    @Test
-    //    public void toosTest3() throws Exception {
-    //        DynamicConfig config = new DynamicConfig(Object.class);
-    //        assert config.getSimpleName().startsWith("Object$auto$");
-    //        assert Proxy.buildClass(config) == Object.class; // 没有Aop
-    //        assert !config.hasChange(); // 没有Aop
-    //    }
-    //
-    //    @Test
-    //    public void toosTest4() {
-    //        DynamicConfig config = new DynamicConfig(Object.class);
-    //        config.addAopInterceptor(invocation -> null);
-    //        assert config.getSimpleName().startsWith("Object$auto$");
-    //        try {
-    //            Proxy.buildClass(config);
-    //            assert false;
-    //        } catch (Exception e) {
-    //            assert e.getMessage().equals("class in package java or javax , does not support.");
-    //        }
-    //    }
+    @Test
+    public void toolsTest4() {
+        DynamicConfig config = new DynamicConfig(Object.class);
+        config.addAopInterceptor(invocation -> null);
+        try {
+            Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), config);
+            assert false;
+        } catch (Exception e) {
+            assert e.getMessage().equals("class in package java or javax , does not support.");
+        }
+    }
 }

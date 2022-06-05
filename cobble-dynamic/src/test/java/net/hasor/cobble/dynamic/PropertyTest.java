@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import com.alibaba.fastjson.JSON;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.supplier.Provider;
 import org.junit.Test;
@@ -31,9 +30,11 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", "abc");
-        assert JSON.toJSONString(instance).equals("{\"name\":\"abc\"}");
+        assert BeanUtils.readProperty(instance, "name").equals("abc");
+        assert delegate.getValue().equals("abc");
         BeanUtils.writeProperty(instance, "name", "def");
-        assert JSON.toJSONString(instance).equals("{\"name\":\"def\"}");
+        assert BeanUtils.readProperty(instance, "name").equals("def");
+        assert delegate.getValue().equals("def");
     }
 
     @Test
@@ -45,9 +46,9 @@ public class PropertyTest {
         Object instance = buildClass.newInstance();
         //
         BeanUtils.writeProperty(instance, "name", true);
-        assert JSON.toJSONString(instance).equals("{\"name\":true}");
+        assert BeanUtils.readProperty(instance, "name").equals(true);
         BeanUtils.writeProperty(instance, "name", false);
-        assert JSON.toJSONString(instance).equals("{\"name\":false}");
+        assert BeanUtils.readProperty(instance, "name").equals(false);
     }
 
     @Test

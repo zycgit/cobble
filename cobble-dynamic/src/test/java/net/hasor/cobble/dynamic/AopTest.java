@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.dynamic.beans.ConstructorBean;
-import net.hasor.cobble.dynamic.beans.PropertyBean;
-import net.hasor.cobble.dynamic.beans.SelectEnum;
-import net.hasor.cobble.dynamic.beans.ThrowAopBean;
+import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
+import net.hasor.cobble.dynamic.beans.*;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.sql.Time;
@@ -30,7 +29,7 @@ import java.util.Date;
 public class AopTest {
     @Test
     public void aopTest1() throws Exception {
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(PropertyBean.class);
         classConfig.addAopInterceptor(aopInterceptor);
         classConfig.addProperty("aacc", String.class);
@@ -177,7 +176,7 @@ public class AopTest {
                 , SelectEnum.Three                                  //
         };
         //
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(ConstructorBean.class);
         classConfig.addAopInterceptor(aopInterceptor);
         Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
@@ -240,7 +239,7 @@ public class AopTest {
 
     @Test
     public void aopTest3() throws Exception {
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(PropertyBean.class);
         classConfig.addAopInterceptor(aopInterceptor);
         Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
@@ -254,40 +253,29 @@ public class AopTest {
         assert buildClass.getName().contains(PropertyBean.class.getName() + "$proxy$");
     }
 
-    //    @Test
-    //    public void aopTest4() throws Exception {
-    //        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
-    //        DynamicConfig classConfig = new DynamicConfig(PropertyBean.class);
-    //        classConfig.addAopInterceptor(aopInterceptor);
-    //        //
-    //        File templeFile = new File("target/tmp_" + System.currentTimeMillis());
-    //        templeFile.deleteOnExit();
-    //        templeFile.mkdirs();
-    //        classConfig.classWriteToPath(templeFile);
-    //        //
-    //
-    //        Class<?> buildClass = Proxy.buildClass(classConfig);
-    //        PropertyBean instance = (PropertyBean) buildClass.newInstance();
-    //        //
-    //        ClassLoader loader = instance.getClass().getClassLoader();
-    //        InputStream resourceAsStream = loader.getResourceAsStream(instance.getClass().getName().replace(".", "/") + ".class");
-    //        ByteArrayOutputStream out = new ByteArrayOutputStream();
-    //        IOUtils.copy(resourceAsStream, out);
-    //        //
-    //        byte[] byteArray1 = out.toByteArray();
-    //        byte[] byteArray2 = classConfig.getBytes();
-    //        //
-    //        String encodeMD51 = MD5.encodeMD5(byteArray1);
-    //        String encodeMD52 = MD5.encodeMD5(byteArray2);
-    //        assert encodeMD51.equals(encodeMD52);
-    //        //
-    //        assert buildClass.getName().equals(instance.getClass().getName());
-    //        assert buildClass.getName().contains(PropertyBean.class.getName() + DynamicConfig.aopClassSuffix);
-    //    }
+    @Test
+    public void aopTest4() throws Exception {
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
+        DynamicConfig classConfig = new DynamicConfig(PropertyBean.class);
+        classConfig.addAopInterceptor(aopInterceptor);
+        classConfig.setDebugOutputDir(new File("target/proxy_" + System.currentTimeMillis()));
+        classConfig.getDebugOutputDir().deleteOnExit();
+        //
+
+        Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        PropertyBean instance = (PropertyBean) buildClass.newInstance();
+        //
+
+        String fullName = buildClass.getName().replace(".", String.valueOf(File.separatorChar)) + ".class";
+        assert new File(classConfig.getDebugOutputDir(), fullName).exists();
+        //
+        assert buildClass.getName().equals(instance.getClass().getName());
+        assert buildClass.getName().contains(PropertyBean.class.getName() + "$proxy$");
+    }
 
     @Test
     public void aopTest5() throws Exception {
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(ThrowAopBean.class);
         classConfig.addAopInterceptor(aopInterceptor);
         //
@@ -310,7 +298,7 @@ public class AopTest {
 
     @Test
     public void aopTest6() throws Exception {
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(GenericsMethodAopBean.class);
         classConfig.addAopInterceptor(aopInterceptor);
         //
@@ -335,7 +323,7 @@ public class AopTest {
 
     @Test
     public void aopTest7() throws Exception {
-        AopBeanInterceptor aopInterceptor = new AopBeanInterceptor();
+        CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         DynamicConfig classConfig = new DynamicConfig(GenericsMethodAopBean.class);
         classConfig.addAopInterceptors(method -> true, aopInterceptor);
         //

@@ -19,6 +19,7 @@ import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.supplier.Provider;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -39,6 +40,7 @@ public class DynamicConfig {
     private final Map<String, DynamicPropertyInfo> dynamicPropertyMap = new HashMap<>();
     private final Map<String, MethodInterceptor[]> interceptorMap     = new HashMap<>();
     private final Map<String, Method>              interceptorMethods = new HashMap<>();
+    private       File                             debugOutputDir;
 
     /** 创建 {@link DynamicConfig} 类型对象 */
     public DynamicConfig() {
@@ -176,6 +178,11 @@ public class DynamicConfig {
 
     // --------------------------------------------------------------------------------------------
 
+    /** 是否包含改变 */
+    public boolean hasChange() {
+        return !this.interceptorMap.isEmpty() || !this.dynamicPropertyMap.isEmpty();
+    }
+
     /** 是否支持Aop */
     public boolean isSupport() {
         String resName = this.superClass.getName().replace(".", "/") + ".class";
@@ -191,9 +198,12 @@ public class DynamicConfig {
         return superClass;
     }
 
-    /**是否包含改变*/
-    public boolean hasChange() {
-        return !this.dynamicPropertyMap.isEmpty();
+    File getDebugOutputDir() {
+        return debugOutputDir;
+    }
+
+    public void setDebugOutputDir(File debugOutputDir) {
+        this.debugOutputDir = debugOutputDir;
     }
 
     static class DynamicPropertyInfo {

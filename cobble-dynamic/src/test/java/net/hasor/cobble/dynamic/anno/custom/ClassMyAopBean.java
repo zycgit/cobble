@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.extends1;
-import net.hasor.cobble.dynamic.Aop;
-import net.hasor.cobble.dynamic.custom.MyAopInterceptor;
-
+package net.hasor.cobble.dynamic.anno.custom;
 /**
- * 类级别
+ * 类法级别
  * @version : 2014-1-3
  * @author 赵永春 (zyc@hasor.net)
  */
-@Aop(MyAopInterceptor.class)
-public class ClassAopBean {
+@MyAop()
+public class ClassMyAopBean {
     public String fooCall(String string) {
         System.out.println("fooCall");
         return "call back : " + string;

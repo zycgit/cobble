@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.dynamic.custom;
+package net.hasor.cobble.dynamic.beans.extend;
 /**
- * 方法级别
- * @version : 2014-1-3
+ * 威廉的孩子
+ * @version : 2015年1月12日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class MethodMyAopBean {
-    @MyAop()
-    public String fooCall(String string) {
-        System.out.println("fooCall");
-        return "call back : " + string;
-    }
+public class WilliamSonBean extends WilliamBean {
 }
