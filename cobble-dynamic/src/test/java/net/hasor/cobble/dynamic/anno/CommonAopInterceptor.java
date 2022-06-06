@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CommonAopInterceptor implements MethodInterceptor {
-    private Map<String, List<String>> callInfo = new HashMap<>();
+    private final Map<String, List<String>> callInfo = new HashMap<>();
 
     public Map<String, List<String>> getCallInfo() {
         return callInfo;

@@ -52,9 +52,6 @@ public class PropertyBean {
     //
     private String        stringValue;
     private SelectEnum    enumValue;
-    //
-    //
-    //
 
     public byte getByteValue() {
         return byteValue;

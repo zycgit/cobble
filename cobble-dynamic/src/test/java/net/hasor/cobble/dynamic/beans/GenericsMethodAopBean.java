@@ -24,15 +24,15 @@ import java.util.Map;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class GenericsMethodAopBean {
-    public <T, V, Z> String fooCall1(T v1, V v2, Z v3) throws Exception {
+    public <T, V, Z> String fooCall1(T v1, V v2, Z v3) {
         return "abc";
     }
 
-    public <T extends Date, V extends ArrayList> String fooCall2(T v1, V v2) throws Exception {
+    public <T extends Date, V extends ArrayList> String fooCall2(T v1, V v2) {
         return "abc";
     }
 
-    public String fooCall3(Class<? extends Date> v1, List<? extends Map<String, Date>> v2) throws Exception {
+    public String fooCall3(Class<? extends Date> v1, List<? extends Map<String, Date>> v2) {
         return "abc";
     }
 }

@@ -32,8 +32,8 @@ import java.util.stream.Stream;
  * @version : 2013-8-20
  * @author 赵永春 (zyc@hasor.net)
  */
-public class AopMatchers {
-    private AopMatchers() {
+public class Matchers {
+    private Matchers() {
     }
 
     /** 匹配任意类型*/
@@ -44,6 +44,11 @@ public class AopMatchers {
     /** 匹配任意方法*/
     public static Predicate<Method> anyMethod() {
         return t -> true;
+    }
+
+    /** 匹配任意方法*/
+    public static Predicate<Method> withMethod(Method method) {
+        return t -> t.equals(method);
     }
 
     /** 在类型中匹配注解 */

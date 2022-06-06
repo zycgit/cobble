@@ -25,10 +25,9 @@ public class PropertyTest {
         SimpleDynamicProperty delegate = new SimpleDynamicProperty();
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", String.class, Provider.of(delegate));
-        //
-        Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        Class<?> buildClass = Proxy.newEnhanceClass(Thread.currentThread().getContextClassLoader(), classConfig);
         Object instance = buildClass.newInstance();
-        //
+
         BeanUtils.writeProperty(instance, "name", "abc");
         assert BeanUtils.readProperty(instance, "name").equals("abc");
         assert delegate.getValue().equals("abc");
@@ -41,10 +40,9 @@ public class PropertyTest {
     public void propertyTest2() throws Exception {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", Boolean.TYPE);
-        //
-        Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        Class<?> buildClass = Proxy.newEnhanceClass(Thread.currentThread().getContextClassLoader(), classConfig);
         Object instance = buildClass.newInstance();
-        //
+
         BeanUtils.writeProperty(instance, "name", true);
         assert BeanUtils.readProperty(instance, "name").equals(true);
         BeanUtils.writeProperty(instance, "name", false);
@@ -55,7 +53,7 @@ public class PropertyTest {
     public void propertyTest3() {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", Boolean.TYPE, ReadWriteType.ReadOnly);
-        Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        Class<?> buildClass = Proxy.newEnhanceClass(Thread.currentThread().getContextClassLoader(), classConfig);
         assert BeanUtils.canReadProperty(buildClass, "name");
         assert !BeanUtils.canWriteProperty(buildClass, "name");
     }
@@ -64,7 +62,7 @@ public class PropertyTest {
     public void propertyTest4() {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", Boolean.TYPE, ReadWriteType.ReadWrite);
-        Class<?> buildClass = Proxy.newDynamicClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        Class<?> buildClass = Proxy.newEnhanceClass(Thread.currentThread().getContextClassLoader(), classConfig);
         assert BeanUtils.canReadProperty(buildClass, "name");
         assert BeanUtils.canWriteProperty(buildClass, "name");
     }

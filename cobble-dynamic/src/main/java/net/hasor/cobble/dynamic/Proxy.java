@@ -25,13 +25,16 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -109,8 +112,6 @@ public final class Proxy {
         }
     }
 
-    // --------------------------------------------------------------------------------------------------------------------------
-
     static {
         try {
             defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
@@ -120,30 +121,110 @@ public final class Proxy {
         }
     }
 
-    public static synchronized Class<?> newDynamicClass(ClassLoader loader, Class<?> superType) {
-        DynamicConfig config = new DynamicConfig(superType);
+    // --------------------------------------------------------------------------------------------------------------------------
+
+    private static Class<?> realSuperType(Class<?> superType) {
+        if (isDynamicClass(superType)) {
+            return getPrototypeType(superType);
+        } else {
+            return superType;
+        }
+    }
+
+    /** 兼容 jdk Proxy 用法 */
+    public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler handler) throws ReflectiveOperationException {
+        return newProxyClass(loader, interfaces, handler).newInstance();
+    }
+
+    /** 兼容 jdk Proxy 用法 */
+    public static Class<?> newProxyClass(ClassLoader loader, Class<?>[] interfaces, InvocationHandler handler) {
+        if (interfaces.length == 0 || handler == null) {
+            throw new IllegalStateException("no interfaces or handler is specified.");
+        }
+
+        DynamicConfig config = new DynamicConfig();
+        for (Class<?> inter : interfaces) {
+            if (!inter.isInterface()) {
+                throw new IllegalArgumentException("interfaces type " + inter + " is not interface.");
+            }
+            config.addImplements(inter, handler);
+        }
+
+        return newEnhanceClass(loader, config);
+    }
+
+    /** 创建对象的代理对象 */
+    public static <T> T newEnhanceInstance(ClassLoader loader, T instance, Predicate<Method> methodMatcher, MethodInterceptor... interceptors) throws ReflectiveOperationException {
+        Objects.requireNonNull(instance, "instance is null.");
+        Objects.requireNonNull(methodMatcher, "methodMatcher is null.");
+        if (interceptors == null || interceptors.length == 0) {
+            return instance;
+        }
+
+        DynamicConfig config = new DynamicConfig(realSuperType(instance.getClass()));
+        for (MethodInterceptor interceptor : interceptors) {
+            config.addAopInterceptor(methodMatcher, interceptor);
+        }
+        if (!config.hasChange()) {
+            return instance;
+        }
+
+        Class<?> buildClass = newProxyClass(loader, config);
+        Constructor<?> constructor = buildClass.getConstructors()[0];
+        return (T) constructor.newInstance(instance);
+    }
+
+    /** 创建增强类 */
+    public static Class<?> newEnhanceClass(ClassLoader loader, Class<?> superType, Predicate<Method> methodMatcher, MethodInterceptor... interceptors) {
+        Objects.requireNonNull(superType, "instance is null.");
+        Objects.requireNonNull(methodMatcher, "methodMatcher is null.");
+        if (interceptors == null || interceptors.length == 0) {
+            return superType;
+        }
+
+        DynamicConfig config = new DynamicConfig(realSuperType(superType));
+        for (MethodInterceptor interceptor : interceptors) {
+            config.addAopInterceptor(methodMatcher, interceptor);
+        }
+
         if (!config.hasChange()) {
             return superType;
         }
         return dynamicClassCache.get(loader, config);
     }
-    //    /** 调用ClassLoader，生成字节码并装载它 */
-    //    public static synchronized Class<?> buildProxyClass(ClassLoader loader, Class<?>... interfaces) throws IOException, ReflectiveOperationException {
-    //
-    //    }
-    //    public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) throws IllegalArgumentException {
-    //
-    //    }
 
-    /** 创建一个给定对象的代理对象 */
-    public static synchronized Object newProxyInstance(ClassLoader loader, DynamicConfig config, Object original) throws ReflectiveOperationException {
-        Class<?> buildClass = newProxyClass(loader, config);
-        Constructor<?> constructor = buildClass.getConstructors()[0];
-        return constructor.newInstance(original);
+    /** 增强一个类型，使用对象身上的 @Aop 注解 */
+    public static Class<?> newEnhanceClass(ClassLoader loader, Class<?> superType) {
+        Objects.requireNonNull(superType, "instance is null.");
+
+        DynamicConfig config = new DynamicConfig(realSuperType(superType));
+        if (!config.hasChange()) {
+            return superType;
+        }
+        return dynamicClassCache.get(loader, config);
     }
 
-    /** 创建对象代理工厂 */
-    public static synchronized <T> ProxyFactory<T> newProxyFactory(ClassLoader loader, DynamicConfig config) {
+    /** 增强一个对象，使用对象身上的 @Aop 注解 */
+    public static Object newEnhanceInstance(ClassLoader loader, Object instance) throws ReflectiveOperationException {
+        Objects.requireNonNull(instance, "instance is null.");
+
+        DynamicConfig config = new DynamicConfig(realSuperType(instance.getClass()));
+        if (!config.hasChange()) {
+            return instance;
+        }
+
+        Class<?> buildClass = newProxyClass(loader, config);
+        Constructor<?> constructor = buildClass.getConstructors()[0];
+        return constructor.newInstance(instance);
+    }
+
+    //
+    //
+    //
+    // --------------------------------------------------------------------------------------------------------------------------
+
+    /** 创建一个工厂，创建增强的代理类对象 */
+    public static <T> ProxyFactory<T> newProxyFactory(ClassLoader loader, DynamicConfig config) {
         Class<?> buildClass = newProxyClass(loader, config);
         return o -> {
             Constructor<?> constructor = buildClass.getConstructors()[0];
@@ -151,13 +232,13 @@ public final class Proxy {
         };
     }
 
-    /** 生成代理类型，并使用给定的 ClassLoader 装载它 */
-    public static synchronized Class<?> newProxyClass(ClassLoader loader, DynamicConfig config) {
+    /** 创建增强的代理类，代理类实例相当于对象的代理对象 */
+    public static Class<?> newProxyClass(ClassLoader loader, DynamicConfig config) {
         return proxyClassCache.get(loader, config);
     }
 
-    /** 生成增强类型，并使用给定的 ClassLoader 装载它 */
-    public static synchronized Class<?> newDynamicClass(ClassLoader loader, DynamicConfig config) {
+    /** 创建增强类 */
+    public static Class<?> newEnhanceClass(ClassLoader loader, DynamicConfig config) {
         return dynamicClassCache.get(loader, config);
     }
 
@@ -211,11 +292,9 @@ public final class Proxy {
 
         String thisClassName = AsmTools.replaceClassName(newClassName);
         String superClassName = AsmTools.replaceClassName(config.getSuperClass());
-        String exceptionUtilsName = AsmTools.replaceClassName(ExceptionUtils.class);
         String[] interfaces = isProxy ?//
                 new String[] { AsmTools.replaceClassName(DynamicClass.class), AsmTools.replaceClassName(DynamicObject.class) } ://
                 new String[] { AsmTools.replaceClassName(DynamicClass.class) };
-        Map<String, Integer> indexMap = new HashMap<>();
         //
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         classWriter.visit(V1_6, ACC_PUBLIC + ACC_SUPER, thisClassName, null, superClassName, interfaces);
@@ -232,103 +311,7 @@ public final class Proxy {
         }
 
         //.静态代码块 static
-        {
-            if (!isProxy) {
-                FieldVisitor fv1 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "proxyMethod", AsmTools.toAsmType(Method[].class), null, null);
-                fv1.visitEnd();
-            }
-            FieldVisitor fv2 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "targetMethod", AsmTools.toAsmType(Method[].class), null, null);
-            fv2.visitEnd();
-            //
-            int superClassIndex = 0;// 0 位置是 superClass
-            int thisClassIndex = 1;// 0 位置是 superClass
-            MethodVisitor mv = classWriter.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
-            mv.visitCode();
-            Label tryStartLabel = new Label();
-            Label tryStartCodeLabel = new Label();
-            Label tryCacheLabel = new Label();
-            Label tryEndLabel = new Label();
-            Label returnLabel = new Label();
-            Label cacheStartCodeLabel = new Label();
-            //
-            mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
-            mv.visitLabel(tryStartLabel);
-            mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(config.getSuperClass())));
-            mv.visitVarInsn(ASTORE, superClassIndex);
-            mv.visitLdcInsn(Type.getType("L" + thisClassName + ";"));
-            mv.visitVarInsn(ASTORE, thisClassIndex);
-            //
-            mv.visitLabel(tryStartCodeLabel);
-            mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
-            mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
-            mv.visitFieldInsn(PUTSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-            if (!isProxy) {
-                mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
-                mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
-                mv.visitFieldInsn(PUTSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-            }
-            //
-            int i = -1;
-            String getMethodDesc = AsmTools.toAsmDesc(Class.class.getMethod("getMethod", String.class, Class[].class));
-            for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
-                Method aopMethod = ent.getValue();
-                String asmMethodName = aopMethod.getName();
-                String[] parameterTypes = AsmTools.splitAsmType(AsmTools.toAsmType(aopMethod.getParameterTypes()));
-                indexMap.put(AsmTools.toAsmFullDesc(aopMethod), ++i);
-                //
-                // targetMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
-                mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, i);
-                mv.visitVarInsn(ALOAD, superClassIndex); // superClass
-                mv.visitLdcInsn(asmMethodName);
-                AsmTools.codeBuilder_2(mv, parameterTypes);
-                mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getMethod", getMethodDesc, false);
-                mv.visitInsn(AASTORE);
-                //
-                // targetMethod[n].setAccessible(true);
-                mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, i);
-                mv.visitInsn(AALOAD);
-                mv.visitInsn(ICONST_1);
-                mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
-                //
-                if (!isProxy) {
-                    // propxyMethod[n] = superClass.getMethod("aop$" + "xxxx",new Class[] { xxx,xxx});
-                    mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-                    mv.visitIntInsn(BIPUSH, i);
-                    mv.visitVarInsn(ALOAD, thisClassIndex); // superClass
-                    mv.visitLdcInsn(aopMethodSuffix + asmMethodName);
-                    AsmTools.codeBuilder_2(mv, parameterTypes);
-                    mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getDeclaredMethod", getMethodDesc, false);
-                    mv.visitInsn(AASTORE);
-                    //
-                    // targetMethod[n].setAccessible(true);
-                    mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-                    mv.visitIntInsn(BIPUSH, i);
-                    mv.visitInsn(AALOAD);
-                    mv.visitInsn(ICONST_1);
-                    mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
-                }
-            }
-            //
-            mv.visitLabel(tryCacheLabel);
-            mv.visitJumpInsn(GOTO, returnLabel);
-            mv.visitLabel(tryEndLabel);
-            mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { AsmTools.replaceClassName(Throwable.class) });
-            mv.visitVarInsn(ASTORE, 0);
-            mv.visitLabel(cacheStartCodeLabel);
-            mv.visitVarInsn(ALOAD, 0);
-            String exceptionMethodDesc = AsmTools.toAsmDesc(ExceptionUtils.class.getMethod("toRuntime", Throwable.class));
-            mv.visitMethodInsn(INVOKESTATIC, exceptionUtilsName, "toRuntime", exceptionMethodDesc, false);
-            mv.visitInsn(ATHROW);
-            mv.visitLabel(returnLabel);
-            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-            mv.visitInsn(RETURN);
-            mv.visitLocalVariable("superclass", AsmTools.toAsmType(Class.class), "Ljava/lang/Class<*>;", tryStartCodeLabel, tryCacheLabel, 0);
-            mv.visitLocalVariable("e", AsmTools.toAsmType(Throwable.class), null, cacheStartCodeLabel, returnLabel, 0);
-            mv.visitMaxs(8, 1);
-            mv.visitEnd();
-        }
+        Map<String, Integer> indexMap = buildStatic(config, classWriter, thisClassName, isProxy);
 
         // .代理方法
         for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
@@ -525,6 +508,108 @@ public final class Proxy {
 
         classWriter.visitEnd();
         return classWriter.toByteArray();
+    }
+
+    private static Map<String, Integer> buildStatic(DynamicConfig config, ClassWriter classWriter, String thisClassName, boolean isProxy) throws NoSuchMethodException {
+        Map<String, Integer> indexMap = new HashMap<>();
+
+        if (!isProxy) {
+            FieldVisitor fv1 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "proxyMethod", AsmTools.toAsmType(Method[].class), null, null);
+            fv1.visitEnd();
+        }
+        FieldVisitor fv2 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "targetMethod", AsmTools.toAsmType(Method[].class), null, null);
+        fv2.visitEnd();
+        //
+        int superClassIndex = 0;// 0 位置是 superClass
+        int thisClassIndex = 1;// 0 位置是 superClass
+        MethodVisitor mv = classWriter.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
+        mv.visitCode();
+        Label tryStartLabel = new Label();
+        Label tryStartCodeLabel = new Label();
+        Label tryCacheLabel = new Label();
+        Label tryEndLabel = new Label();
+        Label returnLabel = new Label();
+        Label cacheStartCodeLabel = new Label();
+        //
+        mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
+        mv.visitLabel(tryStartLabel);
+        mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(config.getSuperClass())));
+        mv.visitVarInsn(ASTORE, superClassIndex);
+        mv.visitLdcInsn(Type.getType("L" + thisClassName + ";"));
+        mv.visitVarInsn(ASTORE, thisClassIndex);
+        //
+        mv.visitLabel(tryStartCodeLabel);
+        mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
+        mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
+        mv.visitFieldInsn(PUTSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
+        if (!isProxy) {
+            mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
+            mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
+            mv.visitFieldInsn(PUTSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
+        }
+        //
+        int i = -1;
+        String getMethodDesc = AsmTools.toAsmDesc(Class.class.getMethod("getMethod", String.class, Class[].class));
+        for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
+            Method aopMethod = ent.getValue();
+            String asmMethodName = aopMethod.getName();
+            String[] parameterTypes = AsmTools.splitAsmType(AsmTools.toAsmType(aopMethod.getParameterTypes()));
+            indexMap.put(AsmTools.toAsmFullDesc(aopMethod), ++i);
+            //
+            // targetMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
+            mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
+            mv.visitIntInsn(BIPUSH, i);
+            mv.visitVarInsn(ALOAD, superClassIndex); // superClass
+            mv.visitLdcInsn(asmMethodName);
+            AsmTools.codeBuilder_2(mv, parameterTypes);
+            mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getMethod", getMethodDesc, false);
+            mv.visitInsn(AASTORE);
+            //
+            // targetMethod[n].setAccessible(true);
+            mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
+            mv.visitIntInsn(BIPUSH, i);
+            mv.visitInsn(AALOAD);
+            mv.visitInsn(ICONST_1);
+            mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
+            //
+            if (!isProxy) {
+                // propxyMethod[n] = superClass.getMethod("aop$" + "xxxx",new Class[] { xxx,xxx});
+                mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitVarInsn(ALOAD, thisClassIndex); // superClass
+                mv.visitLdcInsn(aopMethodSuffix + asmMethodName);
+                AsmTools.codeBuilder_2(mv, parameterTypes);
+                mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getDeclaredMethod", getMethodDesc, false);
+                mv.visitInsn(AASTORE);
+                //
+                // targetMethod[n].setAccessible(true);
+                mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitInsn(AALOAD);
+                mv.visitInsn(ICONST_1);
+                mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
+            }
+        }
+        //
+        mv.visitLabel(tryCacheLabel);
+        mv.visitJumpInsn(GOTO, returnLabel);
+        mv.visitLabel(tryEndLabel);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { AsmTools.replaceClassName(Throwable.class) });
+        mv.visitVarInsn(ASTORE, 0);
+        mv.visitLabel(cacheStartCodeLabel);
+        mv.visitVarInsn(ALOAD, 0);
+        String exceptionMethodDesc = AsmTools.toAsmDesc(ExceptionUtils.class.getMethod("toRuntime", Throwable.class));
+        mv.visitMethodInsn(INVOKESTATIC, AsmTools.replaceClassName(ExceptionUtils.class), "toRuntime", exceptionMethodDesc, false);
+        mv.visitInsn(ATHROW);
+        mv.visitLabel(returnLabel);
+        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        mv.visitInsn(RETURN);
+        mv.visitLocalVariable("superclass", AsmTools.toAsmType(Class.class), "Ljava/lang/Class<*>;", tryStartCodeLabel, tryCacheLabel, 0);
+        mv.visitLocalVariable("e", AsmTools.toAsmType(Throwable.class), null, cacheStartCodeLabel, returnLabel, 0);
+        mv.visitMaxs(8, 1);
+        mv.visitEnd();
+
+        return indexMap;
     }
 
     private static void buildConstructorForBuild(DynamicConfig config, ClassWriter classWriter, String thisClassName, String superClassName) {

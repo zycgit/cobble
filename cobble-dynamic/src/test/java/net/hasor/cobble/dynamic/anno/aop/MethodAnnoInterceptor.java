@@ -23,10 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 public class MethodAnnoInterceptor implements MethodInterceptor {
-    private final Map<String, List<String>> callInfo = new HashMap<>();
+    private static final Map<String, List<String>> callInfo = new HashMap<>();
 
-    public Map<String, List<String>> getCallInfo() {
+    public static Map<String, List<String>> getCallInfo() {
         return callInfo;
+    }
+
+    public static void reset() {
+        callInfo.clear();
     }
 
     @Override

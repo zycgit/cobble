@@ -18,32 +18,31 @@ package net.hasor.cobble.dynamic.beans;
 // 8 种基本类型和其包装类型，以及4种时间类型和常用的枚举、字符串
 //
 public class BasicConstructorBean {
-    private byte      byteValue;
-    private Byte      byteValue2;
+    private final byte      byteValue;
+    private final Byte      byteValue2;
     //
-    private short     shortValue;
-    private Short     shortValue2;
+    private final short     shortValue;
+    private final Short     shortValue2;
     //
-    private int       intValue;
-    private Integer   intValue2;
+    private final int       intValue;
+    private final Integer   intValue2;
     //
-    private long      longValue;
-    private Long      longValue2;
+    private final long      longValue;
+    private final Long      longValue2;
     //
-    private float     floatValue;
-    private Float     floatValue2;
+    private final float     floatValue;
+    private final Float     floatValue2;
     //
-    private double    doubleValue;
-    private Double    doubleValue2;
+    private final double    doubleValue;
+    private final Double    doubleValue2;
     //
-    private boolean   booleanValue;
-    private Boolean   booleanValue2;
+    private final boolean   booleanValue;
+    private final Boolean   booleanValue2;
     //
-    private char      charValue;
-    private Character charValue2;
+    private final char      charValue;
+    private final Character charValue2;
 
-    //
-    public BasicConstructorBean(//
+    public BasicConstructorBean(    //
             byte byteValue          //
             , Byte byteValue2       //
             , short shortValue      //
@@ -61,7 +60,6 @@ public class BasicConstructorBean {
             , char charValue        //
             , Character charValue2  //
     ) {
-        //
         this.byteValue = byteValue;
         this.byteValue2 = byteValue2;
         this.shortValue = shortValue;
@@ -80,9 +78,6 @@ public class BasicConstructorBean {
         this.charValue2 = charValue2;
     }
 
-    //
-    //
-    //
     public byte getByteValue() {
         return byteValue;
     }

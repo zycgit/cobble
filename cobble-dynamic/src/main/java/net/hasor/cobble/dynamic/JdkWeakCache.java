@@ -37,12 +37,9 @@ final class JdkWeakCache<K, P, V> {
     /**
      * Construct an instance of {@code WeakCache}
      *
-     * @param subKeyFactory a function mapping a pair of
-     *                      {@code (key, parameter) -> sub-key}
-     * @param valueFactory  a function mapping a pair of
-     *                      {@code (key, parameter) -> value}
-     * @throws NullPointerException if {@code subKeyFactory} or
-     *                              {@code valueFactory} is null.
+     * @param subKeyFactory a function mapping a pair of {@code (key, parameter) -> sub-key}
+     * @param valueFactory  a function mapping a pair of {@code (key, parameter) -> value}
+     * @throws NullPointerException if {@code subKeyFactory} or {@code valueFactory} is null.
      */
     public JdkWeakCache(BiFunction<K, P, ?> subKeyFactory, BiFunction<K, P, V> valueFactory) {
         this.subKeyFactory = Objects.requireNonNull(subKeyFactory);
@@ -56,13 +53,10 @@ final class JdkWeakCache<K, P, V> {
      * pair of (key, subKey) or the entry has already been cleared.
      *
      * @param key       possibly null key
-     * @param parameter parameter used together with key to create sub-key and
-     *                  value (should not be null)
+     * @param parameter parameter used together with key to create sub-key and value (should not be null)
      * @return the cached value (never null)
-     * @throws NullPointerException if {@code parameter} passed in or
-     *                              {@code sub-key} calculated by
-     *                              {@code subKeyFactory} or {@code value}
-     *                              calculated by {@code valueFactory} is null.
+     * @throws NullPointerException if {@code parameter} passed in or {@code sub-key} calculated by
+     *                              {@code subKeyFactory} or {@code value} calculated by {@code valueFactory} is null.
      */
     public V get(K key, P parameter) {
         Objects.requireNonNull(parameter);
@@ -125,9 +119,8 @@ final class JdkWeakCache<K, P, V> {
     }
 
     /**
-     * Checks whether the specified non-null value is already present in this
-     * {@code WeakCache}. The check is made using identity comparison regardless
-     * of whether value's class overrides {@link Object#equals} or not.
+     * Checks whether the specified non-null value is already present in this {@code WeakCache}.
+     * The check is made using identity comparison regardless of whether value's class overrides {@link Object#equals} or not.
      *
      * @param value the non-null value to check
      * @return true if given {@code value} is already cached
@@ -140,10 +133,7 @@ final class JdkWeakCache<K, P, V> {
         return reverseMap.containsKey(new LookupValue<>(value));
     }
 
-    /**
-     * Returns the current number of cached entries that
-     * can decrease over time when keys/values are GC-ed.
-     */
+    /** Returns the current number of cached entries that can decrease over time when keys/values are GC-ed. */
     public int size() {
         expungeStaleEntries();
         return reverseMap.size();
@@ -156,10 +146,7 @@ final class JdkWeakCache<K, P, V> {
         }
     }
 
-    /**
-     * A factory {@link Supplier} that implements the lazy synchronized
-     * construction of the value and installment of it into the cache.
-     */
+    /** A factory {@link Supplier} that implements the lazy synchronized construction of the value and installment of it into the cache. */
     private final class Factory implements Supplier<V> {
 
         private final K                                  key;
@@ -219,15 +206,13 @@ final class JdkWeakCache<K, P, V> {
 
     /**
      * Common type of value suppliers that are holding a referent.
-     * The {@link #equals} and {@link #hashCode} of implementations is defined
-     * to compare the referent by identity.
+     * The {@link #equals} and {@link #hashCode} of implementations is defined to compare the referent by identity.
      */
     private interface Value<V> extends Supplier<V> {
     }
 
     /**
-     * An optimized {@link Value} used to look-up the value in
-     * {@link JdkWeakCache#containsValue} method so that we are not
+     * An optimized {@link Value} used to look-up the value in {@link JdkWeakCache#containsValue} method so that we are not
      * constructing the whole {@link CacheValue} just to look-up the referent.
      */
     private static final class LookupValue<V> implements Value<V> {
@@ -253,9 +238,7 @@ final class JdkWeakCache<K, P, V> {
         }
     }
 
-    /**
-     * A {@link Value} that weakly references the referent.
-     */
+    /** A {@link Value} that weakly references the referent. */
     private static final class CacheValue<V> extends WeakReference<V> implements Value<V> {
         private final int hash;
 

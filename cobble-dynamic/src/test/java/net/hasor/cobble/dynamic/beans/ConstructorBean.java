@@ -20,40 +20,39 @@ import java.util.Date;
 
 // 8 种基本类型和其包装类型，以及4种时间类型和常用的枚举、字符串
 public class ConstructorBean {
-    private byte          byteValue;
-    private Byte          byteValue2;
+    private final byte          byteValue;
+    private final Byte          byteValue2;
     //
-    private short         shortValue;
-    private Short         shortValue2;
+    private final short         shortValue;
+    private final Short         shortValue2;
     //
-    private int           intValue;
-    private Integer       intValue2;
+    private final int           intValue;
+    private final Integer       intValue2;
     //
-    private long          longValue;
-    private Long          longValue2;
+    private final long          longValue;
+    private final Long          longValue2;
     //
-    private float         floatValue;
-    private Float         floatValue2;
+    private final float         floatValue;
+    private final Float         floatValue2;
     //
-    private double        doubleValue;
-    private Double        doubleValue2;
+    private final double        doubleValue;
+    private final Double        doubleValue2;
     //
-    private boolean       booleanValue;
-    private Boolean       booleanValue2;
+    private final boolean       booleanValue;
+    private final Boolean       booleanValue2;
     //
-    private char          charValue;
-    private Character     charValue2;
+    private final char          charValue;
+    private final Character     charValue2;
     //
-    private Date          dateValue1;
-    private java.sql.Date dateValue2;
-    private Time          dateValue3;
-    private Timestamp     dateValue4;
+    private final Date          dateValue1;
+    private final java.sql.Date dateValue2;
+    private final Time          dateValue3;
+    private final Timestamp     dateValue4;
     //
-    private String        stringValue;
-    private SelectEnum    enumValue;
+    private final String        stringValue;
+    private final SelectEnum    enumValue;
 
-    //
-    public ConstructorBean(//
+    public ConstructorBean(         //
             byte byteValue          //
             , Byte byteValue2       //
             , short shortValue      //
@@ -103,9 +102,6 @@ public class ConstructorBean {
         this.enumValue = enumValue;
     }
 
-    //
-    //
-    //
     public byte getByteValue() {
         return byteValue;
     }

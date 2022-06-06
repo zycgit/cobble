@@ -38,11 +38,11 @@ public class ToolsTest {
 
     @Test
     public void toolsTest2() {
-        Predicate<Class<?>> annotatedWithClass = AopMatchers.annotatedWithClass(MyAop.class);
-        Predicate<Method> annotatedWithMethod = AopMatchers.annotatedWithMethod(MyAop.class);
+        Predicate<Class<?>> annotatedWithClass = Matchers.annotatedWithClass(MyAop.class);
+        Predicate<Method> annotatedWithMethod = Matchers.annotatedWithMethod(MyAop.class);
         //        Predicate<Class<?>> expressionClass = AopMatchers.expressionClass("net.test.hasor.*");
         //        Predicate<Method> expressionMethod = AopMatchers.expressionMethod("java.lang.String *.*(*)");
-        Predicate<Class<?>> subClassesOf = AopMatchers.subClassesOf(JamesBean.class);
+        Predicate<Class<?>> subClassesOf = Matchers.subClassesOf(JamesBean.class);
         //
         annotatedWithClass.hashCode();
         annotatedWithMethod.hashCode();
@@ -51,12 +51,12 @@ public class ToolsTest {
         subClassesOf.hashCode();
         //
         assert annotatedWithClass.toString().startsWith("ClassAnnotationOf");
-        assert annotatedWithClass.equals(AopMatchers.annotatedWithClass(MyAop.class));
-        assert !annotatedWithClass.equals(AopMatchers.annotatedWithClass(Aop.class));
+        assert annotatedWithClass.equals(Matchers.annotatedWithClass(MyAop.class));
+        assert !annotatedWithClass.equals(Matchers.annotatedWithClass(Aop.class));
         //
         assert annotatedWithMethod.toString().startsWith("MethodAnnotationOf");
-        assert annotatedWithMethod.equals(AopMatchers.annotatedWithMethod(MyAop.class));
-        assert !annotatedWithMethod.equals(AopMatchers.annotatedWithClass(Aop.class));
+        assert annotatedWithMethod.equals(Matchers.annotatedWithMethod(MyAop.class));
+        assert !annotatedWithMethod.equals(Matchers.annotatedWithClass(Aop.class));
         //
         //        assert expressionClass.toString().startsWith("ClassOf");
         //        assert expressionClass.equals(expressionClass);
@@ -69,15 +69,15 @@ public class ToolsTest {
         //        assert expressionMethod.equals(AopMatchers.expressionMethod("java.lang.String *.*(*)"));
         //
         assert subClassesOf.toString().startsWith("SubClassesOf");
-        assert subClassesOf.equals(AopMatchers.subClassesOf(JamesBean.class));
-        assert !subClassesOf.equals(AopMatchers.subClassesOf(GrandFatherBean.class));
+        assert subClassesOf.equals(Matchers.subClassesOf(JamesBean.class));
+        assert !subClassesOf.equals(Matchers.subClassesOf(GrandFatherBean.class));
         //
     }
 
     @Test
     public void toolsTest4() {
         DynamicConfig config = new DynamicConfig(Object.class);
-        config.addAopInterceptor(invocation -> null);
+        config.addAopInterceptor(t -> true, invocation -> null);
         try {
             Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), config);
             assert false;
