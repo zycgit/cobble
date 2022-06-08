@@ -31,11 +31,12 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- *
+ * 策略执行顺序：1. superClass、2. interceptorMethods、3. dynamicPropertyMap、4. implementMap、
  * @version : 2014年9月7日
  * @author 赵永春 (zyc@hasor.net)
  */
 public class DynamicConfig {
+    private final String                           specialNamePrefix;
     private final Class<?>                         superClass;
     private final Map<String, DynamicPropertyInfo> dynamicPropertyMap = new HashMap<>();
     private final Map<String, MethodInterceptor[]> interceptorMap     = new HashMap<>();
@@ -43,14 +44,35 @@ public class DynamicConfig {
     private final Map<Class<?>, InvocationHandler> implementMap       = new HashMap<>();
     private       File                             debugOutputDir;
 
-    /** 创建 {@link DynamicConfig} 类型对象 */
+    /** 创建 {@link DynamicConfig} 类型对象，用于生成一个自定义类 */
     public DynamicConfig() {
         this(BasicObject.class);
     }
 
-    /** 创建 {@link DynamicConfig} 类型对象 */
+    /** 创建 {@link DynamicConfig} 类型对象，不支持抽象类 */
     public DynamicConfig(Class<?> superClass) {
+        this(superClass, null);
+    }
+
+    /** 创建 {@link DynamicConfig} 类型对象，支持抽象类 */
+    public DynamicConfig(Class<?> superClass, InvocationHandler handler) {
         this.superClass = superClass == null ? BasicObject.class : superClass;
+        this.specialNamePrefix = this.superClass.getName().startsWith("java.") ? "proxy" : null;
+
+        boolean modifiersTest = Modifier.isFinal(this.superClass.getModifiers()) || !Modifier.isPublic(this.superClass.getModifiers());
+        boolean classTest = this.superClass.isPrimitive() || this.superClass.isArray() || this.superClass.isEnum() || this.superClass.isAnonymousClass() || this.superClass.isInterface();
+        if (modifiersTest || classTest) {
+            throw new IllegalArgumentException("superClass " + superClass + " must be public class and cannot be form [Primitive/Array/Enum/AnonymousClass/Interface]");
+        }
+
+        if (Modifier.isAbstract(this.superClass.getModifiers())) {
+            if (handler == null) {
+                throw new NullPointerException("superClass is abstract, must a handler");
+            } else {
+                this.implementMap.put(this.superClass, handler);
+            }
+        }
+
         try {
             this.tryInitAop();
         } catch (Exception e) {
@@ -123,7 +145,7 @@ public class DynamicConfig {
         Method[] targetMethodArrays = this.getSuperClass().getMethods();
         for (Method targetMethod : targetMethodArrays) {
             int dataModifiers = targetMethod.getModifiers();
-            if (Modifier.isPrivate(dataModifiers) || Modifier.isFinal(dataModifiers) || Modifier.isStatic(dataModifiers)) {
+            if (Modifier.isPrivate(dataModifiers) || Modifier.isFinal(dataModifiers) || Modifier.isStatic(dataModifiers) || Modifier.isAbstract(dataModifiers)) {
                 continue;
             }
 
@@ -216,6 +238,10 @@ public class DynamicConfig {
         Objects.requireNonNull(interfaceType, "args interfaceType is null.");
         Objects.requireNonNull(handler, "args handler is null.");
 
+        if (!interfaceType.isInterface()) {
+            throw new IllegalArgumentException("only interface can be add.");
+        }
+
         this.implementMap.put(interfaceType, handler);
     }
 
@@ -230,14 +256,8 @@ public class DynamicConfig {
         return !this.interceptorMap.isEmpty() || !this.dynamicPropertyMap.isEmpty() || !this.implementMap.isEmpty();
     }
 
-    /** 是否支持Aop */
-    public boolean isSupport() {
-        String resName = this.superClass.getName().replace(".", "/") + ".class";
-        if (resName.startsWith("java/") || resName.startsWith("javax/")) {
-            return false;
-        } else {
-            return !Modifier.isPrivate(this.superClass.getModifiers());
-        }
+    String getSpecialNamePrefix() {
+        return this.specialNamePrefix;
     }
 
     /** 父类类型 */

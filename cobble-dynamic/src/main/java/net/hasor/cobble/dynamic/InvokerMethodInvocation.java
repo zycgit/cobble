@@ -68,12 +68,10 @@ public class InvokerMethodInvocation implements MethodInvocation {
 
         InnerChainMethodInvocation(boolean isProxy, Method proxyMethod, Method targetMethod, Object targetObject, Object[] paramObjects) {
             this.isProxy = isProxy;
-            if (proxyMethod == null) {
-                // proxy
+            if (isProxy) {
                 this.proxyMethod = targetMethod;
                 this.targetObject = ((DynamicObject) targetObject).getOriginalObject();
             } else {
-                // build
                 this.proxyMethod = proxyMethod;
                 this.targetObject = targetObject;
             }

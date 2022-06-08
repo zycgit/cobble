@@ -17,24 +17,20 @@ package net.hasor.cobble.dynamic;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.dynamic.DynamicConfig.DynamicPropertyInfo;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -142,8 +138,22 @@ public final class Proxy {
             throw new IllegalStateException("no interfaces or handler is specified.");
         }
 
-        DynamicConfig config = new DynamicConfig();
+        Class<?> superClass = null;
         for (Class<?> inter : interfaces) {
+            if (!inter.isInterface()) {
+                if (superClass != null) {
+                    throw new IllegalArgumentException("only one base class is allowed.");
+                } else {
+                    superClass = inter;
+                }
+            }
+        }
+
+        DynamicConfig config = new DynamicConfig(superClass, handler);
+        for (Class<?> inter : interfaces) {
+            if (superClass == inter) {
+                continue; // is super class
+            }
             if (!inter.isInterface()) {
                 throw new IllegalArgumentException("interfaces type " + inter + " is not interface.");
             }
@@ -242,9 +252,10 @@ public final class Proxy {
         return dynamicClassCache.get(loader, config);
     }
 
-    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy, ClassLoader loader) throws IOException, ReflectiveOperationException {
+    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy, ClassLoader loader) throws ReflectiveOperationException {
         String className = getClassName(config);
         byte[] classBytes = buildClassBytes(config, className, isProxy);
+        logClassBytes(className, classBytes, config.getDebugOutputDir());
 
         // load class
         try {
@@ -255,49 +266,51 @@ public final class Proxy {
             return buildType;
         } catch (Exception e) {
             throw e;
-        } finally {
-            logClassBytes(className, classBytes, config.getDebugOutputDir());
         }
     }
 
-    private static void logClassBytes(String className, byte[] classBytes, File debugOutputFile) throws IOException {
+    private static void logClassBytes(String className, byte[] classBytes, File debugOutputFile) {
         if (debugOutputFile == null) {
             return;
         }
 
-        String classFullPath = className.replace(".", String.valueOf(File.separatorChar)) + ".class";
-        File outFile = new File(debugOutputFile, classFullPath);
-        outFile.getParentFile().mkdirs();
-        try (FileOutputStream fos = new FileOutputStream(outFile, false)) {
-            fos.write(classBytes);
-            fos.flush();
+        try {
+            String classFullPath = className.replace(".", String.valueOf(File.separatorChar)) + ".class";
+            File outFile = new File(debugOutputFile, classFullPath);
+            outFile.getParentFile().mkdirs();
+            try (FileOutputStream fos = new FileOutputStream(outFile, false)) {
+                fos.write(classBytes);
+                fos.flush();
+            }
+        } catch (Exception e) {
+            throw ExceptionUtils.toRuntime(e);
         }
     }
 
     private static String getClassName(DynamicConfig config) {
-        return config.getSuperClass().getName() + aopClassSuffix + spinIndex.getAndIncrement();
+        String specialNamePrefix = config.getSpecialNamePrefix();
+        if (StringUtils.isBlank(specialNamePrefix)) {
+            specialNamePrefix = "";
+        }
+        return specialNamePrefix + "." + config.getSuperClass().getName() + aopClassSuffix + spinIndex.getAndIncrement();
     }
 
     /** 调用ClassLoader，生成字节码并装载它 */
-    private static byte[] buildClassBytes(DynamicConfig config, String newClassName, boolean isProxy) throws IOException, ReflectiveOperationException {
-        //        if (this.classType != null) {
-        //            return (Class<? extends T>) this.classType;
-        //        }
-        //        if (!this.hasChange()) {
-        //            return (Class<? extends T>) this.superClass;
-        //        }
-        if (!config.isSupport()) {
-            throw new IOException("class in package java or javax , does not support.");
-        }
-
+    private static byte[] buildClassBytes(DynamicConfig config, String newClassName, boolean isProxy) throws ReflectiveOperationException {
         String thisClassName = AsmTools.replaceClassName(newClassName);
         String superClassName = AsmTools.replaceClassName(config.getSuperClass());
-        String[] interfaces = isProxy ?//
-                new String[] { AsmTools.replaceClassName(DynamicClass.class), AsmTools.replaceClassName(DynamicObject.class) } ://
-                new String[] { AsmTools.replaceClassName(DynamicClass.class) };
-        //
+        Set<String> interfaces = new LinkedHashSet<>();
+        List<String> writerMethod = new ArrayList<>();
+
+        interfaces.add(AsmTools.replaceClassName(DynamicClass.class));
+        config.getImplementMap().keySet().forEach(c -> interfaces.add(AsmTools.replaceClassName(c)));
+        interfaces.remove(AsmTools.replaceClassName(config.getSuperClass())); // 可能是继承抽象类
+        if (isProxy) {
+            interfaces.add(AsmTools.replaceClassName(DynamicObject.class));
+        }
+
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        classWriter.visit(V1_6, ACC_PUBLIC + ACC_SUPER, thisClassName, null, superClassName, interfaces);
+        classWriter.visit(V1_6, ACC_PUBLIC + ACC_SUPER, thisClassName, null, superClassName, interfaces.toArray(new String[0]));
 
         // .dynamicConfig 字段
         FieldVisitor fdc = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class), null, null);
@@ -315,194 +328,47 @@ public final class Proxy {
 
         // .代理方法
         for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
-            Method aopMethod = ent.getValue();
-            String[] asmParams = AsmTools.splitAsmType(AsmTools.toAsmType(aopMethod.getParameterTypes()));//"IIIILjava/lang/Integer;F[[[ILjava/lang.Boolean;"
-            String[] throwStrArray = AsmTools.replaceClassName(aopMethod.getExceptionTypes());
-
-            AtomicInteger variableIndexCounters = new AtomicInteger(0);
-            Map<String, Integer> paramIndexMap = new LinkedHashMap<>();
-            paramIndexMap.put("this", 0);
-            for (int i = 0; i < asmParams.length; i++) {
-                paramIndexMap.put("args" + i, variableIndexCounters.incrementAndGet());
-                if ("D".equals(asmParams[i])) {
-                    variableIndexCounters.incrementAndGet();// double 需要额外增加1
-                }
-                if ("J".equals(asmParams[i])) {
-                    variableIndexCounters.incrementAndGet();// long 需要额外增加1
-                }
-            }
-
-            if (!isProxy) {
-                MethodVisitor replacementVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_FINAL, aopMethodSuffix + aopMethod.getName(), AsmTools.toAsmDesc(aopMethod), AsmTools.toAsmSignature(aopMethod), throwStrArray);
-                replacementVisitor.visitCode();
-                replacementVisitor.visitVarInsn(ALOAD, 0);
-                for (int i = 0; i < asmParams.length; i++) {
-                    replacementVisitor.visitVarInsn(AsmTools.getLoad(asmParams[i]), paramIndexMap.get("args" + i));
-                }
-                replacementVisitor.visitMethodInsn(INVOKESPECIAL, superClassName, aopMethod.getName(), AsmTools.toAsmDesc(aopMethod), false);
-                replacementVisitor.visitInsn(AsmTools.getReturn(AsmTools.toAsmType(aopMethod.getReturnType())));
-                replacementVisitor.visitMaxs(-1, -1);
-                replacementVisitor.visitEnd();
-            }
-
-            int paramsIndexMark = variableIndexCounters.get();
-            paramIndexMap.put("paramObjects", variableIndexCounters.incrementAndGet());
-            paramIndexMap.put("returnData", variableIndexCounters.incrementAndGet());
-            paramIndexMap.put("e", paramsIndexMark + 1);// is in cache so recount
-            //
-            Label tryStartLabel = new Label();
-            Label tryCacheLabel = new Label();
-            Label tryEndLabel = new Label();
-            Label paramObjectsLabel = new Label();
-            Label returnDataLabel = new Label();
-            Label returnLabel = new Label();
-            Label eLabel = new Label();
-            //
-            MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC, aopMethod.getName(), AsmTools.toAsmDesc(aopMethod), AsmTools.toAsmSignature(aopMethod), throwStrArray);
-            mv.visitCode();
-            mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
-            mv.visitLabel(tryStartLabel);
-            //
-            // Object[] paramObjects = new Object[] { longValue, doubleValue };
-            if (asmParams.length == 0) {
-                mv.visitInsn(ACONST_NULL);
-            } else {
-                AsmTools.codeBuilder_1(mv, asmParams, paramIndexMap);
-            }
-            mv.visitVarInsn(ASTORE, paramIndexMap.get("paramObjects"));
-            mv.visitLabel(paramObjectsLabel);
-            //
-            // Object obj = new InnerAopInvocation("checkBaseType1", targetMethod[0], this, pObjects).proceed();
-            mv.visitTypeInsn(NEW, AsmTools.replaceClassName(InvokerMethodInvocation.class));
-            mv.visitInsn(DUP);
-            mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
-            mv.visitLdcInsn(ent.getKey());
-            mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-            mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
-            mv.visitInsn(AALOAD);
-            if (!isProxy) {
-                mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
-                mv.visitInsn(AALOAD);
-            } else {
-                mv.visitInsn(ACONST_NULL);
-            }
-            mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
-            mv.visitVarInsn(ALOAD, paramIndexMap.get("this"));
-            mv.visitVarInsn(ALOAD, paramIndexMap.get("paramObjects"));
-            String initDesc = AsmTools.toAsmType(InvokerMethodInvocation.class.getConstructor(boolean.class, String.class, Method.class, Method.class, DynamicConfig.class, Object.class, Object[].class).getParameterTypes());
-            mv.visitMethodInsn(INVOKESPECIAL, AsmTools.replaceClassName(InvokerMethodInvocation.class), "<init>", "(" + initDesc + ")V", false);
-            mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(InvokerMethodInvocation.class), "proceed", "()Ljava/lang/Object;", false);
-            mv.visitVarInsn(ASTORE, paramIndexMap.get("returnData"));
-            mv.visitLabel(returnDataLabel);
-            // return (List) obj;
-            mv.visitVarInsn(ALOAD, paramIndexMap.get("returnData"));
-            AsmTools.codeBuilder_3(mv, AsmTools.toAsmType(aopMethod.getReturnType()), tryCacheLabel);
-            //
-            mv.visitLabel(tryEndLabel);
-            mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Throwable" });
-            //
-            //            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-            //            int finalElseFrameMode = 0;
-            //            Class<?>[] exceptionTypes = aopMethod.getExceptionTypes();
-            //            for (int i = 0; i < exceptionTypes.length; i++) {
-            //                if (i == 0) {
-            //                    finalElseFrameMode = Opcodes.F_APPEND;
-            //                } else if (i == 1) {
-            //                    mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/lang/Throwable" }, 0, null);
-            //                    finalElseFrameMode = Opcodes.F_SAME;
-            //                } else {
-            //                    mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-            //                    finalElseFrameMode = Opcodes.F_SAME;
-            //                }
-            //                //
-            //                Label ifEnd = new Label();
-            //                mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
-            //                mv.visitTypeInsn(INSTANCEOF, AsmTools.replaceClassName(exceptionTypes[i]));
-            //                mv.visitJumpInsn(IFEQ, ifEnd);
-            //                mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
-            //                mv.visitTypeInsn(CHECKCAST, AsmTools.replaceClassName(exceptionTypes[i]));
-            //                mv.visitInsn(ATHROW);
-            //                mv.visitLabel(ifEnd);
-            //            }
-            //            //
-            //            if (finalElseFrameMode == Opcodes.F_APPEND) {
-            //                mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/lang/Throwable" }, 0, null);
-            //            } else {
-            //                mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-            //            }
-            //
-            mv.visitVarInsn(ASTORE, paramIndexMap.get("e"));
-            mv.visitLabel(eLabel);
-            mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
-            String exceptionMethodDesc = AsmTools.toAsmDesc(ExceptionUtils.class.getMethod("toRuntime", Throwable.class));
-            mv.visitMethodInsn(INVOKESTATIC, AsmTools.replaceClassName(ExceptionUtils.class), "toRuntime", exceptionMethodDesc, false);
-            mv.visitInsn(ATHROW);
-            //
-            mv.visitLabel(returnLabel);
-            mv.visitLocalVariable("paramObjects", "[Ljava/lang/Object;", null, paramObjectsLabel, tryEndLabel, paramIndexMap.get("paramObjects"));
-            mv.visitLocalVariable("returnData", "Ljava/lang/Object;", null, returnDataLabel, tryEndLabel, paramIndexMap.get("returnData"));
-            mv.visitLocalVariable("e", "Ljava/lang/Throwable;", null, eLabel, returnLabel, paramIndexMap.get("e"));
-            mv.visitLocalVariable("this", "L" + thisClassName + ";", null, tryStartLabel, returnLabel, paramIndexMap.get("this"));
-            for (int i = 0; i < asmParams.length; i++) {
-                mv.visitLocalVariable("args" + i, asmParams[i], null, tryStartLabel, returnLabel, paramIndexMap.get("args" + i));
-            }
-            //
-            mv.visitMaxs(-1, -1);
-            mv.visitEnd();
+            List<String> dynamicMethods = buildDynamicMethod(ent.getKey(), ent.getValue(), indexMap, classWriter, superClassName, thisClassName, isProxy);
+            writerMethod.addAll(dynamicMethods);
         }
 
         // .代理属性
         for (Map.Entry<String, DynamicPropertyInfo> ent : config.getDynamicPropertyMap().entrySet()) {
-            String propertyName = ent.getKey();
-            DynamicPropertyInfo propertyInfo = ent.getValue();
-            String asmType = AsmTools.toAsmType(propertyInfo.propertyType);
-            {
-                Label sLabel = new Label();
-                Label eLabel = new Label();
-                String methodName = ((propertyInfo.propertyType == Boolean.TYPE) ? "is" : "get") + StringUtils.firstCharToUpperCase(propertyName);
-                String methodDescriptor = "()" + asmType;
-                Method propertyMethod = InvokerDynamicProperty.class.getMethod("getProperty", boolean.class, DynamicConfig.class, String.class, Object.class, String.class);
-                //
-                MethodVisitor mv = classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, methodDescriptor, null, new String[] { "java/lang/Throwable" });
-                mv.visitLabel(sLabel);
-                mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
-                mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
-                mv.visitLdcInsn(newClassName + "_get_" + propertyName);
-                mv.visitVarInsn(ALOAD, 0);// this
-                mv.visitLdcInsn(propertyName);
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InvokerDynamicProperty.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
-                AsmTools.codeBuilder_Cast(mv, asmType, null);
-                mv.visitInsn(AsmTools.getReturn(asmType));
-                mv.visitLabel(eLabel);
-                mv.visitLocalVariable("this", AsmTools.toAsmType(InvokerDynamicProperty.class), null, sLabel, eLabel, 0);
-                mv.visitMaxs(3, 1);
-                mv.visitEnd();
-            }
-            if (propertyInfo.rwType == ReadWriteType.ReadWrite) {
-                Label sLabel = new Label();
-                Label eLabel = new Label();
-                String methodName = "set" + StringUtils.firstCharToUpperCase(propertyName);
-                String methodDescriptor = "(" + asmType + ")V";
-                Method propertyMethod = InvokerDynamicProperty.class.getMethod("setProperty", boolean.class, DynamicConfig.class, String.class, Object.class, String.class, Object.class);
-                //
-                MethodVisitor mv = classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, methodDescriptor, null, new String[] { "java/lang/Throwable" });
-                mv.visitCode();
-                mv.visitLabel(sLabel);
-                mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
-                mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
-                mv.visitLdcInsn(newClassName + "_set_" + propertyName);
-                mv.visitVarInsn(ALOAD, 0);// this
-                mv.visitLdcInsn(propertyName);
-                mv.visitVarInsn(AsmTools.getLoad(asmType), 1);
-                AsmTools.codeBuilder_valueOf(mv, AsmTools.toAsmType(propertyInfo.propertyType));
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InvokerDynamicProperty.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
-                mv.visitInsn(Opcodes.RETURN);
-                mv.visitLabel(eLabel);
-                mv.visitLocalVariable("this", AsmTools.toAsmType(InvokerDynamicProperty.class), null, sLabel, eLabel, 0);
-                mv.visitLocalVariable(propertyName, AsmTools.toAsmType(Object.class), null, sLabel, eLabel, 1);
-                mv.visitMaxs(4, 2);
-                mv.visitEnd();
+            List<String> dynamicMethods = buildDynamicProperty(ent.getKey(), ent.getValue(), classWriter, newClassName, thisClassName, isProxy);
+            writerMethod.addAll(dynamicMethods);
+        }
+
+        // .动态接口
+        for (Map.Entry<Class<?>, InvocationHandler> ent : config.getImplementMap().entrySet()) {
+            Class<?> faceType = ent.getKey();
+            if (faceType == config.getSuperClass()) {
+                // 父类是抽象类只有这种情况下才会出现, 那么只处理 抽象方法，相当于实现抽象类
+                for (Method implMethod : faceType.getMethods()) {
+                    if (Modifier.isAbstract(implMethod.getModifiers())) {
+                        String methodName = implMethod.getName();
+                        String methodDescriptor = AsmTools.toAsmDesc(implMethod);
+
+                        if (writerMethod.contains(methodName + methodDescriptor)) {
+                            continue;
+                        }
+                        writerMethod.add(methodName + methodDescriptor);
+                        buildDynamicImpl(faceType, implMethod, indexMap, classWriter, thisClassName, isProxy);
+                    }
+                }
+            } else if (faceType.isInterface()) {
+                // 常规下动态接口,全部是 接口
+                for (Method implMethod : faceType.getMethods()) {
+                    String methodName = implMethod.getName();
+                    String methodDescriptor = AsmTools.toAsmDesc(implMethod);
+
+                    if (writerMethod.contains(methodName + methodDescriptor)) {
+                        continue;
+                    }
+                    writerMethod.add(methodName + methodDescriptor);
+                    buildDynamicImpl(faceType, implMethod, indexMap, classWriter, thisClassName, isProxy);
+                }
+            } else {
+                throw new RuntimeException("Internal error.");
             }
         }
 
@@ -512,6 +378,11 @@ public final class Proxy {
 
     private static Map<String, Integer> buildStatic(DynamicConfig config, ClassWriter classWriter, String thisClassName, boolean isProxy) throws NoSuchMethodException {
         Map<String, Integer> indexMap = new HashMap<>();
+        List<Class<?>> implClassList = new ArrayList<>(config.getImplementMap().keySet());
+        long arraySize = (config.getInterceptorMap().size() + implClassList.stream().flatMap((Function<Class<?>, Stream<Method>>) t -> Arrays.stream(t.getMethods())).count());
+        if (arraySize > Integer.MAX_VALUE) {
+            throw new ArrayIndexOutOfBoundsException("there are too many ways to method.");
+        }
 
         if (!isProxy) {
             FieldVisitor fv1 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "proxyMethod", AsmTools.toAsmType(Method[].class), null, null);
@@ -519,9 +390,11 @@ public final class Proxy {
         }
         FieldVisitor fv2 = classWriter.visitField(ACC_PRIVATE + ACC_STATIC, "targetMethod", AsmTools.toAsmType(Method[].class), null, null);
         fv2.visitEnd();
-        //
+
         int superClassIndex = 0;// 0 位置是 superClass
-        int thisClassIndex = 1;// 0 位置是 superClass
+        int thisClassIndex = 1;// 0 位置是 thisClass
+        int implsClassIndex = 2;// 0 位置是 implsClass
+
         MethodVisitor mv = classWriter.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
         mv.visitCode();
         Label tryStartLabel = new Label();
@@ -530,24 +403,34 @@ public final class Proxy {
         Label tryEndLabel = new Label();
         Label returnLabel = new Label();
         Label cacheStartCodeLabel = new Label();
-        //
+
         mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
         mv.visitLabel(tryStartLabel);
         mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(config.getSuperClass())));
         mv.visitVarInsn(ASTORE, superClassIndex);
         mv.visitLdcInsn(Type.getType("L" + thisClassName + ";"));
         mv.visitVarInsn(ASTORE, thisClassIndex);
-        //
+
+        mv.visitIntInsn(BIPUSH, implClassList.size());
+        mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Class.class));
+        for (int i = 0; i < implClassList.size(); i++) {
+            mv.visitInsn(DUP);
+            mv.visitIntInsn(BIPUSH, i);
+            mv.visitLdcInsn(Type.getType("L" + AsmTools.replaceClassName(implClassList.get(i)) + ";"));
+            mv.visitInsn(AASTORE);
+        }
+        mv.visitVarInsn(ASTORE, implsClassIndex);
+
         mv.visitLabel(tryStartCodeLabel);
-        mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
+        mv.visitIntInsn(BIPUSH, (int) arraySize);
         mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
         mv.visitFieldInsn(PUTSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
         if (!isProxy) {
-            mv.visitIntInsn(BIPUSH, config.getInterceptorMap().size());
+            mv.visitIntInsn(BIPUSH, (int) arraySize);
             mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
             mv.visitFieldInsn(PUTSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
         }
-        //
+
         int i = -1;
         String getMethodDesc = AsmTools.toAsmDesc(Class.class.getMethod("getMethod", String.class, Class[].class));
         for (Map.Entry<String, Method> ent : config.getInterceptorMethods().entrySet()) {
@@ -576,7 +459,7 @@ public final class Proxy {
                 // propxyMethod[n] = superClass.getMethod("aop$" + "xxxx",new Class[] { xxx,xxx});
                 mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
                 mv.visitIntInsn(BIPUSH, i);
-                mv.visitVarInsn(ALOAD, thisClassIndex); // superClass
+                mv.visitVarInsn(ALOAD, thisClassIndex); // thisClass
                 mv.visitLdcInsn(aopMethodSuffix + asmMethodName);
                 AsmTools.codeBuilder_2(mv, parameterTypes);
                 mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getDeclaredMethod", getMethodDesc, false);
@@ -590,7 +473,37 @@ public final class Proxy {
                 mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
             }
         }
-        //
+
+        for (Class<?> ent : implClassList) {
+            String classType = AsmTools.toAsmType(ent);
+            for (Method entMethod : ent.getMethods()) {
+                String asmMethodName = entMethod.getName();
+                String[] parameterTypes = AsmTools.splitAsmType(AsmTools.toAsmType(entMethod.getParameterTypes()));
+                indexMap.put(classType + "." + AsmTools.toAsmFullDesc(entMethod), ++i);
+                int implIndex = implClassList.indexOf(ent);
+
+                // targetMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
+                mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitVarInsn(ALOAD, thisClassIndex); // thisClass
+                mv.visitLdcInsn(asmMethodName);
+                AsmTools.codeBuilder_2(mv, parameterTypes);
+                mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getMethod", getMethodDesc, false);
+                mv.visitInsn(AASTORE);
+
+                // proxyMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
+                mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
+                mv.visitIntInsn(BIPUSH, i);
+                mv.visitVarInsn(ALOAD, implsClassIndex); // implsClass
+                mv.visitIntInsn(BIPUSH, implIndex);
+                mv.visitInsn(AALOAD);
+                mv.visitLdcInsn(asmMethodName);
+                AsmTools.codeBuilder_2(mv, parameterTypes);
+                mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Class.class), "getMethod", getMethodDesc, false);
+                mv.visitInsn(AASTORE);
+            }
+        }
+
         mv.visitLabel(tryCacheLabel);
         mv.visitJumpInsn(GOTO, returnLabel);
         mv.visitLabel(tryEndLabel);
@@ -604,8 +517,10 @@ public final class Proxy {
         mv.visitLabel(returnLabel);
         mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
         mv.visitInsn(RETURN);
-        mv.visitLocalVariable("superclass", AsmTools.toAsmType(Class.class), "Ljava/lang/Class<*>;", tryStartCodeLabel, tryCacheLabel, 0);
-        mv.visitLocalVariable("e", AsmTools.toAsmType(Throwable.class), null, cacheStartCodeLabel, returnLabel, 0);
+        mv.visitLocalVariable("superClass", AsmTools.toAsmType(Class.class), "Ljava/lang/Class<*>;", tryStartLabel, tryCacheLabel, 0);
+        mv.visitLocalVariable("thisClass", AsmTools.toAsmType(Class.class), "Ljava/lang/Class<*>;", tryStartLabel, tryCacheLabel, 1);
+        mv.visitLocalVariable("implClass", "[Ljava/lang/Class;", "[Ljava/lang/Class<*>;", tryStartLabel, tryCacheLabel, 2);
+        //mv.visitLocalVariable("e", AsmTools.toAsmType(Throwable.class), null, cacheStartCodeLabel, returnLabel, 0);
         mv.visitMaxs(8, 1);
         mv.visitEnd();
 
@@ -614,6 +529,22 @@ public final class Proxy {
 
     private static void buildConstructorForBuild(DynamicConfig config, ClassWriter classWriter, String thisClassName, String superClassName) {
         Constructor<?>[] constructorArray = config.getSuperClass().getConstructors();
+        if (constructorArray.length == 0) {
+            MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+            mv.visitCode();
+            Label l0 = new Label();
+            mv.visitLabel(l0);
+            mv.visitLineNumber(4, l0);
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitMethodInsn(INVOKESPECIAL, superClassName, "<init>", "()V", false);
+            mv.visitInsn(RETURN);
+            Label l1 = new Label();
+            mv.visitLabel(l1);
+            mv.visitLocalVariable("this", "L" + thisClassName + ";", null, l0, l1, 0);
+            mv.visitMaxs(1, 1);
+            mv.visitEnd();
+        }
+
         for (Constructor<?> constructor : constructorArray) {
             String[] asmParams = AsmTools.splitAsmType(AsmTools.toAsmType(constructor.getParameterTypes()));//"IIIILjava/lang/Integer;F[[[ILjava/lang.Boolean;"
             String[] throwStrArray = AsmTools.replaceClassName(constructor.getExceptionTypes());
@@ -698,6 +629,331 @@ public final class Proxy {
             mv.visitMaxs(1, 1);
             mv.visitEnd();
         }
+    }
+
+    private static List<String> buildDynamicMethod(String aopMethodKey, Method aopMethod, Map<String, Integer> indexMap, ClassWriter classWriter, String superClassName, String thisClassName, boolean isProxy) throws NoSuchMethodException {
+        String[] asmParams = AsmTools.splitAsmType(AsmTools.toAsmType(aopMethod.getParameterTypes()));//"IIIILjava/lang/Integer;F[[[ILjava/lang.Boolean;"
+        String[] throwStrArray = AsmTools.replaceClassName(aopMethod.getExceptionTypes());
+        List<String> outputMethod = new ArrayList<>();
+
+        AtomicInteger variableIndexCounters = new AtomicInteger(0);
+        Map<String, Integer> paramIndexMap = new LinkedHashMap<>();
+        paramIndexMap.put("this", 0);
+        for (int i = 0; i < asmParams.length; i++) {
+            paramIndexMap.put("args" + i, variableIndexCounters.incrementAndGet());
+            if ("D".equals(asmParams[i])) {
+                variableIndexCounters.incrementAndGet();// double 需要额外增加1
+            }
+            if ("J".equals(asmParams[i])) {
+                variableIndexCounters.incrementAndGet();// long 需要额外增加1
+            }
+        }
+
+        if (!isProxy) {
+            String methodName = aopMethodSuffix + aopMethod.getName();
+            String methodDesc = AsmTools.toAsmDesc(aopMethod);
+            outputMethod.add(methodName + methodDesc);
+            MethodVisitor replacementVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_FINAL, methodName, methodDesc, AsmTools.toAsmSignature(aopMethod), throwStrArray);
+            replacementVisitor.visitCode();
+            replacementVisitor.visitVarInsn(ALOAD, 0);
+            for (int i = 0; i < asmParams.length; i++) {
+                replacementVisitor.visitVarInsn(AsmTools.getLoad(asmParams[i]), paramIndexMap.get("args" + i));
+            }
+            replacementVisitor.visitMethodInsn(INVOKESPECIAL, superClassName, aopMethod.getName(), AsmTools.toAsmDesc(aopMethod), false);
+            replacementVisitor.visitInsn(AsmTools.getReturn(AsmTools.toAsmType(aopMethod.getReturnType())));
+            replacementVisitor.visitMaxs(-1, -1);
+            replacementVisitor.visitEnd();
+        }
+
+        int paramsIndexMark = variableIndexCounters.get();
+        paramIndexMap.put("paramObjects", variableIndexCounters.incrementAndGet());
+        paramIndexMap.put("returnData", variableIndexCounters.incrementAndGet());
+        paramIndexMap.put("e", paramsIndexMark + 1);// is in cache so recount
+        //
+        Label tryStartLabel = new Label();
+        Label tryCacheLabel = new Label();
+        Label tryEndLabel = new Label();
+        Label paramObjectsLabel = new Label();
+        Label returnDataLabel = new Label();
+        Label returnLabel = new Label();
+        Label eLabel = new Label();
+        //
+        String methodName = aopMethod.getName();
+        String methodDesc = AsmTools.toAsmDesc(aopMethod);
+        outputMethod.add(methodName + methodDesc);
+        MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC, methodName, methodDesc, AsmTools.toAsmSignature(aopMethod), throwStrArray);
+        mv.visitCode();
+        mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
+        mv.visitLabel(tryStartLabel);
+        //
+        // Object[] paramObjects = new Object[] { longValue, doubleValue };
+        if (asmParams.length == 0) {
+            mv.visitInsn(ACONST_NULL);
+        } else {
+            AsmTools.codeBuilder_1(mv, asmParams, paramIndexMap);
+        }
+        mv.visitVarInsn(ASTORE, paramIndexMap.get("paramObjects"));
+        mv.visitLabel(paramObjectsLabel);
+        //
+        // Object obj = new InnerAopInvocation("checkBaseType1", targetMethod[0], this, pObjects).proceed();
+        mv.visitTypeInsn(NEW, AsmTools.replaceClassName(InvokerMethodInvocation.class));
+        mv.visitInsn(DUP);
+        mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
+        mv.visitLdcInsn(aopMethodKey);
+        mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
+        mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
+        mv.visitInsn(AALOAD);
+        if (!isProxy) {
+            mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
+            mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
+            mv.visitInsn(AALOAD);
+        } else {
+            mv.visitInsn(ACONST_NULL);
+        }
+        mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("this"));
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("paramObjects"));
+        String initDesc = AsmTools.toAsmType(InvokerMethodInvocation.class.getConstructor(boolean.class, String.class, Method.class, Method.class, DynamicConfig.class, Object.class, Object[].class).getParameterTypes());
+        mv.visitMethodInsn(INVOKESPECIAL, AsmTools.replaceClassName(InvokerMethodInvocation.class), "<init>", "(" + initDesc + ")V", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(InvokerMethodInvocation.class), "proceed", "()Ljava/lang/Object;", false);
+        mv.visitVarInsn(ASTORE, paramIndexMap.get("returnData"));
+        mv.visitLabel(returnDataLabel);
+        // return (List) obj;
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("returnData"));
+        AsmTools.codeBuilder_3(mv, AsmTools.toAsmType(aopMethod.getReturnType()), tryCacheLabel);
+        //
+        mv.visitLabel(tryEndLabel);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Throwable" });
+        //
+        //            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //            int finalElseFrameMode = 0;
+        //            Class<?>[] exceptionTypes = aopMethod.getExceptionTypes();
+        //            for (int i = 0; i < exceptionTypes.length; i++) {
+        //                if (i == 0) {
+        //                    finalElseFrameMode = Opcodes.F_APPEND;
+        //                } else if (i == 1) {
+        //                    mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/lang/Throwable" }, 0, null);
+        //                    finalElseFrameMode = Opcodes.F_SAME;
+        //                } else {
+        //                    mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //                    finalElseFrameMode = Opcodes.F_SAME;
+        //                }
+        //                //
+        //                Label ifEnd = new Label();
+        //                mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
+        //                mv.visitTypeInsn(INSTANCEOF, AsmTools.replaceClassName(exceptionTypes[i]));
+        //                mv.visitJumpInsn(IFEQ, ifEnd);
+        //                mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
+        //                mv.visitTypeInsn(CHECKCAST, AsmTools.replaceClassName(exceptionTypes[i]));
+        //                mv.visitInsn(ATHROW);
+        //                mv.visitLabel(ifEnd);
+        //            }
+        //            //
+        //            if (finalElseFrameMode == Opcodes.F_APPEND) {
+        //                mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/lang/Throwable" }, 0, null);
+        //            } else {
+        //                mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //            }
+        //
+        mv.visitVarInsn(ASTORE, paramIndexMap.get("e"));
+        mv.visitLabel(eLabel);
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
+        String exceptionMethodDesc = AsmTools.toAsmDesc(ExceptionUtils.class.getMethod("toRuntime", Throwable.class));
+        mv.visitMethodInsn(INVOKESTATIC, AsmTools.replaceClassName(ExceptionUtils.class), "toRuntime", exceptionMethodDesc, false);
+        mv.visitInsn(ATHROW);
+        //
+        mv.visitLabel(returnLabel);
+        mv.visitLocalVariable("paramObjects", "[Ljava/lang/Object;", null, paramObjectsLabel, tryEndLabel, paramIndexMap.get("paramObjects"));
+        mv.visitLocalVariable("returnData", "Ljava/lang/Object;", null, returnDataLabel, tryEndLabel, paramIndexMap.get("returnData"));
+        mv.visitLocalVariable("e", "Ljava/lang/Throwable;", null, eLabel, returnLabel, paramIndexMap.get("e"));
+        mv.visitLocalVariable("this", "L" + thisClassName + ";", null, tryStartLabel, returnLabel, paramIndexMap.get("this"));
+        for (int i = 0; i < asmParams.length; i++) {
+            mv.visitLocalVariable("args" + i, asmParams[i], null, tryStartLabel, returnLabel, paramIndexMap.get("args" + i));
+        }
+        //
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
+
+        return outputMethod;
+    }
+
+    private static List<String> buildDynamicProperty(String propertyName, DynamicPropertyInfo propertyInfo, ClassWriter classWriter, String newClassName, String thisClassName, boolean isProxy) throws NoSuchMethodException {
+        List<String> outputMethod = new ArrayList<>();
+        String asmType = AsmTools.toAsmType(propertyInfo.propertyType);
+        {
+            Label sLabel = new Label();
+            Label eLabel = new Label();
+            String methodName = ((propertyInfo.propertyType == Boolean.TYPE) ? "is" : "get") + StringUtils.firstCharToUpperCase(propertyName);
+            String methodDescriptor = "()" + asmType;
+            Method propertyMethod = InvokerDynamicProperty.class.getMethod("getProperty", boolean.class, DynamicConfig.class, String.class, Object.class, String.class);
+            //
+            outputMethod.add(methodName + methodDescriptor);
+            MethodVisitor mv = classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, methodDescriptor, null, new String[] { "java/lang/Throwable" });
+            mv.visitLabel(sLabel);
+            mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
+            mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
+            mv.visitLdcInsn(newClassName + "_get_" + propertyName);
+            mv.visitVarInsn(ALOAD, 0);// this
+            mv.visitLdcInsn(propertyName);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InvokerDynamicProperty.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
+            AsmTools.codeBuilder_Cast(mv, asmType, null);
+            mv.visitInsn(AsmTools.getReturn(asmType));
+            mv.visitLabel(eLabel);
+            mv.visitLocalVariable("this", AsmTools.toAsmType(InvokerDynamicProperty.class), null, sLabel, eLabel, 0);
+            mv.visitMaxs(3, 1);
+            mv.visitEnd();
+        }
+        if (propertyInfo.rwType == ReadWriteType.ReadWrite) {
+            Label sLabel = new Label();
+            Label eLabel = new Label();
+            String methodName = "set" + StringUtils.firstCharToUpperCase(propertyName);
+            String methodDescriptor = "(" + asmType + ")V";
+            Method propertyMethod = InvokerDynamicProperty.class.getMethod("setProperty", boolean.class, DynamicConfig.class, String.class, Object.class, String.class, Object.class);
+            //
+            outputMethod.add(methodName + methodDescriptor);
+            MethodVisitor mv = classWriter.visitMethod(Opcodes.ACC_PUBLIC, methodName, methodDescriptor, null, new String[] { "java/lang/Throwable" });
+            mv.visitCode();
+            mv.visitLabel(sLabel);
+            mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
+            mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
+            mv.visitLdcInsn(newClassName + "_set_" + propertyName);
+            mv.visitVarInsn(ALOAD, 0);// this
+            mv.visitLdcInsn(propertyName);
+            mv.visitVarInsn(AsmTools.getLoad(asmType), 1);
+            AsmTools.codeBuilder_valueOf(mv, AsmTools.toAsmType(propertyInfo.propertyType));
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, AsmTools.replaceClassName(InvokerDynamicProperty.class), propertyMethod.getName(), AsmTools.toAsmDesc(propertyMethod), false);
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitLabel(eLabel);
+            mv.visitLocalVariable("this", AsmTools.toAsmType(InvokerDynamicProperty.class), null, sLabel, eLabel, 0);
+            mv.visitLocalVariable(propertyName, AsmTools.toAsmType(Object.class), null, sLabel, eLabel, 1);
+            mv.visitMaxs(4, 2);
+            mv.visitEnd();
+        }
+        return outputMethod;
+    }
+
+    private static void buildDynamicImpl(Class<?> implType, Method implMethod, Map<String, Integer> indexMap, ClassWriter classWriter, String thisClassName, boolean isProxy) throws NoSuchMethodException {
+        String methodKey = AsmTools.toAsmType(implType) + "." + AsmTools.toAsmFullDesc(implMethod);
+        String[] asmParams = AsmTools.splitAsmType(AsmTools.toAsmType(implMethod.getParameterTypes()));//"IIIILjava/lang/Integer;F[[[ILjava/lang.Boolean;"
+        String[] throwStrArray = AsmTools.replaceClassName(implMethod.getExceptionTypes());
+
+        AtomicInteger variableIndexCounters = new AtomicInteger(0);
+        Map<String, Integer> paramIndexMap = new LinkedHashMap<>();
+        paramIndexMap.put("this", 0);
+        for (int i = 0; i < asmParams.length; i++) {
+            paramIndexMap.put("args" + i, variableIndexCounters.incrementAndGet());
+            if ("D".equals(asmParams[i])) {
+                variableIndexCounters.incrementAndGet();// double 需要额外增加1
+            }
+            if ("J".equals(asmParams[i])) {
+                variableIndexCounters.incrementAndGet();// long 需要额外增加1
+            }
+        }
+
+        int paramsIndexMark = variableIndexCounters.get();
+        paramIndexMap.put("paramObjects", variableIndexCounters.incrementAndGet());
+        paramIndexMap.put("returnData", variableIndexCounters.incrementAndGet());
+        paramIndexMap.put("e", paramsIndexMark + 1);// is in cache so recount
+
+        Label tryStartLabel = new Label();
+        Label tryCacheLabel = new Label();
+        Label tryEndLabel = new Label();
+        Label paramObjectsLabel = new Label();
+        Label returnDataLabel = new Label();
+        Label returnLabel = new Label();
+        Label eLabel = new Label();
+
+        String methodName = implMethod.getName();
+        String methodDesc = AsmTools.toAsmDesc(implMethod);
+        MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC, methodName, methodDesc, AsmTools.toAsmSignature(implMethod), throwStrArray);
+        mv.visitCode();
+        mv.visitTryCatchBlock(tryStartLabel, tryCacheLabel, tryEndLabel, AsmTools.replaceClassName(Throwable.class));
+        mv.visitLabel(tryStartLabel);
+
+        // Object[] paramObjects = new Object[] { longValue, doubleValue };
+        if (asmParams.length == 0) {
+            mv.visitInsn(ACONST_NULL);
+        } else {
+            AsmTools.codeBuilder_1(mv, asmParams, paramIndexMap);
+        }
+        mv.visitVarInsn(ASTORE, paramIndexMap.get("paramObjects"));
+        mv.visitLabel(paramObjectsLabel);
+
+        // Object obj = new InvokerImplementInvocation("checkBaseType1", targetMethod[0], this, pObjects).proceed();
+        mv.visitTypeInsn(NEW, AsmTools.replaceClassName(InvokerImplementInvocation.class));
+        mv.visitInsn(DUP);
+        mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
+        mv.visitLdcInsn(Type.getType("L" + AsmTools.toAsmType(implType) + ";"));
+        mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
+        mv.visitIntInsn(BIPUSH, indexMap.get(methodKey));
+        mv.visitInsn(AALOAD);
+        mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
+        mv.visitIntInsn(BIPUSH, indexMap.get(methodKey));
+        mv.visitInsn(AALOAD);
+        mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("this"));
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("paramObjects"));
+        String initDesc = AsmTools.toAsmType(InvokerImplementInvocation.class.getConstructor(boolean.class, Class.class, Method.class, Method.class, DynamicConfig.class, Object.class, Object[].class).getParameterTypes());
+        mv.visitMethodInsn(INVOKESPECIAL, AsmTools.replaceClassName(InvokerImplementInvocation.class), "<init>", "(" + initDesc + ")V", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(InvokerImplementInvocation.class), "proceed", "()Ljava/lang/Object;", false);
+        mv.visitVarInsn(ASTORE, paramIndexMap.get("returnData"));
+        mv.visitLabel(returnDataLabel);
+
+        // return (List) obj;
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("returnData"));
+        AsmTools.codeBuilder_3(mv, AsmTools.toAsmType(implMethod.getReturnType()), tryCacheLabel);
+
+        mv.visitLabel(tryEndLabel);
+        mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] { "java/lang/Throwable" });
+
+        //            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //            int finalElseFrameMode = 0;
+        //            Class<?>[] exceptionTypes = aopMethod.getExceptionTypes();
+        //            for (int i = 0; i < exceptionTypes.length; i++) {
+        //                if (i == 0) {
+        //                    finalElseFrameMode = Opcodes.F_APPEND;
+        //                } else if (i == 1) {
+        //                    mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/lang/Throwable" }, 0, null);
+        //                    finalElseFrameMode = Opcodes.F_SAME;
+        //                } else {
+        //                    mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //                    finalElseFrameMode = Opcodes.F_SAME;
+        //                }
+        //
+        //                Label ifEnd = new Label();
+        //                mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
+        //                mv.visitTypeInsn(INSTANCEOF, AsmTools.replaceClassName(exceptionTypes[i]));
+        //                mv.visitJumpInsn(IFEQ, ifEnd);
+        //                mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
+        //                mv.visitTypeInsn(CHECKCAST, AsmTools.replaceClassName(exceptionTypes[i]));
+        //                mv.visitInsn(ATHROW);
+        //                mv.visitLabel(ifEnd);
+        //            }
+        //
+        //            if (finalElseFrameMode == Opcodes.F_APPEND) {
+        //                mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/lang/Throwable" }, 0, null);
+        //            } else {
+        //                mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        //            }
+
+        mv.visitVarInsn(ASTORE, paramIndexMap.get("e"));
+        mv.visitLabel(eLabel);
+        mv.visitVarInsn(ALOAD, paramIndexMap.get("e"));
+        String exceptionMethodDesc = AsmTools.toAsmDesc(ExceptionUtils.class.getMethod("toRuntime", Throwable.class));
+        mv.visitMethodInsn(INVOKESTATIC, AsmTools.replaceClassName(ExceptionUtils.class), "toRuntime", exceptionMethodDesc, false);
+        mv.visitInsn(ATHROW);
+
+        mv.visitLabel(returnLabel);
+        mv.visitLocalVariable("paramObjects", "[Ljava/lang/Object;", null, paramObjectsLabel, tryEndLabel, paramIndexMap.get("paramObjects"));
+        mv.visitLocalVariable("returnData", "Ljava/lang/Object;", null, returnDataLabel, tryEndLabel, paramIndexMap.get("returnData"));
+        mv.visitLocalVariable("e", "Ljava/lang/Throwable;", null, eLabel, returnLabel, paramIndexMap.get("e"));
+        mv.visitLocalVariable("this", "L" + thisClassName + ";", null, tryStartLabel, returnLabel, paramIndexMap.get("this"));
+        for (int i = 0; i < asmParams.length; i++) {
+            mv.visitLocalVariable("args" + i, asmParams[i], null, tryStartLabel, returnLabel, paramIndexMap.get("args" + i));
+        }
+
+        mv.visitMaxs(-1, -1);
+        mv.visitEnd();
     }
 
     public static Class<?> getPrototypeType(Object instance) {

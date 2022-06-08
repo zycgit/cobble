@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
+import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
 import net.hasor.cobble.dynamic.beans.PropertyBean;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ProxyTest {
     @Test
@@ -97,5 +104,62 @@ public class ProxyTest {
 
         instance.setStringValue("abc");
         assert propertyBean.getStringValue().equals("abc");
+    }
+
+    @Test
+    public void aopTest2() throws Exception {
+        final List<Object> data = new ArrayList<>();
+
+        DynamicConfig config = new DynamicConfig(PropertyBean.class);
+        config.addImplements(MethodInterceptor.class, (proxy, method, args) -> null);
+        config.addImplements(List.class, (proxy, method, args) -> {
+            data.add(args[0]);
+            return true;
+        });
+        config.addImplements(Map.class, (proxy, method, args) -> null);
+        config.setDebugOutputDir(new File("target/proxy_" + System.currentTimeMillis()));
+        config.getDebugOutputDir().deleteOnExit();
+
+        Class<?> instance = Proxy.newEnhanceClass(Thread.currentThread().getContextClassLoader(), config);
+        List list = (List) instance.newInstance();
+        list.add("abc");
+        list.add("bcd");
+
+        assert data.size() == 2;
+        assert data.contains("abc");
+        assert data.contains("bcd");
+    }
+
+    @Test
+    public void jdkProxyStyle1() throws Exception {
+        final List<Object> data = new ArrayList<>();
+
+        List list = (List) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] { List.class }, (proxy, method, args) -> {
+            data.add(args[0]);
+            return true;
+        });
+        list.add("abc");
+        list.add("bcd");
+
+        assert data.size() == 2;
+        assert data.contains("abc");
+        assert data.contains("bcd");
+    }
+
+    @Test
+    public void jdkProxyStyle2() throws Exception {
+        final List<Object> data = new ArrayList<>();
+        data.add("abc");
+        data.add("bcd");
+
+        List list = (List) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] { AbstractList.class }, (proxy, method, args) -> {
+            if (method.getName().equals("size")) {
+                return data.size();
+            } else {
+                return BeanUtils.getDefaultValue(method.getReturnType());
+            }
+        });
+
+        assert list.size() == 2;
     }
 }
