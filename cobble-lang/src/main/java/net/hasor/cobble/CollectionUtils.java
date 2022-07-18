@@ -25,11 +25,11 @@ import java.util.function.Function;
 public class CollectionUtils {
     // Empty utilities
     //--------------------------------------------------------------------------
-    public static boolean isNotEmpty(List<?> tables) {
+    public static boolean isNotEmpty(Collection<?> tables) {
         return tables != null && !tables.isEmpty();
     }
 
-    public static boolean isEmpty(List<?> tables) {
+    public static boolean isEmpty(Collection<?> tables) {
         return tables == null || tables.isEmpty();
     }
 
@@ -41,7 +41,7 @@ public class CollectionUtils {
         return maps == null || maps.isEmpty();
     }
 
-    public static int size(List<?> list) {
+    public static int size(Collection<?> list) {
         return (list == null || list.isEmpty()) ? 0 : list.size();
     }
 
