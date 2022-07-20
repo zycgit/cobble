@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io;
+import net.hasor.cobble.io.reader.ReversedLinesFileReader;
+
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -108,6 +112,33 @@ public class FileUtils {
      */
     public static List<String> readLines(File file) throws IOException {
         return readLines(file, null);
+    }
+
+    /**
+     * Reads the contents of a file from back to front of Strings using the default encoding for the VM.
+     * The file is always closed.
+     *
+     * @param file  the file to read, must not be <code>null</code>
+     * @return the list of Strings representing each line in the file, never <code>null</code>
+     * @throws IOException in case of an I/O error
+     */
+    public static List<String> reversedReadLines(File file, int maxLines) throws IOException {
+        try (ReversedLinesFileReader fileReader = new ReversedLinesFileReader(file, StandardCharsets.UTF_8)) {
+            int count = 0;
+            List<String> tailStrList = new ArrayList<>();
+            String line;
+            while (true) {
+                if ((line = fileReader.readLine()) == null) {
+                    break;
+                }
+                tailStrList.add(line);
+                if (count >= maxLines) {
+                    break;
+                }
+                count++;
+            }
+            return tailStrList;
+        }
     }
 
     /**
