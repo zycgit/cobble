@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * <p>Operations on {@link String} that are
@@ -190,7 +191,7 @@ public class StringUtils {
      * @return <code>true</code> if the String is not empty and not null
      */
     public static boolean isNotEmpty(final String str) {
-        return !StringUtils.isEmpty(str);
+        return !isEmpty(str);
     }
 
     /**
@@ -214,7 +215,7 @@ public class StringUtils {
             return true;
         }
         for (int i = 0; i < strLen; i++) {
-            if (Character.isWhitespace(str.charAt(i)) == false) {
+            if (!Character.isWhitespace(str.charAt(i))) {
                 return false;
             }
         }
@@ -238,7 +239,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static boolean isNotBlank(final String str) {
-        return !StringUtils.isBlank(str);
+        return !isBlank(str);
     }
     // Trim
     //-----------------------------------------------------------------------
@@ -293,8 +294,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static String trimToNull(final String str) {
-        String ts = StringUtils.trim(str);
-        return StringUtils.isEmpty(ts) ? null : ts;
+        String ts = trim(str);
+        return isEmpty(ts) ? null : ts;
     }
 
     /**
@@ -319,7 +320,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static String trimToEmpty(final String str) {
-        return str == null ? StringUtils.EMPTY : str.trim();
+        return str == null ? EMPTY : str.trim();
     }
     // Stripping
     //-----------------------------------------------------------------------
@@ -347,7 +348,7 @@ public class StringUtils {
      * @return the stripped String, <code>null</code> if null String input
      */
     public static String strip(final String str) {
-        return StringUtils.strip(str, null);
+        return strip(str, null);
     }
 
     /**
@@ -377,7 +378,7 @@ public class StringUtils {
         if (str == null) {
             return null;
         }
-        str = StringUtils.strip(str, null);
+        str = strip(str, null);
         return str.length() == 0 ? null : str;
     }
 
@@ -404,7 +405,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static String stripToEmpty(final String str) {
-        return str == null ? StringUtils.EMPTY : StringUtils.strip(str, null);
+        return str == null ? EMPTY : strip(str, null);
     }
 
     /**
@@ -434,11 +435,11 @@ public class StringUtils {
      * @return the stripped String, <code>null</code> if null String input
      */
     public static String strip(String str, final String stripChars) {
-        if (StringUtils.isEmpty(str)) {
+        if (isEmpty(str)) {
             return str;
         }
-        str = StringUtils.stripStart(str, stripChars);
-        return StringUtils.stripEnd(str, stripChars);
+        str = stripStart(str, stripChars);
+        return stripEnd(str, stripChars);
     }
 
     /**
@@ -478,7 +479,7 @@ public class StringUtils {
         } else if (stripChars.length() == 0) {
             return str;
         } else {
-            while (start != strLen && stripChars.indexOf(str.charAt(start)) != StringUtils.INDEX_NOT_FOUND) {
+            while (start != strLen && stripChars.indexOf(str.charAt(start)) != INDEX_NOT_FOUND) {
                 start++;
             }
         }
@@ -522,7 +523,7 @@ public class StringUtils {
         } else if (stripChars.length() == 0) {
             return str;
         } else {
-            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != StringUtils.INDEX_NOT_FOUND) {
+            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != INDEX_NOT_FOUND) {
                 end--;
             }
         }
@@ -551,7 +552,7 @@ public class StringUtils {
      * @return the stripped Strings, <code>null</code> if null array input
      */
     public static String[] stripAll(final String[] strs) {
-        return StringUtils.stripAll(strs, null);
+        return stripAll(strs, null);
     }
 
     /**
@@ -586,7 +587,7 @@ public class StringUtils {
         }
         String[] newArr = new String[strsLen];
         for (int i = 0; i < strsLen; i++) {
-            newArr[i] = StringUtils.strip(strs[i], stripChars);
+            newArr[i] = strip(strs[i], stripChars);
         }
         return newArr;
     }
@@ -672,8 +673,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int indexOf(final String str, final char searchChar) {
-        if (StringUtils.isEmpty(str)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str)) {
+            return INDEX_NOT_FOUND;
         }
         return str.indexOf(searchChar);
     }
@@ -704,8 +705,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int indexOf(final String str, final char searchChar, final int startPos) {
-        if (StringUtils.isEmpty(str)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str)) {
+            return INDEX_NOT_FOUND;
         }
         return str.indexOf(searchChar, startPos);
     }
@@ -735,7 +736,7 @@ public class StringUtils {
      */
     public static int indexOf(final String str, final String searchStr) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         return str.indexOf(searchStr);
     }
@@ -774,7 +775,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static int ordinalIndexOf(final String str, final String searchStr, final int ordinal) {
-        return StringUtils.ordinalIndexOf(str, searchStr, ordinal, false);
+        return ordinalIndexOf(str, searchStr, ordinal, false);
     }
 
     /**
@@ -793,13 +794,13 @@ public class StringUtils {
     // Shared code between ordinalIndexOf(String,String,int) and lastOrdinalIndexOf(String,String,int)
     private static int ordinalIndexOf(final String str, final String searchStr, final int ordinal, final boolean lastIndex) {
         if (str == null || searchStr == null || ordinal <= 0) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         if (searchStr.length() == 0) {
             return lastIndex ? str.length() : 0;
         }
         int found = 0;
-        int index = lastIndex ? str.length() : StringUtils.INDEX_NOT_FOUND;
+        int index = lastIndex ? str.length() : INDEX_NOT_FOUND;
         do {
             if (lastIndex) {
                 index = str.lastIndexOf(searchStr, index - 1);
@@ -848,7 +849,7 @@ public class StringUtils {
      */
     public static int indexOf(final String str, final String searchStr, final int startPos) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         // JDK1.2/JDK1.3 have a bug, when startPos > str.length for "", hence
         if (searchStr.length() == 0 && startPos >= str.length()) {
@@ -882,7 +883,7 @@ public class StringUtils {
      * @since 2.5
      */
     public static int indexOfIgnoreCase(final String str, final String searchStr) {
-        return StringUtils.indexOfIgnoreCase(str, searchStr, 0);
+        return indexOfIgnoreCase(str, searchStr, 0);
     }
 
     /**
@@ -918,7 +919,7 @@ public class StringUtils {
      */
     public static int indexOfIgnoreCase(String str, String searchStr, int startPos) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         } else {
             return indexOf(str.toUpperCase(), searchStr.toUpperCase(), startPos);
         }
@@ -946,8 +947,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int lastIndexOf(final String str, final char searchChar) {
-        if (StringUtils.isEmpty(str)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str)) {
+            return INDEX_NOT_FOUND;
         }
         return str.lastIndexOf(searchChar);
     }
@@ -980,8 +981,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int lastIndexOf(final String str, final char searchChar, final int startPos) {
-        if (StringUtils.isEmpty(str)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str)) {
+            return INDEX_NOT_FOUND;
         }
         return str.lastIndexOf(searchChar, startPos);
     }
@@ -1010,7 +1011,7 @@ public class StringUtils {
      */
     public static int lastIndexOf(final String str, final String searchStr) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         return str.lastIndexOf(searchStr);
     }
@@ -1049,7 +1050,7 @@ public class StringUtils {
      * @since 2.5
      */
     public static int lastOrdinalIndexOf(final String str, final String searchStr, final int ordinal) {
-        return StringUtils.ordinalIndexOf(str, searchStr, ordinal, true);
+        return ordinalIndexOf(str, searchStr, ordinal, true);
     }
 
     /**
@@ -1082,7 +1083,7 @@ public class StringUtils {
      */
     public static int lastIndexOf(final String str, final String searchStr, final int startPos) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         return str.lastIndexOf(searchStr, startPos);
     }
@@ -1111,9 +1112,9 @@ public class StringUtils {
      */
     public static int lastIndexOfIgnoreCase(final String str, final String searchStr) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
-        return StringUtils.lastIndexOfIgnoreCase(str, searchStr, str.length());
+        return lastIndexOfIgnoreCase(str, searchStr, str.length());
     }
 
     /**
@@ -1146,7 +1147,7 @@ public class StringUtils {
      */
     public static int lastIndexOfIgnoreCase(final String str, final String searchStr, int startPos) {
         if (str == null || searchStr == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         } else {
             return lastIndexOf(str.toUpperCase(), searchStr.toUpperCase(), startPos);
         }
@@ -1174,7 +1175,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static boolean contains(final String str, final char searchChar) {
-        if (StringUtils.isEmpty(str)) {
+        if (isEmpty(str)) {
             return false;
         }
         return str.indexOf(searchChar) >= 0;
@@ -1264,8 +1265,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int indexOfAny(final String str, final char[] searchChars) {
-        if (StringUtils.isEmpty(str) || ArrayUtils.isEmpty(searchChars)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str) || ArrayUtils.isEmpty(searchChars)) {
+            return INDEX_NOT_FOUND;
         }
         int csLen = str.length();
         int csLast = csLen - 1;
@@ -1286,7 +1287,7 @@ public class StringUtils {
                 }
             }
         }
-        return StringUtils.INDEX_NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -1312,10 +1313,10 @@ public class StringUtils {
      * @since 2.0
      */
     public static int indexOfAny(final String str, final String searchChars) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(searchChars)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str) || isEmpty(searchChars)) {
+            return INDEX_NOT_FOUND;
         }
-        return StringUtils.indexOfAny(str, searchChars.toCharArray());
+        return indexOfAny(str, searchChars.toCharArray());
     }
     // ContainsAny
     //-----------------------------------------------------------------------
@@ -1344,7 +1345,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static boolean containsAny(final String str, final char[] searchChars) {
-        if (StringUtils.isEmpty(str) || ArrayUtils.isEmpty(searchChars)) {
+        if (isEmpty(str) || ArrayUtils.isEmpty(searchChars)) {
             return false;
         }
         int csLength = str.length();
@@ -1404,7 +1405,7 @@ public class StringUtils {
         if (searchChars == null) {
             return false;
         }
-        return StringUtils.containsAny(str, searchChars.toCharArray());
+        return containsAny(str, searchChars.toCharArray());
     }
     // IndexOfAnyBut chars
     //-----------------------------------------------------------------------
@@ -1432,8 +1433,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int indexOfAnyBut(final String str, final char[] searchChars) {
-        if (StringUtils.isEmpty(str) || ArrayUtils.isEmpty(searchChars)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str) || ArrayUtils.isEmpty(searchChars)) {
+            return INDEX_NOT_FOUND;
         }
         int csLen = str.length();
         int csLast = csLen - 1;
@@ -1455,7 +1456,7 @@ public class StringUtils {
             }
             return i;
         }
-        return StringUtils.INDEX_NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -1481,8 +1482,8 @@ public class StringUtils {
      * @since 2.0
      */
     public static int indexOfAnyBut(final String str, final String searchChars) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(searchChars)) {
-            return StringUtils.INDEX_NOT_FOUND;
+        if (isEmpty(str) || isEmpty(searchChars)) {
+            return INDEX_NOT_FOUND;
         }
         int strLen = str.length();
         for (int i = 0; i < strLen; i++) {
@@ -1499,7 +1500,7 @@ public class StringUtils {
                 }
             }
         }
-        return StringUtils.INDEX_NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
     // ContainsOnly
     //-----------------------------------------------------------------------
@@ -1536,7 +1537,7 @@ public class StringUtils {
         if (valid.length == 0) {
             return false;
         }
-        return StringUtils.indexOfAnyBut(str, valid) == StringUtils.INDEX_NOT_FOUND;
+        return indexOfAnyBut(str, valid) == INDEX_NOT_FOUND;
     }
 
     /**
@@ -1565,7 +1566,7 @@ public class StringUtils {
         if (str == null || validChars == null) {
             return false;
         }
-        return StringUtils.containsOnly(str, validChars.toCharArray());
+        return containsOnly(str, validChars.toCharArray());
     }
     // ContainsNone
     //-----------------------------------------------------------------------
@@ -1648,7 +1649,7 @@ public class StringUtils {
         if (str == null || invalidChars == null) {
             return true;
         }
-        return StringUtils.containsNone(str, invalidChars.toCharArray());
+        return containsNone(str, invalidChars.toCharArray());
     }
     // IndexOfAny strings
     //-----------------------------------------------------------------------
@@ -1681,7 +1682,7 @@ public class StringUtils {
      */
     public static int indexOfAny(final String str, final String[] searchStrs) {
         if (str == null || searchStrs == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         int sz = searchStrs.length;
         // String's can't have a MAX_VALUEth index.
@@ -1693,14 +1694,14 @@ public class StringUtils {
                 continue;
             }
             tmp = str.indexOf(search);
-            if (tmp == StringUtils.INDEX_NOT_FOUND) {
+            if (tmp == INDEX_NOT_FOUND) {
                 continue;
             }
             if (tmp < ret) {
                 ret = tmp;
             }
         }
-        return ret == Integer.MAX_VALUE ? StringUtils.INDEX_NOT_FOUND : ret;
+        return ret == Integer.MAX_VALUE ? INDEX_NOT_FOUND : ret;
     }
 
     /**
@@ -1730,10 +1731,10 @@ public class StringUtils {
      */
     public static int lastIndexOfAny(final String str, final String[] searchStrs) {
         if (str == null || searchStrs == null) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         int sz = searchStrs.length;
-        int ret = StringUtils.INDEX_NOT_FOUND;
+        int ret = INDEX_NOT_FOUND;
         int tmp = 0;
         for (int i = 0; i < sz; i++) {
             String search = searchStrs[i];
@@ -1786,7 +1787,7 @@ public class StringUtils {
             start = 0;
         }
         if (start > str.length()) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         return str.substring(start);
     }
@@ -1843,7 +1844,7 @@ public class StringUtils {
         }
         // if start is greater than end, return ""
         if (start > end) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         if (start < 0) {
             start = 0;
@@ -1881,7 +1882,7 @@ public class StringUtils {
             return null;
         }
         if (len < 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         if (str.length() <= len) {
             return str;
@@ -1914,7 +1915,7 @@ public class StringUtils {
             return null;
         }
         if (len < 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         if (str.length() <= len) {
             return str;
@@ -1952,7 +1953,7 @@ public class StringUtils {
             return null;
         }
         if (len < 0 || pos > str.length()) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         if (pos < 0) {
             pos = 0;
@@ -1993,14 +1994,14 @@ public class StringUtils {
      * @since 2.0
      */
     public static String substringBefore(final String str, final String separator) {
-        if (StringUtils.isEmpty(str) || separator == null) {
+        if (isEmpty(str) || separator == null) {
             return str;
         }
         if (separator.length() == 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         int pos = str.indexOf(separator);
-        if (pos == StringUtils.INDEX_NOT_FOUND) {
+        if (pos == INDEX_NOT_FOUND) {
             return str;
         }
         return str.substring(0, pos);
@@ -2035,15 +2036,15 @@ public class StringUtils {
      * @since 2.0
      */
     public static String substringAfter(final String str, final String separator) {
-        if (StringUtils.isEmpty(str)) {
+        if (isEmpty(str)) {
             return str;
         }
         if (separator == null) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         int pos = str.indexOf(separator);
-        if (pos == StringUtils.INDEX_NOT_FOUND) {
-            return StringUtils.EMPTY;
+        if (pos == INDEX_NOT_FOUND) {
+            return EMPTY;
         }
         return str.substring(pos + separator.length());
     }
@@ -2076,11 +2077,11 @@ public class StringUtils {
      * @since 2.0
      */
     public static String substringBeforeLast(final String str, final String separator) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(separator)) {
+        if (isEmpty(str) || isEmpty(separator)) {
             return str;
         }
         int pos = str.lastIndexOf(separator);
-        if (pos == StringUtils.INDEX_NOT_FOUND) {
+        if (pos == INDEX_NOT_FOUND) {
             return str;
         }
         return str.substring(0, pos);
@@ -2116,15 +2117,15 @@ public class StringUtils {
      * @since 2.0
      */
     public static String substringAfterLast(final String str, final String separator) {
-        if (StringUtils.isEmpty(str)) {
+        if (isEmpty(str)) {
             return str;
         }
-        if (StringUtils.isEmpty(separator)) {
-            return StringUtils.EMPTY;
+        if (isEmpty(separator)) {
+            return EMPTY;
         }
         int pos = str.lastIndexOf(separator);
-        if (pos == StringUtils.INDEX_NOT_FOUND || pos == str.length() - separator.length()) {
-            return StringUtils.EMPTY;
+        if (pos == INDEX_NOT_FOUND || pos == str.length() - separator.length()) {
+            return EMPTY;
         }
         return str.substring(pos + separator.length());
     }
@@ -2153,7 +2154,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static String substringBetween(final String str, final String tag) {
-        return StringUtils.substringBetween(str, tag, tag);
+        return substringBetween(str, tag, tag);
     }
 
     /**
@@ -2188,9 +2189,9 @@ public class StringUtils {
             return null;
         }
         int start = str.indexOf(open);
-        if (start != StringUtils.INDEX_NOT_FOUND) {
+        if (start != INDEX_NOT_FOUND) {
             int end = str.indexOf(close, start + open.length());
-            if (end != StringUtils.INDEX_NOT_FOUND) {
+            if (end != INDEX_NOT_FOUND) {
                 return str.substring(start + open.length(), end);
             }
         }
@@ -2220,7 +2221,7 @@ public class StringUtils {
      * @since 2.3
      */
     public static String[] substringsBetween(final String str, final String open, final String close) {
-        if (str == null || StringUtils.isEmpty(open) || StringUtils.isEmpty(close)) {
+        if (str == null || isEmpty(open) || isEmpty(close)) {
             return null;
         }
         int strLen = str.length();
@@ -2340,7 +2341,7 @@ public class StringUtils {
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
     public static String[] split(final String str) {
-        return StringUtils.split(str, null, -1);
+        return split(str, null, -1);
     }
 
     /**
@@ -2368,7 +2369,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static String[] split(final String str, final char separatorChar) {
-        return StringUtils.splitWorker(str, separatorChar, false);
+        return splitWorker(str, separatorChar, false);
     }
 
     /**
@@ -2397,7 +2398,7 @@ public class StringUtils {
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
     public static String[] split(final String str, final String separatorChars) {
-        return StringUtils.splitWorker(str, separatorChars, -1, false);
+        return splitWorker(str, separatorChars, -1, false);
     }
 
     /**
@@ -2431,7 +2432,29 @@ public class StringUtils {
      * @return an array of parsed Strings, <code>null</code> if null String input
      */
     public static String[] split(final String str, final String separatorChars, final int max) {
-        return StringUtils.splitWorker(str, separatorChars, max, false);
+        return splitWorker(str, separatorChars, max, false);
+    }
+
+    /**
+     * `I#20;U10;D22` 可以按照 `#`,`;` 两个字符来切割。 结果为：[I, 20, U, 10, D, 22]
+     */
+    private static String[] split(final String str, final char... separators) {
+        Stream<String> stream = Stream.of(str);
+        for (char separator : separators) {
+            stream = stream.flatMap(s -> Arrays.stream(s.split(String.valueOf(separator))));
+        }
+        return stream.toArray(String[]::new);
+    }
+
+    /**
+     * `I#20;U10;D22` 可以按照 `#`,`;` 两个字符来切割。 结果为：[I, 20, U, 10, D, 22]
+     */
+    private static String[] split(final String str, final String... separators) {
+        Stream<String> stream = Stream.of(str);
+        for (String separator : separators) {
+            stream = stream.flatMap(s -> Arrays.stream(s.split(separator)));
+        }
+        return stream.toArray(String[]::new);
     }
 
     /**
@@ -2458,7 +2481,7 @@ public class StringUtils {
      * @return an array of parsed Strings, <code>null</code> if null String was input
      */
     public static String[] splitByWholeSeparator(final String str, final String separator) {
-        return StringUtils.splitByWholeSeparatorWorker(str, separator, -1, false);
+        return splitByWholeSeparatorWorker(str, separator, -1, false);
     }
 
     /**
@@ -2489,7 +2512,7 @@ public class StringUtils {
      * @return an array of parsed Strings, <code>null</code> if null String was input
      */
     public static String[] splitByWholeSeparator(final String str, final String separator, final int max) {
-        return StringUtils.splitByWholeSeparatorWorker(str, separator, max, false);
+        return splitByWholeSeparatorWorker(str, separator, max, false);
     }
 
     /**
@@ -2518,7 +2541,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static String[] splitByWholeSeparatorPreserveAllTokens(final String str, final String separator) {
-        return StringUtils.splitByWholeSeparatorWorker(str, separator, -1, true);
+        return splitByWholeSeparatorWorker(str, separator, -1, true);
     }
 
     /**
@@ -2551,7 +2574,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static String[] splitByWholeSeparatorPreserveAllTokens(final String str, final String separator, final int max) {
-        return StringUtils.splitByWholeSeparatorWorker(str, separator, max, true);
+        return splitByWholeSeparatorWorker(str, separator, max, true);
     }
 
     /**
@@ -2576,9 +2599,9 @@ public class StringUtils {
         if (len == 0) {
             return ArrayUtils.EMPTY_STRING_ARRAY;
         }
-        if (separator == null || StringUtils.EMPTY.equals(separator)) {
+        if (separator == null || EMPTY.equals(separator)) {
             // Split on whitespace.
-            return StringUtils.splitWorker(str, null, max, preserveAllTokens);
+            return splitWorker(str, null, max, preserveAllTokens);
         }
         int separatorLength = separator.length();
         ArrayList<String> substrings = new ArrayList<>();
@@ -2610,7 +2633,7 @@ public class StringUtils {
                             end = len;
                             substrings.add(str.substring(beg));
                         } else {
-                            substrings.add(StringUtils.EMPTY);
+                            substrings.add(EMPTY);
                         }
                     }
                     beg = end + separatorLength;
@@ -2650,7 +2673,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String[] splitPreserveAllTokens(final String str) {
-        return StringUtils.splitWorker(str, null, -1, true);
+        return splitWorker(str, null, -1, true);
     }
 
     /**
@@ -2686,7 +2709,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String[] splitPreserveAllTokens(final String str, final char separatorChar) {
-        return StringUtils.splitWorker(str, separatorChar, true);
+        return splitWorker(str, separatorChar, true);
     }
 
     /**
@@ -2768,7 +2791,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String[] splitPreserveAllTokens(final String str, final String separatorChars) {
-        return StringUtils.splitWorker(str, separatorChars, -1, true);
+        return splitWorker(str, separatorChars, -1, true);
     }
 
     /**
@@ -2808,7 +2831,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String[] splitPreserveAllTokens(final String str, final String separatorChars, final int max) {
-        return StringUtils.splitWorker(str, separatorChars, max, true);
+        return splitWorker(str, separatorChars, max, true);
     }
 
     /**
@@ -2929,7 +2952,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static String[] splitByCharacterType(final String str) {
-        return StringUtils.splitByCharacterType(str, false);
+        return splitByCharacterType(str, false);
     }
 
     /**
@@ -2957,7 +2980,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static String[] splitByCharacterTypeCamelCase(final String str) {
-        return StringUtils.splitByCharacterType(str, true);
+        return splitByCharacterType(str, true);
     }
 
     /**
@@ -3029,7 +3052,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static String join(final Object[] array) {
-        return StringUtils.join(array, null);
+        return join(array, null);
     }
 
     /**
@@ -3058,7 +3081,7 @@ public class StringUtils {
         if (array == null) {
             return null;
         }
-        return StringUtils.join(array, separator, 0, array.length);
+        return join(array, separator, 0, array.length);
     }
 
     /**
@@ -3093,7 +3116,7 @@ public class StringUtils {
         }
         int bufSize = endIndex - startIndex;
         if (bufSize <= 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         bufSize *= (array[startIndex] == null ? 16 : array[startIndex].toString().length()) + 1;
         StringBuilder buf = new StringBuilder(bufSize);
@@ -3135,7 +3158,7 @@ public class StringUtils {
         if (array == null) {
             return null;
         }
-        return StringUtils.join(array, separator, 0, array.length);
+        return join(array, separator, 0, array.length);
     }
 
     /**
@@ -3170,13 +3193,13 @@ public class StringUtils {
             return null;
         }
         if (separator == null) {
-            separator = StringUtils.EMPTY;
+            separator = EMPTY;
         }
         // endIndex - startIndex > 0:   Len = NofStrings *(len(firstString) + len(separator))
         //           (Assuming that all Strings are roughly equally long)
         int bufSize = endIndex - startIndex;
         if (bufSize <= 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         bufSize *= (array[startIndex] == null ? 16 : array[startIndex].toString().length()) + separator.length();
         StringBuilder buf = new StringBuilder(bufSize);
@@ -3208,7 +3231,7 @@ public class StringUtils {
      * @return the String without whitespaces, <code>null</code> if null String input
      */
     public static String deleteWhitespace(final String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (isEmpty(str)) {
             return str;
         }
         int sz = str.length();
@@ -3252,7 +3275,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String removeStart(final String str, final String remove) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(remove)) {
+        if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
         if (str.startsWith(remove)) {
@@ -3287,10 +3310,10 @@ public class StringUtils {
      * @since 2.4
      */
     public static String removeStartIgnoreCase(final String str, final String remove) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(remove)) {
+        if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
-        if (StringUtils.startsWithIgnoreCase(str, remove)) {
+        if (startsWithIgnoreCase(str, remove)) {
             return str.substring(remove.length());
         }
         return str;
@@ -3321,7 +3344,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String removeEnd(final String str, final String remove) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(remove)) {
+        if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
         if (str.endsWith(remove)) {
@@ -3357,10 +3380,10 @@ public class StringUtils {
      * @since 2.4
      */
     public static String removeEndIgnoreCase(final String str, final String remove) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(remove)) {
+        if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
-        if (StringUtils.endsWithIgnoreCase(str, remove)) {
+        if (endsWithIgnoreCase(str, remove)) {
             return str.substring(0, str.length() - remove.length());
         }
         return str;
@@ -3390,10 +3413,10 @@ public class StringUtils {
      * @since 2.1
      */
     public static String remove(final String str, final String remove) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(remove)) {
+        if (isEmpty(str) || isEmpty(remove)) {
             return str;
         }
-        return StringUtils.replace(str, remove, StringUtils.EMPTY, -1);
+        return replace(str, remove, EMPTY, -1);
     }
 
     /**
@@ -3416,7 +3439,7 @@ public class StringUtils {
      * @since 2.1
      */
     public static String remove(final String str, final char remove) {
-        if (StringUtils.isEmpty(str) || str.indexOf(remove) == StringUtils.INDEX_NOT_FOUND) {
+        if (isEmpty(str) || str.indexOf(remove) == INDEX_NOT_FOUND) {
             return str;
         }
         char[] chars = str.toCharArray();
@@ -3455,7 +3478,7 @@ public class StringUtils {
      *  <code>null</code> if null String input
      */
     public static String replaceOnce(final String text, final String searchString, final String replacement) {
-        return StringUtils.replace(text, searchString, replacement, 1);
+        return replace(text, searchString, replacement, 1);
     }
 
     /**
@@ -3482,7 +3505,7 @@ public class StringUtils {
      *  <code>null</code> if null String input
      */
     public static String replace(final String text, final String searchString, final String replacement) {
-        return StringUtils.replace(text, searchString, replacement, -1);
+        return replace(text, searchString, replacement, -1);
     }
 
     /**
@@ -3514,12 +3537,12 @@ public class StringUtils {
      *  <code>null</code> if null String input
      */
     public static String replace(final String text, final String searchString, final String replacement, int max) {
-        if (StringUtils.isEmpty(text) || StringUtils.isEmpty(searchString) || replacement == null || max == 0) {
+        if (isEmpty(text) || isEmpty(searchString) || replacement == null || max == 0) {
             return text;
         }
         int start = 0;
         int end = text.indexOf(searchString, start);
-        if (end == StringUtils.INDEX_NOT_FOUND) {
+        if (end == INDEX_NOT_FOUND) {
             return text;
         }
         int replLength = searchString.length();
@@ -3527,7 +3550,7 @@ public class StringUtils {
         increase = Math.max(increase, 0);
         increase *= max < 0 ? 16 : Math.min(max, 64);
         StringBuilder buf = new StringBuilder(text.length() + increase);
-        while (end != StringUtils.INDEX_NOT_FOUND) {
+        while (end != INDEX_NOT_FOUND) {
             buf.append(text.substring(start, end)).append(replacement);
             start = end + replLength;
             if (--max == 0) {
@@ -3579,7 +3602,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static String replaceEach(final String text, final String[] searchList, final String[] replacementList) {
-        return StringUtils.replaceEach(text, searchList, replacementList, false, 0);
+        return replaceEach(text, searchList, replacementList, false, 0);
     }
 
     /**
@@ -3631,7 +3654,7 @@ public class StringUtils {
         // timeToLive should be 0 if not used or nothing to replace, else it's
         // the length of the replace array
         int timeToLive = searchList == null ? 0 : searchList.length;
-        return StringUtils.replaceEach(text, searchList, replacementList, true, timeToLive);
+        return replaceEach(text, searchList, replacementList, true, timeToLive);
     }
 
     /**
@@ -3778,7 +3801,7 @@ public class StringUtils {
         if (!repeat) {
             return result;
         }
-        return StringUtils.replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
+        return replaceEach(result, searchList, replacementList, repeat, timeToLive - 1);
     }
     // Replace, character based
     //-----------------------------------------------------------------------
@@ -3847,11 +3870,11 @@ public class StringUtils {
      * @since 2.0
      */
     public static String replaceChars(final String str, final String searchChars, String replaceChars) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(searchChars)) {
+        if (isEmpty(str) || isEmpty(searchChars)) {
             return str;
         }
         if (replaceChars == null) {
-            replaceChars = StringUtils.EMPTY;
+            replaceChars = EMPTY;
         }
         boolean modified = false;
         int replaceCharsLength = replaceChars.length();
@@ -3911,7 +3934,7 @@ public class StringUtils {
             return null;
         }
         if (overlay == null) {
-            overlay = StringUtils.EMPTY;
+            overlay = EMPTY;
         }
         int len = str.length();
         if (start < 0) {
@@ -3962,13 +3985,13 @@ public class StringUtils {
      * @return String without newline, <code>null</code> if null String input
      */
     public static String chomp(final String str) {
-        if (StringUtils.isEmpty(str)) {
+        if (isEmpty(str)) {
             return str;
         }
         if (str.length() == 1) {
             char ch = str.charAt(0);
             if (ch == CharUtils.CR || ch == CharUtils.LF) {
-                return StringUtils.EMPTY;
+                return EMPTY;
             }
             return str;
         }
@@ -4011,7 +4034,7 @@ public class StringUtils {
      * @return String without trailing separator, <code>null</code> if null String input
      */
     public static String chomp(final String str, final String separator) {
-        if (StringUtils.isEmpty(str) || separator == null) {
+        if (isEmpty(str) || separator == null) {
             return str;
         }
         if (str.endsWith(separator)) {
@@ -4051,7 +4074,7 @@ public class StringUtils {
         }
         int strLen = str.length();
         if (strLen < 2) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         int lastIdx = strLen - 1;
         String ret = str.substring(0, lastIdx);
@@ -4112,14 +4135,14 @@ public class StringUtils {
             return null;
         }
         if (repeat <= 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
         int inputLength = str.length();
         if (repeat == 1 || inputLength == 0) {
             return str;
         }
-        if (inputLength == 1 && repeat <= StringUtils.PAD_LIMIT) {
-            return StringUtils.padding(repeat, str.charAt(0));
+        if (inputLength == 1 && repeat <= PAD_LIMIT) {
+            return padding(repeat, str.charAt(0));
         }
         int outputLength = inputLength * repeat;
         switch (inputLength) {
@@ -4170,11 +4193,11 @@ public class StringUtils {
      */
     public static String repeat(final String str, final String separator, final int repeat) {
         if (str == null || separator == null) {
-            return StringUtils.repeat(str, repeat);
+            return repeat(str, repeat);
         } else {
             // given that repeat(String, int) is quite optimized, better to rely on it than try and splice this into it
-            String result = StringUtils.repeat(str + separator, repeat);
-            return StringUtils.removeEnd(result, separator);
+            String result = repeat(str + separator, repeat);
+            return removeEnd(result, separator);
         }
     }
 
@@ -4230,7 +4253,7 @@ public class StringUtils {
      *  <code>null</code> if null String input
      */
     public static String rightPad(final String str, final int size) {
-        return StringUtils.rightPad(str, size, ' ');
+        return rightPad(str, size, ' ');
     }
 
     /**
@@ -4262,10 +4285,10 @@ public class StringUtils {
         if (pads <= 0) {
             return str; // returns original String when possible
         }
-        if (pads > StringUtils.PAD_LIMIT) {
-            return StringUtils.rightPad(str, size, String.valueOf(padChar));
+        if (pads > PAD_LIMIT) {
+            return rightPad(str, size, String.valueOf(padChar));
         }
-        return str.concat(StringUtils.padding(pads, padChar));
+        return str.concat(padding(pads, padChar));
     }
 
     /**
@@ -4295,7 +4318,7 @@ public class StringUtils {
         if (str == null) {
             return null;
         }
-        if (StringUtils.isEmpty(padStr)) {
+        if (isEmpty(padStr)) {
             padStr = " ";
         }
         int padLen = padStr.length();
@@ -4304,8 +4327,8 @@ public class StringUtils {
         if (pads <= 0) {
             return str; // returns original String when possible
         }
-        if (padLen == 1 && pads <= StringUtils.PAD_LIMIT) {
-            return StringUtils.rightPad(str, size, padStr.charAt(0));
+        if (padLen == 1 && pads <= PAD_LIMIT) {
+            return rightPad(str, size, padStr.charAt(0));
         }
         if (pads == padLen) {
             return str.concat(padStr);
@@ -4341,7 +4364,7 @@ public class StringUtils {
      *  <code>null</code> if null String input
      */
     public static String leftPad(final String str, final int size) {
-        return StringUtils.leftPad(str, size, ' ');
+        return leftPad(str, size, ' ');
     }
 
     /**
@@ -4373,10 +4396,10 @@ public class StringUtils {
         if (pads <= 0) {
             return str; // returns original String when possible
         }
-        if (pads > StringUtils.PAD_LIMIT) {
-            return StringUtils.leftPad(str, size, String.valueOf(padChar));
+        if (pads > PAD_LIMIT) {
+            return leftPad(str, size, String.valueOf(padChar));
         }
-        return StringUtils.padding(pads, padChar).concat(str);
+        return padding(pads, padChar).concat(str);
     }
 
     /**
@@ -4406,7 +4429,7 @@ public class StringUtils {
         if (str == null) {
             return null;
         }
-        if (StringUtils.isEmpty(padStr)) {
+        if (isEmpty(padStr)) {
             padStr = " ";
         }
         int padLen = padStr.length();
@@ -4415,8 +4438,8 @@ public class StringUtils {
         if (pads <= 0) {
             return str; // returns original String when possible
         }
-        if (padLen == 1 && pads <= StringUtils.PAD_LIMIT) {
-            return StringUtils.leftPad(str, size, padStr.charAt(0));
+        if (padLen == 1 && pads <= PAD_LIMIT) {
+            return leftPad(str, size, padStr.charAt(0));
         }
         if (pads == padLen) {
             return padStr.concat(str);
@@ -4470,7 +4493,7 @@ public class StringUtils {
      * @return centered String, <code>null</code> if null String input
      */
     public static String center(final String str, final int size) {
-        return StringUtils.center(str, size, ' ');
+        return center(str, size, ' ');
     }
 
     /**
@@ -4506,8 +4529,8 @@ public class StringUtils {
         if (pads <= 0) {
             return str;
         }
-        str = StringUtils.leftPad(str, strLen + pads / 2, padChar);
-        str = StringUtils.rightPad(str, size, padChar);
+        str = leftPad(str, strLen + pads / 2, padChar);
+        str = rightPad(str, size, padChar);
         return str;
     }
 
@@ -4541,7 +4564,7 @@ public class StringUtils {
         if (str == null || size <= 0) {
             return str;
         }
-        if (StringUtils.isEmpty(padStr)) {
+        if (isEmpty(padStr)) {
             padStr = " ";
         }
         int strLen = str.length();
@@ -4549,8 +4572,8 @@ public class StringUtils {
         if (pads <= 0) {
             return str;
         }
-        str = StringUtils.leftPad(str, strLen + pads / 2, padStr);
-        str = StringUtils.rightPad(str, size, padStr);
+        str = leftPad(str, strLen + pads / 2, padStr);
+        str = rightPad(str, size, padStr);
         return str;
     }
     // Case conversion
@@ -4775,12 +4798,12 @@ public class StringUtils {
      * @return the number of occurrences, 0 if either String is <code>null</code>
      */
     public static int countMatches(final String str, final String sub) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(sub)) {
+        if (isEmpty(str) || isEmpty(sub)) {
             return 0;
         }
         int count = 0;
         int idx = 0;
-        while ((idx = str.indexOf(sub, idx)) != StringUtils.INDEX_NOT_FOUND) {
+        while ((idx = str.indexOf(sub, idx)) != INDEX_NOT_FOUND) {
             count++;
             idx += sub.length();
         }
@@ -5080,7 +5103,7 @@ public class StringUtils {
      * @since 2.5
      */
     public static boolean isAllLowerCase(final String str) {
-        if (str == null || StringUtils.isEmpty(str)) {
+        if (str == null || isEmpty(str)) {
             return false;
         }
         int sz = str.length();
@@ -5111,7 +5134,7 @@ public class StringUtils {
      * @since 2.5
      */
     public static boolean isAllUpperCase(final String str) {
-        if (str == null || StringUtils.isEmpty(str)) {
+        if (str == null || isEmpty(str)) {
             return false;
         }
         int sz = str.length();
@@ -5142,7 +5165,7 @@ public class StringUtils {
      *  was <code>null</code>
      */
     public static String defaultString(final String str) {
-        return str == null ? StringUtils.EMPTY : str;
+        return str == null ? EMPTY : str;
     }
 
     /**
@@ -5185,7 +5208,7 @@ public class StringUtils {
      * @since 2.6
      */
     public static String defaultIfBlank(final String str, final String defaultStr) {
-        return StringUtils.isBlank(str) ? defaultStr : str;
+        return isBlank(str) ? defaultStr : str;
     }
 
     /**
@@ -5206,7 +5229,7 @@ public class StringUtils {
      * @see StringUtils#defaultString(String, String)
      */
     public static String defaultIfEmpty(final String str, final String defaultStr) {
-        return StringUtils.isEmpty(str) ? defaultStr : str;
+        return isEmpty(str) ? defaultStr : str;
     }
     // Reversing
     //-----------------------------------------------------------------------
@@ -5257,9 +5280,9 @@ public class StringUtils {
         }
         // could implement manually, but simple way is to reuse other,
         // probably slower, methods.
-        String[] strs = StringUtils.split(str, separatorChar);
+        String[] strs = split(str, separatorChar);
         ArrayUtils.reverse(strs);
-        return StringUtils.join(strs, separatorChar);
+        return join(strs, separatorChar);
     }
     // Abbreviating
     //-----------------------------------------------------------------------
@@ -5297,7 +5320,7 @@ public class StringUtils {
      * @since 2.0
      */
     public static String abbreviate(final String str, final int maxWidth) {
-        return StringUtils.abbreviate(str, 0, maxWidth);
+        return abbreviate(str, 0, maxWidth);
     }
 
     /**
@@ -5358,7 +5381,7 @@ public class StringUtils {
             throw new IllegalArgumentException("Minimum abbreviation width with offset is 7");
         }
         if (offset + maxWidth - 3 < str.length()) {
-            return "..." + StringUtils.abbreviate(str.substring(offset), maxWidth - 3);
+            return "..." + abbreviate(str.substring(offset), maxWidth - 3);
         }
         return "..." + str.substring(str.length() - (maxWidth - 3));
     }
@@ -5393,7 +5416,7 @@ public class StringUtils {
      * @since 2.5
      */
     public static String abbreviateMiddle(final String str, final String middle, final int length) {
-        if (StringUtils.isEmpty(str) || StringUtils.isEmpty(middle)) {
+        if (isEmpty(str) || isEmpty(middle)) {
             return str;
         }
         if (length >= str.length() || length < middle.length() + 2) {
@@ -5439,9 +5462,9 @@ public class StringUtils {
         if (str2 == null) {
             return str1;
         }
-        int at = StringUtils.indexOfDifference(str1, str2);
-        if (at == StringUtils.INDEX_NOT_FOUND) {
-            return StringUtils.EMPTY;
+        int at = indexOfDifference(str1, str2);
+        if (at == INDEX_NOT_FOUND) {
+            return EMPTY;
         }
         return str2.substring(at);
     }
@@ -5471,7 +5494,7 @@ public class StringUtils {
      */
     public static int indexOfDifference(final String str1, final String str2) {
         if (str1 != null && str1.equals(str2)) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         if (str1 == null || str2 == null) {
             return 0;
@@ -5485,7 +5508,7 @@ public class StringUtils {
         if (i < str2.length() || i < str1.length()) {
             return i;
         }
-        return StringUtils.INDEX_NOT_FOUND;
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -5521,7 +5544,7 @@ public class StringUtils {
      */
     public static int indexOfDifference(final String[] strs) {
         if (strs == null || strs.length <= 1) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         boolean anyStringNull = false;
         boolean allStringsNull = true;
@@ -5543,7 +5566,7 @@ public class StringUtils {
         }
         // handle lists containing all nulls or all empty strings
         if (allStringsNull || longestStrLen == 0 && !anyStringNull) {
-            return StringUtils.INDEX_NOT_FOUND;
+            return INDEX_NOT_FOUND;
         }
         // handle lists containing some nulls or some empty strings
         if (shortestStrLen == 0) {
@@ -5607,18 +5630,18 @@ public class StringUtils {
      */
     public static String getCommonPrefix(final String[] strs) {
         if (strs == null || strs.length == 0) {
-            return StringUtils.EMPTY;
+            return EMPTY;
         }
-        int smallestIndexOfDiff = StringUtils.indexOfDifference(strs);
-        if (smallestIndexOfDiff == StringUtils.INDEX_NOT_FOUND) {
+        int smallestIndexOfDiff = indexOfDifference(strs);
+        if (smallestIndexOfDiff == INDEX_NOT_FOUND) {
             // all strings were identical
             if (strs[0] == null) {
-                return StringUtils.EMPTY;
+                return EMPTY;
             }
             return strs[0];
         } else if (smallestIndexOfDiff == 0) {
             // there were no common initial characters
-            return StringUtils.EMPTY;
+            return EMPTY;
         } else {
             // we found a common initial character sequence
             return strs[0].substring(0, smallestIndexOfDiff);
@@ -5749,7 +5772,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static boolean startsWith(final String str, final String prefix) {
-        return StringUtils.startsWith(str, prefix, false);
+        return startsWith(str, prefix, false);
     }
 
     /**
@@ -5774,7 +5797,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static boolean startsWithIgnoreCase(final String str, final String prefix) {
-        return StringUtils.startsWith(str, prefix, true);
+        return startsWith(str, prefix, true);
     }
 
     /**
@@ -5822,11 +5845,11 @@ public class StringUtils {
      * @since 2.5
      */
     public static boolean startsWithAny(final String string, final String[] searchStrings) {
-        if (StringUtils.isEmpty(string) || ArrayUtils.isEmpty(searchStrings)) {
+        if (isEmpty(string) || ArrayUtils.isEmpty(searchStrings)) {
             return false;
         }
         for (String searchString : searchStrings) {
-            if (StringUtils.startsWith(string, searchString)) {
+            if (startsWith(string, searchString)) {
                 return true;
             }
         }
@@ -5858,7 +5881,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static boolean endsWith(final String str, final String suffix) {
-        return StringUtils.endsWith(str, suffix, false);
+        return endsWith(str, suffix, false);
     }
 
     /**
@@ -5884,7 +5907,7 @@ public class StringUtils {
      * @since 2.4
      */
     public static boolean endsWithIgnoreCase(final String str, final String suffix) {
-        return StringUtils.endsWith(str, suffix, true);
+        return endsWith(str, suffix, true);
     }
 
     /**
@@ -5943,7 +5966,7 @@ public class StringUtils {
      * @since 2.6
      */
     public static String normalizeSpace(String str) {
-        str = StringUtils.strip(str);
+        str = strip(str);
         if (str == null || str.length() <= 2) {
             return str;
         }
@@ -5980,11 +6003,11 @@ public class StringUtils {
      * @since 2.6
      */
     public static boolean endsWithAny(final String string, final String[] searchStrings) {
-        if (StringUtils.isEmpty(string) || ArrayUtils.isEmpty(searchStrings)) {
+        if (isEmpty(string) || ArrayUtils.isEmpty(searchStrings)) {
             return false;
         }
         for (String searchString : searchStrings) {
-            if (StringUtils.endsWith(string, searchString)) {
+            if (endsWith(string, searchString)) {
                 return true;
             }
         }
@@ -6002,7 +6025,7 @@ public class StringUtils {
      * </pre>
      */
     public static String firstCharToUpperCase(final String value) {
-        if (StringUtils.isBlank(value)) {
+        if (isBlank(value)) {
             return value;
         }
         StringBuilder sb = new StringBuilder(value);
@@ -6023,7 +6046,7 @@ public class StringUtils {
      * </pre>
      */
     public static String firstCharToLowerCase(final String value) {
-        if (StringUtils.isBlank(value)) {
+        if (isBlank(value)) {
             return value;
         }
         StringBuilder sb = new StringBuilder(value);
@@ -6045,7 +6068,7 @@ public class StringUtils {
      * </pre>
      */
     public static boolean equalsBlankIgnoreCase(final String str1, final String str2) {
-        return StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(str1), StringUtils.trimToEmpty(str2));
+        return equalsIgnoreCase(trimToEmpty(str1), trimToEmpty(str2));
     }
 
     /* ------------------------------------------------------------ */
