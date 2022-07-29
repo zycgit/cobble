@@ -30,7 +30,7 @@ import java.util.Objects;
  *
  * @since 3.0
  */
-public final class Range<T> implements Serializable {
+public class Range<T> implements Serializable {
 
     /**
      * Serialization version.
@@ -143,7 +143,7 @@ public final class Range<T> implements Serializable {
      * @param comp  the comparator to be used, null for natural ordering
      */
     @SuppressWarnings("unchecked")
-    private Range(final T element1, final T element2, final Comparator<T> comp) {
+    protected Range(final T element1, final T element2, final Comparator<T> comp) {
         if (element1 == null || element2 == null) {
             throw new IllegalArgumentException("Elements in a range must not be null: element1=" + element1 + ", element2=" + element2);
         }
