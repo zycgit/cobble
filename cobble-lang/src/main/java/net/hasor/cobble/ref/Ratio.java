@@ -35,6 +35,11 @@ public class Ratio<T> {
         return (boundary != null) ? boundary.getMaximum() : 0L;
     }
 
+    public synchronized void clearRatio() {
+        this.opsBoundary.clear();
+        this.maxBoundary = 0;
+    }
+
     public synchronized void addRatio(int ratio, T value) {
         this.opsBoundary.add(new Boundary<>(value, this.maxBoundary, this.maxBoundary + ratio));
         this.maxBoundary = maxBoundary(this.opsBoundary);
@@ -46,7 +51,7 @@ public class Ratio<T> {
 
     public T getByBoundary(long boundaryNumber) {
         for (Boundary<T> entry : this.opsBoundary) {
-            if (entry.getMinimum() <= boundaryNumber && boundaryNumber < entry.getMaximum()) {
+            if (entry.getMinimum() <= boundaryNumber && boundaryNumber <= entry.getMaximum()) {
                 return entry.getValue();
             }
         }
