@@ -40,6 +40,10 @@ public class QoSBucket {
         this(DEFAULT_RATE, DEFAULT_PEAK, DEFAULT_TIMEWINDOW);
     }
 
+    public QoSBucket(int rate) {
+        this(rate, DEFAULT_PEAK, DEFAULT_TIMEWINDOW);
+    }
+
     public QoSBucket(int rate, int peak, int timeWindow) {
         this.rate = rate;
         this.peak = peak;
@@ -50,6 +54,18 @@ public class QoSBucket {
         //增加此保存值，是为了double转int时候的不精确；如果不累及这个误差，累计的结果会非常大（修正参数）
         this.leftDouble = initialToken - Math.floor(initialToken);
         this.lastRefreshTime = System.currentTimeMillis();
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public int getPeak() {
+        return peak;
+    }
+
+    public int getTimeWindow() {
+        return timeWindow;
     }
 
     /** 检查令牌前，首先更新令牌数量 */
