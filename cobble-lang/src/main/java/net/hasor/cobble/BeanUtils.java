@@ -368,8 +368,7 @@ public class BeanUtils {
         if (Map.class.isAssignableFrom(target)) {
             return new MapProperty(property);
         } else {
-            Map<String, Property> propertyFunc = getPropertyFunc(target, test -> test.getName().equals(property));
-            return propertyFunc.get(property);
+            return getPropertyFunc(target).get(property);
         }
     }
 
