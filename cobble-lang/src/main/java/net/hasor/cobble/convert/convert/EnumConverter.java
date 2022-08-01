@@ -40,6 +40,13 @@ public final class EnumConverter extends AbstractConverter {
         String strValue = value.toString();
 
         for (Enum<?> item : forEnum.getEnumConstants()) {
+            String enumValue = item.name();
+            if (enumValue.equals(strValue)) {
+                return item;
+            }
+        }
+
+        for (Enum<?> item : forEnum.getEnumConstants()) {
             String enumValue = item.name().toLowerCase();
             if (enumValue.equals(strValue.toLowerCase())) {
                 return item;
