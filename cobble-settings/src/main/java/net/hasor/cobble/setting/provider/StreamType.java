@@ -18,7 +18,7 @@
 package net.hasor.cobble.setting.provider;
 /***
  * 配置文件类型
- * @version : 16/7/2
+ * @version : 2016/7/2
  * @author 赵永春 (zyc@byshell.org)
  */
 public enum StreamType {
