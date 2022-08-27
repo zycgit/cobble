@@ -8,7 +8,7 @@ package net.hasor.cobble;
  * (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,9 +23,9 @@ import java.util.Random;
  *
  * <p>Caveat: Instances of {@link Random} are not cryptographically secure.</p>
  *
- * <p>Please note that the Apache Commons project provides a component
+ * <p>Please note that the dbvisitor-faker project provides a component
  * dedicated to pseudo-random number generation, namely
- * <a href="https://commons.apache.org/rng">Commons RNG</a>, that may be
+ * <a href="https://www.dbvisitor.net/docs/faker/overview">dbvisitor-faker</a>, that may be
  * a better choice for applications with more stringent requirements
  * (performance and/or correctness).</p>
  *
