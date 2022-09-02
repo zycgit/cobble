@@ -322,6 +322,93 @@ public class StringUtils {
     public static String trimToEmpty(final String str) {
         return str == null ? EMPTY : str.trim();
     }
+
+    /**
+     * <pre>
+     * StringUtils.trimStart(null,' ')          = null
+     * StringUtils.trimStart("",' ')            = ""
+     * StringUtils.trimStart("     ",' ')       = ""
+     * StringUtils.trimStart("abc",' ')         = "abc"
+     * StringUtils.trimStart("    abc    ",' ') = "abc    "
+     * StringUtils.trimStart("1111abc1111",'1') = "abc1111"
+     * </pre>
+     *
+     * @param str  the String to be trimmed, may be null
+     * @return the trimmed String, or an empty String if <code>null</code> input
+     */
+    public static String trimStart(final String str, char trimChar) {
+        if (str == null || str.equals("")) {
+            return str;
+        }
+
+        char[] val = str.toCharArray();
+        int len = val.length;
+        int st = 0;
+
+        while ((st < len) && (val[st] <= trimChar)) {
+            st++;
+        }
+        return st > 0 ? str.substring(st, len) : str;
+    }
+
+    /**
+     * <pre>
+     * StringUtils.trimEnd(null,' ')          = null
+     * StringUtils.trimEnd("",' ')            = ""
+     * StringUtils.trimEnd("     ",' ')       = ""
+     * StringUtils.trimEnd("abc",' ')         = "abc"
+     * StringUtils.trimEnd("    abc    ",' ') = "    abc"
+     * StringUtils.trimEnd("1111abc1111",'1') = "1111abc"
+     * </pre>
+     *
+     * @param str  the String to be trimmed, may be null
+     * @return the trimmed String, or an empty String if <code>null</code> input
+     */
+    public static String trimEnd(final String str, char trimChar) {
+        if (str == null || str.equals("")) {
+            return str;
+        }
+
+        char[] val = str.toCharArray();
+        int len = val.length;
+        int st = 0;
+
+        while ((st < len) && (val[len - 1] <= trimChar)) {
+            len--;
+        }
+        return len < val.length ? str.substring(st, len) : str;
+    }
+
+    /**
+     * <pre>
+     * StringUtils.trimEnd(null,' ')          = null
+     * StringUtils.trimEnd("",' ')            = ""
+     * StringUtils.trimEnd("     ",' ')       = ""
+     * StringUtils.trimEnd("abc",' ')         = "abc"
+     * StringUtils.trimEnd("    abc    ",' ') = "abc"
+     * StringUtils.trimEnd("1111abc1111",'1') = "abc"
+     * </pre>
+     *
+     * @param str  the String to be trimmed, may be null
+     * @return the trimmed String, or an empty String if <code>null</code> input
+     */
+    public static String trim(final String str, char trimChar) {
+        if (str == null || str.equals("")) {
+            return str;
+        }
+
+        char[] val = str.toCharArray();
+        int len = val.length;
+        int st = 0;
+
+        while ((st < len) && (val[st] <= trimChar)) {
+            st++;
+        }
+        while ((st < len) && (val[len - 1] <= trimChar)) {
+            len--;
+        }
+        return ((st > 0) || (len < val.length)) ? str.substring(st, len) : str;
+    }
     // Stripping
     //-----------------------------------------------------------------------
 
