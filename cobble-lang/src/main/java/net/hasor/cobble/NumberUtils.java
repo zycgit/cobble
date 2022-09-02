@@ -339,6 +339,22 @@ public final class NumberUtils {
     }
 
     /**
+     * <p>Convert a <code>long</code> to a Unsigned <code>Long</code>.</p>
+     *
+     * @param value  a <code>String</code> to convert
+     * @return converted <code>Long</code>
+     * @throws NumberFormatException if the value cannot be converted
+     */
+    public static BigInteger createUnsignedLong(long value) {
+        if (value >= 0) {
+            return BigInteger.valueOf(value);
+        } else {
+            long lowValue = value & 0x7fffffffffffffffL;
+            return BigInteger.valueOf(lowValue).add(BigInteger.valueOf(Long.MAX_VALUE)).add(BigInteger.ONE);
+        }
+    }
+
+    /**
      * <p>Convert a <code>String</code> to a <code>BigInteger</code>.</p>
      *
      * @param val  a <code>String</code> to convert
