@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * 控制操作生成比率
@@ -58,8 +59,43 @@ public class Ratio<T> {
         return null;
     }
 
+    public T getByIndex(int index) {
+        return this.opsBoundary.get(index).getValue();
+    }
+
+    public T getLast() {
+        if (this.opsBoundary.isEmpty()) {
+            return null;
+        } else {
+            return this.opsBoundary.get(this.opsBoundary.size() - 1).getValue();
+        }
+    }
+
+    public T getFirst() {
+        if (this.opsBoundary.isEmpty()) {
+            return null;
+        } else {
+            return this.opsBoundary.get(0).getValue();
+        }
+    }
+
     public T getByRandom() {
         return getByBoundary(RandomUtils.nextLong(0, this.maxBoundary + 1));
+    }
+
+    public boolean isEmpty() {
+        return this.opsBoundary.isEmpty();
+    }
+
+    public int getBoundaryCount() {
+        return this.opsBoundary.size();
+    }
+
+    public void forEach(Consumer<T> action) {
+        Objects.requireNonNull(action);
+        for (Boundary<T> t : this.opsBoundary) {
+            action.accept(t.value);
+        }
     }
 
     /** 拥有上下界的一个范围 */
