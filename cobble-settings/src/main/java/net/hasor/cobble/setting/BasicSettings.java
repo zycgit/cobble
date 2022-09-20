@@ -215,8 +215,11 @@ public class BasicSettings extends AbstractSettings implements Settings {
 
     /** 添加参数，如果参数名称相同则追加一项 */
     public void addSetting(String key, Object value, String namespace) {
-        if (StringUtils.isBlank(namespace) || StringUtils.isBlank(key)) {
-            throw new IllegalArgumentException("namespace or key is blank.");
+        if (StringUtils.isBlank(key)) {
+            throw new IllegalArgumentException("key is blank.");
+        }
+        if (StringUtils.isBlank(namespace)) {
+            namespace = Settings.DefaultNameSpace;
         }
 
         Map<String, TreeNode> treeNodeMap = this.allSettingValue();

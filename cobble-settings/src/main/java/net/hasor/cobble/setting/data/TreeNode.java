@@ -112,6 +112,7 @@ public class TreeNode implements SettingNode {
     public void addValue(String value) {
         this.data.addValue(value);
     }
+
     // ------------------------------------------------------------------------
 
     public String getSubValue(String elementName) {
@@ -185,7 +186,7 @@ public class TreeNode implements SettingNode {
         if (elementName.contains(".")) {
             throw new IllegalArgumentException("elementName contains symbol '.'");
         }
-        //
+
         boolean isInit = false;
         TreeNode treeNode = new TreeNode(this, elementName);
         List<TreeNode> nodeList = this.subList.get(elementName);
@@ -199,7 +200,7 @@ public class TreeNode implements SettingNode {
                 }
             }
         }
-        //
+
         if (setDefault || isInit) {
             this.subDefault.put(elementName, treeNode);
         }

@@ -97,45 +97,33 @@ public class MergedSettings extends BasicSettings implements IOSettings {
         }
         //构建装载环境
         ConfigSource entity = null;
-        try {
-            while ((entity = this.pendingConfigSource.removeFirst()) != null) {
-                loadCount++;
-                try {
-                    // 拿到Reader
-                    ResourceReader dataReader = entity.getResourceReader();
-                    if (dataReader == null) {
-                        continue;
-                    }
-                    SettingsReader settingsReader;
-                    switch (entity.getStreamType()) {
-                        case Xml:
-                            settingsReader = new XmlSettingsReader();
-                            break;
-                        case Yaml:
-                            settingsReader = new YamlSettingsReader();
-                            break;
-                        case Properties:
-                            settingsReader = new PropertiesSettingsReader();
-                            break;
-                        default:
-                            throw new UnsupportedOperationException(entity.getStreamType() + " Unsupported.");
-                    }
-                    settingsReader.readSetting(dataReader, this);
-                } catch (Exception e) {
-                    throw e;
-                }
-                if (this.pendingConfigSource.isEmpty()) {
-                    break;
-                }
+        while ((entity = this.pendingConfigSource.removeFirst()) != null) {
+            loadCount++;
+            // 拿到Reader
+            ResourceReader dataReader = entity.getResourceReader();
+            if (dataReader == null) {
+                continue;
             }
-        } catch (Throwable e) {
-            String errorMessage = "parsing failed -> ";
-            if (e instanceof IOException) {
-                throw (IOException) e;
-            } else {
-                throw new IOException(errorMessage + e.getMessage(), e);
+            SettingsReader settingsReader;
+            switch (entity.getStreamType()) {
+                case Xml:
+                    settingsReader = new XmlSettingsReader();
+                    break;
+                case Yaml:
+                    settingsReader = new YamlSettingsReader();
+                    break;
+                case Properties:
+                    settingsReader = new PropertiesSettingsReader();
+                    break;
+                default:
+                    throw new UnsupportedOperationException(entity.getStreamType() + " Unsupported.");
+            }
+            settingsReader.readSetting(dataReader, this);
+            if (this.pendingConfigSource.isEmpty()) {
+                break;
             }
         }
+
         this.loadFinish();//完成装载
         return loadCount;
     }

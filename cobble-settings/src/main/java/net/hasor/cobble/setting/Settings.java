@@ -31,7 +31,7 @@ import java.util.Date;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface Settings {
-    String DefaultNameSpace = "http://www.hasor.net/sechma/main";
+    String DefaultNameSpace = "https://www.hasor.net/sechma/main";
 
     /** @return 已解析的命名空间列表 */
     String[] getSettingArray();
