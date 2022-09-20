@@ -23,10 +23,8 @@ import org.junit.Test;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class QosTest {
-    @Test
-    public void speedTest() throws Throwable {
+    private void runSpeedTest(QoSBucket qoSBucket) throws Throwable {
         //QoS：稳定每秒50，峰值1000，时间更新窗口10毫秒。
-        QoSBucket qos = new QoSBucket(50, 1000, 10);
         //
         int i = 0;
         int realLoops = 0;
@@ -34,11 +32,23 @@ public class QosTest {
         Thread.sleep(1000);
         do {
             realLoops++;
-            if (qos.check()) {
+            if (qoSBucket.check()) {
                 i++;
                 long checkTime = System.currentTimeMillis() / 1000;
                 System.out.println("Count:" + i + "\tSpeed(s):" + (i / (checkTime - startTime)) + "\trealLoops: " + realLoops);
             }
         } while (i != 300);
+    }
+
+    @Test
+    public void speedTest_1() throws Throwable {
+        //QoS：稳定每秒50，峰值1000，时间更新窗口10毫秒。
+        runSpeedTest(new QoSBucket(50, 1000, 10));
+    }
+
+    @Test
+    public void speedTest_2() throws Throwable {
+        //QoS：稳定每秒50，峰值1000，时间更新窗口10毫秒。
+        runSpeedTest(new QoSBucket(50));
     }
 }

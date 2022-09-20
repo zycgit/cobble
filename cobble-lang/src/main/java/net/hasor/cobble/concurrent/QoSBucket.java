@@ -26,9 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * </ol>
  */
 public class QoSBucket {
-    private static final int           DEFAULT_RATE       = 50;
-    private static final int           DEFAULT_PEAK       = 100;
-    private static final int           DEFAULT_TIMEWINDOW = 1000;
+    private static final int           DEFAULT_RATE   = 50;
+    private static final int           DEFAULT_PEAK   = 100;
+    private static final int           DEFAULT_WINDOW = 10;
     private final        int           rate;                                                    // 稳态中，每秒允许的调用次数
     private final        int           peak;                                                    // 突发调用峰值的上限，即令牌桶容量
     private final        int           timeWindow;                                              // 令牌桶刷新最小间隔，单位毫秒
@@ -36,12 +36,12 @@ public class QoSBucket {
     private volatile     long          lastRefreshTime;                                         // 下一次刷新令牌桶的时间
     private volatile     double        leftDouble;
 
-    public QoSBucket() {
-        this(DEFAULT_RATE, DEFAULT_PEAK, DEFAULT_TIMEWINDOW);
+    public QoSBucket(int rate) {
+        this(rate, DEFAULT_PEAK, DEFAULT_WINDOW);
     }
 
-    public QoSBucket(int rate) {
-        this(rate, DEFAULT_PEAK, DEFAULT_TIMEWINDOW);
+    public QoSBucket() {
+        this(DEFAULT_RATE, DEFAULT_PEAK, DEFAULT_WINDOW);
     }
 
     public QoSBucket(int rate, int peak, int timeWindow) {

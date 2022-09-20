@@ -345,7 +345,7 @@ public class StringUtils {
         int len = val.length;
         int st = 0;
 
-        while ((st < len) && (val[st] <= trimChar)) {
+        while ((st < len) && (val[st] == trimChar)) {
             st++;
         }
         return st > 0 ? str.substring(st, len) : str;
@@ -373,7 +373,7 @@ public class StringUtils {
         int len = val.length;
         int st = 0;
 
-        while ((st < len) && (val[len - 1] <= trimChar)) {
+        while ((st < len) && (val[len - 1] == trimChar)) {
             len--;
         }
         return len < val.length ? str.substring(st, len) : str;
@@ -401,10 +401,10 @@ public class StringUtils {
         int len = val.length;
         int st = 0;
 
-        while ((st < len) && (val[st] <= trimChar)) {
+        while ((st < len) && (val[st] == trimChar)) {
             st++;
         }
-        while ((st < len) && (val[len - 1] <= trimChar)) {
+        while ((st < len) && (val[len - 1] == trimChar)) {
             len--;
         }
         return ((st > 0) || (len < val.length)) ? str.substring(st, len) : str;
