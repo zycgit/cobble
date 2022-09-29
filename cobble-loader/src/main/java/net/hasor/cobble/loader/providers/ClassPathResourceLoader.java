@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Predicate;
@@ -70,15 +69,16 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         }
         List<URL> resources = new ArrayList<>();
         for (ClassLoader loader : classLoaders) {
-            if (loader instanceof URLClassLoader) {
-                URL[] urLs = ((URLClassLoader) loader).getURLs();
-                if (urLs != null) {
-                    for (URL url : urLs) {
-                        if (!resources.contains(url)) {
-                            resources.add(url);
-                        }
+            try {
+                Enumeration<URL> urlEnumeration = loader.getResources("");
+                while (urlEnumeration.hasMoreElements()) {
+                    URL url = urlEnumeration.nextElement();
+                    if (!resources.contains(url)) {
+                        resources.add(url);
                     }
                 }
+            } catch (Exception ignored) {
+
             }
         }
         return resources;

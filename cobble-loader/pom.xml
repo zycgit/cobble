@@ -25,6 +25,10 @@
     <!-- 引用依赖 -->
     <dependencies>
         <dependency>
+            <groupId>net.hasor</groupId>
+            <artifactId>cobble-lang</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>9.3</version>
