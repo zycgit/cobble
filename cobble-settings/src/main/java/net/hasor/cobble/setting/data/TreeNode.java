@@ -522,37 +522,58 @@ public class TreeNode implements SettingNode {
 
     @Override
     public String toXml() {
-        //        StringBuilder strBuilder = new StringBuilder();
-        //        strBuilder.append("<").append(this.elementName);
-        //        if (this.arrMap.size() > 0) {
-        //            strBuilder.append(" ");
-        //            for (Entry<String, String> attEnt : this.arrMap.entrySet()) {
-        //                strBuilder.append(attEnt.getKey()).append("=").append("\"");
-        //                String attVal = attEnt.getValue();
-        //                attVal = attVal.replace("<", "&lt;");//小于号
-        //                attVal = attVal.replace(">", "&gt;");//大于号
-        //                attVal = attVal.replace("'", "&apos;");//'单引号
-        //                attVal = attVal.replace("\"", "&quot;");//'双引号
-        //                attVal = attVal.replace("&", "&amp;");//& 和
-        //                strBuilder.append(attVal).append("\" ");
-        //            }
-        //            strBuilder.deleteCharAt(strBuilder.length() - 1);
-        //        }
-        //        strBuilder.append(">");
-        //        //
-        //        for (XmlSettingNode xmlEnt : this.children) {
-        //            strBuilder.append(xmlEnt.getXmlText());
-        //        }
-        //        //
-        //        if (this.textString != null) {
-        //            String textBody = this.getText();
-        //            textBody = textBody.replace("<", "&lt;");
-        //            textBody = textBody.replace(">", "&gt;");
-        //            strBuilder.append(textBody);
-        //        }
-        //        //
-        //        strBuilder.append("</").append(this.elementName).append(">");
-        //        return strBuilder.toString();
-        throw new UnsupportedOperationException("");
+        TreeNode[] subNodes = this.getSubNodes();
+        String[] thisValues = this.getValues();
+        if ((subNodes == null || subNodes.length == 0) && (thisValues == null || thisValues.length == 0)) {
+            return "<" + this.name + "/>";
+        }
+
+        StringBuilder strBuilder = new StringBuilder();
+        if (thisValues != null && thisValues.length > 1) {
+            for (int i = 1; i < thisValues.length; i++) {
+                strBuilder.append(beginElement(this.name));
+                strBuilder.append(writeCDATA(thisValues[i]));
+                strBuilder.append(endElement(this.name));
+            }
+        }
+
+        strBuilder.append(beginElement(this.name));
+
+        if (thisValues != null && thisValues.length == 1) {
+            strBuilder.append(writeCDATA(thisValues[0]));
+        }
+        if (subNodes != null) {
+            for (TreeNode subNode : subNodes) {
+                strBuilder.append(subNode.toXml());
+            }
+        }
+
+        strBuilder.append(endElement(this.name));
+        return strBuilder.toString();
+    }
+
+    private String beginElement(String name) {
+        return "<" + name + ">";
+    }
+
+    private String endElement(String name) {
+        return "</" + name + ">";
+    }
+
+    private String writeCDATA(String thisValue) {
+        if (thisValue.contains("<") || thisValue.contains(">")) {
+            return "<![CDATA[" + thisValue + "]]>";
+        } else {
+            return thisValue;
+        }
+    }
+
+    private static String writeAttribute(String attVal) {
+        attVal = attVal.replace("<", "&lt;");   //小于号
+        attVal = attVal.replace(">", "&gt;");   //大于号
+        attVal = attVal.replace("'", "&apos;"); //'单引号
+        attVal = attVal.replace("\"", "&quot;");//'双引号
+        attVal = attVal.replace("&", "&amp;");  //& 和
+        return attVal;
     }
 }
