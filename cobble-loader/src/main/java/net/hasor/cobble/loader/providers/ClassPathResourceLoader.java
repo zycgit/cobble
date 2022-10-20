@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Predicate;
@@ -57,7 +58,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     }
 
     /** 获取ClassPath路径 */
-    private static List<URL> getClassPath(ClassLoader classLoader) {
+    protected List<URL> getClassPath(ClassLoader classLoader) {
         List<ClassLoader> classLoaders = new ArrayList<>();
         while (true) {
             if (classLoader == null) {
@@ -69,16 +70,29 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         }
         List<URL> resources = new ArrayList<>();
         for (ClassLoader loader : classLoaders) {
-            try {
-                Enumeration<URL> urlEnumeration = loader.getResources("");
-                while (urlEnumeration.hasMoreElements()) {
-                    URL url = urlEnumeration.nextElement();
-                    if (!resources.contains(url)) {
-                        resources.add(url);
+            String loaderClassName = loader.getClass().getName();
+            if (loader instanceof URLClassLoader) {
+                // before jdk9
+                URL[] urLs = ((URLClassLoader) loader).getURLs();
+                if (urLs != null) {
+                    for (URL url : urLs) {
+                        if (!resources.contains(url)) {
+                            resources.add(url);
+                        }
                     }
                 }
-            } catch (Exception ignored) {
-
+            } else if (loaderClassName.startsWith("jdk.internal.loader.ClassLoaders")) {
+                // in new jdk
+                try {
+                    Enumeration<URL> urlEnumeration = loader.getResources("");
+                    while (urlEnumeration.hasMoreElements()) {
+                        URL url = urlEnumeration.nextElement();
+                        if (!resources.contains(url)) {
+                            resources.add(url);
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }
         return resources;
