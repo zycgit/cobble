@@ -656,4 +656,21 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         System.out.println("WARN: Exception: " + ex);
         ex.printStackTrace();
     }
+
+    /**
+     * Defines a functor interface implemented by classes that transform one object into another.
+     * @author James Strachan
+     * @author Stephen Colebourne
+     */
+    protected interface Transformer {
+        /**
+         * Transforms the input object (leaving it unchanged) into some output object.
+         *
+         * @param input  the object to be transformed, should be left unchanged
+         * @return a transformed object
+         * @throws ClassCastException (runtime) if the input is the wrong class
+         * @throws IllegalArgumentException (runtime) if the input is invalid
+         */
+        Object transform(Object input);
+    }
 }

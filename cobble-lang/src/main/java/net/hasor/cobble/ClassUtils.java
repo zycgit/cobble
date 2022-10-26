@@ -1118,6 +1118,7 @@ public class ClassUtils {
     }
 
     /** 获取ClassPath路径 */
+
     public static List<URL> getClassPath(ClassLoader classLoader) {
         List<ClassLoader> classLoaders = new ArrayList<>();
         while (true) {
@@ -1130,7 +1131,9 @@ public class ClassUtils {
         }
         List<URL> resources = new ArrayList<>();
         for (ClassLoader loader : classLoaders) {
+            String loaderClassName = loader.getClass().getName();
             if (loader instanceof URLClassLoader) {
+                // before jdk9
                 URL[] urLs = ((URLClassLoader) loader).getURLs();
                 if (urLs != null) {
                     for (URL url : urLs) {
@@ -1138,6 +1141,18 @@ public class ClassUtils {
                             resources.add(url);
                         }
                     }
+                }
+            } else if (loaderClassName.startsWith("jdk.internal.loader.ClassLoaders")) {
+                // in new jdk
+                try {
+                    Enumeration<URL> urlEnumeration = loader.getResources("");
+                    while (urlEnumeration.hasMoreElements()) {
+                        URL url = urlEnumeration.nextElement();
+                        if (!resources.contains(url)) {
+                            resources.add(url);
+                        }
+                    }
+                } catch (Exception ignored) {
                 }
             }
         }

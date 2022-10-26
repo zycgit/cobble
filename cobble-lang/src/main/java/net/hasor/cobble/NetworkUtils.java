@@ -31,7 +31,7 @@ public class NetworkUtils {
         s.close();
     }
 
-    /**测试端口是否被占用*/
+    /** 测试端口是否被占用 */
     public static boolean isPortAvailable(int port) {
         try {
             isPortAvailable("0.0.0.0", port);
@@ -42,7 +42,7 @@ public class NetworkUtils {
         }
     }
 
-    /**根据IP字节数据转换为int.*/
+    /** 根据IP字节数据转换为int */
     public static byte[] ipStrToBytes(String ipData) {
         byte[] ipParts = new byte[4];
         String[] splitArrays = ipData.split("\\.");
@@ -52,7 +52,7 @@ public class NetworkUtils {
         return ipParts;
     }
 
-    /**根据名字获取地址，local代表本机（如果本机有多网卡那么请明确指定ip）*/
+    /** 根据名字获取地址，local代表本机（如果本机有多网卡那么请明确指定ip）*/
     public static InetAddress finalBindAddress(String hostString) throws UnknownHostException, SocketException {
         if ("local".equalsIgnoreCase(hostString)) {
             List<String> localAddr = localAddrForIPv4();
@@ -66,12 +66,12 @@ public class NetworkUtils {
         }
     }
 
-    /**根据掩码长度获取掩码字符串形式.*/
+    /** 根据掩码长度获取掩码字符串形式 */
     public static String maskToStringByPrefixLength(int length) {
         return ipDataToString(ipDataByInt(maskByPrefixLength(length)));
     }
 
-    /**根据掩码长度获取子网掩码值.*/
+    /** 根据掩码长度获取子网掩码值 */
     public static int maskByPrefixLength(int length) {
         if (length > 32) {
             throw new IndexOutOfBoundsException("mask length max is 32.");
@@ -79,7 +79,7 @@ public class NetworkUtils {
         return -1 << (32 - length);
     }
 
-    /**根据IP值分解IP为字节数组.*/
+    /** 根据IP值分解IP为字节数组 */
     public static byte[] ipDataByInt(int ipData) {
         byte ipParts[] = new byte[4];
         for (int i = 0; i < ipParts.length; i++) {
@@ -89,7 +89,7 @@ public class NetworkUtils {
         return ipParts;
     }
 
-    /**根据IP字节数据转换为int.*/
+    /** 根据IP字节数据转换为int */
     public static int ipDataByBytes(byte[] ipData) {
         int ipParts[] = new int[4];
         ipParts[0] = 0xFFFFFFFF & (ipData[0] << 24);
@@ -103,12 +103,12 @@ public class NetworkUtils {
         return intIP;
     }
 
-    /**将分解的IP数据转换为字符串*/
+    /** 将分解的IP数据转换为字符串 */
     public static String ipDataToString(int ipData) {
         return ipDataToString(ipDataByInt(ipData));
     }
 
-    /**将分解的IP数据转换为字符串*/
+    /** 将分解的IP数据转换为字符串 */
     public static String ipDataToString(byte[] ipData) {
         String result = "";
         result = result + toStr(ipData[0]);

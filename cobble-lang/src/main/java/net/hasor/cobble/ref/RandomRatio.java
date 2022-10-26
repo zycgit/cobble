@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * @version : 2022-07-25
  * @author 赵永春 (zyc@hasor.net)
  */
-public class Ratio<T> {
+public class RandomRatio<T> {
     private final    List<Boundary<T>> opsBoundary = new CopyOnWriteArrayList<>();
     private volatile long              maxBoundary = 0;
 
@@ -80,7 +80,7 @@ public class Ratio<T> {
     }
 
     public T getByRandom() {
-        return getByBoundary(RandomUtils.nextLong(0, this.maxBoundary + 1));
+        return getByBoundary(RandomUtils.nextLong(0, this.maxBoundary));
     }
 
     public boolean isEmpty() {

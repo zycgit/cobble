@@ -34,8 +34,8 @@ import java.util.function.Function;
  */
 public class ExceptionUtils {
     public static RuntimeException toRuntime(Throwable proxy) {
-        return toRuntime(proxy, throwable -> {
-            return new RuntimeException(throwable.getClass().getName() + " - " + throwable.getMessage(), throwable);
+        return toRuntime(proxy, e -> {
+            return new RuntimeException(e.getClass().getName() + " - " + e.getMessage(), e);
         });
     }
 
