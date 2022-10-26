@@ -16,8 +16,6 @@
 package net.hasor.cobble.bus;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.concurrent.future.BasicFuture;
-import net.hasor.cobble.logging.Logger;
-import net.hasor.cobble.logging.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -28,8 +26,7 @@ import java.util.concurrent.*;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class EventBus implements BusContext {
-    protected static Logger                              logger      = LoggerFactory.getLogger(EventBus.class);
-    private final    ConcurrentMap<String, ListenerPool> listenerMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ListenerPool> listenerMap = new ConcurrentHashMap<>();
 
     private ListenerPool getOrCreateListenerPool(String event) {
         ListenerPool pool = listenerMap.get(event);
@@ -214,7 +211,7 @@ public class EventBus implements BusContext {
         executor.execute(() -> {
             try {
                 timeUnit.sleep(timeout);
-                
+
                 if (!future.isCancelled()) {
                     Object result = fireEvent(event, args, caller);
                     future.completed(result);

@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import net.hasor.cobble.logging.Logger;
-import net.hasor.cobble.logging.LoggerFactory;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Locale;
 
 /**
  * @since 1.0
  */
 public final class SystemUtils {
-    private static final Logger  logger           = LoggerFactory.getLogger(SystemUtils.class);
     private static final boolean IS_WINDOWS       = isWindows0();
     private static final boolean IS_ANDROID       = isAndroid0();
     private static final boolean IS_OSX           = isOsx0();
@@ -74,17 +68,7 @@ public final class SystemUtils {
             throw new IllegalArgumentException("key must not be empty.");
         }
 
-        String value = null;
-        try {
-            if (System.getSecurityManager() == null) {
-                value = System.getProperty(key);
-            } else {
-                value = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(key));
-            }
-        } catch (SecurityException e) {
-            logger.error("Unable to retrieve a system property '" + key + "'; default values will be used.", e);
-        }
-
+        String value = System.getProperty(key);
         if (value == null) {
             return defaultValue;
         }
@@ -126,11 +110,7 @@ public final class SystemUtils {
     }
 
     private static boolean isWindows0() {
-        boolean windows = getSystemProperty("os.name", "").toLowerCase(Locale.US).contains("win");
-        if (windows) {
-            logger.debug("Platform: Windows");
-        }
-        return windows;
+        return getSystemProperty("os.name", "").toLowerCase(Locale.US).contains("win");
     }
 
     private static boolean isAndroid0() {
@@ -142,21 +122,12 @@ public final class SystemUtils {
 
         // Android sets this property to Dalvik, regardless of whether it actually is.
         String vmName = getSystemProperty("java.vm.name");
-        boolean isAndroid = "Dalvik".equals(vmName);
-        if (isAndroid) {
-            logger.debug("Platform: Android");
-        }
-        return isAndroid;
+        return "Dalvik".equals(vmName);
     }
 
     private static boolean isOsx0() {
         String osname = getSystemProperty("os.name", "").toLowerCase(Locale.US).replaceAll("[^a-z0-9]+", "");
-        boolean osx = osname.startsWith("macosx") || osname.startsWith("osx");
-
-        if (osx) {
-            logger.debug("Platform: MacOS");
-        }
-        return osx;
+        return osname.startsWith("macosx") || osname.startsWith("osx");
     }
 
     private static boolean isJ9Jvm0() {

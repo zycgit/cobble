@@ -43,6 +43,7 @@
         <module>cobble-loader</module>
         <module>cobble-dynamic</module>
         <module>cobble-settings</module>
+        <module>cobble-logging</module>
     </modules>
 
     <dependencyManagement>
@@ -50,6 +51,11 @@
             <dependency>
                 <groupId>net.hasor</groupId>
                 <artifactId>cobble-lang</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.hasor</groupId>
+                <artifactId>cobble-logging</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
