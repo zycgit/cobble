@@ -78,11 +78,6 @@ public class ToolsTest {
     public void toolsTest4() {
         DynamicConfig config = new DynamicConfig(Object.class);
         config.addAopInterceptor(t -> true, invocation -> null);
-        try {
-            Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), config);
-            assert false;
-        } catch (Exception e) {
-            assert e.getMessage().equals("class in package java or javax , does not support.");
-        }
+        Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), config);
     }
 }

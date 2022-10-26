@@ -56,7 +56,11 @@ public class DynamicConfig {
 
     /** 创建 {@link DynamicConfig} 类型对象，支持抽象类 */
     public DynamicConfig(Class<?> superClass, InvocationHandler handler) {
-        this.superClass = superClass == null ? BasicObject.class : superClass;
+        if (superClass == null || superClass.isInterface()) {
+            this.superClass = BasicObject.class;
+        } else {
+            this.superClass = superClass;
+        }
         this.specialNamePrefix = this.superClass.getName().startsWith("java.") ? "proxy" : null;
 
         boolean modifiersTest = Modifier.isFinal(this.superClass.getModifiers()) || !Modifier.isPublic(this.superClass.getModifiers());

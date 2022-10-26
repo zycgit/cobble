@@ -149,6 +149,7 @@ public final class Proxy {
             }
         }
 
+        superClass = superClass == null ? BasicObject.class : superClass;
         DynamicConfig config = new DynamicConfig(superClass, handler);
         for (Class<?> inter : interfaces) {
             if (superClass == inter) {
@@ -291,8 +292,10 @@ public final class Proxy {
         String specialNamePrefix = config.getSpecialNamePrefix();
         if (StringUtils.isBlank(specialNamePrefix)) {
             specialNamePrefix = "";
+        } else {
+            specialNamePrefix += ".";
         }
-        return specialNamePrefix + "." + config.getSuperClass().getName() + aopClassSuffix + spinIndex.getAndIncrement();
+        return specialNamePrefix + config.getSuperClass().getName() + aopClassSuffix + spinIndex.getAndIncrement();
     }
 
     /** 调用ClassLoader，生成字节码并装载它 */
@@ -303,7 +306,7 @@ public final class Proxy {
         List<String> writerMethod = new ArrayList<>();
 
         interfaces.add(AsmTools.replaceClassName(DynamicClass.class));
-        config.getImplementMap().keySet().forEach(c -> interfaces.add(AsmTools.replaceClassName(c)));
+        config.getImplementMap().keySet().stream().filter(Class::isInterface).forEach(c -> interfaces.add(AsmTools.replaceClassName(c)));
         interfaces.remove(AsmTools.replaceClassName(config.getSuperClass())); // 可能是继承抽象类
         if (isProxy) {
             interfaces.add(AsmTools.replaceClassName(DynamicObject.class));
@@ -883,7 +886,7 @@ public final class Proxy {
         mv.visitTypeInsn(NEW, AsmTools.replaceClassName(InvokerImplementInvocation.class));
         mv.visitInsn(DUP);
         mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
-        mv.visitLdcInsn(Type.getType("L" + AsmTools.toAsmType(implType) + ";"));
+        mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(implType)));
         mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
         mv.visitIntInsn(BIPUSH, indexMap.get(methodKey));
         mv.visitInsn(AALOAD);
