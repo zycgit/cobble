@@ -4781,7 +4781,7 @@ public class ArrayUtils {
 
     /**删除数组中空元素*/
     public static Object[] clearNull(final Object[] arr) {
-        ArrayList<Object> list = new ArrayList<Object>();
+        ArrayList<Object> list = new ArrayList<>();
         if (arr != null) {
             for (Object item : arr) {
                 if (item != null) {

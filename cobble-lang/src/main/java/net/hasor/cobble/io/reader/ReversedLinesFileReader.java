@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.reader;
-
 import net.hasor.cobble.io.Charsets;
 
 import java.io.*;
@@ -29,7 +28,6 @@ import java.nio.charset.StandardCharsets;
  * @since 2.2
  */
 public class ReversedLinesFileReader implements Closeable {
-
     private final int              blockSize;
     private final Charset          encoding;
     private final RandomAccessFile randomAccessFile;
@@ -169,7 +167,6 @@ public class ReversedLinesFileReader implements Closeable {
     }
 
     private class FilePart {
-
         private final long   no;
         private final byte[] data;
         private       byte[] leftOver;

@@ -24,7 +24,6 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-
     protected final  ClassLoader      parentClassLoader;
     private volatile InnerClassLoader innerClassLoader;
 

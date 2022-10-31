@@ -44,6 +44,7 @@
         <module>cobble-dynamic</module>
         <module>cobble-settings</module>
         <module>cobble-logging</module>
+        <module>cobble-bytebuf</module>
     </modules>
 
     <dependencyManagement>
@@ -71,6 +72,11 @@
             <dependency>
                 <groupId>net.hasor</groupId>
                 <artifactId>cobble-loader</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.hasor</groupId>
+                <artifactId>cobble-bytebuf</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

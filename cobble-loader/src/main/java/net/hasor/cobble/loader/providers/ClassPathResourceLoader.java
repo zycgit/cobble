@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Predicate;
@@ -59,43 +59,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
     /** 获取ClassPath路径 */
     protected List<URL> getClassPath(ClassLoader classLoader) {
-        List<ClassLoader> classLoaders = new ArrayList<>();
-        while (true) {
-            if (classLoader == null) {
-                break;
-            } else {
-                classLoaders.add(classLoader);
-                classLoader = classLoader.getParent();
-            }
-        }
-        List<URL> resources = new ArrayList<>();
-        for (ClassLoader loader : classLoaders) {
-            String loaderClassName = loader.getClass().getName();
-            if (loader instanceof URLClassLoader) {
-                // before jdk9
-                URL[] urLs = ((URLClassLoader) loader).getURLs();
-                if (urLs != null) {
-                    for (URL url : urLs) {
-                        if (!resources.contains(url)) {
-                            resources.add(url);
-                        }
-                    }
-                }
-            } else if (loaderClassName.startsWith("jdk.internal.loader.ClassLoaders")) {
-                // in new jdk
-                try {
-                    Enumeration<URL> urlEnumeration = loader.getResources("");
-                    while (urlEnumeration.hasMoreElements()) {
-                        URL url = urlEnumeration.nextElement();
-                        if (!resources.contains(url)) {
-                            resources.add(url);
-                        }
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        return resources;
+        return ClassUtils.getClassPath(classLoader);
     }
 
     private String formatResourcePath(String resourcePath) {

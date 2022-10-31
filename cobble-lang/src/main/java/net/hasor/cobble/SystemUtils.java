@@ -83,7 +83,7 @@ public final class SystemUtils {
         return IS_WINDOWS;
     }
 
-    static boolean isAndroid() {
+    public static boolean isAndroid() {
         return IS_ANDROID;
     }
 
@@ -148,5 +148,4 @@ public final class SystemUtils {
         // Check for root and toor as some BSDs have a toor user that is basically the same as root.
         return "root".equals(username) || "toor".equals(username);
     }
-
 }
