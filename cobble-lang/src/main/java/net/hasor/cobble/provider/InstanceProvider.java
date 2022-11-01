@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.supplier;
+package net.hasor.cobble.provider;
 import java.util.function.Supplier;
 
 /**
- * 线程单例对象的{@link Supplier}封装形式。
+ * 对象的{@link Supplier}封装形式。
  * @version : 2014年7月8日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class ThreadSingleProvider<T> implements Supplier<T> {
-    private final ThreadLocal<T> instance;
+public class InstanceProvider<T> implements Provider<T> {
+    private T instance = null;
 
-    public ThreadSingleProvider(final Supplier<T> provider) {
-        this.instance = ThreadLocal.withInitial(() -> newInstance(provider));
+    public InstanceProvider(final T instance) {
+        this.instance = instance;
     }
 
-    protected T newInstance(Supplier<T> provider) {
-        return provider.get();
+    @Override
+    public T call() throws Exception {
+        return this.instance;
     }
 
-    public T get() {
-        return this.instance.get();
-    }
-
-    public String toString() {
-        return "ThreadSingleProvider->" + instance.toString();
+    public void set(T instance) {
+        this.instance = instance;
     }
 }

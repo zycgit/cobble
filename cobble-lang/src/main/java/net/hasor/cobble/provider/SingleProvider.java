@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.supplier;
+package net.hasor.cobble.provider;
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 /**
@@ -21,16 +22,29 @@ import java.util.function.Supplier;
  * @version : 2014年7月8日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class SingleProvider<T> implements Supplier<T> {
-    private          Supplier<T> provider = null;
+public class SingleProvider<T> implements Provider<T> {
+    private          Provider<T> provider = null;
     private volatile T           instance = null;
     private final    Object      lock     = new Object();
 
-    public SingleProvider(Supplier<T> provider) {
+    public SingleProvider(T instance) {
+        this.instance = instance;
+    }
+
+    public SingleProvider(Provider<T> provider) {
         this.provider = provider;
     }
 
-    public T get() {
+    public SingleProvider(Supplier<T> supplier) {
+        this.provider = supplier::get;
+    }
+
+    public SingleProvider(Callable<T> callable) {
+        this.provider = callable::call;
+    }
+
+    @Override
+    public T call() throws Exception {
         if (this.instance == null) {
             synchronized (this.lock) {
                 if (this.instance == null) {

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * <p>各种类型的Provider接口工具。</p>
+ * <p>提供 Supplier、Callable 的转换和包装</p>
  */
-package net.hasor.cobble.supplier;
+package net.hasor.cobble.provider;
