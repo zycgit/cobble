@@ -74,15 +74,18 @@ public class EventBus implements BusContext {
     }
 
     @Override
-    public boolean clearListener(String event) {
+    public void clearAllListener() {
+        this.listenerMap.clear();
+    }
+
+    @Override
+    public void clearListener(String event) {
         if (StringUtils.isBlank(event)) {
-            return false;
+            return;
         }
         ListenerPool listenerPool = this.getListenerPool(event);
         if (listenerPool != null) {
-            return this.getListenerPool(event).clearListener();
-        } else {
-            return false;
+            this.getListenerPool(event).clearListener();
         }
     }
 
@@ -188,11 +191,11 @@ public class EventBus implements BusContext {
     }
 
     @Override
-    public Future<Void> lazyFireEvent(Executor executor, String event, Object args, long timeout, TimeUnit timeUnit) {
+    public Future<Void> lazyFireEvent(Executor executor, String event, Object args, long sleep, TimeUnit timeUnit) {
         BasicFuture<Void> future = new BasicFuture<>();
         executor.execute(() -> {
             try {
-                timeUnit.sleep(timeout);
+                timeUnit.sleep(sleep);
 
                 if (!future.isCancelled()) {
                     fireEvent(event, args);
@@ -206,11 +209,11 @@ public class EventBus implements BusContext {
     }
 
     @Override
-    public Future<Object> lazyFireEvent(Executor executor, String event, Object args, BusCaller caller, long timeout, TimeUnit timeUnit) {
+    public Future<Object> lazyFireEvent(Executor executor, String event, Object args, BusCaller caller, long sleep, TimeUnit timeUnit) {
         BasicFuture<Object> future = new BasicFuture<>();
         executor.execute(() -> {
             try {
-                timeUnit.sleep(timeout);
+                timeUnit.sleep(sleep);
 
                 if (!future.isCancelled()) {
                     Object result = fireEvent(event, args, caller);
@@ -222,5 +225,4 @@ public class EventBus implements BusContext {
         });
         return future;
     }
-
 }

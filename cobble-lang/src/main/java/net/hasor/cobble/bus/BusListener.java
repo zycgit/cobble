@@ -28,5 +28,4 @@ public interface BusListener extends java.util.EventListener {
      * @throws Throwable 执行事件期间引发的异常。
      */
     Object onEvent(String event, Object data) throws Throwable;
-
 }

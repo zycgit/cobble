@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.bus;
-
 /**
+ * 决定如何执行 BusListener 和执行后的返回值
  * @version : 2019年06月20日
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface BusCaller {
-
     Object doEvent(BusListener listener, Object lastResult) throws Throwable;
-
 }
