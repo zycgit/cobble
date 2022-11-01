@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
@@ -30,10 +29,8 @@ import java.util.EnumSet;
  * @since 1.0
  */
 public class NumericEntityUnescaper extends CharSequenceTranslator {
-
     /** NumericEntityUnescaper option enum. */
     public enum OPTION {
-
         /**
          * Require a semicolon.
          */

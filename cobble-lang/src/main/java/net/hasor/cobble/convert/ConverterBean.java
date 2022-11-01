@@ -16,7 +16,7 @@
  */
 package net.hasor.cobble.convert;
 import net.hasor.cobble.convert.convert.*;
-import net.hasor.cobble.supplier.ContextClassLoaderLocal;
+import net.hasor.cobble.ref.ContextClassLoaderLocal;
 
 import java.io.File;
 import java.lang.reflect.Array;

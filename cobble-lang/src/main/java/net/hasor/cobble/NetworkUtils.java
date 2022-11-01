@@ -81,7 +81,7 @@ public class NetworkUtils {
 
     /** 根据IP值分解IP为字节数组 */
     public static byte[] ipDataByInt(int ipData) {
-        byte ipParts[] = new byte[4];
+        byte[] ipParts = new byte[4];
         for (int i = 0; i < ipParts.length; i++) {
             int pos = ipParts.length - 1 - i;
             ipParts[pos] = (byte) (ipData >> (i * 8));
@@ -91,14 +91,14 @@ public class NetworkUtils {
 
     /** 根据IP字节数据转换为int */
     public static int ipDataByBytes(byte[] ipData) {
-        int ipParts[] = new int[4];
+        int[] ipParts = new int[4];
         ipParts[0] = 0xFFFFFFFF & (ipData[0] << 24);
         ipParts[1] = 0x00FFFFFF & (ipData[1] << 16);
         ipParts[2] = 0x0000FFFF & (ipData[2] << 8);
         ipParts[3] = 0x000000FF & (ipData[3] << 0);
         int intIP = 0;
-        for (int i = 0; i < ipParts.length; i++) {
-            intIP = intIP | ipParts[i];
+        for (int ipPart : ipParts) {
+            intIP = intIP | ipPart;
         }
         return intIP;
     }
@@ -110,12 +110,12 @@ public class NetworkUtils {
 
     /** 将分解的IP数据转换为字符串 */
     public static String ipDataToString(byte[] ipData) {
-        String result = "";
-        result = result + toStr(ipData[0]);
+        StringBuilder result = new StringBuilder();
+        result.append(toStr(ipData[0]));
         for (int i = 1; i < ipData.length; i++) {
-            result = result + "." + toStr(ipData[i]);
+            result.append(".").append(toStr(ipData[i]));
         }
-        return result;
+        return result.toString();
     }
 
     private static String toStr(byte byteData) {

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.Map;
  * @since 1.0
  */
 public class EntityArrays {
-
     /**
      * A Map&lt;CharSequence, CharSequence&gt; to to escape
      * <a href="https://secure.wikimedia.org/wikipedia/en/wiki/ISO/IEC_8859-1">ISO-8859-1</a>
@@ -448,5 +446,4 @@ public class EntityArrays {
         }
         return newMap;
     }
-
 }

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.io.IOException;
 import java.io.Writer;
 
@@ -24,7 +23,6 @@ import java.io.Writer;
  * Handles initial index checking and counting of returned code points.
  */
 abstract class SinglePassTranslator extends CharSequenceTranslator {
-
     @Override
     public int translate(final CharSequence input, final int index, final Writer out) throws IOException {
         if (index != 0) {

@@ -34,8 +34,7 @@ public final class SystemUtils {
      * <p><code>NumberUtils</code> instances should NOT be constructed in standard programming.
      * Instead, the class should be used as <code>NumberUtils.stringToInt("6");</code>.</p>
      *
-     * <p>This constructor is public to permit tools that require a JavaBean instance
-     * to operate.</p>
+     * <p>This constructor is public to permit tools that require a JavaBean instance to operate.</p>
      */
     public SystemUtils() {
         super();
@@ -54,13 +53,10 @@ public final class SystemUtils {
     }
 
     /**
-     * Returns the value of the Java system property with the specified
-     * {@code key}, while falling back to the specified default value if
-     * the property access fails.
+     * Returns the value of the Java system property with the specified {@code key},
+     * while falling back to the specified default value if the property access fails.
      *
-     * @return the property value.
-     *         {@code def} if there's no such property or if an access to the
-     *         specified property is not allowed.
+     * @return the property value. {@code def} if there's no such property or if an access to the specified property is not allowed.
      */
     public static String getSystemProperty(final String key, String defaultValue) {
         ObjectUtils.checkNotNull(key, "key");
@@ -93,7 +89,8 @@ public final class SystemUtils {
     }
 
     /**
-     * Returns {@code true} if the running JVM is either <a href="https://developer.ibm.com/javasdk/">IBM J9</a> or
+     * Returns {@code true} if the running JVM is either
+     * <a href="https://developer.ibm.com/javasdk/">IBM J9</a> or
      * <a href="https://www.eclipse.org/openj9/">Eclipse OpenJ9</a>, {@code false} otherwise.
      */
     public static boolean isJ9Jvm() {

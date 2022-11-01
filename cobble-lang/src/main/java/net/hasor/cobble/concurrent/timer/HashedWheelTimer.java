@@ -14,7 +14,6 @@
  * under the License.
  */
 package net.hasor.cobble.concurrent.timer;
-
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ObjectUtils;
 import net.hasor.cobble.SystemUtils;
@@ -66,33 +65,28 @@ import java.util.logging.Logger;
  * More comprehensive slides are located <a href="https://www.cse.wustl.edu/~cdgill/courses/cs6874/TimingWheels.ppt">here</a>.
  */
 public class HashedWheelTimer implements Timer {
-    static final         Logger        logger                    = Logger.getLogger(HashedWheelTimer.class.getName());
-    private static final AtomicInteger INSTANCE_COUNTER          = new AtomicInteger();
-    private static final AtomicBoolean WARNED_TOO_MANY_INSTANCES = new AtomicBoolean();
-    private static final int           INSTANCE_COUNT_LIMIT      = 64;
-    private static final long          MILLISECOND_NANOS         = TimeUnit.MILLISECONDS.toNanos(1);
-
-    private static final AtomicIntegerFieldUpdater<HashedWheelTimer> WORKER_STATE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(HashedWheelTimer.class, "workerState");
-
-    private final Worker worker = new Worker();
-    private final Thread workerThread;
-
-    public static final int WORKER_STATE_INIT     = 0;
-    public static final int WORKER_STATE_STARTED  = 1;
-    public static final int WORKER_STATE_SHUTDOWN = 2;
+    static final         Logger                                      logger                    = Logger.getLogger(HashedWheelTimer.class.getName());
+    private static final AtomicInteger                               INSTANCE_COUNTER          = new AtomicInteger();
+    private static final AtomicBoolean                               WARNED_TOO_MANY_INSTANCES = new AtomicBoolean();
+    private static final int                                         INSTANCE_COUNT_LIMIT      = 64;
+    private static final long                                        MILLISECOND_NANOS         = TimeUnit.MILLISECONDS.toNanos(1);
+    private static final AtomicIntegerFieldUpdater<HashedWheelTimer> WORKER_STATE_UPDATER      = AtomicIntegerFieldUpdater.newUpdater(HashedWheelTimer.class, "workerState");
+    private final        Worker                                      worker                    = new Worker();
+    private final        Thread                                      workerThread;
+    public static final  int                                         WORKER_STATE_INIT         = 0;
+    public static final  int                                         WORKER_STATE_STARTED      = 1;
+    public static final  int                                         WORKER_STATE_SHUTDOWN     = 2;
     @SuppressWarnings({ "unused", "FieldMayBeFinal" })
-    private volatile    int workerState; // 0 - init, 1 - started, 2 - shut down
-
-    private final long                      tickDuration;
-    private final HashedWheelBucket[]       wheel;
-    private final int                       mask;
-    private final CountDownLatch            startTimeInitialized = new CountDownLatch(1);
-    private final Queue<HashedWheelTimeout> timeouts             = new ConcurrentLinkedQueue<>();
-    private final Queue<HashedWheelTimeout> cancelledTimeouts    = new ConcurrentLinkedQueue<>();
-    private final AtomicLong                pendingTimeouts      = new AtomicLong(0);
-    private final long                      maxPendingTimeouts;
-
-    private volatile long startTime;
+    private volatile     int                                         workerState; // 0 - init, 1 - started, 2 - shut down
+    private final        long                                        tickDuration;
+    private final        HashedWheelBucket[]                         wheel;
+    private final        int                                         mask;
+    private final        CountDownLatch                              startTimeInitialized      = new CountDownLatch(1);
+    private final        Queue<HashedWheelTimeout>                   timeouts                  = new ConcurrentLinkedQueue<>();
+    private final        Queue<HashedWheelTimeout>                   cancelledTimeouts         = new ConcurrentLinkedQueue<>();
+    private final        AtomicLong                                  pendingTimeouts           = new AtomicLong(0);
+    private final        long                                        maxPendingTimeouts;
+    private volatile     long                                        startTime;
 
     /**
      * Creates a new timer with the default thread factory
@@ -396,8 +390,7 @@ public class HashedWheelTimer implements Timer {
 
     private final class Worker implements Runnable {
         private final Set<Timeout> unprocessedTimeouts = new HashSet<>();
-
-        private long tick;
+        private       long         tick;
 
         @Override
         public void run() {
@@ -528,30 +521,24 @@ public class HashedWheelTimer implements Timer {
     }
 
     private static final class HashedWheelTimeout implements Timeout {
-
         private static final int                                           ST_INIT       = 0;
         private static final int                                           ST_CANCELLED  = 1;
         private static final int                                           ST_EXPIRED    = 2;
         private static final AtomicIntegerFieldUpdater<HashedWheelTimeout> STATE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(HashedWheelTimeout.class, "state");
-
-        private final HashedWheelTimer timer;
-        private final TimerTask        task;
-        private final long             deadline;
-
+        private final        HashedWheelTimer                              timer;
+        private final        TimerTask                                     task;
+        private final        long                                          deadline;
         @SuppressWarnings({ "unused", "FieldMayBeFinal", "RedundantFieldInitialization" })
-        private volatile int state = ST_INIT;
-
+        private volatile     int                                           state         = ST_INIT;
         // remainingRounds will be calculated and set by Worker.transferTimeoutsToBuckets() before the
         // HashedWheelTimeout will be added to the correct HashedWheelBucket.
-        long remainingRounds;
-
+        long               remainingRounds;
         // This will be used to chain timeouts in HashedWheelTimerBucket via a double-linked-list.
         // As only the workerThread will act on it there is no need for synchronization / volatile.
         HashedWheelTimeout next;
         HashedWheelTimeout prev;
-
         // The bucket to which the timeout was added
-        HashedWheelBucket bucket;
+        HashedWheelBucket  bucket;
 
         HashedWheelTimeout(HashedWheelTimer timer, TimerTask task, long deadline) {
             this.timer = timer;

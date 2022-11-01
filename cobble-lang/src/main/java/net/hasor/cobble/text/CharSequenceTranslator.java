@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -30,7 +29,6 @@ import java.util.Objects;
  * @since 1.0
  */
 public abstract class CharSequenceTranslator {
-
     /**
      * Array containing the hexadecimal alphabet.
      */
@@ -133,5 +131,4 @@ public abstract class CharSequenceTranslator {
     public static String hex(final int codepoint) {
         return Integer.toHexString(codepoint).toUpperCase(Locale.ENGLISH);
     }
-
 }

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -28,7 +27,6 @@ import java.util.regex.Pattern;
  * @author 赵永春 (zyc@hasor.net)
  */
 public enum DateFormatType {
-
     // date
     s_yyyyMMdd("\\d{4}-\\d{2}-\\d{2}", "yyyy-MM-dd", true, false, false, 0),
     d_yyyyMMdd("\\d{4}/\\d{2}/\\d{2}", "yyyy/MM/dd", true, false, false, 0),
@@ -59,7 +57,6 @@ public enum DateFormatType {
     //
     t_yyyyMMdd_HHmmss("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z", "yyyy-MM-dd'T'HH:mm:ss'Z'", true, true, true, 0),
     ;
-
     private final Pattern regPattern;
     private final String  datePattern;
     private final boolean containsDate;

@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.security.InvalidParameterException;
@@ -29,7 +28,6 @@ import java.util.Map;
  * @since 1.0
  */
 public class LookupTranslator extends CharSequenceTranslator {
-
     /** The mapping to be used in translation. */
     private final Map<String, String> lookupMap;
     /** The first character of each key in the lookupMap. */

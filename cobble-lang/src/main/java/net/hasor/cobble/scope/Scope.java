@@ -29,7 +29,7 @@ public interface Scope {
      * @param provider 对象 Provider。
      * @return 返回作用域中的对象 Provider。
      */
-    public <T> Supplier<T> scope(Object key, Supplier<T> provider);
+    <T> Supplier<T> scope(Object key, Supplier<T> provider);
 
     /**
      * 构造一个Scope链，使一个对象的创建可以同时贯穿两个Scope。<p>
@@ -40,7 +40,7 @@ public interface Scope {
      * @see #chainScope(Object, Scope[], Supplier)
      * @see #chainScope(Object, Scope[], int, int, Supplier)
      */
-    public default <T> Supplier<T> chainScope(Object key, Scope secondScope, Supplier<T> provider) {
+    default <T> Supplier<T> chainScope(Object key, Scope secondScope, Supplier<T> provider) {
         Scope[] scopeArray = new Scope[] { secondScope };
         return chainScope(key, scopeArray, 0, scopeArray.length, provider);
     }
@@ -54,7 +54,7 @@ public interface Scope {
      * @see #chainScope(Object, Scope, Supplier)
      * @see #chainScope(Object, Scope[], int, int, Supplier)
      */
-    public default <T> Supplier<T> chainScope(Object key, Scope[] scopeChain, Supplier<T> provider) {
+    default <T> Supplier<T> chainScope(Object key, Scope[] scopeChain, Supplier<T> provider) {
         return chainScope(key, scopeChain, 0, scopeChain.length, provider);
     }
 
@@ -69,7 +69,7 @@ public interface Scope {
      * @see #chainScope(Object, Scope, Supplier)
      * @see #chainScope(Object, Scope[], Supplier)
      */
-    public default <T> Supplier<T> chainScope(final Object key, final Scope[] scopeChain, int start, int end, Supplier<T> provider) {
+    default <T> Supplier<T> chainScope(final Object key, final Scope[] scopeChain, int start, int end, Supplier<T> provider) {
         Supplier<T> nextSupplier = provider;
         if (start < end) {
             for (int i = start; i < end; i++) {
@@ -80,7 +80,7 @@ public interface Scope {
                 };
             }
         }
-        //
+
         Supplier<T> finalSupplier = nextSupplier;
         return () -> {
             Supplier<T> scope = scope(key, finalSupplier);

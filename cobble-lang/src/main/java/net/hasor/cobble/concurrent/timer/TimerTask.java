@@ -14,7 +14,6 @@
  * under the License.
  */
 package net.hasor.cobble.concurrent.timer;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  * {@link Timer#newTimeout(TimerTask, long, TimeUnit)}.
  */
 public interface TimerTask {
-
     /**
      * Executed after the delay specified with
      * {@link Timer#newTimeout(TimerTask, long, TimeUnit)}.

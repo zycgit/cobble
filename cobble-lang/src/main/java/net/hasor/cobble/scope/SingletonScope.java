@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.scope;
-import net.hasor.cobble.supplier.Provider;
+import net.hasor.cobble.provider.Provider;
 
 import java.util.Collections;
 import java.util.Map;

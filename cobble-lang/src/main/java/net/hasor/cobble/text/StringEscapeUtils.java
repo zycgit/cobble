@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import net.hasor.cobble.StringUtils;
 
 import java.io.IOException;
@@ -36,7 +35,6 @@ import java.util.Map;
 public class StringEscapeUtils {
 
     /* ESCAPE TRANSLATORS */
-
     /**
      * Translator object for escaping Java.
      *
@@ -160,7 +158,6 @@ public class StringEscapeUtils {
      * as the foundation for a custom translator.
      */
     public static final CharSequenceTranslator ESCAPE_HTML3 = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_ESCAPE), new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE));
-
     /**
      * Translator object for escaping HTML version 4.0.
      *
@@ -169,7 +166,6 @@ public class StringEscapeUtils {
      * as the foundation for a custom translator.
      */
     public static final CharSequenceTranslator ESCAPE_HTML4 = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_ESCAPE), new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE), new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE));
-
     /**
      * Translator object for escaping individual Comma Separated Values.
      *
@@ -177,8 +173,7 @@ public class StringEscapeUtils {
      * object allows the CSV escaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator ESCAPE_CSV = new CsvTranslators.CsvEscaper();
-
+    public static final CharSequenceTranslator ESCAPE_CSV   = new CsvTranslators.CsvEscaper();
     /**
      * Translator object for escaping Shell command language.
      *
@@ -215,7 +210,6 @@ public class StringEscapeUtils {
     }
 
     /* UNESCAPE TRANSLATORS */
-
     /**
      * Translator object for unescaping escaped Java.
      *
@@ -243,7 +237,6 @@ public class StringEscapeUtils {
      * as the foundation for a custom translator.
      */
     public static final CharSequenceTranslator UNESCAPE_ECMASCRIPT = UNESCAPE_JAVA;
-
     /**
      * Translator object for unescaping escaped Json.
      *
@@ -251,8 +244,7 @@ public class StringEscapeUtils {
      * object allows the Json unescaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator UNESCAPE_JSON = UNESCAPE_JAVA;
-
+    public static final CharSequenceTranslator UNESCAPE_JSON       = UNESCAPE_JAVA;
     /**
      * Translator object for unescaping escaped HTML 3.0.
      *
@@ -260,8 +252,7 @@ public class StringEscapeUtils {
      * object allows the HTML unescaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator UNESCAPE_HTML3 = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_UNESCAPE), new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE), new NumericEntityUnescaper());
-
+    public static final CharSequenceTranslator UNESCAPE_HTML3      = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_UNESCAPE), new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE), new NumericEntityUnescaper());
     /**
      * Translator object for unescaping escaped HTML 4.0.
      *
@@ -269,8 +260,7 @@ public class StringEscapeUtils {
      * object allows the HTML unescaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator UNESCAPE_HTML4 = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_UNESCAPE), new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE), new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE), new NumericEntityUnescaper());
-
+    public static final CharSequenceTranslator UNESCAPE_HTML4      = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_UNESCAPE), new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE), new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE), new NumericEntityUnescaper());
     /**
      * Translator object for unescaping escaped XML.
      *
@@ -278,8 +268,7 @@ public class StringEscapeUtils {
      * object allows the XML unescaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator UNESCAPE_XML = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_UNESCAPE), new LookupTranslator(EntityArrays.APOS_UNESCAPE), new NumericEntityUnescaper());
-
+    public static final CharSequenceTranslator UNESCAPE_XML        = new AggregateTranslator(new LookupTranslator(EntityArrays.BASIC_UNESCAPE), new LookupTranslator(EntityArrays.APOS_UNESCAPE), new NumericEntityUnescaper());
     /**
      * Translator object for unescaping escaped Comma Separated Value entries.
      *
@@ -287,8 +276,7 @@ public class StringEscapeUtils {
      * object allows the CSV unescaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator UNESCAPE_CSV = new CsvTranslators.CsvUnescaper();
-
+    public static final CharSequenceTranslator UNESCAPE_CSV        = new CsvTranslators.CsvUnescaper();
     /**
      * Translator object for unescaping escaped XSI Value entries.
      *
@@ -296,13 +284,12 @@ public class StringEscapeUtils {
      * object allows the XSI unescaping functionality to be used
      * as the foundation for a custom translator.
      */
-    public static final CharSequenceTranslator UNESCAPE_XSI = new XsiUnescaper();
+    public static final CharSequenceTranslator UNESCAPE_XSI        = new XsiUnescaper();
 
     /**
      * Translator object for unescaping backslash escaped entries.
      */
     static class XsiUnescaper extends CharSequenceTranslator {
-
         /**
          * Escaped backslash constant.
          */
@@ -370,12 +357,10 @@ public class StringEscapeUtils {
      *
      */
     public static final class Builder {
-
         /**
          * StringBuilder to be used in the Builder class.
          */
-        private final StringBuilder sb;
-
+        private final StringBuilder          sb;
         /**
          * CharSequenceTranslator to be used in the Builder class.
          */
@@ -800,5 +785,4 @@ public class StringEscapeUtils {
     public static final String unescapeXSI(final String input) {
         return UNESCAPE_XSI.translate(input);
     }
-
 }

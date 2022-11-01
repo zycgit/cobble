@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.concurrent;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

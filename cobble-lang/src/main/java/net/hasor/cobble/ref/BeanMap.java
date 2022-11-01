@@ -41,19 +41,19 @@ import java.util.*;
  * @author Stephen Colebourne
  */
 public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
-    private transient    Object                     bean;
-    private transient    ConverterBean              transformConvert;
-    private transient    Map<String, Method>        readMethods      = new LinkedHashMap<>();
-    private transient    Map<String, Method>        writeMethods     = new LinkedHashMap<>();
-    private transient    Map<String, Class<?>>      types            = new LinkedHashMap<>();
+    private transient       Object                     bean;
+    private transient       ConverterBean              transformConvert;
+    private final transient Map<String, Method>        readMethods      = new LinkedHashMap<>();
+    private final transient Map<String, Method>        writeMethods     = new LinkedHashMap<>();
+    private final transient Map<String, Class<?>>      types            = new LinkedHashMap<>();
     /** An empty array.  Used to invoke accessors via reflection. */
-    public static final  Object[]                   NULL_ARGUMENTS   = {};
+    public static final     Object[]                   NULL_ARGUMENTS   = {};
     /**
      * Maps primitive Class types to transformers.  The transformer
      * transform strings into the appropriate primitive wrapper.
      * N.B. private & unmodifiable replacement for the (public & static) defaultTransformers instance.
      */
-    private static final Map<Class<?>, Transformer> typeTransformers = Collections.unmodifiableMap(createTypeTransformers());
+    private static final    Map<Class<?>, Transformer> typeTransformers = Collections.unmodifiableMap(createTypeTransformers());
 
     private static Map<Class<?>, Transformer> createTypeTransformers() {
         Map<Class<?>, Transformer> defaultTransformers = new HashMap<>();

@@ -1118,7 +1118,6 @@ public class ClassUtils {
     }
 
     /** 获取ClassPath路径 */
-
     public static List<URL> getClassPath(ClassLoader classLoader) {
         List<ClassLoader> classLoaders = new ArrayList<>();
         while (true) {

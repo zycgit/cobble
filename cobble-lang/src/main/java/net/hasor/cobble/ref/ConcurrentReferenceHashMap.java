@@ -15,7 +15,6 @@
  */
 
 package net.hasor.cobble.ref;
-
 import net.hasor.cobble.ObjectUtils;
 
 import java.lang.ref.ReferenceQueue;
@@ -53,23 +52,22 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <V> the value type
  */
 public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
-    private static final int           DEFAULT_INITIAL_CAPACITY  = 16;
-    private static final float         DEFAULT_LOAD_FACTOR       = 0.75f;
-    private static final int           DEFAULT_CONCURRENCY_LEVEL = 16;
-    private static final ReferenceType DEFAULT_REFERENCE_TYPE    = ReferenceType.SOFT;
-    private static final int           MAXIMUM_CONCURRENCY_LEVEL = 1 << 16;
-    private static final int           MAXIMUM_SEGMENT_SIZE      = 1 << 30;
-
+    private static final int                  DEFAULT_INITIAL_CAPACITY  = 16;
+    private static final float                DEFAULT_LOAD_FACTOR       = 0.75f;
+    private static final int                  DEFAULT_CONCURRENCY_LEVEL = 16;
+    private static final ReferenceType        DEFAULT_REFERENCE_TYPE    = ReferenceType.SOFT;
+    private static final int                  MAXIMUM_CONCURRENCY_LEVEL = 1 << 16;
+    private static final int                  MAXIMUM_SEGMENT_SIZE      = 1 << 30;
     /** Array of segments indexed using the high order bits from the hash. */
-    private final    Segment[]            segments;
+    private final        Segment[]            segments;
     /** When the average number of references per table exceeds this value resize will be attempted. */
-    private final    float                loadFactor;
+    private final        float                loadFactor;
     /** The reference type: SOFT or WEAK. */
-    private final    ReferenceType        referenceType;
+    private final        ReferenceType        referenceType;
     /** The shift value used to calculate the size of the segments array and an index from the hash. */
-    private final    int                  shift;
+    private final        int                  shift;
     /** Late binding entry set. */
-    private volatile Set<Map.Entry<K, V>> entrySet;
+    private volatile     Set<Map.Entry<K, V>> entrySet;
 
     /** Create a new {@code ConcurrentReferenceHashMap} instance. */
     public ConcurrentReferenceHashMap() {
@@ -416,26 +414,23 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * A single segment used to divide the map to allow better concurrent performance.
      */
     protected final class Segment extends ReentrantLock {
-        private final ReferenceManager referenceManager;
-        private final int              initialSize;
-
+        private final    ReferenceManager  referenceManager;
+        private final    int               initialSize;
         /**
          * Array of references indexed using the low order bits from the hash.
          * This property should only be set along with {@code resizeThreshold}.
          */
         private volatile Reference<K, V>[] references;
-
         /**
          * The total number of references contained in this segment. This includes chained
          * references and references that have been garbage collected but not purged.
          */
-        private final AtomicInteger count = new AtomicInteger();
-
+        private final    AtomicInteger     count = new AtomicInteger();
         /**
          * The threshold when resizing of the references should occur. When {@code count}
          * exceeds this value references will be resized.
          */
-        private int resizeThreshold;
+        private          int               resizeThreshold;
 
         public Segment(int initialSize, int resizeThreshold) {
             this.referenceManager = createReferenceManager();
@@ -466,7 +461,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
          * @param task the update operation
          * @return the result of the operation
          */
-
         public <T> T doTask(final int hash, final Object key, final Task<T> task) {
             boolean resize = task.hasOption(TaskOption.RESIZE);
             if (task.hasOption(TaskOption.RESTRUCTURE_BEFORE)) {
@@ -628,7 +622,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * @param <V> the value type
      */
     protected interface Reference<K, V> {
-
         /** Return the referenced entry, or {@code null} if the entry is no longer available. */
         Entry<K, V> get();
 
@@ -704,7 +697,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * A task that can be {@link Segment#doTask run} against a {@link Segment}.
      */
     private abstract class Task<T> {
-
         private final EnumSet<TaskOption> options;
 
         public Task(TaskOption... options) {
@@ -723,7 +715,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
          * @return the result of the task
          * @see #execute(Reference, Entry)
          */
-
         protected T execute(Reference<K, V> ref, Entry<K, V> entry, Entries<V> entries) {
             return execute(ref, entry);
         }
@@ -735,7 +726,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
          * @return the result of the task
          * @see #execute(Reference, Entry, Entries)
          */
-
         protected T execute(Reference<K, V> ref, Entry<K, V> entry) {
             return null;
         }
@@ -745,7 +735,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Various options supported by a {@code Task}.
      */
     private enum TaskOption {
-
         RESTRUCTURE_BEFORE,
         RESTRUCTURE_AFTER,
         SKIP_IF_EMPTY,
@@ -756,7 +745,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Allows a task access to {@link ConcurrentReferenceHashMap.Segment} entries.
      */
     private interface Entries<V> {
-
         /**
          * Add a new entry with the specified value.
          * @param value the value to add
@@ -768,7 +756,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Internal entry-set implementation.
      */
     private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
-
         @Override
         public Iterator<Map.Entry<K, V>> iterator() {
             return new EntryIterator();
@@ -811,18 +798,12 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Internal entry iterator implementation.
      */
     private class EntryIterator implements Iterator<Map.Entry<K, V>> {
-
-        private int segmentIndex;
-
-        private int referenceIndex;
-
+        private int               segmentIndex;
+        private int               referenceIndex;
         private Reference<K, V>[] references;
-
-        private Reference<K, V> reference;
-
-        private Entry<K, V> next;
-
-        private Entry<K, V> last;
+        private Reference<K, V>   reference;
+        private Entry<K, V>       next;
+        private Entry<K, V>       last;
 
         public EntryIterator() {
             moveToNextSegment();
@@ -890,7 +871,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * The types of restructuring that can be performed.
      */
     protected enum Restructure {
-
         WHEN_NECESSARY,
         NEVER
     }
@@ -900,7 +880,6 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * This class can be overridden if alternative reference types need to be supported.
      */
     protected class ReferenceManager {
-
         private final ReferenceQueue<Entry<K, V>> queue = new ReferenceQueue<>();
 
         /**
@@ -966,9 +945,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Internal {@link Reference} implementation for {@link WeakReference WeakReferences}.
      */
     private static final class WeakEntryReference<K, V> extends WeakReference<Entry<K, V>> implements Reference<K, V> {
-
-        private final int hash;
-
+        private final int             hash;
         private final Reference<K, V> nextReference;
 
         public WeakEntryReference(Entry<K, V> entry, int hash, Reference<K, V> next, ReferenceQueue<Entry<K, V>> queue) {
@@ -995,5 +972,4 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
             clear();
         }
     }
-
 }

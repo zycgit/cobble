@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import net.hasor.cobble.ref.Range;
 
 import java.io.IOException;
@@ -27,7 +26,6 @@ import java.io.Writer;
  * @since 1.0
  */
 public class NumericEntityEscaper extends CodePointTranslator {
-
     /** whether to escape between the boundaries or outside them. */
     private final boolean        between;
     /** range from lowest codepoint to highest codepoint. */

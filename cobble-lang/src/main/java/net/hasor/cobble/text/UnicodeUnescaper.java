@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.io.IOException;
 import java.io.Writer;
 
@@ -27,7 +26,6 @@ import java.io.Writer;
  * @since 1.0
  */
 public class UnicodeUnescaper extends CharSequenceTranslator {
-
     /**
      * {@inheritDoc}
      */

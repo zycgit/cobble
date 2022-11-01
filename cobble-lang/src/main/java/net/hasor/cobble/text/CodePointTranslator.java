@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import java.io.IOException;
 import java.io.Writer;
 
@@ -26,7 +25,6 @@ import java.io.Writer;
  * @since 1.0
  */
 public abstract class CodePointTranslator extends CharSequenceTranslator {
-
     /**
      * Implementation of translate that maps onto the abstract translate(int, Writer) method.
      * {@inheritDoc}
@@ -47,5 +45,4 @@ public abstract class CodePointTranslator extends CharSequenceTranslator {
      * @throws IOException if and only if the Writer produces an IOException
      */
     public abstract boolean translate(int codepoint, Writer out) throws IOException;
-
 }

@@ -764,7 +764,6 @@ public final class NumberUtils {
     //
     // ============================================================================================
     //  数学计算处理工具，提供：加、减、乘、除、整除、求余，尽量考虑在保证性能的前提下不产生精度丢失问题。
-
     private static final int BOOL   = 1;
     private static final int BYTE   = 2;
     private static final int SHORT  = 3;

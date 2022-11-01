@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 import net.hasor.cobble.CharUtils;
 import net.hasor.cobble.StringUtils;
 
@@ -32,7 +31,6 @@ import java.io.Writer;
  * @see <a href="https://commons.apache.org/proper/commons-csv/apidocs/index.html">Apache Commons CSV</a>
  */
 public final class CsvTranslators {
-
     /** Comma character. */
     private static final char   CSV_DELIMITER         = ',';
     /** Quote character. */
@@ -52,7 +50,6 @@ public final class CsvTranslators {
      * Translator for escaping Comma Separated Values.
      */
     public static class CsvEscaper extends SinglePassTranslator {
-
         @Override
         void translateWhole(final CharSequence input, final Writer out) throws IOException {
             final String inputSting = input.toString();
@@ -71,7 +68,6 @@ public final class CsvTranslators {
      * Translator for unescaping escaped Comma Separated Value entries.
      */
     public static class CsvUnescaper extends SinglePassTranslator {
-
         @Override
         void translateWhole(final CharSequence input, final Writer out) throws IOException {
             // is input not quoted?

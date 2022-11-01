@@ -694,7 +694,6 @@ public class BeanUtils {
             ((Map) dest).put(property, val);
         }
     }
-
 }
 
 class SimpleProperty implements Property {

@@ -63,7 +63,6 @@ import java.util.*;
  * @see #forType(Type)
  */
 public class ResolvableType implements Serializable {
-
     /**
      * {@code ResolvableType} returned when no value is available. {@code NONE} is used
      * in preference to {@code null} so that multiple method calls can be safely chained.
@@ -71,20 +70,19 @@ public class ResolvableType implements Serializable {
     public static final  ResolvableType                                             NONE              = new ResolvableType(EmptyType.INSTANCE, null, null, 0);
     private static final ResolvableType[]                                           EMPTY_TYPES_ARRAY = new ResolvableType[0];
     private static final ConcurrentReferenceHashMap<ResolvableType, ResolvableType> cache             = new ConcurrentReferenceHashMap<>(256);
-
     /** The underlying Java type being managed. */
-    private final    Type             type;
+    private final        Type                                                       type;
     /** Optional provider for the type. */
-    private final    TypeProvider     typeProvider;
+    private final        TypeProvider                                               typeProvider;
     /** The {@code VariableResolver} to use or {@code null} if no resolver is available. */
-    private final    VariableResolver variableResolver;
+    private final        VariableResolver                                           variableResolver;
     /** The component type for an array or {@code null} if the type should be deduced. */
-    private final    ResolvableType   componentType;
-    private final    Integer          hash;
-    private          Class<?>         resolved;
-    private volatile ResolvableType   superType;
-    private volatile ResolvableType[] interfaces;
-    private volatile ResolvableType[] generics;
+    private final        ResolvableType                                             componentType;
+    private final        Integer                                                    hash;
+    private              Class<?>                                                   resolved;
+    private volatile     ResolvableType                                             superType;
+    private volatile     ResolvableType[]                                           interfaces;
+    private volatile     ResolvableType[]                                           generics;
 
     /**
      * Private constructor used to create a new {@link ResolvableType} for cache key purposes,
@@ -622,7 +620,6 @@ public class ResolvableType implements Serializable {
      * @see #getGeneric(int...)
      * @see #resolve()
      */
-
     public Class<?> resolveGeneric(int... indexes) {
         return getGeneric(indexes).resolve();
     }
@@ -640,7 +637,6 @@ public class ResolvableType implements Serializable {
      * @see #resolveGeneric(int...)
      * @see #resolveGenerics()
      */
-
     public Class<?> resolve() {
         return this.resolved;
     }
@@ -1241,7 +1237,6 @@ public class ResolvableType implements Serializable {
 
     /** Strategy interface used to resolve {@link TypeVariable TypeVariables}. */
     interface VariableResolver extends Serializable {
-
         /**
          * Return the source of the resolver (used for hashCode and equals).
          */
@@ -1252,7 +1247,6 @@ public class ResolvableType implements Serializable {
          * @param variable the variable to resolve
          * @return the resolved variable, or {@code null} if not found
          */
-
         ResolvableType resolveVariable(TypeVariable<?> variable);
     }
 
@@ -1418,7 +1412,6 @@ public class ResolvableType implements Serializable {
          * @param type the source type
          * @return a {@link WildcardBounds} instance or {@code null}
          */
-
         public static WildcardBounds get(ResolvableType type) {
             ResolvableType resolveToWildcard = type;
             while (!(resolveToWildcard.getType() instanceof WildcardType)) {
@@ -1455,5 +1448,4 @@ public class ResolvableType implements Serializable {
             return INSTANCE;
         }
     }
-
 }

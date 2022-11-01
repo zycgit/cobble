@@ -15,7 +15,6 @@
  */
 
 package net.hasor.cobble.reflect.resolvable;
-
 import net.hasor.cobble.ClassUtils;
 
 import java.lang.annotation.Annotation;
@@ -42,7 +41,6 @@ import java.util.Optional;
  * @since 2.0
  */
 class MethodParameter {
-
     private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
     private final        Executable   executable;
     private final        int          parameterIndex;
@@ -422,5 +420,4 @@ class MethodParameter {
         }
         return parameterIndex;
     }
-
 }

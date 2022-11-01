@@ -14,7 +14,6 @@
  * under the License.
  */
 package net.hasor.cobble.concurrent.timer;
-
 import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit;
  * Schedules {@link TimerTask}s for one-time future execution in a background thread.
  */
 public interface Timer {
-
     /**
      * Schedules the specified {@link TimerTask} for one-time execution after
      * the specified delay.

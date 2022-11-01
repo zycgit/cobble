@@ -46,7 +46,6 @@ import java.util.Objects;
  * @since 4.0
  */
 class SerializableTypeWrapper {
-
     // See https://github.com/oracle/graal/blob/master/sdk/src/org.graalvm.nativeimage/src/org/graalvm/nativeimage/ImageInfo.java
     private static final boolean imageCode = (System.getProperty("org.graalvm.nativeimage.imagecode") != null);
 
@@ -120,7 +119,6 @@ class SerializableTypeWrapper {
      * Additional interface implemented by the type proxy.
      */
     interface SerializableTypeProxy {
-
         /**
          * Return the underlying type provider.
          */
@@ -129,7 +127,6 @@ class SerializableTypeWrapper {
 
     /** A {@link Serializable} interface providing access to a {@link Type}. */
     interface TypeProvider extends Serializable {
-
         /**
          * Return the (possibly non {@link Serializable}) {@link Type}.
          */
@@ -150,7 +147,6 @@ class SerializableTypeWrapper {
      * or {@code Type[]}.
      */
     private static class TypeProxyInvocationHandler implements InvocationHandler, Serializable {
-
         private final TypeProvider provider;
 
         public TypeProxyInvocationHandler(TypeProvider provider) {
@@ -194,12 +190,9 @@ class SerializableTypeWrapper {
 
     /** {@link TypeProvider} for {@link Type Types} obtained from a {@link Field}. */
     static class FieldTypeProvider implements TypeProvider {
-
-        private final String fieldName;
-
-        private final Class<?> declaringClass;
-
-        private transient Field field;
+        private final     String   fieldName;
+        private final     Class<?> declaringClass;
+        private transient Field    field;
 
         public FieldTypeProvider(Field field) {
             this.fieldName = field.getName();
@@ -229,15 +222,10 @@ class SerializableTypeWrapper {
 
     /** {@link TypeProvider} for {@link Type Types} obtained from a {@link MethodParameter}. */
     static class MethodParameterTypeProvider implements TypeProvider {
-
-        private final String methodName;
-
-        private final Class<?>[] parameterTypes;
-
-        private final Class<?> declaringClass;
-
-        private final int parameterIndex;
-
+        private final     String          methodName;
+        private final     Class<?>[]      parameterTypes;
+        private final     Class<?>        declaringClass;
+        private final     int             parameterIndex;
         private transient MethodParameter methodParameter;
 
         public MethodParameterTypeProvider(MethodParameter methodParameter) {
@@ -322,5 +310,4 @@ class SerializableTypeWrapper {
             this.method = method;
         }
     }
-
 }

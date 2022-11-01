@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-
 /**
  * Translates codepoints to their Unicode escaped value suitable for Java source.
  *
  * @since 1.0
  */
 public class JavaUnicodeEscaper extends UnicodeEscaper {
-
     /**
      * <p>
      * Constructs a {@code JavaUnicodeEscaper} above the specified value (exclusive).
@@ -109,5 +107,4 @@ public class JavaUnicodeEscaper extends UnicodeEscaper {
         final char[] surrogatePair = Character.toChars(codepoint);
         return "\\u" + hex(surrogatePair[0]) + "\\u" + hex(surrogatePair[1]);
     }
-
 }

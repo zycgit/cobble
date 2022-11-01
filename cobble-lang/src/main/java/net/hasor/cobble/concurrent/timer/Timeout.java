@@ -14,12 +14,10 @@
  * under the License.
  */
 package net.hasor.cobble.concurrent.timer;
-
 /**
  * A handle associated with a {@link TimerTask} that is returned by a {@link Timer}.
  */
 public interface Timeout {
-
     /**
      * Returns the {@link Timer} that created this handle.
      */

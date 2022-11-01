@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -31,33 +30,31 @@ import java.util.Objects;
  * @since 3.0
  */
 public class Range<T> implements Serializable {
-
     /**
      * Serialization version.
      * @see Serializable
      */
-    private static final long serialVersionUID = 1L;
-
+    private static final long          serialVersionUID = 1L;
     /**
      * The ordering scheme used in this range.
      */
-    private final     Comparator<T> comparator;
+    private final        Comparator<T> comparator;
     /**
      * The minimum value in this range (inclusive).
      */
-    private final     T             minimum;
+    private final        T             minimum;
     /**
      * The maximum value in this range (inclusive).
      */
-    private final     T             maximum;
+    private final        T             maximum;
     /**
      * Cached output hashCode (class is immutable).
      */
-    private transient int           hashCode;
+    private transient    int           hashCode;
     /**
      * Cached output toString (class is immutable).
      */
-    private transient String        toString;
+    private transient    String        toString;
 
     /**
      * <p>Obtains a range using the specified element as both the minimum
@@ -476,5 +473,4 @@ public class Range<T> implements Serializable {
             return ((Comparable) obj1).compareTo(obj2);
         }
     }
-
 }
