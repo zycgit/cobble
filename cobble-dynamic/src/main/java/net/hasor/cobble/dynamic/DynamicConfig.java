@@ -16,7 +16,6 @@
 package net.hasor.cobble.dynamic;
 import net.hasor.cobble.ArrayUtils;
 import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.provider.Provider;
 
@@ -75,12 +74,6 @@ public class DynamicConfig {
             } else {
                 this.implementMap.put(this.superClass, handler);
             }
-        }
-
-        try {
-            this.tryInitAop();
-        } catch (Exception e) {
-            throw ExceptionUtils.toRuntime(e);
         }
     }
 
@@ -183,7 +176,8 @@ public class DynamicConfig {
         return Collections.unmodifiableMap(this.interceptorMethods);
     }
 
-    private void tryInitAop() throws ReflectiveOperationException {
+    /** 加载 superClass 类上的 @Aop 注解 */
+    public void loadAnnotation() throws ReflectiveOperationException {
         // class
         Set<Class<? extends MethodInterceptor>> classLevels = extractAopType(this.superClass);
         for (Class<? extends MethodInterceptor> interceptorType : classLevels) {

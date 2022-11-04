@@ -27,10 +27,10 @@ import java.util.Map;
 
 public class ProxyTest {
     @Test
-    public void aopTest1() throws Exception {
+    public void aopTest1() {
         PropertyBean propertyBean = new PropertyBean();
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
-        PropertyBean instance = Proxy.newEnhanceInstance(Thread.currentThread().getContextClassLoader(), propertyBean, t -> true, aopInterceptor);
+        PropertyBean instance = Proxy.newProxyInstance(propertyBean, t -> true, aopInterceptor);
 
         assert Proxy.isProxyObject(instance);
         assert Proxy.isProxyClass(instance.getClass());
@@ -120,7 +120,7 @@ public class ProxyTest {
         config.setDebugOutputDir(new File("target/proxy_" + System.currentTimeMillis()));
         config.getDebugOutputDir().deleteOnExit();
 
-        Class<?> instance = Proxy.newEnhanceClass(Thread.currentThread().getContextClassLoader(), config);
+        Class<?> instance = Proxy.buildProxyClass(Thread.currentThread().getContextClassLoader(), config);
         List list = (List) instance.newInstance();
         list.add("abc");
         list.add("bcd");
@@ -131,7 +131,7 @@ public class ProxyTest {
     }
 
     @Test
-    public void jdkProxyStyle1() throws Exception {
+    public void jdkProxyStyle1() {
         final List<Object> data = new ArrayList<>();
 
         List list = (List) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] { List.class }, (proxy, method, args) -> {
@@ -147,7 +147,7 @@ public class ProxyTest {
     }
 
     @Test
-    public void jdkProxyStyle2() throws Exception {
+    public void jdkProxyStyle2() {
         final List<Object> data = new ArrayList<>();
         data.add("abc");
         data.add("bcd");

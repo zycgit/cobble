@@ -99,6 +99,11 @@ public class Matchers {
         return anyClassInclude(checkTypes).negate();
     }
 
+    /** 属于接口的任意一个方法 */
+    public static Predicate<Method> anyMethod(Class<?> face) {
+        return m -> m.getDeclaringClass() == face;
+    }
+
     /** 匹配方法 */
     private static class MethodOf implements Predicate<Method> {
         private final MatchTypeEnum matchTypeEnum;

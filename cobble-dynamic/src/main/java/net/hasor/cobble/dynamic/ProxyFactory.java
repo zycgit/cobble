@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import java.lang.reflect.InvocationTargetException;
-
 /**
  * @version : 2020-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface ProxyFactory<T> {
-    T apply(T original) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+    T apply(T original) throws ReflectiveOperationException;
 }
