@@ -191,7 +191,7 @@ public class ArrayByteBufTest {
 
     @Test
     public void extendTest01() throws NoSuchAlgorithmException {
-        ArrayByteBuf byteBuf = (ArrayByteBuf) ByteBufAllocator.DEFAULT.arrayBuffer(256, 512);
+        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.arrayBuffer(256, 512);
         byte[] array1 = byteBuf.array();
 
         byteBuf.writeBytes(RandomUtils.nextBytes(array1.length));
@@ -210,7 +210,7 @@ public class ArrayByteBufTest {
 
     @Test
     public void freeTest01() {
-        ArrayByteBuf byteBuf = (ArrayByteBuf) ByteBufAllocator.DEFAULT.arrayBuffer();
+        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.arrayBuffer();
         byteBuf.free();
         assert byteBuf.array() == null;
 
@@ -224,10 +224,10 @@ public class ArrayByteBufTest {
 
     @Test
     public void copyTest01() throws NoSuchAlgorithmException {
-        ArrayByteBuf byteBuf1 = (ArrayByteBuf) ByteBufAllocator.DEFAULT.arrayBuffer();
+        ByteBuf byteBuf1 = ByteBufAllocator.DEFAULT.arrayBuffer();
         byteBuf1.writeBytes(RandomUtils.nextBytes(byteBuf1.capacity()));
 
-        ArrayByteBuf byteBuf2 = byteBuf1.copy();
+        ByteBuf byteBuf2 = byteBuf1.copy();
 
         assert byteBuf1.array() != byteBuf2.array();
 
