@@ -15,7 +15,7 @@
  */
 package net.hasor.cobble.dynamic;
 import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.supplier.Provider;
+import net.hasor.cobble.provider.Provider;
 import org.junit.Test;
 
 public class PropertyTest {

@@ -145,4 +145,31 @@ public final class SystemUtils {
         // Check for root and toor as some BSDs have a toor user that is basically the same as root.
         return "root".equals(username) || "toor".equals(username);
     }
+
+    //--------------------------------------------------------------------
+    private static final int JAVA_VERSION = javaVersion0();
+
+    public static int getJavaVersion() {
+        return JAVA_VERSION;
+    }
+
+    private static int javaVersion0() {
+        if (isAndroid0()) {
+            return 6;
+        }
+
+        String javaSpecVersion = getSystemProperty("java.specification.version", "1.6");
+        final String[] components = javaSpecVersion.split("\\.");
+        final int[] version = new int[components.length];
+        for (int i = 0; i < components.length; i++) {
+            version[i] = Integer.parseInt(components[i]);
+        }
+
+        if (version[0] == 1) {
+            assert version[1] >= 6;
+            return version[1];
+        } else {
+            return version[0];
+        }
+    }
 }

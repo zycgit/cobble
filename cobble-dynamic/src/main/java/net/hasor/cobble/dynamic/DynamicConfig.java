@@ -18,7 +18,7 @@ import net.hasor.cobble.ArrayUtils;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.supplier.Provider;
+import net.hasor.cobble.provider.Provider;
 
 import java.io.File;
 import java.lang.annotation.Annotation;

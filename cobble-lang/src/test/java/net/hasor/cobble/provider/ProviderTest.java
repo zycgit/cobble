@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.provider;
-import net.hasor.cobble.supplier.ClassLoaderSingleProvider;
-import net.hasor.cobble.supplier.InstanceProvider;
-import net.hasor.cobble.supplier.SingleProvider;
-import net.hasor.cobble.supplier.ThreadSingleProvider;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -29,22 +25,22 @@ import java.util.function.Supplier;
 public class ProviderTest {
     @Test
     public void providerTest1() {
-        Supplier<List> ofList = InstanceProvider.of(new ArrayList());
-        ClassLoaderSingleProvider<List> provider = new ClassLoaderSingleProvider<>(ofList);
+        Supplier<List> ofList = Provider.of(new ArrayList());
+        LoaderSingleProvider<List> provider = new LoaderSingleProvider<>(ofList);
         provider.toString();
         //
         assert provider.get() != null;
         assert provider.get() == provider.get();
         //
         ArrayList obj = new ArrayList();
-        Supplier<ArrayList> ofListWrap = InstanceProvider.wrap(obj);
+        Supplier<ArrayList> ofListWrap = Provider.wrap(obj);
         assert ofListWrap.get() == obj;
     }
 
     @Test
     public void providerTest2() {
         //
-        Supplier<List> listProvider = InstanceProvider.of(new ArrayList());
+        Supplier<List> listProvider = Provider.of(new ArrayList());
         SingleProvider<List> singleProvider = new SingleProvider<>(listProvider);
         singleProvider.toString();
         //
