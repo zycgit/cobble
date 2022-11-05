@@ -19,12 +19,12 @@ import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
@@ -221,17 +221,18 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                 continue;
             }
 
-            String resourceName = fileItem.getAbsolutePath().substring(contextDir.getAbsolutePath().length() + 1);
-            if (!dirTestFound(new File(resourceName), testDir)) {
+            if (!dirTestFound(fileItem, testDir)) {
                 continue;
             }
             InputStreamGet inputStream = () -> {
                 if (fileItem.canRead()) {
-                    return new FileInputStream(fileItem);
+                    return Files.newInputStream(fileItem.toPath());
                 } else {
                     throw new IOException("file cannot be read :" + fileItem);
                 }
             };
+
+            String resourceName = fileItem.getAbsolutePath().substring(contextDir.getAbsolutePath().length() + 1);
             T res = scanner.found(new ScanEvent(resourceName, fileItem.length(), fileItem.toURI().toURL(), inputStream));
             if (res != null) {
                 result.add(res);

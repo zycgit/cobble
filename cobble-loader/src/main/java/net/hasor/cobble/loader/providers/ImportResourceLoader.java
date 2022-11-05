@@ -25,14 +25,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 允许将 ResourceLoader 的中的一部分资源设置为 '可见'，并将不同的 ResourceLoader 之间 '可见' 部分汇聚为一个新的 ResourceLoader。
- *
  * --
  * -- ExportResourceLoader 强调的是对外部分可见、ImportResourceLoader 强调的是按需汇聚。
  * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
  */
-public class ImportResourceLoader extends AbstractResourceLoader implements MultiStrategy {
-    private final Map<String, List<LoaderWrap>> packageLoaders = new ConcurrentHashMap<>();
+public class ImportResourceLoader extends AbstractResourceLoader implements ClassLoaderStrategy {
+    private final Map<String, List<LoaderWrap>> packageLoaders;
     private final MultiResourceLoader           mergeResourceLoader;
     private final int                           classLoadMode;
 
@@ -42,12 +41,13 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Mult
 
     public ImportResourceLoader(int mode, ClassLoader parent) {
         super(parent);
+        this.packageLoaders = new ConcurrentHashMap<>();
         this.classLoadMode = mode;
-        this.mergeResourceLoader = new MultiResourceLoader(MERGE_MODE, parent);
+        this.mergeResourceLoader = new MultiResourceLoader(MERGE, parent);
     }
 
     protected ResourceLoader loaderForClassLoader() {
-        if (classLoadMode == ISOLATION_MODE) {
+        if (classLoadMode == ISOLATION) {
             return this;
         } else {
             return this.mergeResourceLoader;
@@ -55,7 +55,7 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Mult
     }
 
     public Class<?> getClass(String className) throws ClassNotFoundException {
-        if (classLoadMode == ISOLATION_MODE) {
+        if (classLoadMode == ISOLATION) {
             return this.loadClassByIsolation(className);
         } else {
             return this.loadClassByMerge(className);

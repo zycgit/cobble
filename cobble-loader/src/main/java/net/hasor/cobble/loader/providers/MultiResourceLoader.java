@@ -29,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-public class MultiResourceLoader extends AbstractResourceLoader implements MultiStrategy {
+public class MultiResourceLoader extends AbstractResourceLoader implements ClassLoaderStrategy {
     private final List<ResourceLoader> loaders = new CopyOnWriteArrayList<>();
     private final int                  classLoadMode;
 
@@ -58,7 +58,7 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Multi
     }
 
     public Class<?> getClass(String className) throws ClassNotFoundException {
-        if (classLoadMode == ISOLATION_MODE) {
+        if (classLoadMode == ISOLATION) {
             return this.loadClassByIsolation(className);
         } else {
             return this.loadClassByMerge(className);

@@ -23,10 +23,10 @@ import java.io.IOException;
  */
 @FunctionalInterface
 public interface ClassMatcher {
-    public boolean matcher(ClassMatcherContext context) throws IOException;
+    boolean matcher(ClassMatcherContext context) throws IOException;
 
     /** 类信息结构 */
-    public static class ClassInfo {
+    class ClassInfo {
         public String   className  = null;
         public String   superName  = null;
         public String[] interFaces = new String[0];
@@ -34,7 +34,7 @@ public interface ClassMatcher {
         public String[] annos      = new String[0];
     }
 
-    public static abstract class ClassMatcherContext {
+    abstract class ClassMatcherContext {
         private final ClassInfo classInfo;
 
         public ClassMatcherContext(ClassInfo classInfo) {

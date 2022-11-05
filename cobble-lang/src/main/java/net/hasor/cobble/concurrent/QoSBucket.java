@@ -114,9 +114,6 @@ public class QoSBucket {
         if (rate <= 0 || peak <= 0 || timeWindow < 1) {
             return false;
         }
-        if (peak < (rate * timeWindow / 1000F)) {
-            return false;
-        }
-        return true;
+        return !(peak < (rate * timeWindow / 1000F));
     }
 }

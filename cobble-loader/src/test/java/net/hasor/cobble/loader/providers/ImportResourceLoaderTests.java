@@ -28,8 +28,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 
-import static net.hasor.cobble.loader.providers.ImportResourceLoader.ISOLATION_MODE;
-import static net.hasor.cobble.loader.providers.ImportResourceLoader.MERGE_MODE;
+import static net.hasor.cobble.loader.providers.ImportResourceLoader.ISOLATION;
+import static net.hasor.cobble.loader.providers.ImportResourceLoader.MERGE;
 
 /**
  * Tests for {@link JarFile}.
@@ -42,7 +42,7 @@ public class ImportResourceLoaderTests {
         String file1 = ResourcesUtils.getResource("/dir/basic.jar").getFile();
         String file2 = ResourcesUtils.getResource("/dir/app-1.jar").getFile();
         String file3 = ResourcesUtils.getResource("/dir/app-2.zip").getFile();
-        this.loader = new ImportResourceLoader(ISOLATION_MODE);
+        this.loader = new ImportResourceLoader(ISOLATION);
         this.loader.importResources(0, new PathResourceLoader(new File(file1)));
         this.loader.importResources(1, "app/onlyjar", new PathResourceLoader(new File(file2)));
         this.loader.importResources(2, "app/onlyzip", new PathResourceLoader(new File(file3)));
@@ -50,7 +50,7 @@ public class ImportResourceLoaderTests {
 
     @Test
     public void importLoaderTest1() throws Exception {
-        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION);
         JarResourceLoader jar1 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/basic.jar").getFile()));
         JarResourceLoader jar2 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-1.jar").getFile()));
         JarResourceLoader jar3 = new JarResourceLoader(new File(ResourcesUtils.getResource("/jars/app-2.zip").getFile()));
@@ -212,7 +212,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
 
@@ -229,7 +229,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
 
@@ -247,7 +247,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("Application.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
@@ -268,7 +268,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION_MODE);
+        ImportResourceLoader loader = new ImportResourceLoader(ISOLATION);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
         loader.importResources("Application.class", loader2);
@@ -289,7 +289,7 @@ public class ImportResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        ImportResourceLoader loader = new ImportResourceLoader(MERGE_MODE);
+        ImportResourceLoader loader = new ImportResourceLoader(MERGE);
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
         loader.importResources("Application.class", loader2);

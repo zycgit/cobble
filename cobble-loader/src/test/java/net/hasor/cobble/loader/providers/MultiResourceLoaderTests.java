@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static net.hasor.cobble.loader.providers.MultiStrategy.ISOLATION_MODE;
-import static net.hasor.cobble.loader.providers.MultiStrategy.MERGE_MODE;
+import static net.hasor.cobble.loader.providers.ClassLoaderStrategy.ISOLATION;
+import static net.hasor.cobble.loader.providers.ClassLoaderStrategy.MERGE;
 
 /**
  * Tests for {@link JarFile}.
@@ -41,7 +41,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         assert loader.exist("app/FooImpl.class");
         assert loader.exist("app/FooImpl.java");
@@ -56,7 +56,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
         assert loader.getResource("app/FooImpl.java").toString().endsWith("jars/app-1.jar!/app/FooImpl.java");
@@ -70,7 +70,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader2, loader1);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader2, loader1);
 
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-2.zip!/app/FooImpl.class");
         assert loader.getResource("app/FooImpl.java").toString().endsWith("jars/app-2.zip!/app/FooImpl.java");
@@ -89,7 +89,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.java")));
@@ -109,7 +109,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader2, loader1);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader2, loader1);
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.java")));
@@ -124,7 +124,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         assert loader.getResources("app/FooImpl.class").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
         assert loader.getResources("app/FooImpl.java").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.java");
@@ -151,7 +151,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         List<InputStream> streams1 = loader.getResourcesAsStream("app/FooImpl.class");
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(streams1.get(0)));
@@ -179,7 +179,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/FooImpl.class").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/FooImpl.java").openStream()));
@@ -198,7 +198,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader2, loader1);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader2, loader1);
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/FooImpl.class").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/FooImpl.java").openStream()));
@@ -224,7 +224,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader1, loader2);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader1, loader2);
 
         InputStream inputStream = loader.scanOneResource(scanner);
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
@@ -254,7 +254,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader2, loader1);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader2, loader1);
 
         InputStream inputStream = loader.scanOneResource(scanner);
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(inputStream));
@@ -272,7 +272,7 @@ public class MultiResourceLoaderTests {
         String file2 = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader1 = new JarResourceLoader(new File(file1));
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE, loader2, loader1);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION, loader2, loader1);
 
         assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
         assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
@@ -286,7 +286,7 @@ public class MultiResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION_MODE);
+        MultiResourceLoader loader = new MultiResourceLoader(ISOLATION);
         loader.addLoader(loader1);
         loader.addLoader(loader2);
 
@@ -311,7 +311,7 @@ public class MultiResourceLoaderTests {
         String dir2 = ResourcesUtils.getResource("/dir/isol/app-2").getFile();
         PathResourceLoader loader2 = new PathResourceLoader(new File(dir2));
 
-        MultiResourceLoader loader = new MultiResourceLoader(MERGE_MODE);
+        MultiResourceLoader loader = new MultiResourceLoader(MERGE);
         loader.addLoader(loader1);
         loader.addLoader(loader2);
 

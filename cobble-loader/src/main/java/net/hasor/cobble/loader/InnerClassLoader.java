@@ -18,6 +18,7 @@ import net.hasor.cobble.loader.ResourceLoader.MatchType;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -184,7 +185,7 @@ class InnerClassLoader extends ClassLoader {
 
         chmod777(fileTmp); // Unix - allow temp file deletion by any user
         //
-        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileTmp)); InputStream in = inf.getStream()) {
+        try (BufferedOutputStream out = new BufferedOutputStream(Files.newOutputStream(fileTmp.toPath())); InputStream in = inf.getStream()) {
             ioCopy(in, out);
         }
         return fileTmp;

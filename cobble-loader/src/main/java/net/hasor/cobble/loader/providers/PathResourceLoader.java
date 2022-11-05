@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-
 import net.hasor.cobble.loader.AbstractResourceLoader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -81,7 +80,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
         List<File> resourcePaths = formatResourcePath(resource);
         for (File file : resourcePaths) {
             if (file.exists() && file.isFile()) {
-                return new FileInputStream(file);
+                return Files.newInputStream(file.toPath());
             }
         }
         return null;
@@ -105,7 +104,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
         List<File> resourcePaths = formatResourcePath(resource);
         for (File file : resourcePaths) {
             if (file.exists() && file.isFile()) {
-                result.add(new FileInputStream(file));
+                result.add(Files.newInputStream(file.toPath()));
             }
         }
         return result;
@@ -160,7 +159,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
             }
             InputStreamGet inputStream = () -> {
                 if (fileItem.canRead()) {
-                    return new FileInputStream(fileItem);
+                    return Files.newInputStream(fileItem.toPath());
                 } else {
                     throw new IOException("file cannot be read :" + fileItem);
                 }
