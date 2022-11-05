@@ -40,7 +40,7 @@ public class ClassResourceLoaderTests {
         ClassPathResourceLoader loader = new ClassPathResourceLoader();
         assert loader.exist("dir/app-1.jar/app/FooImpl.class");
         assert loader.exist("dir/app-1.jar/app/FooImpl.java");
-        assert loader.exist("dir/app-1.jar/META-INF/MANIFEST.MF");
+        assert loader.exist("dir/app-1.jar/META-INF/jar.mf");
         assert loader.exist("dir/app-1.jar/META-INF/ReadMe.txt");
         assert !loader.exist("dir/app-1.jar/abc/abc.text");
     }

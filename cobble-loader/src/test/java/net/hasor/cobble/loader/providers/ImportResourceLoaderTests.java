@@ -86,7 +86,7 @@ public class ImportResourceLoaderTests {
         assert loader.exist("app/onlybasic/FooOnlyBasic.java");
         assert loader.exist("app/onlyjar/FooOnlyJar.java");
         assert loader.exist("app/onlyzip/FooOnlyZip.java");
-        assert loader.exist("META-INF/MANIFEST.MF");
+        assert loader.exist("META-INF/jar.mf");
         assert loader.exist("META-INF/ReadMe.txt");
         assert !loader.exist("abc/abc.text");
     }
@@ -97,7 +97,7 @@ public class ImportResourceLoaderTests {
         assert loader.getResource("app/onlybasic/FooOnlyBasic.java").toString().endsWith("dir/basic.jar/app/onlybasic/FooOnlyBasic.java");
         assert loader.getResource("app/onlyjar/FooOnlyJar.java").toString().endsWith("dir/app-1.jar/app/onlyjar/FooOnlyJar.java");
         assert loader.getResource("app/onlyzip/FooOnlyZip.java").toString().endsWith("dir/app-2.zip/app/onlyzip/FooOnlyZip.java");
-        assert loader.getResource("META-INF/MANIFEST.MF").toString().endsWith("dir/basic.jar/META-INF/MANIFEST.MF");
+        assert loader.getResource("META-INF/jar.mf").toString().endsWith("dir/basic.jar/META-INF/jar.mf");
         assert loader.getResource("META-INF/ReadMe.txt").toString().endsWith("dir/basic.jar/META-INF/ReadMe.txt");
     }
 
@@ -106,13 +106,13 @@ public class ImportResourceLoaderTests {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/app/onlybasic/FooOnlyBasic.java"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-1.jar/app/onlyjar/FooOnlyJar.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-2.zip/app/onlyzip/FooOnlyZip.java"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/jar.mf"));
         byte[] byteDat5 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/ReadMe.txt"));
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/onlybasic/FooOnlyBasic.java")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/onlyjar/FooOnlyJar.java")));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourceAsStream("app/onlyzip/FooOnlyZip.java")));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/MANIFEST.MF")));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/jar.mf")));
         assert Objects.deepEquals(byteDat5, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/ReadMe.txt")));
     }
 
@@ -122,10 +122,10 @@ public class ImportResourceLoaderTests {
         assert loader.getResources("app/onlybasic/FooOnlyBasic.java").get(0).toString().endsWith("dir/basic.jar/app/onlybasic/FooOnlyBasic.java");
         assert loader.getResources("app/onlyjar/FooOnlyJar.java").get(0).toString().endsWith("dir/app-1.jar/app/onlyjar/FooOnlyJar.java");
         assert loader.getResources("app/onlyzip/FooOnlyZip.java").get(0).toString().endsWith("dir/app-2.zip/app/onlyzip/FooOnlyZip.java");
-        assert loader.getResources("META-INF/MANIFEST.MF").get(0).toString().endsWith("dir/basic.jar/META-INF/MANIFEST.MF");
+        assert loader.getResources("META-INF/jar.mf").get(0).toString().endsWith("dir/basic.jar/META-INF/jar.mf");
         assert loader.getResources("META-INF/ReadMe.txt").get(0).toString().endsWith("dir/basic.jar/META-INF/ReadMe.txt");
 
-        assert loader.getResources("META-INF/MANIFEST.MF").size() == 1;
+        assert loader.getResources("META-INF/jar.mf").size() == 1;
         assert loader.getResources("META-INF/ReadMe.txt").size() == 1;
     }
 
@@ -134,13 +134,13 @@ public class ImportResourceLoaderTests {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/app/onlybasic/FooOnlyBasic.java"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-1.jar/app/onlyjar/FooOnlyJar.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-2.zip/app/onlyzip/FooOnlyZip.java"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/jar.mf"));
         byte[] byteDat5 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/ReadMe.txt"));
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourcesAsStream("app/onlybasic/FooOnlyBasic.java").get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourcesAsStream("app/onlyjar/FooOnlyJar.java").get(0)));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourcesAsStream("app/onlyzip/FooOnlyZip.java").get(0)));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/MANIFEST.MF").get(0)));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/jar.mf").get(0)));
         assert Objects.deepEquals(byteDat5, IOUtils.toByteArray(loader.getResourcesAsStream("META-INF/ReadMe.txt").get(0)));
     }
 
@@ -149,13 +149,13 @@ public class ImportResourceLoaderTests {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/app/onlybasic/FooOnlyBasic.java"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-1.jar/app/onlyjar/FooOnlyJar.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-2.zip/app/onlyzip/FooOnlyZip.java"));
-        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/jar.mf"));
         byte[] byteDat5 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/basic.jar/META-INF/ReadMe.txt"));
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/onlybasic/FooOnlyBasic.java").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/onlyjar/FooOnlyJar.java").openStream()));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResource("app/onlyzip/FooOnlyZip.java").openStream()));
-        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/MANIFEST.MF").openStream()));
+        assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/jar.mf").openStream()));
         assert Objects.deepEquals(byteDat5, IOUtils.toByteArray(loader.getResource("META-INF/ReadMe.txt").openStream()));
     }
 

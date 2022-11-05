@@ -45,7 +45,7 @@ public class MultiResourceLoaderTests {
 
         assert loader.exist("app/FooImpl.class");
         assert loader.exist("app/FooImpl.java");
-        assert loader.exist("META-INF/MANIFEST.MF");
+        assert loader.exist("META-INF/jar.mf");
         assert loader.exist("META-INF/ReadMe.txt");
         assert !loader.exist("abc/abc.text");
     }
@@ -60,7 +60,7 @@ public class MultiResourceLoaderTests {
 
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
         assert loader.getResource("app/FooImpl.java").toString().endsWith("jars/app-1.jar!/app/FooImpl.java");
-        assert loader.getResource("META-INF/MANIFEST.MF").toString().endsWith("jars/app-1.jar!/META-INF/MANIFEST.MF");
+        assert loader.getResource("META-INF/jar.mf").toString().endsWith("jars/app-1.jar!/META-INF/jar.mf");
         assert loader.getResource("META-INF/ReadMe.txt").toString().endsWith("jars/app-1.jar!/META-INF/ReadMe.txt");
     }
 
@@ -74,7 +74,7 @@ public class MultiResourceLoaderTests {
 
         assert loader.getResource("app/FooImpl.class").toString().endsWith("jars/app-2.zip!/app/FooImpl.class");
         assert loader.getResource("app/FooImpl.java").toString().endsWith("jars/app-2.zip!/app/FooImpl.java");
-        assert loader.getResource("META-INF/MANIFEST.MF").toString().endsWith("jars/app-1.jar!/META-INF/MANIFEST.MF");
+        assert loader.getResource("META-INF/jar.mf").toString().endsWith("jars/app-1.jar!/META-INF/jar.mf");
         assert loader.getResource("META-INF/ReadMe.txt").toString().endsWith("jars/app-2.zip!/META-INF/ReadMe.txt");
     }
 
@@ -82,7 +82,7 @@ public class MultiResourceLoaderTests {
     public void multiLoaderTest3() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.java"));
-        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/jar.mf"));
         byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file1 = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
@@ -93,7 +93,7 @@ public class MultiResourceLoaderTests {
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.java")));
-        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/MANIFEST.MF")));
+        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/jar.mf")));
         assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/ReadMe.txt")));
         assert loader.getResourceAsStream("abc/abc.text") == null;
     }
@@ -102,7 +102,7 @@ public class MultiResourceLoaderTests {
     public void multiLoaderTest3_1() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.java"));
-        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/jar.mf"));
         byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/ReadMe.txt"));
 
         String file1 = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
@@ -113,7 +113,7 @@ public class MultiResourceLoaderTests {
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/FooImpl.java")));
-        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/MANIFEST.MF")));
+        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/jar.mf")));
         assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResourceAsStream("META-INF/ReadMe.txt")));
         assert loader.getResourceAsStream("abc/abc.text") == null;
     }
@@ -128,11 +128,11 @@ public class MultiResourceLoaderTests {
 
         assert loader.getResources("app/FooImpl.class").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.class");
         assert loader.getResources("app/FooImpl.java").get(0).toString().endsWith("jars/app-1.jar!/app/FooImpl.java");
-        assert loader.getResources("META-INF/MANIFEST.MF").get(0).toString().endsWith("jars/app-1.jar!/META-INF/MANIFEST.MF");
+        assert loader.getResources("META-INF/jar.mf").get(0).toString().endsWith("jars/app-1.jar!/META-INF/jar.mf");
         assert loader.getResources("META-INF/ReadMe.txt").get(0).toString().endsWith("jars/app-1.jar!/META-INF/ReadMe.txt");
         assert loader.getResources("app/FooImpl.class").get(1).toString().endsWith("jars/app-2.zip!/app/FooImpl.class");
         assert loader.getResources("app/FooImpl.java").get(1).toString().endsWith("jars/app-2.zip!/app/FooImpl.java");
-        assert loader.getResources("META-INF/MANIFEST.MF").size() == 1;
+        assert loader.getResources("META-INF/jar.mf").size() == 1;
         assert loader.getResources("META-INF/ReadMe.txt").get(1).toString().endsWith("jars/app-2.zip!/META-INF/ReadMe.txt");
     }
 
@@ -140,7 +140,7 @@ public class MultiResourceLoaderTests {
     public void multiLoaderTest5() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.java"));
-        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/jar.mf"));
         byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         byte[] byteDat5 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.class"));
@@ -163,7 +163,7 @@ public class MultiResourceLoaderTests {
         assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(streams3.get(0)));
         assert Objects.deepEquals(byteDat8, IOUtils.toByteArray(streams3.get(1)));
 
-        List<InputStream> streams4 = loader.getResourcesAsStream("META-INF/MANIFEST.MF");
+        List<InputStream> streams4 = loader.getResourcesAsStream("META-INF/jar.mf");
         assert streams4.size() == 1;
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(streams4.get(0)));
     }
@@ -172,7 +172,7 @@ public class MultiResourceLoaderTests {
     public void multiLoaderTest6() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/app/FooImpl.java"));
-        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/jar.mf"));
         byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/ReadMe.txt"));
 
         String file1 = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
@@ -183,7 +183,7 @@ public class MultiResourceLoaderTests {
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/FooImpl.class").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/FooImpl.java").openStream()));
-        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResource("META-INF/MANIFEST.MF").openStream()));
+        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResource("META-INF/jar.mf").openStream()));
         assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/ReadMe.txt").openStream()));
     }
 
@@ -191,7 +191,7 @@ public class MultiResourceLoaderTests {
     public void multiLoaderTest6_1() throws Exception {
         byte[] byteDat1 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.class"));
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/FooImpl.java"));
-        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/MANIFEST.MF"));
+        byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-1.jar/META-INF/jar.mf"));
         byte[] byteDat4 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/META-INF/ReadMe.txt"));
 
         String file1 = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
@@ -202,7 +202,7 @@ public class MultiResourceLoaderTests {
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResource("app/FooImpl.class").openStream()));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResource("app/FooImpl.java").openStream()));
-        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResource("META-INF/MANIFEST.MF").openStream()));
+        assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(loader.getResource("META-INF/jar.mf").openStream()));
         assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(loader.getResource("META-INF/ReadMe.txt").openStream()));
     }
 
