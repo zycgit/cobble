@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -66,10 +66,10 @@ public interface ResourceLoader {
     class ScanEvent {
         private final String         name;
         private final long           size;
-        private final URL            resource;
+        private final URI            resource;
         private final InputStreamGet streamGeter;
 
-        public ScanEvent(String name, long size, URL resource, InputStreamGet streamGetter) {
+        public ScanEvent(String name, long size, URI resource, InputStreamGet streamGetter) {
             this.name = name;
             this.size = size;
             this.resource = resource;
@@ -84,7 +84,7 @@ public interface ResourceLoader {
             return this.size;
         }
 
-        public URL getResource() {
+        public URI getResource() {
             return this.resource;
         }
 
@@ -96,7 +96,7 @@ public interface ResourceLoader {
     /** 扫描classpath时找到资源的回调接口方法 */
     interface Scanner<T> {
         /**
-         * 找到资源(返回值为true表示找到预期的资源结束扫描，false表示继续扫描剩下的资源)
+         * 找了一个资源
          * @param event 找到资源事件。
          */
         T found(ScanEvent event) throws IOException;

@@ -15,15 +15,16 @@
  */
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.SystemUtils;
 import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.logging.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.net.*;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
@@ -37,9 +38,10 @@ import java.util.zip.ZipEntry;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClassPathResourceLoader extends AbstractResourceLoader {
-    public static ResourceLoader INSTANCE = new ClassPathResourceLoader();
-    private final ClassLoader    classLoader;
-    private final List<URL>      classpath;
+    private static final Logger         logger   = Logger.getLogger(ClassPathResourceLoader.class);
+    public static        ResourceLoader INSTANCE = new ClassPathResourceLoader();
+    private final        ClassLoader    classLoader;
+    private final        List<URL>      classpath;
 
     public ClassPathResourceLoader() {
         super(Thread.currentThread().getContextClassLoader());
@@ -118,7 +120,8 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
-        Predicate<File>[] testDir = buildPredicate(matchType, scanPaths, File::getPath);
+        Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
+
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
@@ -142,7 +145,8 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
-        Predicate<File>[] testDir = buildPredicate(matchType, scanPaths, File::getPath);
+        Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
+
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
@@ -175,12 +179,21 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                 continue;
             }
 
-            URL url = new URL("jar:" + content + "!/" + entry.getName());
-            InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
-            T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
-            if (res != null) {
-                result.add(res);
+            try {
+                URI uri = new URL("jar:" + content + "!/" + entry.getName()).toURI();
+                InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
+                T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), uri, inputStream));
+                if (res != null) {
+                    result.add(res);
+                }
+            } catch (URISyntaxException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.warn("scanJarFile :" + e.getMessage(), e);
+                } else {
+                    logger.debug("scanJarFile :" + e.getMessage());
+                }
             }
+
             if (matchOnce && !result.isEmpty()) {
                 return;
             }
@@ -200,7 +213,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    private static <T> void dirScan(List<T> result, File contextDir, File curFile, Predicate<File>[] testDir, Scanner<T> scanner, boolean matchOnce) throws IOException {
+    private static <T> void dirScan(List<T> result, File contextDir, File curFile, Predicate<String>[] testDir, Scanner<T> scanner, boolean matchOnce) throws IOException {
         if (matchOnce && !result.isEmpty()) {
             return;
         }
@@ -221,7 +234,12 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                 continue;
             }
 
-            if (!dirTestFound(fileItem, testDir)) {
+            String resourceName = fileItem.getAbsolutePath().substring(contextDir.getAbsolutePath().length() + 1);
+            if (SystemUtils.isWindows()) {
+                resourceName = StringUtils.replace(resourceName, File.separator, "/");
+            }
+
+            if (!dirTestFound(resourceName, testDir)) {
                 continue;
             }
             InputStreamGet inputStream = () -> {
@@ -232,19 +250,18 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                 }
             };
 
-            String resourceName = fileItem.getAbsolutePath().substring(contextDir.getAbsolutePath().length() + 1);
-            T res = scanner.found(new ScanEvent(resourceName, fileItem.length(), fileItem.toURI().toURL(), inputStream));
+            T res = scanner.found(new ScanEvent(resourceName, fileItem.length(), fileItem.toURI(), inputStream));
             if (res != null) {
                 result.add(res);
             }
         }
     }
 
-    private static boolean dirTestFound(File entry, Predicate<File>[] dirTest) {
+    private static boolean dirTestFound(String entry, Predicate<String>[] dirTest) {
         if (dirTest == null || dirTest.length == 0) {
             return true;
         } else {
-            for (Predicate<File> predicate : dirTest) {
+            for (Predicate<String> predicate : dirTest) {
                 if (predicate.test(entry)) {
                     return true;
                 }

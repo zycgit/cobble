@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.SystemUtils;
 import net.hasor.cobble.loader.AbstractResourceLoader;
 
 import java.io.File;
@@ -121,11 +123,11 @@ public class PathResourceLoader extends AbstractResourceLoader {
         return false;
     }
 
-    protected boolean testFound(File entry, Predicate<File>[] testPredicates) {
+    protected boolean testFound(String entry, Predicate<String>[] testPredicates) {
         if (testPredicates == null || testPredicates.length == 0) {
             return true;
         } else {
-            for (Predicate<File> predicate : testPredicates) {
+            for (Predicate<String> predicate : testPredicates) {
                 if (predicate.test(entry)) {
                     return true;
                 }
@@ -134,7 +136,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    private <T> void scanDirFile(File baseDir, List<T> result, File scanDir, Scanner<T> scanner, Predicate<File>[] scanPaths, boolean matchOnce) throws IOException {
+    private <T> void scanDirFile(File baseDir, List<T> result, File scanDir, Scanner<T> scanner, Predicate<String>[] scanPaths, boolean matchOnce) throws IOException {
         File[] listFiles = scanDir.listFiles();
         if (listFiles == null) {
             return;
@@ -147,8 +149,13 @@ public class PathResourceLoader extends AbstractResourceLoader {
                 // 过滤掉：隐藏和不存在的
                 continue;
             }
+
             String resourceName = fileItem.getAbsolutePath().substring(baseDir.getAbsolutePath().length() + 1);
-            if (!testFound(new File(resourceName), scanPaths)) {
+            if (SystemUtils.isWindows()) {
+                resourceName = StringUtils.replace(resourceName, File.separator, "/");
+            }
+
+            if (!testFound(resourceName, scanPaths)) {
                 // 匹配失败
                 continue;
             }
@@ -164,7 +171,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
                     throw new IOException("file cannot be read :" + fileItem);
                 }
             };
-            T res = scanner.found(new ScanEvent(resourceName, fileItem.length(), fileItem.toURI().toURL(), inputStream));
+            T res = scanner.found(new ScanEvent(resourceName, fileItem.length(), fileItem.toURI(), inputStream));
             if (res != null) {
                 result.add(res);
             }
@@ -174,7 +181,8 @@ public class PathResourceLoader extends AbstractResourceLoader {
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<File>[] tests = buildPredicate(matchType, scanPaths, File::getPath);
+        Predicate<String>[] tests = buildPredicate(matchType, scanPaths, s -> s);
+
         for (File baseDir : this.dirPathList) {
             if (baseDir.exists()) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests, false);
@@ -186,7 +194,8 @@ public class PathResourceLoader extends AbstractResourceLoader {
     @Override
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
-        Predicate<File>[] tests = buildPredicate(matchType, scanPaths, File::getPath);
+        Predicate<String>[] tests = buildPredicate(matchType, scanPaths, s -> s);
+
         for (File baseDir : this.dirPathList) {
             if (baseDir.exists()) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests, true);

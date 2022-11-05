@@ -16,10 +16,13 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.jar.JarFile;
+import net.hasor.cobble.logging.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,8 +39,9 @@ import java.util.zip.ZipEntry;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class JarResourceLoader extends AbstractResourceLoader {
-    private final JarFile       jarFile;
-    private final List<JarFile> nestedJarFile;
+    private static final Logger        logger = Logger.getLogger(JarResourceLoader.class);
+    private final        JarFile       jarFile;
+    private final        List<JarFile> nestedJarFile;
 
     public JarResourceLoader(File file) throws IOException {
         this(null, file, Collections.emptyList());
@@ -179,11 +183,19 @@ public class JarResourceLoader extends AbstractResourceLoader {
                 continue;
             }
 
-            URL url = new URL(jarFile.getUrl(), entry.getName());
-            InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
-            T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), url, inputStream));
-            if (res != null) {
-                result.add(res);
+            try {
+                URI uri = new URL(jarFile.getUrl(), entry.getName()).toURI();
+                InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
+                T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), uri, inputStream));
+                if (res != null) {
+                    result.add(res);
+                }
+            } catch (URISyntaxException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.warn("scanJarFile :" + e.getMessage(), e);
+                } else {
+                    logger.debug("scanJarFile :" + e.getMessage());
+                }
             }
             if (matchOnce && !result.isEmpty()) {
                 return;

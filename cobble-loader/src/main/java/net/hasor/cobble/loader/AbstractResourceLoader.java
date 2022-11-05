@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-
 import java.util.function.Function;
 import java.util.function.Predicate;
 
