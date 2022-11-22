@@ -4,7 +4,7 @@
 
 分为 6 个部分（按字母序）：
 
-- cobble-bytebuf，资源的扫描/加载、加载器编排、类隔离工具框架。
+- cobble-bytebuf，增强的 ByteBuf 工具用于替代 JDK ByteBuf，无需切换读/写模式、缓存扩容零拷贝。
 - cobble-dynamic，基于 ASM 的 Java 动态代理、及类编辑工具。
 - cobble-lang，一些整理工具类和组建。
 - cobble-loader，资源的扫描/加载、加载器编排、类隔离工具框架。
