@@ -24,10 +24,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -48,7 +45,9 @@ public class JarResourceLoader extends AbstractResourceLoader {
     }
 
     public JarResourceLoader(ClassLoader parent, File file) throws IOException {
-        this(parent, file, Collections.emptyList());
+        super(parent);
+        this.jarFile = new JarFile(file);
+        this.nestedJarFile = new ArrayList<>();
     }
 
     public JarResourceLoader(ClassLoader parent, File file, List<String> nestedList) throws IOException {
@@ -59,6 +58,19 @@ public class JarResourceLoader extends AbstractResourceLoader {
             JarEntry jarEntry = this.jarFile.getJarEntry(nestedJar);
             if (jarEntry != null) {
                 this.nestedJarFile.add(this.jarFile.getNestedJarFile(jarEntry));
+            }
+        }
+    }
+
+    public JarResourceLoader(ClassLoader parent, File file, Predicate<JarEntry> nestedPredicate) throws IOException {
+        super(parent);
+        this.jarFile = new JarFile(file);
+        this.nestedJarFile = new ArrayList<>();
+        if (nestedPredicate != null) {
+            for (JarEntry jarEntry : this.jarFile) {
+                if (jarEntry != null && nestedPredicate.test(jarEntry)) {
+                    this.nestedJarFile.add(this.jarFile.getNestedJarFile(jarEntry));
+                }
             }
         }
     }

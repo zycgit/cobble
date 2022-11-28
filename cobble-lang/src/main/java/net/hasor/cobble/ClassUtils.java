@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -1130,9 +1127,20 @@ public class ClassUtils {
         }
         List<URL> resources = new ArrayList<>();
         for (ClassLoader loader : classLoaders) {
-            String loaderClassName = loader.getClass().getName();
+            // jdk
+            try {
+                Enumeration<URL> urlEnumeration = loader.getResources("");
+                while (urlEnumeration.hasMoreElements()) {
+                    URL url = urlEnumeration.nextElement();
+                    if (!resources.contains(url)) {
+                        resources.add(url);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
             if (loader instanceof URLClassLoader) {
-                // before jdk9
+                // before jdk9 special
                 URL[] urLs = ((URLClassLoader) loader).getURLs();
                 if (urLs != null) {
                     for (URL url : urLs) {
@@ -1140,18 +1148,6 @@ public class ClassUtils {
                             resources.add(url);
                         }
                     }
-                }
-            } else if (loaderClassName.startsWith("jdk.internal.loader.ClassLoaders")) {
-                // in new jdk
-                try {
-                    Enumeration<URL> urlEnumeration = loader.getResources("");
-                    while (urlEnumeration.hasMoreElements()) {
-                        URL url = urlEnumeration.nextElement();
-                        if (!resources.contains(url)) {
-                            resources.add(url);
-                        }
-                    }
-                } catch (Exception ignored) {
                 }
             }
         }
