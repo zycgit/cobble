@@ -29,7 +29,7 @@ import java.util.*;
  * @version 2009-10-16
  * @author 赵永春 (zyc@hasor.net)
  */
-class AsmTools implements Opcodes {
+public class AsmTools implements Opcodes {
     /** 根据类型获取其Return指令 */
     public static int getReturn(final String asmType) {
         char t = asmType.charAt(0);

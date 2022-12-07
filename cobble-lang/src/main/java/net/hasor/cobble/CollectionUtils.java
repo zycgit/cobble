@@ -124,6 +124,15 @@ public class CollectionUtils {
         return arrayList;
     }
 
+    public static <T> List<T> asList(T... arrays) {
+        if (arrays == null || arrays.length == 0) {
+            return new ArrayList<>();
+        }
+        ArrayList<T> arrayList = new ArrayList<>();
+        Collections.addAll(arrayList, arrays);
+        return arrayList;
+    }
+
     public static <T> List<T> asList(Iterator<T> iterator) {
         if (iterator == null) {
             return Collections.emptyList();
@@ -134,6 +143,78 @@ public class CollectionUtils {
         }
         return arrayList;
     }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1) {
+        return asMap(key1, val1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2) {
+        return asMap(key1, val1, key2, val2, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3) {
+        return asMap(key1, val1, key2, val2, key3, val3, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4) {
+        return asMap(key1, val1, key2, val2, key3, val3, key4, val4, null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4, K key5, V val5) {
+        return asMap(key1, val1, key2, val2, key3, val3, key4, val4, key5, val5, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4, K key5, V val5, K key6, V val6) {
+        return asMap(key1, val1, key2, val2, key3, val3, key4, val4, key5, val5, key6, val6, null, null, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4, K key5, V val5, K key6, V val6, K key7, V val7) {
+        return asMap(key1, val1, key2, val2, key3, val3, key4, val4, key5, val5, key6, val6, key7, val7, null, null, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4, K key5, V val5, K key6, V val6, K key7, V val7, K key8, V val8) {
+        return asMap(key1, val1, key2, val2, key3, val3, key4, val4, key5, val5, key6, val6, key7, val7, key8, val8, null, null, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4, K key5, V val5, K key6, V val6, K key7, V val7, K key8, V val8, K key9, V val9) {
+        return asMap(key1, val1, key2, val2, key3, val3, key4, val4, key5, val5, key6, val6, key7, val7, key8, val8, key9, val9, null, null);
+    }
+
+    public static <K, V> Map<K, V> asMap(K key1, V val1, K key2, V val2, K key3, V val3, K key4, V val4, K key5, V val5, K key6, V val6, K key7, V val7, K key8, V val8, K key9, V val9, K key0, V val0) {
+        Map<K, V> map = new HashMap<>();
+        if (key1 != null) {
+            map.put(key1, val1);
+        }
+        if (key2 != null) {
+            map.put(key2, val2);
+        }
+        if (key3 != null) {
+            map.put(key3, val3);
+        }
+        if (key4 != null) {
+            map.put(key4, val4);
+        }
+        if (key5 != null) {
+            map.put(key5, val5);
+        }
+        if (key6 != null) {
+            map.put(key6, val6);
+        }
+        if (key7 != null) {
+            map.put(key7, val7);
+        }
+        if (key8 != null) {
+            map.put(key8, val8);
+        }
+        if (key9 != null) {
+            map.put(key9, val9);
+        }
+        if (key0 != null) {
+            map.put(key0, val0);
+        }
+        return map;
+    }
+
     //--------------------------------------------------------------------------
 
     /** 合并两个迭代器 */

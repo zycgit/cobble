@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
