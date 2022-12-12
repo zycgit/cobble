@@ -90,7 +90,7 @@ public class RandomUtils {
      * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random integer
      */
-    private static int nextInt(int startInclusive, int endInclusive) {
+    public static int nextInt(int startInclusive, int endInclusive) {
         return nextBigInteger(startInclusive, endInclusive).intValue();
     }
 
