@@ -253,7 +253,7 @@ public class RandomUtils {
      * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random BigDecimal
      */
-    public static BigDecimal nextBigDecimal(Number startInclusive, Number endInclusive, Integer scale) {
+    public static BigDecimal nextDecimal(Number startInclusive, Number endInclusive, Integer scale) {
         BigDecimal minBig = (startInclusive instanceof BigDecimal) ? (BigDecimal) startInclusive : (startInclusive instanceof BigInteger) ? new BigDecimal((BigInteger) startInclusive) : (BigDecimal.valueOf(startInclusive.doubleValue()));
         BigDecimal maxBig = (endInclusive instanceof BigDecimal) ? (BigDecimal) endInclusive : (endInclusive instanceof BigInteger) ? new BigDecimal((BigInteger) endInclusive) : (BigDecimal.valueOf(endInclusive.doubleValue()));
 
