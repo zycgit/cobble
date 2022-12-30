@@ -24,7 +24,10 @@ import net.hasor.cobble.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
@@ -125,7 +128,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
-                File contextDir = new File(URLDecoder.decode(url.getFile()));
+                File contextDir = new File(url.getFile());
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, false);
                 } else {
@@ -150,7 +153,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
-                File contextDir = new File(URLDecoder.decode(url.getFile()));
+                File contextDir = new File(url.getFile());
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, true);
                 } else {
