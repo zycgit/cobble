@@ -24,10 +24,8 @@ import net.hasor.cobble.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Predicate;
@@ -119,6 +117,15 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         return this.classLoader.getResource(formatResourcePath(resource)) != null;
     }
 
+    private static File contextDir(URL url) throws UnsupportedEncodingException {
+        // 例如：JCEF 的jar 包名字含有符号："+"，而 Windows 下 Idea 的 rt.jar 存在于空格目录中。
+        File contextDir = new File(url.getFile());
+        if (!contextDir.exists()) {
+            contextDir = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
+        }
+        return contextDir.exists() ? contextDir : null;
+    }
+
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
@@ -128,7 +135,11 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
-                File contextDir = new File(url.getFile());
+                File contextDir = contextDir(url);
+                if (contextDir == null) {
+                    continue;
+                }
+
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, false);
                 } else {
@@ -153,7 +164,11 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
-                File contextDir = new File(url.getFile());
+                File contextDir = contextDir(url);
+                if (contextDir == null) {
+                    continue;
+                }
+
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, true);
                 } else {
