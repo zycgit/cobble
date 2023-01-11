@@ -134,7 +134,7 @@ public class IOUtils {
      * @param conn the connection to close.
      * @since 2.4
      */
-    public static void close(final URLConnection conn) {
+    public static void closeQuietly(final URLConnection conn) {
         if (conn instanceof HttpURLConnection) {
             ((HttpURLConnection) conn).disconnect();
         }
@@ -591,7 +591,7 @@ public class IOUtils {
         try {
             return IOUtils.toByteArray(conn);
         } finally {
-            IOUtils.close(conn);
+            IOUtils.closeQuietly(conn);
         }
     }
 
