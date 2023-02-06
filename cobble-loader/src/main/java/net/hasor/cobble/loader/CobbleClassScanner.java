@@ -16,6 +16,7 @@
 package net.hasor.cobble.loader;
 import net.hasor.cobble.loader.ClassMatcher.ClassInfo;
 import net.hasor.cobble.loader.ClassMatcher.ClassMatcherContext;
+import net.hasor.cobble.loader.providers.ClassPathResourceLoader;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -35,6 +36,12 @@ public class CobbleClassScanner {
     private final ResourceLoader         classLoader;
     private final Map<String, ClassInfo> classInfoMap = new ConcurrentHashMap<>();
 
+    /** Scanner 在进行类扫描的时候将会使用 ClassPathResourceLoader 来扫描资源 */
+    public CobbleClassScanner() {
+        this.classLoader = new ClassPathResourceLoader();
+    }
+
+    /** Scanner 在进行类扫描的时候将会使用 ResourceLoader 来扫描资源 */
     public CobbleClassScanner(ResourceLoader classLoader) {
         this.classLoader = classLoader;
     }
