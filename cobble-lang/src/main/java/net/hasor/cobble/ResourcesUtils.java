@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
+import net.hasor.cobble.io.FileUtils;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -189,10 +190,10 @@ public class ResourcesUtils {
                 return new AutoCloseInputStream(resourceURL.openStream());
             }
             case "file": {
-                File targetFile = new File(resourceURL.getPath());
+                File targetFile = FileUtils.toFile(resourceURL);
                 if (targetFile.exists()) {
                     if (targetFile.canRead() && targetFile.isFile()) {
-                        return new AutoCloseInputStream(new FileInputStream(targetFile));
+                        return new AutoCloseInputStream(Files.newInputStream(targetFile.toPath()));
                     } else {
                         throw new IOException("resource " + targetFile.getAbsolutePath() + " can not be read.");
                     }

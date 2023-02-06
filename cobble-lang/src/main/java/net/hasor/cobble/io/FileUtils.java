@@ -17,6 +17,8 @@ package net.hasor.cobble.io;
 import net.hasor.cobble.io.reader.ReversedLinesFileReader;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -760,11 +762,7 @@ public class FileUtils {
             File canonicalDir = file.getParentFile().getCanonicalFile();
             fileInCanonicalDir = new File(canonicalDir, file.getName());
         }
-        if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {
-            return false;
-        } else {
-            return true;
-        }
+        return !fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile());
     }
 
     /**
@@ -810,6 +808,28 @@ public class FileUtils {
             deleteDirectoryOnExit(file);
         } else {
             file.deleteOnExit();
+        }
+    }
+
+    public static File toFile(URL file) {
+        if (file == null) {
+            return null;
+        }
+        try {
+            return new File(file.toURI());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static File toFile(URI file) {
+        if (file == null) {
+            return null;
+        }
+        try {
+            return new File(file);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
