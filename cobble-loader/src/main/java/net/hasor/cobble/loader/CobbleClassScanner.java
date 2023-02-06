@@ -48,6 +48,41 @@ public class CobbleClassScanner {
 
     /**
      * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
+     * @param matcherType 匹配的类型，可以是类标注的注解、实现的接口、继承的父类。
+     * @return 返回扫描结果。
+     */
+    public Set<Class<?>> getClassSet(String[] loadPackages, Class<?> matcherType) {
+        return this.getClassSet(loadPackages, context -> {
+            ClassInfo classInfo = context.getClassInfo();
+            String matcherTypeName = matcherType.getName();
+
+            if (classInfo != null) {
+                if (matcherType.isAnnotation()) {
+                    for (String anno : classInfo.annos) {
+                        if (anno.equals(matcherTypeName)) {
+                            return true;
+                        }
+                    }
+                } else if (matcherType.isInterface()) {
+                    for (String anno : classInfo.interFaces) {
+                        if (anno.equals(matcherTypeName)) {
+                            return true;
+                        }
+                    }
+                } else {
+                    for (String castType : classInfo.castType) {
+                        if (castType.equals(matcherTypeName)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+    }
+
+    /**
+     * 扫描jar包中凡是匹配compareType参数的类均被返回。（对执行结果不缓存）
      * @param matcher 匹配规则。
      * @return 返回扫描结果。
      */
