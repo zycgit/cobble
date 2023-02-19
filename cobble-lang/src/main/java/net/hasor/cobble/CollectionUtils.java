@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
+import net.hasor.cobble.ref.BufferedIterator;
+
 import java.util.*;
 import java.util.function.Function;
 
@@ -70,8 +72,12 @@ public class CollectionUtils {
         }
         return newList;
     }
+
     // Iterator/Enumeration utilities
     //--------------------------------------------------------------------------
+    public static <T> BufferedIterator<T> bufferedIterator(final Iterator<T> oriIterator, final int bufferedSize) {
+        return new BufferedIterator<>(oriIterator, bufferedSize);
+    }
 
     /** 迭代器类型转换 */
     public static <T, O> Iterator<O> convertIterator(final Iterator<T> oriIterator, final Function<T, O> converter) {

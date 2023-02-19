@@ -20,14 +20,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 可以将多个Map合并成一个Map对象进行操作，同时每个子 Map 又保持相对独立性。
+ * 可以将多个 Map 合并成一个 Map 对象进行操作，同时每个 Map 可以根据名字独立操作它。
  * @version : 2016-07-17
  * @author 赵永春 (zyc@hasor.net)
  */
 public class SpaceHashMap<K, T> {
-    protected Map<String, Map<K, T>> spaceMap = new HashMap<>();
+    protected Map<String, Map<K, T>> spaceMap = new LinkedHashMap<>();
 
-    /**将一个值保存到一个命名空间下 */
+    /** 将一个值保存到一个命名空间下，如果命名空间不存在则创建一个。 */
     public T put(final String space, final K key, final T value) {
         Map<K, T> spaceMap = this.spaceMap.get(space);
         if (spaceMap == null) {
@@ -37,7 +37,7 @@ public class SpaceHashMap<K, T> {
         return spaceMap.put(key, value);
     }
 
-    /**将一个map加入或追加到一个命名空间下 */
+    /** 将一个map加入或追加到一个命名空间下，如果命名空间不存在则创建一个。 */
     public void putAll(final String space, final Map<K, T> newMap) {
         Map<K, T> spaceMap = this.spaceMap.get(space);
         if (spaceMap == null) {
@@ -47,7 +47,7 @@ public class SpaceHashMap<K, T> {
         spaceMap.putAll(newMap);
     }
 
-    /** 确认K所在的命名空间 */
+    /** 确认 key 所在的命名空间 */
     public List<T> get(final K key) {
         List<T> findVal = new ArrayList<>();
         for (Map<K, T> map : this.spaceMap.values()) {
@@ -59,7 +59,7 @@ public class SpaceHashMap<K, T> {
         return findVal;
     }
 
-    /** 确认K所在的命名空间 */
+    /** 返回指定命名空间下的 key 值 */
     public T get(final String space, final K key) {
         Map<K, T> map = this.spaceMap.get(space);
         if (map == null) {
@@ -69,7 +69,7 @@ public class SpaceHashMap<K, T> {
         }
     }
 
-    /** 删除命名空间下的key */
+    /** 删除指定命名空间下的 key 值 */
     public T remove(String space, K key) {
         Map<K, T> spaceMap = this.spaceMap.get(space);
         if (spaceMap != null) {
@@ -78,7 +78,7 @@ public class SpaceHashMap<K, T> {
         return null;
     }
 
-    /**清空所有空间中为指定key的数据 */
+    /** 清空所有命名空间下的 key 值 */
     public void removeAll(final K key) {
         for (Map<K, T> mapItem : this.spaceMap.values()) {
             mapItem.remove(key);
@@ -90,16 +90,16 @@ public class SpaceHashMap<K, T> {
         return this.spaceMap.keySet();
     }
 
-    /** 所有Key集合 */
+    /** 所有命名空间下的所有 Key 集合 */
     public Set<K> keySet() {
-        Set<K> keys = new HashSet<K>();
+        Set<K> keys = new HashSet<>();
         for (Map<K, T> mapItem : this.spaceMap.values()) {
             keys.addAll(mapItem.keySet());
         }
         return keys;
     }
 
-    /** 命名空间下的key集合 */
+    /** 某个命名空间下的所有 Key 集合 */
     public Set<K> keySet(String space) {
         Map<K, T> map = this.spaceMap.get(space);
         if (map != null) {
@@ -108,24 +108,26 @@ public class SpaceHashMap<K, T> {
         return new HashSet<>();
     }
 
-    /** 删除某个命名空间的所有数据 */
+    /** 删除某个命名空间 */
     public void deleteSpace(String space) {
         this.spaceMap.remove(space);
     }
 
-    /** 删除某个命名空间的所有数据 */
+    /** 删除所有命名空间 */
     public void deleteAllSpace() {
         this.spaceMap.clear();
     }
 
+    /** 所有命名空间下 key 的总数（去重） */
     public int size() {
-        int count = 0;
+        Set<K> keys = new HashSet<>();
         for (Map<K, T> map : this.spaceMap.values()) {
-            count += map.size();
+            keys.addAll(map.keySet());
         }
-        return count;
+        return keys.size();
     }
 
+    /** 某个命名空间下 key 的总数 */
     public int size(String space) {
         Map<K, T> map = this.spaceMap.get(space);
         if (map == null) {
@@ -135,7 +137,8 @@ public class SpaceHashMap<K, T> {
         }
     }
 
-    public SpaceHashMap<K, T> space(final String space) {
+    /** 将 space 下的数据独立出一个新的 SpaceHashMap */
+    public SpaceHashMap<K, T> cloneSpace(final String space) {
         SpaceHashMap<K, T> spaceMap = new SpaceHashMap<>();
         Map<K, T> dataMap = this.spaceMap.get(space);
         if (dataMap != null) {
@@ -146,7 +149,7 @@ public class SpaceHashMap<K, T> {
 
     /** 所有Key集合 */
     public Set<T> valueSet() {
-        Set<T> values = new HashSet<T>();
+        Set<T> values = new HashSet<>();
         for (Map<K, T> mapItem : this.spaceMap.values()) {
             values.addAll(mapItem.values());
         }
@@ -163,10 +166,10 @@ public class SpaceHashMap<K, T> {
     }
 
     public Iterator<Map.Entry<K, T>> iterator() {
-        Iterator<Map.Entry<K, T>> seqIter = null;
+        Iterator<Map.Entry<K, T>> seqIterator = null;
         for (Map<K, T> mapItem : this.spaceMap.values()) {
-            seqIter = CollectionUtils.mergeIterator(seqIter, mapItem.entrySet().iterator());
+            seqIterator = CollectionUtils.mergeIterator(seqIterator, mapItem.entrySet().iterator());
         }
-        return seqIter;
+        return seqIterator;
     }
 }
