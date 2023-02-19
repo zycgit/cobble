@@ -67,13 +67,13 @@ public interface ResourceLoader {
         private final String         name;
         private final long           size;
         private final URI            resource;
-        private final InputStreamGet streamGeter;
+        private final InputStreamGet streamGetter;
 
         public ScanEvent(String name, long size, URI resource, InputStreamGet streamGetter) {
             this.name = name;
             this.size = size;
             this.resource = resource;
-            this.streamGeter = streamGetter;
+            this.streamGetter = streamGetter;
         }
 
         public String getName() {
@@ -89,7 +89,7 @@ public interface ResourceLoader {
         }
 
         public InputStream getStream() throws IOException {
-            return this.streamGeter.getStream();
+            return this.streamGetter.getStream();
         }
     }
 
