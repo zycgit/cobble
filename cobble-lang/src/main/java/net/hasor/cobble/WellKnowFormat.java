@@ -17,6 +17,7 @@ package net.hasor.cobble;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAccessor;
 import java.util.function.Function;
 
 /**
@@ -44,6 +45,8 @@ public enum WellKnowFormat {
 
     // wel know format
     WKF_DATE(true, DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+    WKF_DATE8(true, DateTimeFormatter.ofPattern("yyyyMMdd")),
+    //
     WKF_TIME24(true, 0, DateTimeFormatter.ofPattern("HH:mm:ss")),
     WKF_TIME24_S0(true, 0, DateTimeFormatter.ofPattern("HH:mm:ss")),
     WKF_TIME24_S1(true, 1, DateTimeFormatter.ofPattern("HH:mm:ss.S")),
@@ -69,6 +72,7 @@ public enum WellKnowFormat {
     WKF_DATE_TIME24_S9(true, 9, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS")),
     // '2023-02-19+04:45'
     WKF_OFFSET_DATE(true, DateTimeFormatter.ofPattern("yyyy-MM-ddxxxxx")),
+    WKF_OFFSET_DATE8(true, DateTimeFormatter.ofPattern("yyyyMMddxxxxx")),
     // '08:35:41+04:45', '08:35:41.123456789+04:45'
     WKF_OFFSET_TIME24(true, 0, DateTimeFormatter.ofPattern("HH:mm:ssxxxxx")),
     WKF_OFFSET_TIME24_S0(true, 0, DateTimeFormatter.ofPattern("HH:mm:ssxxxxx")),
@@ -145,6 +149,14 @@ public enum WellKnowFormat {
 
     public DateTimeFormatter toPattern() {
         return this.ofPattern;
+    }
+
+    public String format(TemporalAccessor temporal) {
+        return this.ofPattern.format(temporal);
+    }
+
+    public TemporalAccessor parse(CharSequence text) {
+        return this.ofPattern.parse(text);
     }
 
     public static WellKnowFormat valueOfCode(String code) {

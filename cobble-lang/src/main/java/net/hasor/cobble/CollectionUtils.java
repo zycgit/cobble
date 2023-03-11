@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
+import net.hasor.cobble.function.Property;
 import net.hasor.cobble.ref.BufferedIterator;
+import net.hasor.cobble.reflect.SFunction;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -302,5 +305,241 @@ public class CollectionUtils {
             }
         }
         return false;
+    }
+    //--------------------------------------------------------------------------
+
+    /**
+     * 将 dataList 转换成 Tree 结构。
+     * <li>1. 并且接收结果集的对象必须含有 id, pid, children 三个属性</li>
+     * <li>2. 如果 PID 在结果集的 ID 集中不存在，也会成为一个根节点</li>
+     * <li>3. 用于 Tree 查询的结果集中必须含有下列数据结构</li>
+     * <br/><pre>
+     * | ID | PID  | NAME       | ... |
+     * | 1  | NULL | TreeNode 1 | ... |
+     * | 2  | 1    | TreeNode 2 | ... |
+     * | 3  | 2    | TreeNode 3 | ... |
+     * | 4  | 1    | TreeNode 4 | ... |
+     * | 5  | NULL | TreeNode 5 | ... |
+     * </pre>
+     * <li>结果顺序及 Tree nodes 顺序与查询结果保持不变</li>
+     * @param treeID Tree 的 ID 属性
+     * @param parent Tree 结构中父节点属性
+     * @param children Tree 子节点列表
+     */
+    public static <T> List<T> toTree(List<T> dataList, SFunction<T> children, SFunction<T> treeID, SFunction<T> parent) {
+        if (dataList.isEmpty()) {
+            return dataList;
+        }
+        Class<?> type = dataList.get(0).getClass();
+        Property childrenField = BeanUtils.getPropertyFunc(type, BeanUtils.toProperty(children));
+        Property treeIdField = BeanUtils.getPropertyFunc(type, BeanUtils.toProperty(treeID));
+        Property parentField = BeanUtils.getPropertyFunc(type, BeanUtils.toProperty(parent));
+        return toPidTree(dataList, childrenField, treeIdField, parentField, o -> o);
+    }
+
+    /**
+     * 将 dataList 转换成 Tree 结构。
+     * <li>1. 并且接收结果集的对象必须含有 id, pid, children 三个属性</li>
+     * <li>2. 如果 PID 在结果集的 ID 集中不存在，也会成为一个根节点</li>
+     * <li>3. 用于 Tree 查询的结果集中必须含有下列数据结构</li>
+     * <br/><pre>
+     * | ID | PID  | NAME       | ... |
+     * | 1  | NULL | TreeNode 1 | ... |
+     * | 2  | 1    | TreeNode 2 | ... |
+     * | 3  | 2    | TreeNode 3 | ... |
+     * | 4  | 1    | TreeNode 4 | ... |
+     * | 5  | NULL | TreeNode 5 | ... |
+     * </pre>
+     * <li>结果顺序及 Tree nodes 顺序与查询结果保持不变</li>
+     * @param treeID Tree 的 ID 属性
+     * @param parent Tree 结构中父节点属性
+     * @param children Tree 子节点列表
+     */
+    public static List<Map<String, Object>> toTree(List<Map<String, Object>> dataList, String children, String treeID, String parent) {
+        if (dataList.isEmpty()) {
+            return dataList;
+        }
+        Property childrenField = BeanUtils.getPropertyFunc(Map.class, children);
+        Property treeIdField = BeanUtils.getPropertyFunc(Map.class, treeID);
+        Property parentField = BeanUtils.getPropertyFunc(Map.class, parent);
+        return toPidTree(dataList, childrenField, treeIdField, parentField, o -> o);
+    }
+
+    /**
+     * 将 dataList 转换成 Tree 结构。
+     * 并将 pathField 字段值作为路径 Key；将结果集按照前 路径 缀匹配方式转换为 Tree 结构。
+     * <br/><pre>
+     * | ID | PATH | NAME       | ... |
+     * | 1  | NULL | TreeNode 1 | ... |
+     * | 2  | /a   | TreeNode 2 | ... |
+     * | 3  | /a/b | TreeNode 3 | ... |
+     * | 4  | /b   | TreeNode 4 | ... |
+     * | 5  | /b/c | TreeNode 5 | ... |
+     * </pre>
+     * <li>结果顺序及 Tree nodes 顺序与查询结果保持不变</li>
+     * @param pathCode Tree 的 PATH 属性
+     * @param children Tree 子节点列表
+     */
+    public static <T> List<T> toTree(List<T> dataList, SFunction<T> children, SFunction<T> pathCode) {
+        if (dataList.isEmpty()) {
+            return dataList;
+        }
+        Class<?> type = dataList.get(0).getClass();
+        Property childrenField = BeanUtils.getPropertyFunc(type, BeanUtils.toProperty(children));
+        Property pathCodeField = BeanUtils.getPropertyFunc(type, BeanUtils.toProperty(pathCode));
+        return toPathTree(dataList, childrenField, pathCodeField, o -> o);
+    }
+
+    /**
+     * 将 dataList 转换成 Tree 结构。
+     * 并将 pathField 字段值作为路径 Key；将结果集按照前 路径 缀匹配方式转换为 Tree 结构。
+     * <br/><pre>
+     * | ID | PATH | NAME       | ... |
+     * | 1  | NULL | TreeNode 1 | ... |
+     * | 2  | /a   | TreeNode 2 | ... |
+     * | 3  | /a/b | TreeNode 3 | ... |
+     * | 4  | /b   | TreeNode 4 | ... |
+     * | 5  | /b/c | TreeNode 5 | ... |
+     * </pre>
+     * <li>结果顺序及 Tree nodes 顺序与查询结果保持不变</li>
+     * @param pathCode Tree 的 PATH 属性
+     * @param children Tree 子节点列表
+     */
+    public static List<Map<String, Object>> toTree(List<Map<String, Object>> dataList, String children, String pathCode) {
+        if (dataList.isEmpty()) {
+            return dataList;
+        }
+        Property childrenField = BeanUtils.getPropertyFunc(Map.class, children);
+        Property pathCodeField = BeanUtils.getPropertyFunc(Map.class, pathCode);
+        return toPathTree(dataList, childrenField, pathCodeField, o -> o);
+    }
+
+    private static <I, O> List<O> toPidTree(List<I> dataList, Property childrenField, //
+            Property treeIdField, Property parentField, Function<I, O> convert) {
+        // init property of [treeID\parent\children]
+        if (treeIdField == null || parentField == null || childrenField == null || childrenField.isReadOnly()) {
+            throw new IllegalArgumentException("[treeID, parent, children] not exist or children is readOnly.");
+        }
+
+        // init treeList (use LinkedHashMap)
+        Map<Object, I> dataMap = new LinkedHashMap<>();
+        for (I node : dataList) {
+            Object tid = treeIdField.get(node);
+            if (tid == null) {
+                throw new IllegalArgumentException(" treeID is null.");
+            } else {
+                dataMap.put(tid, node);
+            }
+        }
+
+        // extract tree structure
+        Set<Object> needRemove = new HashSet<>();
+        for (I node : dataList) {
+            Object tid = treeIdField.get(node);
+            Object parentId = parentField.get(node);
+            if (parentId == null || !dataMap.containsKey(parentId)) {
+                continue;
+            }
+
+            // get or init children list
+            Object parentData = dataMap.get(parentId);
+            List childrenList = (List) childrenField.get(parentData);
+            if (childrenList == null) {
+                childrenList = new ArrayList<>();
+                childrenField.set(parentData, childrenList);
+            }
+
+            // move node to children
+            childrenList.add(node);
+            needRemove.add(tid);
+        }
+
+        for (Object remove : needRemove) {
+            dataMap.remove(remove);
+        }
+        return dataMap.values().stream().map(convert).collect(Collectors.toList());
+    }
+
+    private static <I, O> List<O> toPathTree(List<I> dataList, Property childrenField, //
+            Property pathCodeField, Function<I, O> convert) {
+        // init property of [pathCode\children]
+        if (pathCodeField == null || childrenField == null || childrenField.isReadOnly()) {
+            throw new IllegalArgumentException("[pathCode, children] not exist or children is readOnly.");
+        }
+
+        // data
+        List<I> sortedList = dataList.stream().sorted((o1, o2) -> {
+            Object o1Path = pathCodeField.get(o1);
+            Object o2Path = pathCodeField.get(o2);
+            String o1PathStr = o1Path == null ? "" : o1Path.toString();
+            String o2PathStr = o2Path == null ? "" : o2Path.toString();
+            return o1PathStr.compareTo(o2PathStr);
+        }).collect(Collectors.toList());
+
+        // init children list
+        List<String> allPathList = new ArrayList<>();
+        Map<String, List<I>> allPathMap = new HashMap<>();
+
+        for (I item : sortedList) {
+            Object path = pathCodeField.get(item);
+            String pathStr = (path == null) ? null : path.toString();
+            if (StringUtils.isBlank(pathStr)) {
+                allPathMap.computeIfAbsent(pathStr, k -> new ArrayList<>()).add(item);
+                continue;
+            }
+
+            String parentPath = null;//parent path item
+            for (String pItem : allPathList) {
+                if (StringUtils.startsWith(pathStr, pItem) && !StringUtils.equals(pathStr, pItem)) {
+                    parentPath = pItem;
+                    break;
+                }
+            }
+
+            if (parentPath != null) {
+                List<I> parentList = allPathMap.get(parentPath);
+                I parent = parentList.get(0);
+                List childrenList = (List) childrenField.get(parent);
+                if (childrenList == null) {
+                    childrenList = new ArrayList<>();
+                    childrenField.set(parent, childrenList);
+                }
+                insertOrAppend(dataList, childrenList, item);
+            } else if (allPathMap.containsKey(pathStr)) {
+                List<I> list = allPathMap.get(pathStr);
+                list.add(item);
+            } else {
+                allPathList.add(0, pathStr);
+                List<I> list = new ArrayList<>();
+                list.add(item);
+                allPathMap.put(pathStr, list);
+            }
+        }
+
+        // extract tree structure
+        List<O> result = new ArrayList<>();
+        for (List<I> nodeList : allPathMap.values()) {
+            for (I node : nodeList) {
+                insertOrAppend(dataList, result, convert.apply(node));
+            }
+        }
+        return result;
+    }
+
+    private static void insertOrAppend(List oriData, List waitInsert, Object item) {
+        int pos = waitInsert.size();
+
+        int pubPos = oriData.indexOf(item);
+        for (Object obj : waitInsert) {
+            int objPubPos = oriData.indexOf(obj);
+            if (pubPos < objPubPos) {
+                int newPos = waitInsert.indexOf(obj);
+                if (newPos < pos) {
+                    pos = newPos;
+                }
+            }
+        }
+
+        waitInsert.add(pos, item);
     }
 }
