@@ -136,7 +136,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, false);
-                } else {
+                } else if (contextDir.exists()) {
                     JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
                     jarScan(result, jarFile, testJar, scanner, false);
                 }
