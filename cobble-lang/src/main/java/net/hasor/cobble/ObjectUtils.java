@@ -17,6 +17,7 @@
 package net.hasor.cobble;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * <p>Operations on <code>Object</code>.</p>
@@ -330,6 +331,22 @@ public class ObjectUtils {
         return c1.compareTo(c2);
     }
 
+    // cast or convert
+    //-----------------------------------------------------------------------
+
+    public static <T> T tryCast(Object obj, Class<T> clazz) {
+        return clazz.isInstance(obj) ? clazz.cast(obj) : null;
+    }
+
+    public static <T, S> S tryCastConvert(Object obj, Class<T> clazz, Function<? super T, ? extends S> convertor) {
+        //noinspection unchecked
+        return clazz.isInstance(obj) ? convertor.apply((T) obj) : null;
+    }
+
+    public static <T, S> S doConvert(T obj, Function<? super T, ? extends S> function) {
+        return obj == null ? null : function.apply(obj);
+    }
+
     // hashCode
     //-----------------------------------------------------------------------
 
@@ -637,5 +654,25 @@ public class ObjectUtils {
             throw new IllegalArgumentException(name + ": " + l + " (expected: " + start + "-" + end + ")");
         }
         return l;
+    }
+
+    // assert
+    //-----------------------------------------------------------------------
+
+    public static boolean assertTrue(boolean value, Object message) {
+        if (!value) {
+            String resultMessage = "Assertion failed";
+            if (message != null) {
+                resultMessage += ": " + message;
+            }
+            throw new IllegalArgumentException(resultMessage);
+        }
+
+        return true;
+    }
+
+    public static boolean assertTrue(boolean value) {
+        //noinspection ConstantConditions
+        return value || assertTrue(false, null);
     }
 }

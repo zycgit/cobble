@@ -375,6 +375,7 @@ public final class NumberUtils {
     public static BigDecimal createBigDecimal(String val) {
         return new BigDecimal(val);
     }
+
     //--------------------------------------------------------------------
 
     /**
@@ -448,6 +449,84 @@ public final class NumberUtils {
         }
         return a;
     }
+    //--------------------------------------------------------------------
+
+    /**
+     * <p>Gets the between num of min,max <code>long</code> values.</p>
+     * @param value  value 1
+     * @param min  value 2
+     * @param max  value 3
+     */
+    public static long between(long value, long min, long max) {
+        if (min > max) {
+            return value;
+        }
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    /**
+     * <p>Gets the between num of min,max <code>int</code> values.</p>
+     * @param value  value 1
+     * @param min  value 2
+     * @param max  value 3
+     */
+    public static int between(int value, int min, int max) {
+        if (min > max) {
+            return value;
+        }
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    /**
+     * <p>Gets the between num of min,max <code>float</code> values.</p>
+     * @param value  value 1
+     * @param min  value 2
+     * @param max  value 3
+     */
+    public static float between(float value, float min, float max) {
+        if (min > max) {
+            return value;
+        }
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    /**
+     * <p>Gets the between num of min,max <code>double</code> values.</p>
+     * @param value  value 1
+     * @param min  value 2
+     * @param max  value 3
+     */
+    public static double between(double value, double min, double max) {
+        if (min > max) {
+            return value;
+        }
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
     //--------------------------------------------------------------------
 
     /**
