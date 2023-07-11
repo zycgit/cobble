@@ -180,10 +180,6 @@ public class ResourcesUtils {
     public static InputStream getResourceAsStream(ClassLoader classLoader, URL resourceURL) throws IOException {
         String protocol = resourceURL.getProtocol().trim().toLowerCase();
         switch (protocol) {
-            case "classpath": {
-                String resourcePath = resourceURL.getPath();
-                return getResourceAsStream(classLoader, resourcePath);
-            }
             case "http":
             case "https":
             case "ftp": {
@@ -210,8 +206,13 @@ public class ResourcesUtils {
                 ZipEntry e = jar.getEntry(entPath);
                 return new AutoCloseInputStream(jar.getInputStream(e));
             }
-            default:
+            case "classpath":
+            default: {
+                if (classLoader == null) {
+                    classLoader = Thread.currentThread().getContextClassLoader();
+                }
                 return classLoader.getResourceAsStream(resourceURL.toString());
+            }
         }
     }
 

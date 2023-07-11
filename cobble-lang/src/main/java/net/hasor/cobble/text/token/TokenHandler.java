@@ -21,5 +21,5 @@ package net.hasor.cobble.text.token;
  * @version : 2020-04-12
  */
 public interface TokenHandler {
-    public String handleToken(StringBuilder hasFound, String openToken, String content);
+    String handleToken(StringBuilder hasFound, String openToken, String closeToken, String content);
 }

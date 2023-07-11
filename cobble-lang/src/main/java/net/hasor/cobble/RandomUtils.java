@@ -83,6 +83,16 @@ public class RandomUtils {
     }
 
     /**
+     * <p> fill an array of random bytes. </p>
+     *
+     * @param b fill array
+     * @throws IllegalArgumentException if {@code count} is negative
+     */
+    public static void nextBytes(byte[] b) {
+        RANDOM.nextBytes(b);
+    }
+
+    /**
      * <p> Returns a random integer within the specified range. </p>
      *
      * @param startInclusive the smallest value that can be returned, must be non-negative
