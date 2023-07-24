@@ -15,10 +15,12 @@
  */
 package net.hasor.cobble.loader;
 import net.hasor.cobble.loader.ResourceLoader.MatchType;
+import net.hasor.cobble.loader.sandbox.SecPolicyContext;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -29,14 +31,16 @@ import java.util.List;
  * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
  */
-class InnerClassLoader extends ClassLoader {
-    private final String         tempDirectory = "cobbleLoader/" + System.currentTimeMillis();
-    private       File           tempDir;
-    private final ResourceLoader resourceLoader;
+class InnerClassLoader extends ClassLoader implements SecPolicyContext {
+    private final String          tempDirectory = "cobbleLoader/" + System.currentTimeMillis();
+    private       File            tempDir;
+    private final ResourceLoader  resourceLoader;
+    private final SecurityManager securityManager;
 
-    public InnerClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
+    public InnerClassLoader(ClassLoader parent, ResourceLoader resourceLoader, SecurityManager securityManager) {
         super(parent);
         this.resourceLoader = resourceLoader;
+        this.securityManager = securityManager;
     }
 
     @Override
@@ -203,5 +207,20 @@ class InnerClassLoader extends ClassLoader {
         file.setReadable(true, false);
         file.setWritable(true, false);
         file.setExecutable(true, false); // Unix: allow content for dir, redundant for file
+    }
+
+    @Override
+    public boolean enable() {
+        return this.securityManager != null;
+    }
+
+    @Override
+    public void checkPermission(Permission perm) {
+        this.securityManager.checkPermission(perm);
+    }
+
+    @Override
+    public void checkPermission(Permission perm, Object context) {
+        this.securityManager.checkPermission(perm, context);
     }
 }
