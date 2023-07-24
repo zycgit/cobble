@@ -87,7 +87,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
             return "";
         }
 
-        String newEvalString = new GenericTokenParser(new String[] { "${" }, "}", (builder, token, content) -> {
+        String newEvalString = new GenericTokenParser(new String[] { "${" }, "}", (hasFound, openToken, closeToken, content) -> {
             String varKey = content;
             String varDefault = "";
             int defaultIndexOf = content.indexOf(":");
