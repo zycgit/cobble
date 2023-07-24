@@ -1,10 +1,10 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,7 +26,8 @@ import java.io.FilenameFilter;
  * @version $Revision: 1178224 $ $Date: 2011-10-02 15:09:57 -0400 (Sun, 02 Oct 2011) $
  * @author Stephen Colebourne
  */
-public interface IOFileFilter extends FileFilter, FilenameFilter {
+@FunctionalInterface
+public interface WalkFilter extends FileFilter, FilenameFilter {
     /**
      * Checks to see if the File should be accepted by this filter. <p>
      * Defined in {@link FileFilter}.
@@ -34,7 +35,7 @@ public interface IOFileFilter extends FileFilter, FilenameFilter {
      * @param file the File to check
      * @return true if this file matches the test
      */
-    public boolean accept(File file);
+    boolean accept(File file);
 
     /**
      * Checks to see if the File should be accepted by this filter. <p>
@@ -44,5 +45,7 @@ public interface IOFileFilter extends FileFilter, FilenameFilter {
      * @param name the filename within the directory to check
      * @return true if this file matches the test
      */
-    public boolean accept(File dir, String name);
+    default boolean accept(File dir, String name) {
+        return accept(new File(dir, name));
+    }
 }

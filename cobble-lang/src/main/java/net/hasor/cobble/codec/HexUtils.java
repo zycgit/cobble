@@ -27,7 +27,7 @@ import java.io.StringReader;
  * @version : 2012-6-21
  * @author 赵永春 (zyc@hasor.net)
  */
-public class HexadecimalUtils {
+public class HexUtils {
     /** 字节数组 转换为 十六进制字符串 */
     public static String bytes2hex(final byte[] b) {
         StringBuilder hs = new StringBuilder();

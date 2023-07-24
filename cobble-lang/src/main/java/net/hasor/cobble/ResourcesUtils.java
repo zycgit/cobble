@@ -169,7 +169,15 @@ public class ResourcesUtils {
 
     /**获取classpath中可能存在的资源，以流的形式返回。*/
     public static InputStream getResourceAsStream(ClassLoader classLoader, String resourcePath) throws IOException {
-        URL resource = getResource(resourcePath);
+        resourcePath = formatResource(resourcePath);
+        URL resource;
+        if (classLoader != null) {
+            resource = classLoader.getResource(resourcePath);
+        } else {
+            classLoader = getCurrentLoader();
+            resource = getResource(resourcePath);
+        }
+
         if (resource == null) {
             return null;
         }

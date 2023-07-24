@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -830,6 +831,57 @@ public class FileUtils {
             return new File(file);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /** 依据 baseDir 向下遍历目录并寻找符合 test 的结果 */
+    public static List<File> walkDown(File baseDir, WalkFilter test) {
+        return walk(baseDir, true, test);
+    }
+
+    /** 依据 baseDir 向上遍历目录并寻找符合 test 的结果 */
+    public static List<File> walkUp(File baseDir, WalkFilter test) {
+        return walk(baseDir, false, test);
+    }
+
+    /** 依据 baseDir 遍历目录并寻找符合 test 的结果，goDown 为 true 表示向下遍历，为 false 表示向上遍历 */
+    public static List<File> walk(File baseDir, boolean goDown, WalkFilter filter) {
+        if (baseDir == null) {
+            return Collections.emptyList();
+        }
+        ArrayList<File> files = new ArrayList<>();
+        walkAppend(baseDir, goDown, filter, files, Long.MAX_VALUE);
+        return files;
+    }
+
+    private static void walkAppend(File baseDir, boolean goDown, WalkFilter filter, List<File> append, long depth) {
+        if (baseDir == null || depth == 0) {
+            return;
+        }
+
+        // current dir
+        String[] lf = baseDir.list();
+        if (lf != null) {
+            for (String f : lf) {
+                File file = new File(baseDir, f);
+                if ((filter == null) || filter.accept(file) || filter.accept(baseDir, f)) {
+                    append.add(file);
+                    if (goDown) {
+                        walkAppend(file, true, filter, append, depth--);
+                    }
+                }
+            }
+        }
+
+        // go up
+        if (!goDown) {
+            File parent = baseDir.getParentFile();
+            if (parent == null) {
+                parent = baseDir.getAbsoluteFile().getParentFile();
+            }
+            if (parent != null) {
+                walkAppend(parent, false, filter, append, depth--);
+            }
         }
     }
 }

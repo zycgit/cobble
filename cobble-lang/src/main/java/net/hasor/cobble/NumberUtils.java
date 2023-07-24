@@ -73,40 +73,6 @@ public final class NumberUtils {
         }
     }
     //--------------------------------------------------------------------
-    // must handle Long, Float, Integer, Float, Short,
-    //                  BigDecimal, BigInteger and Byte
-    // useful methods:
-    // Byte.decode(String)
-    // Byte.valueOf(String,int radix)
-    // Byte.valueOf(String)
-    // Double.valueOf(String)
-    // Float.valueOf(String)
-    // new Float(String)
-    // Integer.valueOf(String,int radix)
-    // Integer.valueOf(String)
-    // Integer.decode(String)
-    // Integer.getInteger(String)
-    // Integer.getInteger(String,int val)
-    // Integer.getInteger(String,Integer val)
-    // new Integer(String)
-    // new Double(String)
-    // new Byte(String)
-    // new Long(String)
-    // Long.getLong(String)
-    // Long.getLong(String,int)
-    // Long.getLong(String,Integer)
-    // Long.valueOf(String,int)
-    // Long.valueOf(String)
-    // new Short(String)
-    // Short.decode(String)
-    // Short.valueOf(String,int)
-    // Short.valueOf(String)
-    // new BigDecimal(String)
-    // new BigInteger(String)
-    // new BigInteger(String,int radix)
-    // Possible inputs:
-    // 45 45.5 45E7 4.5E7 Hex Oct Binary xxxF xxxD xxxf xxxd
-    // plus minus everything. Prolly more. A lot are not separable.
 
     /**
      * <p>Turns a string value into a java.lang.Number.</p>

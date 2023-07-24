@@ -19,6 +19,8 @@ import net.hasor.cobble.text.token.GenericTokenParser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,8 +33,6 @@ import java.util.function.Function;
 public class I18nUtils {
 
     public static final  I18nUtils           DEFAULT     = new I18nUtils();
-    private static final Set<String>         LANGUAGES   = new HashSet<>(Arrays.asList(Locale.getISOLanguages()));
-    private static final Set<String>         COUNTRIES   = new HashSet<>(Arrays.asList(Locale.getISOCountries()));
     private static final Map<String, Locale> LOCAL_CACHE = new LinkedCaseInsensitiveMap<>();
 
     static {
@@ -104,7 +104,7 @@ public class I18nUtils {
             }
 
             Map<Locale, String> localeMap = this.i18nDictionary.get(code);
-            if (localeMap == null) {
+            if (localeMap == null || !localeMap.containsKey(locale)) {
                 return null;
             }
             return localeMap.get(locale);
@@ -133,23 +133,31 @@ public class I18nUtils {
     private       String                   defaultI18nKey;
     private final I18nMessageSource        messageSource;
     private final Function<String, String> variablesSource;
+    private final Map<String, ClassLoader> i18nSource;
+    private final Set<String>              i18nLoaded;
 
     private I18nUtils() {
         this.defaultI18nKey = toI18nKey(Locale.getDefault());
         this.messageSource = new I18nMessageSourceImpl();
         this.variablesSource = new VariablesSourceImpl();
+        this.i18nSource = new HashMap<>();
+        this.i18nLoaded = new HashSet<>();
     }
 
     public I18nUtils(I18nMessageSource messageSource) {
         this.defaultI18nKey = toI18nKey(Locale.getDefault());
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = new VariablesSourceImpl();
+        this.i18nSource = new HashMap<>();
+        this.i18nLoaded = new HashSet<>();
     }
 
     public I18nUtils(I18nMessageSource messageSource, Function<String, String> variablesSource) {
         this.defaultI18nKey = toI18nKey(Locale.getDefault());
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = variablesSource == null ? new VariablesSourceImpl() : variablesSource;
+        this.i18nSource = new HashMap<>();
+        this.i18nLoaded = new HashSet<>();
     }
 
     public String getDefaultI18nKey() {
@@ -173,23 +181,10 @@ public class I18nUtils {
             throw new UnsupportedOperationException("I18nMessageSource is external.");
         }
 
-        for (String res : i18nResources) {
-            for (String country : COUNTRIES) {
-                for (String language : LANGUAGES) {
-                    String i18nKey = toI18nKey(language, country);
-                    String i18nResource = res + "_" + i18nKey + ".properties";
-
-                    try (InputStream stream = ResourcesUtils.getResourceAsStream(resourceLoader, i18nResource)) {
-                        if (stream != null) {
-                            Locale locale = getLocale(language, country);
-                            Properties properties = new Properties();
-                            properties.load(stream);
-                            properties.forEach((key, value) -> {
-                                ((I18nMessageSourceImpl) this.messageSource).putDictionary(key.toString(), locale, value.toString());
-                            });
-                        }
-                    }
-                }
+        for (String i18n : i18nResources) {
+            if (!this.i18nSource.containsKey(i18n)) {
+                resourceLoader = resourceLoader == null ? Thread.currentThread().getContextClassLoader() : resourceLoader;
+                this.i18nSource.put(i18n, resourceLoader);
             }
         }
     }
@@ -198,6 +193,14 @@ public class I18nUtils {
     public void addVariables(String varName, String varValue) {
         if (this.variablesSource instanceof VariablesSourceImpl) {
             ((VariablesSourceImpl) this.variablesSource).put(varName, varValue);
+        } else {
+            throw new UnsupportedOperationException("variablesSource is external.");
+        }
+    }
+
+    public void putVariables(Map<String, String> variables) {
+        if (variables != null && this.variablesSource instanceof VariablesSourceImpl) {
+            ((VariablesSourceImpl) this.variablesSource).putAll(variables);
         } else {
             throw new UnsupportedOperationException("variablesSource is external.");
         }
@@ -215,6 +218,10 @@ public class I18nUtils {
 
     /** 获取 i18n 文本 */
     public String getMessage(String code, Object[] args, String i18nLocal) {
+        if (StringUtils.isBlank(code)) {
+            return code;
+        }
+
         Locale locale;
         if (LOCAL_CACHE.containsKey(i18nLocal)) {
             locale = LOCAL_CACHE.get(i18nLocal);
@@ -226,9 +233,35 @@ public class I18nUtils {
 
     /** 获取 i18n 文本 */
     public String getMessage(String code, Object[] args, Locale locale) {
+        String i18nKey = toI18nKey(locale);
+
+        if (!this.i18nLoaded.contains(i18nKey)) {
+            synchronized (this) {
+                if (!this.i18nLoaded.contains(i18nKey)) {
+                    for (String i18nResourcePath : this.i18nSource.keySet()) {
+                        String i18nResource = i18nResourcePath + "_" + i18nKey + ".properties";
+                        ClassLoader i18nLoader = this.i18nSource.get(i18nResourcePath);
+
+                        try (InputStream stream = ResourcesUtils.getResourceAsStream(i18nLoader, i18nResource)) {
+                            if (stream != null) {
+                                Properties properties = new Properties();
+                                properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
+                                properties.forEach((key, value) -> {
+                                    ((I18nMessageSourceImpl) this.messageSource).putDictionary(key.toString(), locale, value.toString());
+                                });
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    this.i18nLoaded.add(i18nKey);
+                }
+            }
+        }
+
         String message = this.messageSource.getMessage(code, args, locale);
-        if (StringUtils.isBlank(message)) {
-            return message;
+        if (message == null) {
+            return code;
         }
 
         message = resolveMessageArgs(message);
