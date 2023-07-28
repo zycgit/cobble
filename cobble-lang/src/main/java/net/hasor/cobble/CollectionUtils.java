@@ -64,8 +64,8 @@ public class CollectionUtils {
     public static <T> List<List<T>> splitList(List<T> sourceList, int groupSize) {
         int length = sourceList.size();
         // 计算可以分成多少组
-        int num = (length + groupSize - 1) / groupSize;
-        List<List<T>> newList = new ArrayList<>(num);
+        long num = (length + groupSize - 1) / groupSize;
+        List<List<T>> newList = new ArrayList<>((int) (groupSize * 0.25));
         for (int i = 0; i < num; i++) {
             // 开始位置
             int fromIndex = i * groupSize;
