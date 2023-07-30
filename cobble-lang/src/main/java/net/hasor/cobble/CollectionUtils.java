@@ -62,10 +62,18 @@ public class CollectionUtils {
      * @param groupSize 每组定长
      */
     public static <T> List<List<T>> splitList(List<T> sourceList, int groupSize) {
+        groupSize = Math.max(1, groupSize);
         int length = sourceList.size();
         // 计算可以分成多少组
-        long num = (length + groupSize - 1) / groupSize;
-        List<List<T>> newList = new ArrayList<>((int) (groupSize * 0.25));
+        long num = (length + (long) groupSize - 1) / groupSize;
+
+        List<List<T>> newList;
+        if (groupSize > 8192) {
+            newList = new LinkedList<>();
+        } else {
+            newList = new ArrayList<>((int) (groupSize * 0.25));
+        }
+
         for (int i = 0; i < num; i++) {
             // 开始位置
             int fromIndex = i * groupSize;
