@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble;
+package net.hasor.cobble.i18n;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.ResourcesUtils;
+import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.ref.LinkedCaseInsensitiveMap;
 import net.hasor.cobble.text.token.GenericTokenParser;
 
@@ -140,24 +143,24 @@ public class I18nUtils {
         this.defaultI18nKey = toI18nKey(Locale.getDefault());
         this.messageSource = new I18nMessageSourceImpl();
         this.variablesSource = new VariablesSourceImpl();
-        this.i18nSource = new HashMap<>();
-        this.i18nLoaded = new HashSet<>();
+        this.i18nSource = new LinkedHashMap<>();
+        this.i18nLoaded = new LinkedHashSet<>();
     }
 
     public I18nUtils(I18nMessageSource messageSource) {
         this.defaultI18nKey = toI18nKey(Locale.getDefault());
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = new VariablesSourceImpl();
-        this.i18nSource = new HashMap<>();
-        this.i18nLoaded = new HashSet<>();
+        this.i18nSource = new LinkedHashMap<>();
+        this.i18nLoaded = new LinkedHashSet<>();
     }
 
     public I18nUtils(I18nMessageSource messageSource, Function<String, String> variablesSource) {
         this.defaultI18nKey = toI18nKey(Locale.getDefault());
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = variablesSource == null ? new VariablesSourceImpl() : variablesSource;
-        this.i18nSource = new HashMap<>();
-        this.i18nLoaded = new HashSet<>();
+        this.i18nSource = new LinkedHashMap<>();
+        this.i18nLoaded = new LinkedHashSet<>();
     }
 
     public String getDefaultI18nKey() {
@@ -173,7 +176,8 @@ public class I18nUtils {
     }
 
     protected void loadResources(String... i18nResources) throws IOException {
-        loadResources(Thread.currentThread().getContextClassLoader(), i18nResources);
+        ClassLoader classLoader = ClassUtils.getClassLoader(Thread.currentThread().getContextClassLoader());
+        loadResources(classLoader, i18nResources);
     }
 
     protected void loadResources(ClassLoader resourceLoader, String... i18nResources) throws IOException {
@@ -183,8 +187,37 @@ public class I18nUtils {
 
         for (String i18n : i18nResources) {
             if (!this.i18nSource.containsKey(i18n)) {
-                resourceLoader = resourceLoader == null ? Thread.currentThread().getContextClassLoader() : resourceLoader;
+                resourceLoader = resourceLoader == null ? ClassUtils.getClassLoader(Thread.currentThread().getContextClassLoader()) : resourceLoader;
                 this.i18nSource.put(i18n, resourceLoader);
+            }
+        }
+    }
+
+    public void loadResources(Class<?>... i18nResources) throws IOException {
+        Set<Class<?>> loaded = new HashSet<>();
+        for (Class<?> i18nType : i18nResources) {
+            // deep parents
+            List<Class<?>> interfaces = ClassUtils.getAllInterfaces(i18nType);
+            List<Class<?>> superclasses = ClassUtils.getAllSuperclasses(i18nType);
+            Collections.reverse(interfaces);
+            Collections.reverse(superclasses);
+
+            // all load type
+            List<Class<?>> loadTypes = new ArrayList<>();
+            loadTypes.addAll(interfaces);
+            loadTypes.addAll(superclasses);
+            loadTypes.add(i18nType);
+
+            for (Class<?> type : loadTypes) {
+                if (loaded.contains(type)) {
+                    continue;
+                }
+
+                loaded.add(type);
+                I18nResource i18nResource = type.getAnnotation(I18nResource.class);
+                if (i18nResource != null) {
+                    this.loadResources(type.getClassLoader(), i18nResource.value());
+                }
             }
         }
     }
