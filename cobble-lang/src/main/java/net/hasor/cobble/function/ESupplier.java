@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface ESupplier<T, E extends Throwable> extends Supplier<T> {
     @Override
-    public default T get() {
+    default T get() {
         try {
             return this.eGet();
         } catch (Throwable e) {

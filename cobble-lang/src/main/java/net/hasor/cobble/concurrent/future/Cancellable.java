@@ -21,5 +21,5 @@ package net.hasor.cobble.concurrent.future;
  */
 public interface Cancellable {
     /** 取消调用 */
-    public boolean cancel();
+    boolean cancel();
 }

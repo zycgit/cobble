@@ -1,4 +1,5 @@
 package net.hasor.cobble;
+import net.hasor.cobble.i18n.I18nUtils;
 import org.junit.Test;
 
 import java.io.IOException;

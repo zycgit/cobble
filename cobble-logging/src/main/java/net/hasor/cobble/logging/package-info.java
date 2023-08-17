@@ -15,5 +15,6 @@
  */
 /**
  * Base package for logging.
+ * <p>source code form mybatis.</p>
  */
 package net.hasor.cobble.logging;

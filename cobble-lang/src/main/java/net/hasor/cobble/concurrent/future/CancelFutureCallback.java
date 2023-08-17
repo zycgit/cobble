@@ -21,5 +21,5 @@ package net.hasor.cobble.concurrent.future;
  */
 public interface CancelFutureCallback<T> extends FutureCallback<T> {
     /** 执行被取消 */
-    public void cancelled();
+    void cancelled();
 }

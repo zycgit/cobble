@@ -21,24 +21,24 @@ public interface Timeout {
     /**
      * Returns the {@link Timer} that created this handle.
      */
-    public Timer timer();
+    Timer timer();
 
     /**
      * Returns the {@link TimerTask} which is associated with this handle.
      */
-    public TimerTask task();
+    TimerTask task();
 
     /**
      * Returns {@code true} if and only if the {@link TimerTask} associated
      * with this handle has been expired.
      */
-    public boolean isExpired();
+    boolean isExpired();
 
     /**
      * Returns {@code true} if and only if the {@link TimerTask} associated
      * with this handle has been cancelled.
      */
-    public boolean isCancelled();
+    boolean isCancelled();
 
     /**
      * Attempts to cancel the {@link TimerTask} associated with this handle.
@@ -47,5 +47,5 @@ public interface Timeout {
      *
      * @return True if the cancellation completed successfully, otherwise false
      */
-    public boolean cancel();
+    boolean cancel();
 }
