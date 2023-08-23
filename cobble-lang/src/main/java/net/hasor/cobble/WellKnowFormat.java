@@ -15,6 +15,8 @@
  */
 package net.hasor.cobble;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.TemporalAccessor;
@@ -129,7 +131,12 @@ public enum WellKnowFormat {
     }
 
     public String format(Date date) {
-        return (date == null) ? null : this.ofPattern.format(date.toInstant());
+        if (date == null) {
+            return null;
+        } else {
+            ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.systemDefault());
+            return this.ofPattern.format(zonedDateTime);
+        }
     }
 
     public String format(TemporalAccessor temporal) {
