@@ -98,7 +98,8 @@ public class I18nUtils {
     }
 
     private static class I18nMessageSourceImpl implements I18nMessageSource {
-        private final Map<String, Map<Locale, String>> i18nDictionary = new ConcurrentHashMap<>();
+        private final Map<String, String>              defaultDictionary = new ConcurrentHashMap<>();
+        private final Map<String, Map<Locale, String>> i18nDictionary    = new ConcurrentHashMap<>();
 
         @Override
         public String getMessage(String code, Object[] args, Locale locale) {
@@ -108,9 +109,16 @@ public class I18nUtils {
 
             Map<Locale, String> localeMap = this.i18nDictionary.get(code);
             if (localeMap == null || !localeMap.containsKey(locale)) {
+                if (this.defaultDictionary.containsKey(code)) {
+                    return this.defaultDictionary.get(code);
+                }
                 return null;
             }
             return localeMap.get(locale);
+        }
+
+        public void putDictionary(String code, String message) {
+            this.defaultDictionary.put(code, message);
         }
 
         public void putDictionary(String code, Locale locale, String message) {
@@ -185,10 +193,22 @@ public class I18nUtils {
             throw new UnsupportedOperationException("I18nMessageSource is external.");
         }
 
+        resourceLoader = resourceLoader == null ? ClassUtils.getClassLoader(Thread.currentThread().getContextClassLoader()) : resourceLoader;
+
         for (String i18n : i18nResources) {
             if (!this.i18nSource.containsKey(i18n)) {
-                resourceLoader = resourceLoader == null ? ClassUtils.getClassLoader(Thread.currentThread().getContextClassLoader()) : resourceLoader;
                 this.i18nSource.put(i18n, resourceLoader);
+                
+                String i18nResource = i18n + ".properties";
+                try (InputStream stream = ResourcesUtils.getResourceAsStream(resourceLoader, i18nResource)) {
+                    if (stream != null) {
+                        Properties properties = new Properties();
+                        properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
+                        properties.forEach((key, value) -> {
+                            ((I18nMessageSourceImpl) this.messageSource).putDictionary(key.toString(), value.toString());
+                        });
+                    }
+                }
             }
         }
     }
