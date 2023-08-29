@@ -270,7 +270,7 @@ public abstract class AbstractSettings implements Settings {
         if (oriDataArray == null || oriDataArray.length == 0) {
             return new Date[0];
         }
-        //
+
         DateFormat dateFormat = new SimpleDateFormat(format);
         dateFormat.setLenient(false);
         Date[] parsedDate = new Date[oriDataArray.length];

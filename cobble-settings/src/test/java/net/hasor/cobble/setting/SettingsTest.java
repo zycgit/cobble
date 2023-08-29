@@ -15,7 +15,6 @@
  */
 package net.hasor.cobble.setting;
 import net.hasor.cobble.setting.enums.SelectEnum;
-import net.hasor.cobble.setting.provider.ConfigSource;
 import net.hasor.cobble.setting.provider.StreamType;
 import org.junit.Test;
 
@@ -32,17 +31,12 @@ public class SettingsTest {
     @Test
     public void mapTest() throws IOException {
         MergedSettings inputStreamSettings = new MergedSettings();
-        assert inputStreamSettings.loadSettings() == 0;
+        inputStreamSettings.refresh();
 
         StringReader ins = new StringReader(new String(new byte[] { 0, 0, 0 }));
 
-        ConfigSource configSource = new ConfigSource(StreamType.Xml, () -> ins);
-        assert inputStreamSettings.addConfigSource(configSource);
-        assert !inputStreamSettings.addConfigSource(configSource);
-        assert !inputStreamSettings.addConfigSource(new ConfigSource(null, () -> null));
-
         try {
-            inputStreamSettings.loadSettings();
+            inputStreamSettings.loadReader(ins, StreamType.Xml);
             assert false;
         } catch (IOException e) {
             assert e.getMessage().startsWith("parsing failed -> ");
@@ -271,7 +265,7 @@ public class SettingsTest {
     @Test
     public void conflictTest1() throws IOException {
         MergedSettings settings = new MergedSettings();
-        settings.addResource("/net_hasor_core_settings/conflict-config.xml", StreamType.Xml);
+        settings.loadResource("/net_hasor_core_settings/conflict-config.xml", StreamType.Xml);
         settings.loadSettings();
 
         assert settings.getBoolean("hasor.debug");

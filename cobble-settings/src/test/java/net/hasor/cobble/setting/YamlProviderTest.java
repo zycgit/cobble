@@ -31,7 +31,7 @@ public class YamlProviderTest {
 
         YamlSettingsReader reader = new YamlSettingsReader();
         BasicSettings settings = new BasicSettings();
-        reader.readSetting(() -> settingReader, settings);
+        reader.readSetting(settingReader, settings);
 
         assert settings.getString("mySelf.myName").equals("赵永春");
         assert settings.getString("myself.myname") == null;
@@ -53,7 +53,7 @@ public class YamlProviderTest {
 
         YamlSettingsReader reader = new YamlSettingsReader();
         BasicSettings settings = new BasicSettings();
-        reader.readSetting(() -> settingReader, settings);
+        reader.readSetting(settingReader, settings);
 
         assert settings.getString("arrays").equals("b");
         assert settings.getStringArray("arrays")[0].equals("a");

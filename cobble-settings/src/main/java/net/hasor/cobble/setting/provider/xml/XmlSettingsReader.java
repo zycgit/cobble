@@ -17,7 +17,6 @@
  */
 package net.hasor.cobble.setting.provider.xml;
 import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -35,19 +34,14 @@ import java.io.Reader;
  */
 public class XmlSettingsReader implements SettingsReader {
     @Override
-    public void readSetting(ResourceReader resourceReader, Settings readTo) throws IOException {
-        Reader reader = resourceReader.getReader();
-        readXml(reader, readTo);
-    }
-
-    protected void readXml(Reader dataReader, Settings readTo) throws IOException {
+    public void readSetting(Reader reader, Settings readTo) throws IOException {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
             factory.setFeature("http://xml.org/sax/features/namespaces", true);
             SAXParser parser = factory.newSAXParser();
             SaxXmlParser handler = new SaxXmlParser(readTo);
-            InputSource inputSource = new InputSource(dataReader);
+            InputSource inputSource = new InputSource(reader);
             parser.parse(inputSource, handler);
         } catch (SAXException | ParserConfigurationException e) {
             throw new IOException("parsing failed -> " + e.getMessage(), e);

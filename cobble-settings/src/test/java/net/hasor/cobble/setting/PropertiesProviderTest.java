@@ -31,7 +31,7 @@ public class PropertiesProviderTest {
 
         PropertiesSettingsReader reader = new PropertiesSettingsReader();
         BasicSettings settings = new BasicSettings();
-        reader.readSetting(() -> settingReader, settings);
+        reader.readSetting(settingReader, settings);
 
         assert settings.getString("mySelf.myName").equals("赵永春");
         assert settings.getString("myself.myname") == null;

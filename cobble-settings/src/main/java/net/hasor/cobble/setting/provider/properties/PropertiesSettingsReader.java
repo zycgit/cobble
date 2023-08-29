@@ -17,7 +17,6 @@
  */
 package net.hasor.cobble.setting.provider.properties;
 import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
 
 import java.io.IOException;
@@ -31,8 +30,7 @@ import java.util.Properties;
  */
 public class PropertiesSettingsReader implements SettingsReader {
     @Override
-    public void readSetting(ResourceReader resourceReader, Settings readTo) throws IOException {
-        Reader reader = resourceReader.getReader();
+    public void readSetting(Reader reader, Settings readTo) throws IOException {
         Properties properties = new Properties();
         properties.load(reader);
         loadProperties(readTo, properties);

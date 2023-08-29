@@ -16,16 +16,13 @@
 package net.hasor.cobble.setting;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.io.input.AutoCloseInputStream;
 import net.hasor.cobble.setting.provider.StreamType;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 /**
  * 继承自{@link MergedSettings}父类。
@@ -36,29 +33,20 @@ public class DefaultSettings extends MergedSettings {
     private URI settingURI;
 
     /**创建{@link DefaultSettings}类型对象。*/
-    public DefaultSettings() throws IOException, URISyntaxException {
-        this("");
-    }
-
-    /**创建{@link DefaultSettings}类型对象。*/
-    public DefaultSettings(Reader mainSettings, StreamType type) throws IOException {
-        this.addReader(mainSettings, type);
+    public DefaultSettings() throws IOException {
         refresh();
     }
 
     /**创建{@link DefaultSettings}类型对象。*/
     public DefaultSettings(String mainSettings) throws IOException, URISyntaxException {
         if (StringUtils.isNotBlank(mainSettings)) {
-            URL url = ResourcesUtils.getResource(mainSettings);
-            if (url != null) {
-                this.settingURI = url.toURI();
-            }
+            this.settingURI = new URI("classpath:" + mainSettings);
         }
         refresh();
     }
 
     /**创建{@link DefaultSettings}类型对象。*/
-    public DefaultSettings(final File mainSettings) throws IOException {
+    public DefaultSettings(File mainSettings) throws IOException {
         if (mainSettings != null) {
             this.settingURI = mainSettings.toURI();
         }
@@ -66,7 +54,7 @@ public class DefaultSettings extends MergedSettings {
     }
 
     /**创建{@link DefaultSettings}类型对象。*/
-    public DefaultSettings(final URI mainSettings) throws IOException {
+    public DefaultSettings(URI mainSettings) throws IOException {
         if (mainSettings != null) {
             this.settingURI = mainSettings;
         }
@@ -79,35 +67,23 @@ public class DefaultSettings extends MergedSettings {
     }
 
     @Override
-    protected void readyLoad() throws IOException {
-        super.readyLoad();
-        URI settingConfig = getSettingURI();
-        if (settingConfig != null) {
-            try (InputStream stream = ResourcesUtils.getResourceAsStream(settingConfig)) {
+    protected void loadSettings() throws IOException {
+        URI configURI = getSettingURI();
+        if (configURI != null) {
+            try (InputStream stream = ResourcesUtils.getResourceAsStream(configURI)) {
                 if (stream != null) {
-                    _addStream(settingConfig.toURL());
+                    String lowerCase = configURI.toString().toLowerCase();
+                    if (lowerCase.endsWith(".xml")) {
+                        this.loadStream(stream, StreamType.Xml);
+                    } else if (lowerCase.endsWith(".yaml") || lowerCase.endsWith(".yml")) {
+                        this.loadStream(stream, StreamType.Yaml);
+                    } else {
+                        this.loadStream(stream, StreamType.Properties);
+                    }
                 }
             }
         }
-    }
 
-    private void _addStream(URL resourceUrl) throws IOException {
-        AutoCloseInputStream inputStream = new AutoCloseInputStream(resourceUrl.openStream());
-        String lowerCase = resourceUrl.toString().toLowerCase();
-
-        if (lowerCase.endsWith(".xml")) {
-            this.addStream(inputStream, StreamType.Xml);
-        } else if (lowerCase.endsWith(".yaml") || lowerCase.endsWith(".yml")) {
-            this.addStream(inputStream, StreamType.Yaml);
-        } else {
-            this.addStream(inputStream, StreamType.Properties);
-        }
-    }
-
-    @Override
-    public void refresh() throws IOException {
-        this.cleanData();
-        this.loadSettings();
-        super.refresh();
+        super.loadSettings();
     }
 }

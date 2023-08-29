@@ -19,6 +19,7 @@ package net.hasor.cobble.setting.provider;
 import net.hasor.cobble.setting.Settings;
 
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  *
@@ -26,5 +27,5 @@ import java.io.IOException;
  * @author 赵永春 (zyc@byshell.org)
  */
 public interface SettingsReader {
-    void readSetting(ResourceReader configSource, Settings readTo) throws IOException;
+    void readSetting(Reader reader, Settings readTo) throws IOException;
 }

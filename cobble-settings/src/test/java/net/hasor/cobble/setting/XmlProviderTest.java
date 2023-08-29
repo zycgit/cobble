@@ -32,7 +32,7 @@ public class XmlProviderTest {
 
         XmlSettingsReader reader = new XmlSettingsReader();
         BasicSettings settings = new BasicSettings();
-        reader.readSetting(() -> settingReader, settings);
+        reader.readSetting(settingReader, settings);
 
         assert settings.getString("mySelf.myName").equals("赵永春");
         assert settings.getString("myself.myname") == null;
@@ -54,8 +54,7 @@ public class XmlProviderTest {
                 "</config>";
 
         MergedSettings settings = new MergedSettings();
-        settings.addStringBody(data, StreamType.Xml);
-        settings.loadSettings();
+        settings.loadStringBody(data, StreamType.Xml);
 
         Boolean aBoolean = settings.getBoolean("hasor.debug");
         Boolean[] aBooleanArray = settings.getBooleanArray("hasor.debug");
@@ -68,9 +67,8 @@ public class XmlProviderTest {
     @Test
     public void xmlTest_3() throws Exception {
         MergedSettings settings = new MergedSettings();
-        settings.addResource("classpath:/net_hasor_core_settings/ns1-config.xml", StreamType.Xml);
-        settings.addResource("classpath:/net_hasor_core_settings/ns2-config.xml", StreamType.Xml);
-        settings.loadSettings();
+        settings.loadResource("classpath:/net_hasor_core_settings/ns1-config.xml", StreamType.Xml);
+        settings.loadResource("classpath:/net_hasor_core_settings/ns2-config.xml", StreamType.Xml);
 
         Settings ns1 = settings.getSettings("http://mode1.myProject.net");
         Settings ns2 = settings.getSettings("http://mode2.myProject.net");
@@ -82,8 +80,7 @@ public class XmlProviderTest {
     @Test
     public void xmlTest_4() throws Exception {
         MergedSettings settings = new MergedSettings();
-        settings.addResource("classpath:/net_hasor_core_settings/ns-all-config.xml", StreamType.Xml);
-        settings.loadSettings();
+        settings.loadResource("classpath:/net_hasor_core_settings/ns-all-config.xml", StreamType.Xml);
 
         Settings ns1 = settings.getSettings("http://mode1.myProject.net");
         Settings ns2 = settings.getSettings("http://mode2.myProject.net");
@@ -95,8 +92,7 @@ public class XmlProviderTest {
     @Test
     public void xmlTest_5() throws Exception {
         MergedSettings settings = new MergedSettings();
-        settings.addResource("classpath:/net_hasor_core_settings/main-ns-config.xml", StreamType.Xml);
-        settings.loadSettings();
+        settings.loadResource("classpath:/net_hasor_core_settings/main-ns-config.xml", StreamType.Xml);
 
         assert settings.getString("appSettings.serverLocal.url").equals("www.google.com");
     }

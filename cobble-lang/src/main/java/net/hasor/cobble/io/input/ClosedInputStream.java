@@ -24,7 +24,6 @@ import java.io.InputStream;
  * Typically uses of this class include testing for corner cases in methods
  * that accept input streams and acting as a sentinel value instead of a
  * {@code null} input stream.
- *
  * @version $Id: ClosedInputStream.java 1307459 2012-03-30 15:11:44Z ggregory $
  * @since 1.4
  */
@@ -36,7 +35,6 @@ public class ClosedInputStream extends InputStream {
 
     /**
      * Returns -1 to indicate that the stream is closed.
-     *
      * @return always -1
      */
     @Override

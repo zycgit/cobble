@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import net.hasor.cobble.io.FileUtils;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
 
 import java.io.File;
@@ -31,8 +30,8 @@ import java.util.zip.ZipEntry;
 
 /**
  * 资源加载工具类，所有方法均是程序级优先。
- * @version 2010-9-24
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2010-9-24
  */
 public class ResourcesUtils {
     /*------------------------------------------------------------------------------*/
@@ -49,12 +48,12 @@ public class ResourcesUtils {
         return Thread.currentThread().getContextClassLoader();
     }
 
-    /** 合成所有属性文件的配置信息到一个{@link Map}接口中。*/
+    /** 合成所有属性文件的配置信息到一个{@link Map}接口中。 */
     public static Map<String, String> getProperty(final String[] resourcePaths) throws IOException {
         return getProperty(Arrays.asList(resourcePaths).iterator());
     }
 
-    /** 合成所有属性文件的配置信息到一个{@link Map}接口中。*/
+    /** 合成所有属性文件的配置信息到一个{@link Map}接口中。 */
     public static Map<String, String> getProperty(final Iterator<String> iterator) throws IOException {
         if (iterator == null) {
             return null;
@@ -70,12 +69,12 @@ public class ResourcesUtils {
         return fullData;
     }
 
-    /** 读取一个属性文件，并且以{@link Map}接口的形式返回。*/
+    /** 读取一个属性文件，并且以{@link Map}接口的形式返回。 */
     public static Map<String, String> getProperty(final String resourcePath) throws IOException {
         return getProperty(getCurrentLoader(), resourcePath);
     }
 
-    /** 读取一个属性文件，并且以{@link Map}接口的形式返回。*/
+    /** 读取一个属性文件，并且以{@link Map}接口的形式返回。 */
     public static Map<String, String> getProperty(final ClassLoader classLoader, final String resourcePath) throws IOException {
         Properties prop = new Properties();
         InputStream in = getResourceAsStream(classLoader, resourcePath);
@@ -93,7 +92,7 @@ public class ResourcesUtils {
 
     /*------------------------------------------------------------------------------*/
 
-    /** 获取 classpath 中可能存在的资源。*/
+    /** 获取 classpath 中可能存在的资源。 */
     public static URL getResource(String resourcePath) throws IOException {
         if (StringUtils.isBlank(resourcePath)) {
             return null;
@@ -109,18 +108,18 @@ public class ResourcesUtils {
         }
     }
 
-    /** 获取 classpath 中可能存在的资源。*/
+    /** 获取 classpath 中可能存在的资源。 */
     public static URL getResource(ClassLoader classLoader, String resourcePath) throws IOException {
         resourcePath = formatResource(resourcePath);
         return classLoader.getResource(resourcePath);
     }
 
-    /** 获取 classpath 中可能存在的资源列表。*/
+    /** 获取 classpath 中可能存在的资源列表。 */
     public static List<URL> getResources(String resourcePath) throws IOException {
         return getResources(getCurrentLoader(), resourcePath);
     }
 
-    /** 获取 classpath 中可能存在的资源列表。*/
+    /** 获取 classpath 中可能存在的资源列表。 */
     public static List<URL> getResources(ClassLoader classLoader, String resourcePath) throws IOException {
         if (resourcePath == null) {
             return new ArrayList<>(0);
@@ -138,17 +137,17 @@ public class ResourcesUtils {
 
     /*------------------------------------------------------------------------------*/
 
-    /** 获取可能存在的资源，以流的形式返回。*/
+    /** 获取可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(File resourceFile) throws IOException {
         return getResourceAsStream(getCurrentLoader(), resourceFile.toURI().toURL());
     }
 
-    /** 获取classpath中可能存在的资源，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(URI resourceURI) throws IOException {
         return getResourceAsStream(getCurrentLoader(), resourceURI.toURL());
     }
 
-    /** 获取classpath中可能存在的资源，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(String resourcePath) throws IOException {
         URL resource = getResource(resourcePath);
         if (resource == null) {
@@ -157,17 +156,17 @@ public class ResourcesUtils {
         return getResourceAsStream(getCurrentLoader(), resource);
     }
 
-    /** 获取classpath中可能存在的资源，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(URL resourceURL) throws IOException {
         return getResourceAsStream(getCurrentLoader(), resourceURL);
     }
 
-    /** 获取classpath中可能存在的资源，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(ClassLoader classLoader, URI resourceURI) throws IOException {
         return getResourceAsStream(classLoader, resourceURI.toURL());
     }
 
-    /**获取classpath中可能存在的资源，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(ClassLoader classLoader, String resourcePath) throws IOException {
         resourcePath = formatResource(resourcePath);
         URL resource;
@@ -184,7 +183,7 @@ public class ResourcesUtils {
         return getResourceAsStream(classLoader, resource);
     }
 
-    /** 获取classpath中可能存在的资源，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(ClassLoader classLoader, URL resourceURL) throws IOException {
         String protocol = resourceURL.getProtocol().trim().toLowerCase();
         switch (protocol) {
@@ -194,7 +193,8 @@ public class ResourcesUtils {
                 return new AutoCloseInputStream(resourceURL.openStream());
             }
             case "file": {
-                File targetFile = FileUtils.toFile(resourceURL);
+                String substring = resourceURL.toString().substring(5);
+                File targetFile = new File(substring);
                 if (targetFile.exists()) {
                     if (targetFile.canRead() && targetFile.isFile()) {
                         return new AutoCloseInputStream(Files.newInputStream(targetFile.toPath()));
@@ -214,7 +214,13 @@ public class ResourcesUtils {
                 ZipEntry e = jar.getEntry(entPath);
                 return new AutoCloseInputStream(jar.getInputStream(e));
             }
-            case "classpath":
+            case "classpath": {
+                if (classLoader == null) {
+                    classLoader = Thread.currentThread().getContextClassLoader();
+                }
+                String resource = formatResource(resourceURL.toString().substring(10));// "classpath:" length is 10
+                return classLoader.getResourceAsStream(resource);
+            }
             default: {
                 if (classLoader == null) {
                     classLoader = Thread.currentThread().getContextClassLoader();
@@ -224,12 +230,12 @@ public class ResourcesUtils {
         }
     }
 
-    /** 获取classpath中可能存在的资源列表，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源列表，以流的形式返回。 */
     public static List<InputStream> getResourceAsStreamList(String resourcePath) throws IOException {
         return getResourceAsStreamList(getCurrentLoader(), resourcePath);
     }
 
-    /** 获取classpath中可能存在的资源列表，以流的形式返回。*/
+    /** 获取classpath中可能存在的资源列表，以流的形式返回。 */
     public static List<InputStream> getResourceAsStreamList(ClassLoader classLoader, String resourcePath) throws IOException {
         ArrayList<InputStream> iss = new ArrayList<>();
         List<URL> urls = getResources(classLoader, resourcePath);

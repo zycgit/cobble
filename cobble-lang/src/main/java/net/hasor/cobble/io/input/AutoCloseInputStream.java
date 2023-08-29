@@ -1,9 +1,10 @@
 /*
- * Copyright 2008-2009 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,84 +15,79 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.input;
+import net.hasor.cobble.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * 具有自动关闭的输入流
- * @version 2009-5-13
- * @author 赵永春 (zyc@hasor.net)
+ * Proxy stream that closes and discards the underlying stream as soon as the
+ * end of input has been reached or when the stream is explicitly closed.
+ * Not even a reference to the underlying stream is kept after it has been
+ * closed, so any allocated in-memory buffers can be freed even if the
+ * client application still keeps a reference to the proxy stream.
+ * <p>
+ * This class is typically used to release any resources related to an open
+ * stream as soon as possible even if the client application (by not explicitly
+ * closing the stream when no longer needed) or the underlying stream (by not
+ * releasing resources once the last byte has been read) do not do that.
+ *
+ * @version $Id: AutoCloseInputStream.java 1586350 2014-04-10 15:57:20Z ggregory $
+ * @since 1.4
  */
-public class AutoCloseInputStream extends InputStream {
-    /** 目标读取的流 */
-    private InputStream in    = null;
-    /** 目标读取的流 */
-    private boolean     close = false;
-    //========================================================================================
+public class AutoCloseInputStream extends ProxyInputStream {
 
     /**
-     * 创建自动关闭的输入流
-     * @param in 读取的目标流
+     * Creates an automatically closing proxy for the given input stream.
+     *
+     * @param in underlying input stream
      */
     public AutoCloseInputStream(final InputStream in) {
-        this.in = in;
+        super(in);
     }
-    //========================================================================================
 
     /**
-     * 如果读取的目标流已经读取到末尾则自动关闭该流，并且对于已经关闭的流调用该方法将始终返回-1。
-     * @return 如果读取的目标流已经读取到末尾则自动关闭该流，并且对于已经关闭的流调用该方法将始终返回-1。
+     * Closes the underlying input stream and replaces the reference to it
+     * with a {@link ClosedInputStream} instance.
+     * <p>
+     * This method is automatically called by the read methods when the end
+     * of input has been reached.
+     * <p>
+     * Note that it is safe to call this method any number of times. The original
+     * underlying input stream is closed and discarded only once when this
+     * method is first called.
+     *
+     * @throws IOException if the underlying input stream can not be closed
      */
     @Override
-    public int read() throws IOException {
-        if (this.close) {
-            return -1;
-        }
-        int read = this.in.read();
-        if (read == -1) {
-            this.close();
-        }
-        return read;
-    }
-
-    @Override
-    public int available() throws IOException {
-        return this.in.available();
-    }
-
-    @Override
     public void close() throws IOException {
-        this.in.close();
-        this.close = true;
+        in.close();
+        in = new ClosedInputStream();
     }
 
+    /**
+     * Automatically closes the stream if the end of stream was reached.
+     *
+     * @param n number of bytes read, or -1 if no more bytes are available
+     * @throws IOException if the stream could not be closed
+     * @since 2.0
+     */
     @Override
-    public synchronized void mark(final int readlimit) {
-        this.in.mark(readlimit);
+    protected void afterRead(final int n) throws IOException {
+        if (n == IOUtils.EOF) {
+            close();
+        }
     }
 
+    /**
+     * Ensures that the stream is closed before it gets garbage-collected.
+     * As mentioned in {@link #close()}, this is a no-op if the stream has
+     * already been closed.
+     * @throws Throwable if an error occurs
+     */
     @Override
-    public boolean markSupported() {
-        return this.in.markSupported();
-    }
-
-    @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
-        return this.in.read(b, off, len);
-    }
-
-    @Override
-    public int read(final byte[] b) throws IOException {
-        return this.in.read(b);
-    }
-
-    @Override
-    public synchronized void reset() throws IOException {
-        this.in.reset();
-    }
-
-    @Override
-    public long skip(final long n) throws IOException {
-        return this.in.skip(n);
+    protected void finalize() throws Throwable {
+        close();
+        super.finalize();
     }
 }

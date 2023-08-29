@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 
 /**
  * Settings接口的抽象实现。
- * @version : 2013-4-2
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-2
  */
 public class BasicSettings extends AbstractSettings implements Settings {
     protected static Logger                logger  = LoggerFactory.getLogger(BasicSettings.class);
@@ -48,25 +48,38 @@ public class BasicSettings extends AbstractSettings implements Settings {
         return this.envMap;
     }
 
-    @Override
-    public void refresh() throws IOException {
+    /** 清空已经装载的所有数据 */
+    protected void cleanData() {
+        this.envMap().clear();
+        this.allSettingValue().clear();
+    }
+
+    /** 加载预定义的环境变量 */
+    protected void loadEnvironment() throws IOException {
         // 1st，System.getProperties()
         Properties prop = System.getProperties();
         for (Object propKey : prop.keySet()) {
             String k = propKey.toString();
             Object v = prop.get(propKey);
             if (v != null) {
-                this.envMap.put(k.toUpperCase(), v.toString());
+                envMap().put(k.toUpperCase(), v.toString());
             }
         }
 
-        // .2st，System.getenv()
+        // 2st，System.getenv()
         Map<String, String> envMap = System.getenv();
         for (String key : envMap.keySet()) {
-            this.envMap.put(key.toUpperCase(), envMap.get(key));
+            envMap().put(key.toUpperCase(), envMap.get(key));
         }
+    }
 
-        // replace environment variable in config
+    /** 加载预定义的配置信息 */
+    protected void loadSettings() throws IOException {
+
+    }
+
+    /** replace environment variable in config */
+    protected void updateSettings() {
         Collection<TreeNode> valueSet = this.allSettingValue().values();
         for (TreeNode sv : valueSet) {
             sv.update((dataNode, context) -> {
@@ -80,6 +93,14 @@ public class BasicSettings extends AbstractSettings implements Settings {
                 }
             }, this);
         }
+    }
+
+    @Override
+    public void refresh() throws IOException {
+        this.cleanData();
+        this.loadEnvironment();
+        this.loadSettings();
+        this.updateSettings();
     }
 
     public String evalSetting(String evalString) {
@@ -122,10 +143,11 @@ public class BasicSettings extends AbstractSettings implements Settings {
         Pattern keyPattern = Pattern.compile("(?:%([\\w\\._-]+)%){1,1}");//  (?:%([\w\._-]+)%)
         Matcher keyM = keyPattern.matcher(evalString);
         Map<String, String> data = new HashMap<>();
+        Map<String, String> envMap = this.envMap();
         while (keyM.find()) {
             String varKeyOri = keyM.group(1);
             String keyName = "%" + varKeyOri + "%";
-            String var = this.envMap.get(varKeyOri.toUpperCase());
+            String var = envMap.get(varKeyOri.toUpperCase());
             if (var == null) {
                 data.put(keyName, "");
             } else {
@@ -238,13 +260,6 @@ public class BasicSettings extends AbstractSettings implements Settings {
         } else {
             String valueStr = (value == null) ? null : value.toString();
             dataNode.addValue(key.trim(), valueStr);
-        }
-    }
-
-    /** 清空已经装载的所有数据 */
-    protected void cleanData() {
-        for (TreeNode dataNode : this.allSettingValue().values()) {
-            dataNode.clear();
         }
     }
 

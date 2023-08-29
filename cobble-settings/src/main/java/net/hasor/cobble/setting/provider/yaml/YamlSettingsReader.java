@@ -19,7 +19,6 @@ package net.hasor.cobble.setting.provider.yaml;
 import net.hasor.cobble.setting.SettingNode;
 import net.hasor.cobble.setting.Settings;
 import net.hasor.cobble.setting.data.TreeNode;
-import net.hasor.cobble.setting.provider.ResourceReader;
 import net.hasor.cobble.setting.provider.SettingsReader;
 import org.yaml.snakeyaml.Yaml;
 
@@ -36,8 +35,7 @@ import java.util.stream.Collectors;
  */
 public class YamlSettingsReader implements SettingsReader {
     @Override
-    public void readSetting(ResourceReader resourceReader, Settings readTo) throws IOException {
-        Reader reader = resourceReader.getReader();
+    public void readSetting(Reader reader, Settings readTo) throws IOException {
         Object yamlConfig = new Yaml().load(reader);
         loadYaml(readTo, yamlConfig);
     }

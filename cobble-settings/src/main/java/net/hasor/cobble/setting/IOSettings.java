@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
+import net.hasor.cobble.setting.provider.StreamType;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.nio.charset.Charset;
 
 /**
  * 需要经过解析读取配置文件资源的{@link  Settings}
- * @version : 2013-9-9
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-9-9
  */
 public interface IOSettings extends Settings {
-    /** 装载配置文件 */
-    int loadSettings() throws IOException;
+    void loadResource(String mainSettings, StreamType type) throws IOException;
+
+    void loadStream(InputStream mainSettings, StreamType type) throws IOException;
+
+    void loadStream(InputStream mainSettings, Charset charset, StreamType type) throws IOException;
+
+    void loadStringBody(String mainSettings, StreamType type) throws IOException;
+
+    void loadReader(Reader mainSettings, StreamType type) throws IOException;
 }

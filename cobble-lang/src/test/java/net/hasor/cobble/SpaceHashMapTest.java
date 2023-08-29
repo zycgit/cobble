@@ -46,7 +46,7 @@ public class SpaceHashMapTest {
         assert spaceMap.remove("ccc", "key_a") == null;
         assert spaceMap.keySet("ccc").size() == 0;
         //
-        assert spaceMap.size() == 7;
+        assert spaceMap.size() == 5;
         assert spaceMap.size("aaa") == 3;
         assert spaceMap.size("bbb") == 4;
         assert spaceMap.size("ccc") == 0;
@@ -67,7 +67,7 @@ public class SpaceHashMapTest {
         assert keyB.size() == 2 && keyB.contains("k2") && keyB.contains("k4");
         //
         assert spaceMap.remove("aaa", "key_b") != null;
-        assert spaceMap.size() == 6;
+        assert spaceMap.size() == 5;
         Set<String> valuesA = spaceMap.valueSet("aaa");
         assert valuesA.size() == 2 && valuesA.contains("k1") && valuesA.contains("k3");
         //

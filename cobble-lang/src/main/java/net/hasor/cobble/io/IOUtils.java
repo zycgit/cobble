@@ -63,31 +63,31 @@ public class IOUtils {
     // NOTE: This class is focussed on InputStream, OutputStream, Reader and
     // Writer. Each method should take at least one of these as a parameter,
     // or return one of them.
-    private static final int    EOF                    = -1;
+    public static final int    EOF                    = -1;
     /**
      * The Unix directory separator character.
      */
-    public static final  char   DIR_SEPARATOR_UNIX     = '/';
+    public static final char   DIR_SEPARATOR_UNIX     = '/';
     /**
      * The Windows directory separator character.
      */
-    public static final  char   DIR_SEPARATOR_WINDOWS  = '\\';
+    public static final char   DIR_SEPARATOR_WINDOWS  = '\\';
     /**
      * The system directory separator character.
      */
-    public static final  char   DIR_SEPARATOR          = File.separatorChar;
+    public static final char   DIR_SEPARATOR          = File.separatorChar;
     /**
      * The Unix line separator string.
      */
-    public static final  String LINE_SEPARATOR_UNIX    = "\n";
+    public static final String LINE_SEPARATOR_UNIX    = "\n";
     /**
      * The Windows line separator string.
      */
-    public static final  String LINE_SEPARATOR_WINDOWS = "\r\n";
+    public static final String LINE_SEPARATOR_WINDOWS = "\r\n";
     /**
      * The system line separator string.
      */
-    public static final  String LINE_SEPARATOR;
+    public static final String LINE_SEPARATOR;
 
     static {
         // avoid security issues

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2020-04-19
  */
@@ -33,7 +32,7 @@ public class ResourcesUtilsTest {
 
     @Test
     public void getResourceTest2() throws IOException {
-        InputStream resource = ResourcesUtils.getResourceAsStream("classpath:/META-INF/NOTICE.txt");
+        InputStream resource = ResourcesUtils.getResourceAsStream("classpath:/META-INF/License.ASF20.txt");
         assert resource != null;
     }
 }

@@ -13,16 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.setting.provider;
-import java.io.IOException;
-import java.io.Reader;
-
-/***
- *
- * @version : 2021-12-27
- * @author 赵永春 (zyc@byshell.org)
- */
-@FunctionalInterface
-public interface ResourceReader {
-    public Reader getReader() throws IOException;
+package sun.net.www.protocol.jar;
+public class Handler extends net.hasor.cobble.loader.jar.Handler {
 }
