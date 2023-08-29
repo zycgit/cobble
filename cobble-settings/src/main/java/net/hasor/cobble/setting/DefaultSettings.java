@@ -26,18 +26,18 @@ import java.net.URISyntaxException;
 
 /**
  * 继承自{@link MergedSettings}父类。
- * @version : 2013-9-9
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-9-9
  */
 public class DefaultSettings extends MergedSettings {
     private URI settingURI;
 
-    /**创建{@link DefaultSettings}类型对象。*/
+    /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings() throws IOException {
         refresh();
     }
 
-    /**创建{@link DefaultSettings}类型对象。*/
+    /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(String mainSettings) throws IOException, URISyntaxException {
         if (StringUtils.isNotBlank(mainSettings)) {
             this.settingURI = new URI("classpath:" + mainSettings);
@@ -45,7 +45,7 @@ public class DefaultSettings extends MergedSettings {
         refresh();
     }
 
-    /**创建{@link DefaultSettings}类型对象。*/
+    /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(File mainSettings) throws IOException {
         if (mainSettings != null) {
             this.settingURI = mainSettings.toURI();
@@ -53,7 +53,7 @@ public class DefaultSettings extends MergedSettings {
         refresh();
     }
 
-    /**创建{@link DefaultSettings}类型对象。*/
+    /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(URI mainSettings) throws IOException {
         if (mainSettings != null) {
             this.settingURI = mainSettings;
@@ -61,13 +61,15 @@ public class DefaultSettings extends MergedSettings {
         refresh();
     }
 
-    /**获取配置文件{@link URI}。*/
+    /** 获取配置文件{@link URI}。 */
     public URI getSettingURI() {
         return this.settingURI;
     }
 
     @Override
     protected void loadSettings() throws IOException {
+        super.loadSettings();
+
         URI configURI = getSettingURI();
         if (configURI != null) {
             try (InputStream stream = ResourcesUtils.getResourceAsStream(configURI)) {
