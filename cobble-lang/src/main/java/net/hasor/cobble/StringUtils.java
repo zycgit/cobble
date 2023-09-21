@@ -6215,22 +6215,39 @@ public class StringUtils {
 
     // Hump
     //-----------------------------------------------------------------------
-    private static final Pattern linePattern = Pattern.compile("_(\\w)");
     private static final Pattern humpPattern = Pattern.compile("[A-Z]");
 
-    /** 下划线转驼峰 */
-    public static String lineToHump(String str) {
-        if (str == null) {
-            return null;
+    /**
+     * Convert a column name with underscores to the corresponding property name using "camel case".
+     * A name like "customer_number" would match a "customerNumber" property name.
+     * @param name the column name to be converted
+     * @return the name using "camel case"
+     */
+    public static String lineToHump(String name) {
+        // copy from spring jdbc 6.0.12 JdbcUtils.convertUnderscoreNameToPropertyName
+        StringBuilder result = new StringBuilder();
+        boolean nextIsUpper = false;
+        if (name != null && name.length() > 0) {
+            if (name.length() > 1 && name.charAt(1) == '_') {
+                result.append(Character.toUpperCase(name.charAt(0)));
+            } else {
+                result.append(Character.toLowerCase(name.charAt(0)));
+            }
+            for (int i = 1; i < name.length(); i++) {
+                char c = name.charAt(i);
+                if (c == '_') {
+                    nextIsUpper = true;
+                } else {
+                    if (nextIsUpper) {
+                        result.append(Character.toUpperCase(c));
+                        nextIsUpper = false;
+                    } else {
+                        result.append(Character.toLowerCase(c));
+                    }
+                }
+            }
         }
-        str = str.toLowerCase();
-        Matcher matcher = linePattern.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+        return result.toString();
     }
 
     /** 驼峰转下划线 */

@@ -16,6 +16,8 @@
 package net.hasor.cobble.concurrent;
 import net.hasor.cobble.StringUtils;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,7 +49,18 @@ public class ThreadUtils {
         };
     }
 
-    public static Thread frontThread(final ClassLoader loader, Runnable runnable) {
+    //
+
+    /** 创建一个前台线程，不启动它 */
+    public static Thread frontThread(Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        t.setDaemon(false);
+        return t;
+    }
+
+    /** 创建一个前台线程，不启动它 */
+    public static Thread frontThread(ClassLoader loader, Runnable runnable) {
         Thread t = new Thread(runnable);
         t.setContextClassLoader(loader);
         t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
@@ -55,11 +68,82 @@ public class ThreadUtils {
         return t;
     }
 
-    public static Thread daemonThread(final ClassLoader loader, Runnable runnable) {
+    /** 创建一个后台线程，不启动它 */
+    public static Thread daemonThread(Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        t.setDaemon(true);
+        return t;
+    }
+
+    /** 创建一个后台线程，不启动它 */
+    public static Thread daemonThread(ClassLoader loader, Runnable runnable) {
         Thread t = new Thread(runnable);
         t.setContextClassLoader(loader);
         t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
         t.setDaemon(true);
         return t;
+    }
+
+    //
+
+    /** 创建一个前台线程，并启动它 */
+    public static Thread runFrontThread(Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        t.setDaemon(false);
+        t.start();
+        return t;
+    }
+
+    /** 创建一个前台线程，并启动它 */
+    public static Thread runFrontThread(ClassLoader loader, Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setContextClassLoader(loader);
+        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        t.setDaemon(false);
+        t.start();
+        return t;
+    }
+
+    /** 创建一个后台线程，并启动它 */
+    public static Thread runDaemonThread(Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
+
+    /** 创建一个后台线程，并启动它 */
+    public static Thread runDaemonThread(ClassLoader loader, Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setContextClassLoader(loader);
+        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
+
+    /** 创建一个 ExecutorService 使用固定数量的后台线程 */
+    public static ExecutorService daemonFixedThreadPool(final ClassLoader loader, int nThreads) {
+        ThreadFactory threadFactory = threadFactory(loader, "Thread-%s", true);
+        return Executors.newFixedThreadPool(nThreads, threadFactory);
+    }
+
+    /** 创建一个 ExecutorService 使用固定数量的前台线程 */
+    public static ExecutorService frontFixedThreadPool(final ClassLoader loader, int nThreads) {
+        ThreadFactory threadFactory = threadFactory(loader, "Thread-%s", false);
+        return Executors.newFixedThreadPool(nThreads, threadFactory);
+    }
+
+    public static void sleep(int intervalMillis) {
+        if (intervalMillis <= 0) {
+            return;
+        }
+        try {
+            Thread.sleep(intervalMillis);
+        } catch (Exception ignored) {
+        }
     }
 }
