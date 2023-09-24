@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.concurrent.future;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Basic implementation of the {@link Future} interface. <tt>BasicFuture<tt>
@@ -24,12 +29,16 @@ import java.util.concurrent.*;
  * @param <T> the future result type of an asynchronous operation.
  * @since 4.2
  */
-public class BasicFuture<T> implements Future<T>, Cancellable {
-    private final    FutureCallback<T> callback;
-    private volatile boolean           completed;
-    private volatile boolean           cancelled;
-    private volatile T                 result;
-    private volatile Throwable         ex;
+public class BasicFuture<T> implements Future<T> {
+    private final    FutureCallback<T>               callback;
+    private volatile List<FutureListener<Future<T>>> completedListener;
+    private volatile List<FutureListener<Future<T>>> failedListener;
+    private volatile List<FutureListener<Future<T>>> cancelListener;
+    private volatile List<FutureListener<Future<T>>> finalListener;
+    private volatile boolean                         completed;
+    private volatile boolean                         cancelled;
+    private volatile T                               result;
+    private volatile Throwable                       ex;
 
     public BasicFuture() {
         super();
@@ -73,6 +82,7 @@ public class BasicFuture<T> implements Future<T>, Cancellable {
         if (unit == null) {
             throw new NullPointerException("Time unit");
         }
+
         final long msecs = unit.toMillis(timeout);
         final long startTime = (msecs <= 0) ? 0 : System.currentTimeMillis();
         long waitTime = msecs;
@@ -104,9 +114,12 @@ public class BasicFuture<T> implements Future<T>, Cancellable {
             this.result = result;
             notifyAll();
         }
+
         if (this.callback != null) {
             this.callback.completed(result);
         }
+        this.triggerListener(this.completedListener);
+        this.triggerListener(this.finalListener);
         return true;
     }
 
@@ -119,9 +132,12 @@ public class BasicFuture<T> implements Future<T>, Cancellable {
             this.ex = exception;
             notifyAll();
         }
+
         if (this.callback != null) {
             this.callback.failed(exception);
         }
+        this.triggerListener(this.failedListener);
+        this.triggerListener(this.finalListener);
         return true;
     }
 
@@ -141,10 +157,109 @@ public class BasicFuture<T> implements Future<T>, Cancellable {
                 this.failed(new CancellationException());
             }
         }
+
+        this.triggerListener(this.cancelListener);
+        this.triggerListener(this.finalListener);
         return true;
     }
 
     public boolean cancel() {
         return cancel(true);
+    }
+
+    private void triggerListener(List<FutureListener<Future<T>>> listenerList) {
+        if (listenerList != null) {
+            for (FutureListener<Future<T>> callback : listenerList) {
+                callback.operationComplete(this);
+            }
+        }
+    }
+
+    public Future<T> onCompleted(FutureListener<Future<T>> listener) {
+        if (listener == null) {
+            return this;
+        }
+
+        if (this.completed && !this.cancelled && this.ex == null) {
+            listener.operationComplete(this);
+            return this;
+        }
+
+        if (this.completedListener == null) {
+            synchronized (this) {
+                if (this.completedListener == null) {
+                    this.completedListener = new ArrayList<>();
+                }
+            }
+        }
+
+        this.completedListener.add(listener);
+        return this;
+    }
+
+    public Future<T> onFailed(FutureListener<Future<T>> listener) {
+        if (listener == null) {
+            return this;
+        }
+
+        if (this.completed && !this.cancelled && this.ex != null) {
+            listener.operationComplete(this);
+            return this;
+        }
+
+        if (this.failedListener == null) {
+            synchronized (this) {
+                if (this.failedListener == null) {
+                    this.failedListener = new ArrayList<>();
+                }
+            }
+        }
+
+        this.failedListener.add(listener);
+        return this;
+    }
+
+    public Future<T> onCancel(FutureListener<Future<T>> listener) {
+        if (listener == null) {
+            return this;
+        }
+
+        if (this.completed && this.cancelled) {
+            listener.operationComplete(this);
+            return this;
+        }
+
+        if (this.cancelListener == null) {
+            synchronized (this) {
+                if (this.cancelListener == null) {
+                    this.cancelListener = new ArrayList<>();
+                }
+            }
+        }
+
+        this.cancelListener.add(listener);
+        return this;
+    }
+
+    public Future<T> onFinal(FutureListener<Future<T>> listener) {
+        if (listener == null) {
+            return this;
+        }
+
+        if (this.completed) {
+            listener.operationComplete(this);
+            return this;
+        }
+
+        if (this.finalListener == null) {
+            synchronized (this) {
+                if (this.finalListener == null) {
+                    this.finalListener = new ArrayList<>();
+                }
+            }
+        }
+
+        this.finalListener.add(listener);
+        return this;
     }
 }
