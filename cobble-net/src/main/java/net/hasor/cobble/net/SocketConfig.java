@@ -31,7 +31,7 @@ public class SocketConfig {
     // 缓冲区关系： socket <---> swap <---> rcv/snd
     //               IO Thread    WorkerThread
     private ExecutorService  ioExecutor; // IO 线程，负责处理创建链接及 swap 缓冲区和 socket 缓冲区之间的数据交换
-    private ExecutorService  workerExecutor; // Worker 线程，负责处理 swap 缓冲区和 rcv/snd 缓冲区之间的数据交换
+    private ExecutorService  workerExecutor; // Worker 线程，负责处理 swap 缓冲区和 rcv/snd 缓冲区之间的数据交换，以及各类 IOTask 任务
 
     public void setSwapBufSize(int swapBufSize) {
         this.swapBufSize = swapBufSize;

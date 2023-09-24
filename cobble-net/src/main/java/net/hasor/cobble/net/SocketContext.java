@@ -36,14 +36,14 @@ import java.util.concurrent.atomic.AtomicReference;
 class SocketContext {
     private static final AtomicLong            nextID = new AtomicLong();
     private final        SocketConfig          config;
-    private final        ExecutorService       acceptExecutor;
+    private final        ExecutorService       ioExecutor;
     private final        ExecutorService       workerExecutor;
     private final        ByteBufAllocator      bufAllocator;
     private final        Map<Long, NetChannel> channelMap;
 
     public SocketContext(SocketConfig config, ExecutorService accept, ExecutorService worker) {
         this.config = config;
-        this.acceptExecutor = Objects.requireNonNull(accept);
+        this.ioExecutor = Objects.requireNonNull(accept);
         this.workerExecutor = Objects.requireNonNull(worker);
         this.bufAllocator = config.getBufAllocator() == null ? ByteBufAllocator.DEFAULT : config.getBufAllocator();
         this.channelMap = new ConcurrentHashMap<>();
@@ -71,8 +71,8 @@ class SocketContext {
         return this.bufAllocator.buffer(bufSize);
     }
 
-    public ExecutorService getAcceptExecutor() {
-        return this.acceptExecutor;
+    public ExecutorService getIoExecutor() {
+        return this.ioExecutor;
     }
 
     public ExecutorService getWorkerExecutor() {

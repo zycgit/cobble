@@ -37,7 +37,7 @@ public class SocketServer implements AutoCloseable {
     private final        SocketContext                   context;
     private              AsynchronousChannelGroup        channelGroup;
     private              AsynchronousServerSocketChannel acceptChannel;
-    private final        ExecutorService                 accept;
+    private final        ExecutorService                 ioExec;
     private final        ExecutorService                 worker;
 
     public SocketServer() {
@@ -47,17 +47,18 @@ public class SocketServer implements AutoCloseable {
     public SocketServer(SocketConfig config) {
         ExecutorService ioExec = config.getIoExecutor();
         if (ioExec == null) {
-            ThreadFactory threadFactory = ThreadUtils.threadFactory(SocketServer.class.getClassLoader(), "AIO-Thread-%s", true);
-            ioExec = Executors.newFixedThreadPool(1, threadFactory);
-            this.accept = ioExec;
+            ThreadFactory threadFactory = ThreadUtils.threadFactory(SocketServer.class.getClassLoader(), "Cobble-AIO-Thread-%s", true);
+            int process = Runtime.getRuntime().availableProcessors();
+            ioExec = Executors.newFixedThreadPool(Math.min(process / 2, 2), threadFactory);
+            this.ioExec = ioExec;
         } else {
-            this.accept = null;
+            this.ioExec = null;
         }
 
         ExecutorService worker = config.getWorkerExecutor();
         if (worker == null) {
             int process = Runtime.getRuntime().availableProcessors();
-            ThreadFactory threadFactory = ThreadUtils.threadFactory(SocketServer.class.getClassLoader(), "AIO-WorkerThread-%s", true);
+            ThreadFactory threadFactory = ThreadUtils.threadFactory(SocketServer.class.getClassLoader(), "Cobble-AIO-Workers-%s", true);
             worker = Executors.newFixedThreadPool(process, threadFactory);
             this.worker = worker;
         } else {
@@ -69,7 +70,7 @@ public class SocketServer implements AutoCloseable {
     }
 
     public AutoCloseable listen(InetSocketAddress listen) throws IOException {
-        this.channelGroup = AsynchronousChannelGroup.withThreadPool(this.context.getAcceptExecutor());
+        this.channelGroup = AsynchronousChannelGroup.withThreadPool(this.context.getIoExecutor());
         this.acceptChannel = AsynchronousServerSocketChannel.open(this.channelGroup);
 
         this.acceptChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
@@ -98,8 +99,8 @@ public class SocketServer implements AutoCloseable {
         logger.info("channelGroup closed.");
 
         // waiting close accept
-        if (this.accept != null) {
-            while (!this.accept.isTerminated()) {
+        if (this.ioExec != null) {
+            while (!this.ioExec.isTerminated()) {
                 long cost = System.currentTimeMillis() - t;
                 if (cost > 3000) {
                     t = System.currentTimeMillis();
@@ -128,8 +129,8 @@ public class SocketServer implements AutoCloseable {
         // close resources
         this.acceptChannel.close();
         this.channelGroup.shutdown();
-        if (this.accept != null) {
-            this.accept.shutdown();
+        if (this.ioExec != null) {
+            this.ioExec.shutdown();
         }
         if (this.worker != null) {
             this.worker.shutdown();
