@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.bus;
+import net.hasor.cobble.concurrent.TimeUnit;
 import net.hasor.cobble.concurrent.future.Future;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 
 /**
  *

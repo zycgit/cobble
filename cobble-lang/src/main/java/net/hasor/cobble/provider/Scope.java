@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.ref;
+package net.hasor.cobble.provider;
 import java.util.function.Supplier;
 
 /**

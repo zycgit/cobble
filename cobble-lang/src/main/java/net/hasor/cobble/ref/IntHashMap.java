@@ -38,24 +38,24 @@ public class IntHashMap {
     /**
      * The hash table data.
      */
-    private transient Entry table[];
+    private transient Entry[] table;
     /**
      * The total number of entries in the hash table.
      */
-    private transient int   count;
+    private transient int     count;
     /**
      * The table is rehashed when its size exceeds this threshold.  (The
      * value of this field is (int)(capacity * loadFactor).)
      *
      * @serial
      */
-    private           int   threshold;
+    private           int     threshold;
     /**
      * The load factor for the hashtable.
      *
      * @serial
      */
-    private final     float loadFactor;
+    private final     float   loadFactor;
 
     /**
      * <p>Innerclass that acts as a datastructure to create a new entry in the

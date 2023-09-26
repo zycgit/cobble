@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble.ref;
+package net.hasor.cobble.provider;
 import java.util.function.Supplier;
 
 /**
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class PrototypeScope implements Scope {
-    public final static PrototypeScope SINGLETON = new PrototypeScope();
+    public final static PrototypeScope PROTOTYPE = new PrototypeScope();
 
     @Override
     public <T> Supplier<T> scope(Object key, Supplier<T> provider) {
