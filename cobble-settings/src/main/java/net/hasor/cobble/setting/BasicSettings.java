@@ -97,9 +97,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
 
     @Override
     public void refresh() throws IOException {
-        this.cleanData();
         this.loadEnvironment();
-        this.loadSettings();
         this.updateSettings();
     }
 

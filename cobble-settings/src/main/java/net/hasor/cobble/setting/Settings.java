@@ -39,7 +39,7 @@ public interface Settings {
     /** 获取指在某个特定命名空间下的Settings接口对象 */
     Settings getSettings(String namespace);
 
-    /** 强制重新装载配置文件 */
+    /** 如果配置的值采用了表达式，那么 refresh 会计算它们 */
     default void refresh() throws IOException {
     }
 

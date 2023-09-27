@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.hasor</groupId>
         <artifactId>cobble-parent</artifactId>
-        <version>4.6.1-SNAPSHOT</version>
+        <version>4.6.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cobble-all</artifactId>
@@ -159,7 +159,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <executions>
                     <execution>
                         <id>default-compile</id>
@@ -187,7 +187,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.1.2</version>
                 <executions>
                     <execution>
                         <id>default-test</id>
@@ -242,9 +242,9 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <delete dir="${basedir}/target/src" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar" />
+                                <delete dir="${basedir}/target/src"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar"/>
                             </target>
                         </configuration>
                         <goals>

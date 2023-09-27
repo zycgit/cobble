@@ -85,5 +85,6 @@ public class MergedSettings extends BasicSettings implements IOSettings {
                 throw new UnsupportedOperationException(type + " Unsupported.");
         }
         reader.readSetting(dataReader, this);
+        this.updateSettings();
     }
 }

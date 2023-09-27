@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * 继承自{@link MergedSettings}父类。
@@ -30,7 +29,7 @@ import java.net.URISyntaxException;
  * @version : 2013-9-9
  */
 public class DefaultSettings extends MergedSettings {
-    private URI settingURI;
+    private String resource;
 
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings() throws IOException {
@@ -38,9 +37,10 @@ public class DefaultSettings extends MergedSettings {
     }
 
     /** 创建{@link DefaultSettings}类型对象。 */
-    public DefaultSettings(String mainSettings) throws IOException, URISyntaxException {
+    public DefaultSettings(String mainSettings) throws IOException {
         if (StringUtils.isNotBlank(mainSettings)) {
-            this.settingURI = new URI("classpath:" + mainSettings);
+            this.resource = mainSettings;
+            this.loadSettings();
         }
         refresh();
     }
@@ -48,7 +48,8 @@ public class DefaultSettings extends MergedSettings {
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(File mainSettings) throws IOException {
         if (mainSettings != null) {
-            this.settingURI = mainSettings.toURI();
+            this.resource = mainSettings.toURI().toURL().toString();
+            this.loadSettings();
         }
         refresh();
     }
@@ -56,25 +57,20 @@ public class DefaultSettings extends MergedSettings {
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(URI mainSettings) throws IOException {
         if (mainSettings != null) {
-            this.settingURI = mainSettings;
+            this.resource = mainSettings.toURL().toString();
+            this.loadSettings();
         }
         refresh();
-    }
-
-    /** 获取配置文件{@link URI}。 */
-    public URI getSettingURI() {
-        return this.settingURI;
     }
 
     @Override
     protected void loadSettings() throws IOException {
         super.loadSettings();
 
-        URI configURI = getSettingURI();
-        if (configURI != null) {
-            try (InputStream stream = ResourcesUtils.getResourceAsStream(configURI)) {
+        if (StringUtils.isNotBlank(this.resource)) {
+            try (InputStream stream = ResourcesUtils.getResourceAsStream(this.resource)) {
                 if (stream != null) {
-                    String lowerCase = configURI.toString().toLowerCase();
+                    String lowerCase = this.resource.toLowerCase();
                     if (lowerCase.endsWith(".xml")) {
                         this.loadStream(stream, StreamType.Xml);
                     } else if (lowerCase.endsWith(".yaml") || lowerCase.endsWith(".yml")) {

@@ -332,7 +332,9 @@ public class MultiResourceLoaderTests {
             ((Function) obj2).apply("hello");
             assert false;
         } catch (NoSuchMethodError e) {
-            assert e.getMessage().equals("lib.Foo.run([Ljava/lang/String;)Ljava/lang/String;");
+            boolean jvm9Test = e.getMessage().equals("'java.lang.String lib.Foo.run(java.lang.String[])'");
+            boolean jvm6Test = e.getMessage().equals("lib.Foo.run([Ljava/lang/String;)Ljava/lang/String;");
+            assert jvm9Test || jvm6Test;
         }
     }
 }
