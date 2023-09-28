@@ -42,10 +42,11 @@ import java.util.zip.ZipEntry;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClassPathResourceLoader extends AbstractResourceLoader {
-    private static final Logger         logger   = Logger.getLogger(ClassPathResourceLoader.class);
-    public static        ResourceLoader INSTANCE = new ClassPathResourceLoader();
+    private static final Logger         logger    = Logger.getLogger(ClassPathResourceLoader.class);
+    public static        ResourceLoader INSTANCE  = new ClassPathResourceLoader();
     private final        ClassLoader    classLoader;
     private final        List<URL>      classpath;
+    private final        String[]       ZIP_TYPES = new String[] { ".jar", ".JAR", ".zip", ".ZIP" };
 
     public ClassPathResourceLoader() {
         super(Thread.currentThread().getContextClassLoader());
@@ -130,15 +131,24 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
                 File contextDir = FileUtils.toFile(url);
-                if (contextDir == null) {
+                if (contextDir == null || !contextDir.exists()) {
                     continue;
                 }
 
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, false);
-                } else if (contextDir.exists()) {
-                    JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
-                    jarScan(result, jarFile, testJar, scanner, false);
+                } else {
+                    String jarName = contextDir.getName();
+                    if (!StringUtils.endsWithAny(jarName, ZIP_TYPES)) {
+                        continue;
+                    }
+
+                    try {
+                        JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
+                        jarScan(result, jarFile, testJar, scanner, false);
+                    } catch (Exception e) {
+                        logger.error("cannot open jar (" + jarName + ") " + e.getMessage(), e);
+                    }
                 }
             } else if (protocol.equals("jar")) {
                 JarURLConnection jarc = (JarURLConnection) url.openConnection();
@@ -159,15 +169,24 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
                 File contextDir = FileUtils.toFile(url);
-                if (contextDir == null) {
+                if (contextDir == null || !contextDir.exists()) {
                     continue;
                 }
 
                 if (contextDir.isDirectory()) {
                     dirScan(result, contextDir, contextDir, testDir, scanner, true);
                 } else {
-                    JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
-                    jarScan(result, jarFile, testJar, scanner, true);
+                    String jarName = contextDir.getName();
+                    if (!StringUtils.endsWithAny(jarName, ZIP_TYPES)) {
+                        continue;
+                    }
+
+                    try {
+                        JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
+                        jarScan(result, jarFile, testJar, scanner, true);
+                    } catch (Exception e) {
+                        logger.error("cannot open jar (" + jarName + ") " + e.getMessage(), e);
+                    }
                 }
             } else if (protocol.equals("jar")) {
                 JarURLConnection jarc = (JarURLConnection) url.openConnection();
