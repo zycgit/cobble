@@ -57,12 +57,19 @@ public class BasicFuture<T> implements Future<T> {
         this.callback = callback;
     }
 
+    @Override
     public boolean isCancelled() {
         return this.cancelled;
     }
 
+    @Override
     public boolean isDone() {
         return this.completed;
+    }
+
+    @Override
+    public Throwable getCause() {
+        return this.ex;
     }
 
     private T getResult() throws ExecutionException {
@@ -72,6 +79,7 @@ public class BasicFuture<T> implements Future<T> {
         return this.result;
     }
 
+    @Override
     public synchronized T get() throws InterruptedException, ExecutionException {
         while (!this.completed) {
             wait();
@@ -79,6 +87,7 @@ public class BasicFuture<T> implements Future<T> {
         return getResult();
     }
 
+    @Override
     public synchronized T get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         if (unit == null) {
             throw new NullPointerException("Time unit");
@@ -106,6 +115,7 @@ public class BasicFuture<T> implements Future<T> {
         }
     }
 
+    @Override
     public boolean completed(final T result) {
         synchronized (this) {
             if (this.completed) {
@@ -124,6 +134,7 @@ public class BasicFuture<T> implements Future<T> {
         return true;
     }
 
+    @Override
     public boolean failed(final Throwable exception) {
         synchronized (this) {
             if (this.completed) {
@@ -142,6 +153,7 @@ public class BasicFuture<T> implements Future<T> {
         return true;
     }
 
+    @Override
     public boolean cancel(final boolean mayInterruptIfRunning) {
         synchronized (this) {
             if (this.completed) {
@@ -164,6 +176,7 @@ public class BasicFuture<T> implements Future<T> {
         return true;
     }
 
+    @Override
     public boolean cancel() {
         return cancel(true);
     }
@@ -176,6 +189,7 @@ public class BasicFuture<T> implements Future<T> {
         }
     }
 
+    @Override
     public Future<T> onCompleted(FutureListener<Future<T>> listener) {
         if (listener == null) {
             return this;
@@ -198,6 +212,7 @@ public class BasicFuture<T> implements Future<T> {
         return this;
     }
 
+    @Override
     public Future<T> onFailed(FutureListener<Future<T>> listener) {
         if (listener == null) {
             return this;
@@ -220,6 +235,7 @@ public class BasicFuture<T> implements Future<T> {
         return this;
     }
 
+    @Override
     public Future<T> onCancel(FutureListener<Future<T>> listener) {
         if (listener == null) {
             return this;
@@ -242,6 +258,7 @@ public class BasicFuture<T> implements Future<T> {
         return this;
     }
 
+    @Override
     public Future<T> onFinal(FutureListener<Future<T>> listener) {
         if (listener == null) {
             return this;

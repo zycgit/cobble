@@ -24,6 +24,8 @@ package net.hasor.cobble.concurrent.future;
  */
 public interface Future<T> extends java.util.concurrent.Future<T> {
 
+    Throwable getCause();
+
     boolean completed(final T result);
 
     boolean failed(final Throwable exception);
