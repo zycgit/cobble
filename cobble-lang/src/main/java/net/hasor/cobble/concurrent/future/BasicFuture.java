@@ -72,7 +72,12 @@ public class BasicFuture<T> implements Future<T> {
         return this.ex;
     }
 
-    private T getResult() throws ExecutionException {
+    @Override
+    public T getResult() {
+        return (this.ex != null) ? null : this.result;
+    }
+
+    private T result() throws ExecutionException {
         if (this.ex != null) {
             throw new ExecutionException(this.ex.getMessage(), this.ex);
         }
@@ -84,7 +89,7 @@ public class BasicFuture<T> implements Future<T> {
         while (!this.completed) {
             wait();
         }
-        return getResult();
+        return result();
     }
 
     @Override
@@ -97,14 +102,14 @@ public class BasicFuture<T> implements Future<T> {
         final long startTime = (msecs <= 0) ? 0 : System.currentTimeMillis();
         long waitTime = msecs;
         if (this.completed) {
-            return getResult();
+            return result();
         } else if (waitTime <= 0) {
             throw new TimeoutException();
         } else {
             for (; ; ) {
                 wait(waitTime);
                 if (this.completed) {
-                    return getResult();
+                    return result();
                 } else {
                     waitTime = msecs - (System.currentTimeMillis() - startTime);
                     if (waitTime <= 0) {

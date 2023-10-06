@@ -24,6 +24,9 @@ package net.hasor.cobble.concurrent.future;
  */
 public interface Future<T> extends java.util.concurrent.Future<T> {
 
+    /** 不阻塞，不抛异常，获取结果如果 completed 则返回 result，如果 failed 或 cancel 则返回空。*/
+    T getResult();
+
     Throwable getCause();
 
     boolean completed(final T result);
