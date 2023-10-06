@@ -32,19 +32,18 @@ public class SocketServerTest {
         ThreadFactory tf2 = ThreadUtils.threadFactory(loader, "WORK-Thread-%s", true);
 
         // 监听处理线程
-        SocketConfig config = new SocketConfig();
+        SoConfig config = new SoConfig();
         config.setSwapBuf(2, 2);
-        config.setLocalBuf(10, 10);
+        config.setLocalBuf(128, 128);
         //        config.setSoReadTimeoutMs(6000);
         config.setSoKeepAlive(true);
-        config.setSoKeepAliveIntervalMs(4000);
         config.setBufAllocator(ByteBufUtil.DEFAULT_HEAP_ALLOCATOR);
         //
         config.setIoExecutor(Executors.newFixedThreadPool(1, tf1));
         config.setWorkerExecutor(Executors.newFixedThreadPool(1, tf2));
 
-        SocketServer server = new SocketServer(config);
-        try (SocketServer close = server.listen(new InetSocketAddress(5567))) {
+        TcpServer server = new TcpServer(config);
+        try (TcpServer close = server.listen(new InetSocketAddress("192.168.10.186", 5567))) {
             System.in.read();
         }
     }
