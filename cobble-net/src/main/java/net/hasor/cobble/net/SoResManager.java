@@ -40,5 +40,4 @@ public interface SoResManager extends AutoCloseable {
     void freeObject(Object refObj);
 
     ExecutorService getExecutor();
-
 }
