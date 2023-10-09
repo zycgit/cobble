@@ -24,8 +24,13 @@ import net.hasor.cobble.concurrent.future.Future;
 public interface SoContext {
     SoConfig getConfig();
 
+    SoResManager getResourceManager();
+
     /** 异步方式处理 swap 区到 rcv/snd 区的 IO 操作任务 */
     <T> Future<T> submitSoTask(AbstractSoTask mainTask, T result);
+
+    /** 异步方式处理 swap 区到 rcv/snd 区的 IO 操作任务 */
+    <T> Future<T> submitSoTask(SoResManager rm, AbstractSoTask mainTask, T result);
 
     /** Socket 通道是否已经关闭 */
     boolean isClose(long channelID);
