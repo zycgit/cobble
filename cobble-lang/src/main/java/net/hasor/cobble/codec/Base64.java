@@ -7,11 +7,24 @@ import java.nio.charset.StandardCharsets;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class Base64 {
-    protected static final String Base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@*-"; // supplement
-    //    /**返回与Base64对应的JSbase64编码/解码脚本*/
-    //    public static Reader getJSReader() throws UnsupportedEncodingException {
-    //        return new InputStreamReader(Base64.class.getResourceAsStream("/META-INF/resource/util/base64.js"), "utf-8");
-    //    };
+    /**
+     * Standard Base64 encoding as described in the Section 3 of
+     * <a href="http://www.faqs.org/rfcs/rfc3548.html">RFC3548</a>.
+     */
+    protected static final String STANDARD = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; // supplement
+    /**
+     * Base64-like encoding that is URL-safe as described in the Section 4 of
+     * <a href="http://www.faqs.org/rfcs/rfc3548.html">RFC3548</a>.  It is
+     * important to note that data encoded this way is <em>not</em> officially
+     * valid Base64, or at the very least should not be called Base64 without
+     * also specifying that is was encoded using the URL-safe dialect.
+     */
+    protected static final String URL_SAFE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"; // supplement
+    /**
+     * Special "ordered" dialect of Base64 described in
+     * <a href="http://www.faqs.org/qa/rfcc-1940.html">RFC1940</a>.
+     */
+    protected static final String ORDERED  = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"; // supplement
 
     /**
      * 使用UTF-8编码进行Base64编码
@@ -57,10 +70,10 @@ public abstract class Base64 {
             } else {
                 b2 = b3 = 64;// 2 bytes "-" are supplement
             }
-            buf.append(Base64.Base64Chars.charAt(b0));
-            buf.append(Base64.Base64Chars.charAt(b1));
-            buf.append(Base64.Base64Chars.charAt(b2));
-            buf.append(Base64.Base64Chars.charAt(b3));
+            buf.append(Base64.STANDARD.charAt(b0));
+            buf.append(Base64.STANDARD.charAt(b1));
+            buf.append(Base64.STANDARD.charAt(b2));
+            buf.append(Base64.STANDARD.charAt(b3));
         }
         return buf.toString();
     }
@@ -92,14 +105,14 @@ public abstract class Base64 {
         byte[] b = new byte[len / 4 * 3];
         int i = 0, j = 0, e = 0, c, tmp;
         while (i < len) {
-            c = Base64.Base64Chars.indexOf(s.charAt(i++));
+            c = Base64.STANDARD.indexOf(s.charAt(i++));
             tmp = c << 18;
-            c = Base64.Base64Chars.indexOf(s.charAt(i++));
+            c = Base64.STANDARD.indexOf(s.charAt(i++));
             tmp |= c << 12;
-            c = Base64.Base64Chars.indexOf(s.charAt(i++));
+            c = Base64.STANDARD.indexOf(s.charAt(i++));
             if (c < 64) {
                 tmp |= c << 6;
-                c = Base64.Base64Chars.indexOf(s.charAt(i++));
+                c = Base64.STANDARD.indexOf(s.charAt(i++));
                 if (c < 64) {
                     tmp |= c;
                 } else {

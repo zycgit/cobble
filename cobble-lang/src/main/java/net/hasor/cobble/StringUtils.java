@@ -6269,4 +6269,8 @@ public class StringUtils {
         }
         return strString;
     }
+
+    public static String getOrDefault(String value, String defaultValue) {
+        return isBlank(value) ? defaultValue : value;
+    }
 }

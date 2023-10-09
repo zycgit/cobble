@@ -27,6 +27,14 @@ public interface Future<T> extends java.util.concurrent.Future<T> {
     /** 不阻塞，不抛异常，获取结果如果 completed 则返回 result，如果 failed 或 cancel 则返回空。*/
     T getResult();
 
+    /** 阻塞等待直到成功或失败 */
+    default void await() {
+        try {
+            this.get();
+        } catch (Exception ignored) {
+        }
+    }
+
     Throwable getCause();
 
     boolean completed(final T result);
