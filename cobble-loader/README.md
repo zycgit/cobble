@@ -25,11 +25,11 @@
 
 - 基础加载器
 
-| 类名 | 作用 |
-| -------- | ------ |
-| ClassPathResourceLoader | 处理 Classpath 中的资源加载 |
-| JarResourceLoader | 外部独立的Jar 或 Jar in Jar |
-| PathResourceLoader | 处理本地文件路径中的资源加载 |
+| 类名                 | 作用                                                      |
+|--------------------|---------------------------------------------------------|
+| ClassPathResourceLoader | 处理 Classpath 中的资源加载                                     |
+| JarResourceLoader  | 外部独立的Jar 或 Jar in Jar（Jar/war 文件读取使用成熟的 spring boot 代码） |
+| PathResourceLoader | 处理本地文件路径中的资源加载                                          |
 
 - 加载器编排
 

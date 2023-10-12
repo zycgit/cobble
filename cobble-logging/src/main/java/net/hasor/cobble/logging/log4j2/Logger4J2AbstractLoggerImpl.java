@@ -26,15 +26,13 @@ import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.spi.ExtendedLoggerWrapper;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.log4j2.Log4j2AbstractLoggerImpl</p>
  * @author Eduardo Macarron
  */
 public class Logger4J2AbstractLoggerImpl implements Logger {
-
-    private static final Marker MARKER = MarkerManager.getMarker(LoggerFactory.MARKER);
-
-    private static final String FQCN = Logger4J2Impl.class.getName();
-
-    private final ExtendedLoggerWrapper log;
+    private static final Marker                MARKER = MarkerManager.getMarker(LoggerFactory.MARKER);
+    private static final String                FQCN   = Logger4J2Impl.class.getName();
+    private final        ExtendedLoggerWrapper log;
 
     public Logger4J2AbstractLoggerImpl(AbstractLogger abstractLogger) {
         log = new ExtendedLoggerWrapper(abstractLogger, abstractLogger.getName(), abstractLogger.getMessageFactory());

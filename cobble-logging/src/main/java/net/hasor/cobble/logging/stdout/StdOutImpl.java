@@ -18,6 +18,7 @@ package net.hasor.cobble.logging.stdout;
 import net.hasor.cobble.logging.Logger;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.stdout.StdOutImpl</p>
  * @author Clinton Begin
  */
 public class StdOutImpl implements Logger {

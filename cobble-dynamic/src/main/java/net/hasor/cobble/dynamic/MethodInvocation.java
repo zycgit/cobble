@@ -17,9 +17,17 @@ package net.hasor.cobble.dynamic;
 import java.lang.reflect.Method;
 
 /**
- * 拦截器链
+ * Description of an invocation to a method, given to an interceptor
+ * upon method-call.
+ *
+ * <p>A method invocation is a joinpoint and can be intercepted by a
+ * method interceptor.
+ *
+ * copy from org.aopalliance.intercept.MethodInvocation,and its extends types
  * @version : 2014-7-17
+ * @author Rod Johnson
  * @author 赵永春 (zyc@hasor.net)
+ * @see MethodInterceptor
  */
 public interface MethodInvocation {
 

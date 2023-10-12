@@ -20,10 +20,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.spi.AbstractLogger;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.log4j2.Log4j2Impl</p>
  * @author Eduardo Macarron
  */
 public class Logger4J2Impl implements Logger {
-
     private final Logger logger;
 
     public Logger4J2Impl(String clazz) {

@@ -32,6 +32,9 @@ package net.hasor.cobble.dynamic;
  *    }
  * }
  * </pre>
+ *
+ * copy from org.aopalliance.intercept.MethodInterceptor
+ * @author Rod Johnson
  */
 @FunctionalInterface
 public interface MethodInterceptor {

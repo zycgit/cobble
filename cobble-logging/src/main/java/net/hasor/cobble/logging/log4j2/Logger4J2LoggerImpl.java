@@ -21,13 +21,12 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.log4j2.Log4j2LoggerImpl</p>
  * @author Eduardo Macarron
  */
 public class Logger4J2LoggerImpl implements Logger {
-
-    private static final Marker MARKER = MarkerManager.getMarker(LoggerFactory.MARKER);
-
-    private final org.apache.logging.log4j.Logger logger;
+    private static final Marker                          MARKER = MarkerManager.getMarker(LoggerFactory.MARKER);
+    private final        org.apache.logging.log4j.Logger logger;
 
     public Logger4J2LoggerImpl(org.apache.logging.log4j.Logger logger) {
         this.logger = logger;

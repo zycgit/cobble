@@ -22,6 +22,7 @@ import org.slf4j.MarkerFactory;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.slf4j.Slf4jImpl</p>
  * @author Eduardo Macarron
  */
 class Slf4jLocationAwareLoggerImpl implements Logger {

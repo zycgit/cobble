@@ -16,6 +16,7 @@
 package net.hasor.cobble.logging;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.LogException</p>
  * @author Clinton Begin
  */
 public class LogException extends RuntimeException {

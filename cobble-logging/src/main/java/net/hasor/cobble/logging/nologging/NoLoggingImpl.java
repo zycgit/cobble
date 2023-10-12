@@ -18,10 +18,10 @@ package net.hasor.cobble.logging.nologging;
 import net.hasor.cobble.logging.Logger;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.nologging.NoLoggingImpl</p>
  * @author Clinton Begin
  */
 public class NoLoggingImpl implements Logger {
-
     public NoLoggingImpl(String clazz) {
         // Do Nothing
     }

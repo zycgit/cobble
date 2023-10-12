@@ -20,10 +20,10 @@ import net.hasor.cobble.logging.Logger;
 import java.util.logging.Level;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl</p>
  * @author Clinton Begin
  */
 public class Jdk14LoggingImpl implements Logger {
-
     private final java.util.logging.Logger logger;
 
     public Jdk14LoggingImpl(String clazz) {

@@ -16,34 +16,37 @@
 package net.hasor.cobble.logging;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.Log</p>
+ *
+ * 新增了 getLogger 方法
  * @author Clinton Begin
+ * @author 赵永春 (zyc@hasor.net)
  */
 public interface Logger {
 
-    public static Logger getLogger(String logger) {
+    static Logger getLogger(String logger) {
         return LoggerFactory.getLogger(logger);
     }
 
-    public static Logger getLogger(Class<?> clazz) {
+    static Logger getLogger(Class<?> clazz) {
         return LoggerFactory.getLogger(clazz);
     }
 
-    public boolean isDebugEnabled();
+    boolean isDebugEnabled();
 
-    public boolean isTraceEnabled();
+    boolean isTraceEnabled();
 
-    public void error(String s, Throwable e);
+    void error(String s, Throwable e);
 
-    public void error(String s);
+    void error(String s);
 
-    public void debug(String s);
+    void debug(String s);
 
-    public void info(String s);
+    void info(String s);
 
-    public void trace(String s);
+    void trace(String s);
 
-    public void warn(String s);
+    void warn(String s);
 
-    public void warn(String s, Throwable e);
-
+    void warn(String s, Throwable e);
 }

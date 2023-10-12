@@ -21,6 +21,7 @@ import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.slf4j.Slf4jImpl</p>
  * @author Clinton Begin
  * @author Eduardo Macarron
  */

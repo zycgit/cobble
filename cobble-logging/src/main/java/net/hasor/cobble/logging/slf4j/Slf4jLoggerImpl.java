@@ -18,6 +18,7 @@ package net.hasor.cobble.logging.slf4j;
 import net.hasor.cobble.logging.Logger;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.slf4j.Slf4jLoggerImpl</p>
  * @author Eduardo Macarron
  */
 class Slf4jLoggerImpl implements Logger {

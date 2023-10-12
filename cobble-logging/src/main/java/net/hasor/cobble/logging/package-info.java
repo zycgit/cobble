@@ -15,6 +15,6 @@
  */
 /**
  * Base package for logging.
- * <p>source code form mybatis.</p>
+ * <p>source code form mybatis package org.apache.ibatis.logging</p>
  */
 package net.hasor.cobble.logging;

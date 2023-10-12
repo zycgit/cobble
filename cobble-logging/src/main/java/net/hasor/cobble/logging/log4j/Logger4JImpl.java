@@ -19,13 +19,12 @@ import net.hasor.cobble.logging.Logger;
 import org.apache.log4j.Level;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.log4j.Log4jImpl</p>
  * @author Eduardo Macarron
  */
 public class Logger4JImpl implements Logger {
-
-    private static final String FQCN = Logger4JImpl.class.getName();
-
-    private final org.apache.log4j.Logger logger;
+    private static final String                  FQCN = Logger4JImpl.class.getName();
+    private final        org.apache.log4j.Logger logger;
 
     public Logger4JImpl(String clazz) {
         logger = org.apache.log4j.Logger.getLogger(clazz);

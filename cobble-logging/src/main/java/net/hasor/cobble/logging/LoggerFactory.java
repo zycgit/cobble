@@ -25,6 +25,7 @@ import net.hasor.cobble.logging.stdout.StdOutImpl;
 import java.lang.reflect.Constructor;
 
 /**
+ * <p>copy form mybatis org.apache.ibatis.logging.LogFactory</p>
  * @author Clinton Begin
  * @author Eduardo Macarron
  */

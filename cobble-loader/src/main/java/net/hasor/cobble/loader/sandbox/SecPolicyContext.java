@@ -73,5 +73,5 @@ public interface SecPolicyContext {
      * @see java.security.AccessControlContext#checkPermission(java.security.Permission)
      * @since 1.2
      */
-    public void checkPermission(Permission perm, Object context);
+    void checkPermission(Permission perm, Object context);
 }
