@@ -40,6 +40,9 @@ import java.util.Objects;
  * to methods that return further {@link Type Types} (for example
  * {@link GenericArrayType#getGenericComponentType()}) will be automatically wrapped.
  *
+ * 2021-11-01 reduction based on SpringFramework, org.springframework.core.SerializableTypeWrapper
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Phillip Webb
  * @author Juergen Hoeller
  * @author Sam Brannen

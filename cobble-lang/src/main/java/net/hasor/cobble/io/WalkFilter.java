@@ -22,9 +22,13 @@ import java.io.FilenameFilter;
 /**
  * An interface which brings the FileFilter and FilenameFilter interfaces together.
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.filefilter.IOFileFilter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @since Commons IO 1.0
  * @version $Revision: 1178224 $ $Date: 2011-10-02 15:09:57 -0400 (Sun, 02 Oct 2011) $
  * @author Stephen Colebourne
+ *
  */
 @FunctionalInterface
 public interface WalkFilter extends FileFilter, FilenameFilter {

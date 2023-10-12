@@ -34,7 +34,9 @@ import java.util.*;
  * non-canonical method variants work with the JVM names, such as
  * <code>[I</code>. </p>
  *
- * @author 赵永春
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.ClassUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Gary Gregory
  * @author Norm Deane

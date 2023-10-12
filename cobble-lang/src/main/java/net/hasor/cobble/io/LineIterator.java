@@ -43,6 +43,9 @@ import java.util.NoSuchElementException;
  * }
  * </pre>
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.LineIterator
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: LineIterator.java 1307461 2012-03-30 15:12:29Z ggregory $
  * @since 1.2
  */

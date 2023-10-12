@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 /**
+ *
  * A {@link Timer} optimized for approximated I/O timeout scheduling.
  *
  * <h3>Tick Duration</h3>
@@ -63,6 +64,8 @@ import java.util.logging.Logger;
  * Tony Lauck's paper, <a href="https://cseweb.ucsd.edu/users/varghese/PAPERS/twheel.ps.Z">'Hashed
  * and Hierarchical Timing Wheels: data structures to efficiently implement a timer facility'</a>.
  * More comprehensive slides are located <a href="https://www.cse.wustl.edu/~cdgill/courses/cs6874/TimingWheels.ppt">here</a>.
+ *
+ * this class copy from netty io.netty.util.HashedWheelTimer
  */
 public class HashedWheelTimer implements Timer {
     static final         Logger                                      logger                    = Logger.getLogger(HashedWheelTimer.class.getName());

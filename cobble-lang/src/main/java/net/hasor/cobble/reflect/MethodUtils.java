@@ -47,6 +47,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * This call will only succeed when the application has sufficient security privileges. 
  * If this call fails then the method may fail.</p>
  *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.reflect.MethodUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Craig R. McClanahan
  * @author Ralph Schaer

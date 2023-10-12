@@ -26,6 +26,9 @@ import net.hasor.cobble.convert.Converter;
  * implementations that provide configuration options from being
  * retrieved and modified.
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.ConverterFacade
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 552084 $ $Date: 2007-06-30 04:04:13 +0100 (Sat, 30 Jun 2007) $
  * @since 1.8.0
  */

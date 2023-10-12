@@ -49,6 +49,9 @@ import net.hasor.cobble.convert.Converter;
  *
  * <p>Case is ignored when converting values to true or false.</p>
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.BooleanConverter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Craig R. McClanahan
  * @version $Revision: 801644 $ $Date: 2009-08-06 14:38:56 +0100 (Thu, 06 Aug 2009) $
  * @since 1.3

@@ -45,6 +45,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>If not explicitly specified, this implementation will use
  * {@linkplain SoftReference soft entry references}.
  *
+ * 2019-12-03 reduction based on SpringFramework, org.springframework.util.ConcurrentReferenceHashMap
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Phillip Webb
  * @author Juergen Hoeller
  * @since 3.2

@@ -51,9 +51,10 @@ import java.util.*;
  * <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">
  * Double-Checked Locking Idiom Is Broken Declaration</a>.</p>
  *
+ * copy from Apache Commons Beanutils, org.apache.commons.beanutils.WeakFastHashMap
+ *
  * @since Commons Collections 1.0
  * @version $Revision: 687089 $ $Date: 2008-08-19 17:33:30 +0100 (Tue, 19 Aug 2008) $
- *
  * @author Craig R. McClanahan
  * @author Stephen Colebourne
  */

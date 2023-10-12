@@ -26,9 +26,28 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 文件工具
- * @version : 2011-6-3
+ * General file manipulation utilities.
+ * <p>
+ * Facilities are provided in the following areas:
+ * <ul>
+ * <li>writing to a file
+ * <li>reading from a file
+ * <li>make a directory including parent directories
+ * <li>copying files and directories
+ * <li>deleting files and directories
+ * <li>converting to and from a URL
+ * <li>listing files and directories by filter and extension
+ * <li>comparing file content
+ * <li>file last changed date
+ * <li>calculating a checksum
+ * </ul>
+ * <p>
+ * Origin of code: Excalibur, Alexandria, Commons-Utils
+ *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.FileUtils
+ *
  * @author 赵永春 (zyc@hasor.net)
+ * @version $Id: FileUtils.java 1349509 2012-06-12 20:39:23Z ggregory $
  */
 public class FileUtils {
     /**
@@ -180,10 +199,7 @@ public class FileUtils {
         try {
             in = openInputStream(file);
             return IOUtils.lineIterator(in, encoding);
-        } catch (IOException ex) {
-            IOUtils.closeQuietly(in);
-            throw ex;
-        } catch (RuntimeException ex) {
+        } catch (IOException | RuntimeException ex) {
             IOUtils.closeQuietly(in);
             throw ex;
         }

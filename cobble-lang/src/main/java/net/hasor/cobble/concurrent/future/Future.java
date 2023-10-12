@@ -20,7 +20,6 @@ package net.hasor.cobble.concurrent.future;
  * {@link #cancel()}, {@link #failed(Throwable)}, or {@link #completed(Object)}.
  *
  * @param <T> the future result type of an asynchronous operation.
- * @since 4.2
  */
 public interface Future<T> extends java.util.concurrent.Future<T> {
 

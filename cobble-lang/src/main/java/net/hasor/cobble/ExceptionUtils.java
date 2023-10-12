@@ -28,6 +28,10 @@ import java.util.function.Function;
 /**
  * <p>Provides utilities for manipulating and examining
  * <code>Throwable</code> objects.</p>
+ *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.exception.ExceptionUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version : 2014年9月25日
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: ExceptionUtils.java 1436770 2013-01-22 07:09:45Z ggregory $

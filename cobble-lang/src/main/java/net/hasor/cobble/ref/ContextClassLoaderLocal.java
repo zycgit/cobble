@@ -97,8 +97,11 @@ import java.util.WeakHashMap;
  * containers required each component to load the full set of classes it
  * needs, ie avoided providing classes loaded via a "shared" classloader.</p>
  *
- * @see Thread#getContextClassLoader
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.ContextClassLoaderLocal
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Eric Pabst
+ * @see Thread#getContextClassLoader
  */
 public class ContextClassLoaderLocal<T> {
     private final Map<ClassLoader, T> valueByClassLoader     = new WeakHashMap<>();

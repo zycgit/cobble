@@ -18,7 +18,22 @@ package net.hasor.cobble;
 import java.util.Locale;
 
 /**
+ * <p>
+ * Helpers for {@code java.lang.System}.
+ * </p>
+ * <p>
+ * If a system property cannot be read due to security restrictions, the corresponding field in this class will be set
+ * to {@code null} and a message will be written to {@code System.err}.
+ * </p>
+ * <p>
+ * #ThreadSafe#
+ * </p>
+ *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.StringUtils
+ *
  * @since 1.0
+ * @author 赵永春 (zyc@hasor.net)
+ * @version $Id: SystemUtils.java 1671043 2015-04-03 12:09:07Z britter $
  */
 public final class SystemUtils {
     private static final boolean IS_WINDOWS       = isWindows0();

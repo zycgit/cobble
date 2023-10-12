@@ -29,6 +29,9 @@ import java.util.Date;
  * Can be configured to either return a <i>default value</i> or throw a
  * <code>ConversionException</code> if a conversion error occurs.
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.DateConverter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 640131 $
  * @since 1.8.0
  */

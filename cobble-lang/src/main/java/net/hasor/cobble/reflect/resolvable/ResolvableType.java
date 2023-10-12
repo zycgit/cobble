@@ -51,6 +51,9 @@ import java.util.*;
  * }
  * </pre>
  *
+ * 2021-11-01 reduction based on SpringFramework, org.springframework.core.ResolvableType
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Phillip Webb
  * @author Juergen Hoeller
  * @author Stephane Nicoll

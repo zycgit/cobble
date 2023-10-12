@@ -32,6 +32,9 @@ import java.util.Optional;
  * subclass available which synthesizes annotations with attribute aliases. That subclass is used
  * for web and message endpoint processing, in particular.
  *
+ * 2021-11-01 reduction based on SpringFramework, org.springframework.core.MethodParameter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Andy Clement

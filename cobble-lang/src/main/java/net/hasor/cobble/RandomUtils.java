@@ -29,6 +29,8 @@ import static java.math.BigDecimal.ROUND_DOWN;
  * <p>Provides randomness between any two numbers, For example: arbitrarily large numbers, negative numbers</p>
  *
  * <p>that may be a better choice for applications with more stringent requirements</p>
+ *
+ * @author 赵永春 (zyc@hasor.net)
  */
 public class RandomUtils {
     /**

@@ -26,7 +26,9 @@ import java.util.Objects;
  * or you need to supply a {@code Comparator}. </p>
  *
  * <p>#ThreadSafe# if the objects and comparator are thread-safe</p>
+ * 2017-09-13 reduction based on SpringFramework, org.springframework.util.LinkedCaseInsensitiveMap
  *
+ * @author 赵永春 (zyc@hasor.net)
  * @since 3.0
  */
 public class Range<T> implements Serializable {

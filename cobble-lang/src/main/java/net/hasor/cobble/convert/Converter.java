@@ -28,6 +28,8 @@ package net.hasor.cobble.convert;
  * non-thread-safe if the application using them is single-threaded. However
  * it is recommended that they be written in a thread-safe manner anyway.</p> 
  *
+ * copy from Apache Commons Beanutils, org.apache.commons.beanutils.Converter
+ *
  * @author Craig McClanahan
  * @author Paulo Gaspar
  * @version $Revision: 555824 $ $Date: 2007-07-13 01:27:15 +0100 (Fri, 13 Jul 2007) $
@@ -44,5 +46,5 @@ public interface Converter {
      *
      * @exception ConversionException if conversion cannot be performed successfully
      */
-    public Object convert(Class<?> type, Object value);
+      Object convert(Class<?> type, Object value);
 }

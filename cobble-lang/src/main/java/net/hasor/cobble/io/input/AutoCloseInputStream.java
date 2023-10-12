@@ -32,6 +32,9 @@ import java.io.InputStream;
  * closing the stream when no longer needed) or the underlying stream (by not
  * releasing resources once the last byte has been read) do not do that.
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.AutoCloseInputStream
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: AutoCloseInputStream.java 1586350 2014-04-10 15:57:20Z ggregory $
  * @since 1.4
  */

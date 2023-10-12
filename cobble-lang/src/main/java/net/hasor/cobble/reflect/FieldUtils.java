@@ -29,6 +29,9 @@ import java.util.Iterator;
  * programmer. This can allow fields to be changed that shouldn't be. This
  * facility should be used with care.
  *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.reflect.FieldUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Matt Benson
  * @since 2.5

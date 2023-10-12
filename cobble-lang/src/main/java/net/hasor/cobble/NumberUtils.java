@@ -22,6 +22,9 @@ import java.math.RoundingMode;
 /**
  * <p>Provides extra functionality for Java Number classes.</p>
  *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.math.NumberUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author <a href="mailto:rand_mcneely@yahoo.com">Rand McNeely</a>
  * @author <a href="mailto:steve.downey@netfolio.com">Steve Downey</a>

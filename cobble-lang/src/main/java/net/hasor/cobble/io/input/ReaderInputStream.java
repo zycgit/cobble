@@ -70,8 +70,11 @@ import java.nio.charset.CodingErrorAction;
  * <p>
  * Instances of {@link ReaderInputStream} are not thread safe.
  *
- * ref "org.apache.commons.io.output.WriterOutputStream"
+ * ref org.apache.commons.io.output.WriterOutputStream
  *
+ * reduction based on Apache Commons IO, org.apache.commons.io.input.ReaderInputStream
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @since 2.0
  */
 public class ReaderInputStream extends InputStream {

@@ -81,6 +81,9 @@ import java.util.Locale;
  * For example to cater for number styles used in Germany such as <code>0.000,00</code> the pattern
  * is specified in the normal form <code>0,000.00</code> and the locale set to <code>Locale.GERMANY</code>.
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.NumberConverter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 745081 $ $Date: 2009-02-17 14:05:20 +0000 (Tue, 17 Feb 2009) $
  * @since 1.8.0
  */

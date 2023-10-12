@@ -34,7 +34,7 @@
  * holder.
  */
 /*
- * Copyright (c) 2004, Mikael Grev, MiG InfoCom AB. (base64 @ miginfocom . com)
+ * Copyright (c) 2004, Mikael Grev, MiG InfoCom AB. (base64@miginfocom.com)
  * All rights reserved.
  */
 package net.hasor.cobble.io.output;

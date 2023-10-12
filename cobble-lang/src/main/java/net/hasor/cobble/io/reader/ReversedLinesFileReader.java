@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets;
 /**
  * Reads lines in a file reversely (similar to a BufferedReader, but starting at the last line). Useful for e.g. searching in log files.
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.ReversedLinesFileReader
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @since 2.2
  */
 public class ReversedLinesFileReader implements Closeable {

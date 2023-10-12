@@ -32,6 +32,9 @@ import java.io.OutputStream;
  * is actually reached, since it triggers when a pending write operation would
  * cause the threshold to be exceeded.
  *
+ * reduction based on Apache Commons IO, org.apache.commons.io.output.ThresholdingOutputStream
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: ThresholdingOutputStream.java 1307462 2012-03-30 15:13:11Z ggregory $
  */
 public abstract class ThresholdingOutputStream extends OutputStream {

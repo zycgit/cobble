@@ -31,6 +31,10 @@ import java.util.Map.Entry;
  * element may throw an exception. Each method documents its behaviour.</p>
  *
  * <p>#ThreadSafe#</p>
+ *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.ArrayUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Moritz Petersen
  * @author <a href="mailto:fredrik@westermarck.com">Fredrik Westermarck</a>

@@ -23,6 +23,11 @@ package net.hasor.cobble;
  * Each method documents its behaviour in more detail.</p>
  *
  * <p>#ThreadSafe#</p>
+ *
+ *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.BooleanUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Matthew Hawthorne
  * @author Gary Gregory

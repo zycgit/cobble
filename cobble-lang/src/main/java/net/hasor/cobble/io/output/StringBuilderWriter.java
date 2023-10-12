@@ -27,6 +27,9 @@ import java.io.Writer;
  * For safe usage with multiple {@link Thread}s then
  * <code>java.io.StringWriter</code> should be used.
  *
+ * reduction based on Apache Commons IO, org.apache.commons.io.output.StringBuilderWriter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: StringBuilderWriter.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @since 2.0
  */

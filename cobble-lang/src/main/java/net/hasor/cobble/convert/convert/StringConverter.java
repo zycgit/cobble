@@ -37,7 +37,9 @@ import net.hasor.cobble.convert.Converter;
  * them up based on the class of the input object). However this is not part
  * of the existing ConvertUtils framework.
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.StringConverter
  *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Craig R. McClanahan
  * @version $Revision: 690380 $ $Date: 2008-08-29 21:04:38 +0100 (Fri, 29 Aug 2008) $
  * @since 1.3

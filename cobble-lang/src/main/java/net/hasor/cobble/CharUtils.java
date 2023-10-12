@@ -23,6 +23,10 @@ package net.hasor.cobble;
  * Each method documents its behaviour in more detail.</p>
  *
  * <p>#ThreadSafe#</p>
+ *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.CharUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @since 2.1
  * @version $Id: CharUtils.java 1056988 2011-01-09 17:58:53Z niallp $

@@ -46,8 +46,11 @@ import java.nio.charset.UnsupportedCharsetException;
  * accepted on input, big-endian used on output.)</li>
  * </ul>
  *
+ * reduction based on Apache Commons Codec, org.apache.commons.codec.Charsets
+ *
  * @see <a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
  * @since 2.3
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: Charsets.java 1311751 2012-04-10 14:26:21Z ggregory $
  */
 public class Charsets {

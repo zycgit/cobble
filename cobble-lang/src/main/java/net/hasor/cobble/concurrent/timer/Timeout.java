@@ -16,6 +16,7 @@
 package net.hasor.cobble.concurrent.timer;
 /**
  * A handle associated with a {@link TimerTask} that is returned by a {@link Timer}.
+ * this class copy from netty io.netty.util.Timeout
  */
 public interface Timeout {
     /**

@@ -43,6 +43,9 @@ import java.util.List;
  * designed to behave exactly like the original. The only exception is the
  * deprecated toString(int) method that has been ignored.
  *
+ * reduction based on Apache Commons IO, org.apache.commons.io.output.ByteArrayOutputStream
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: ByteArrayOutputStream.java 1304052 2012-03-22 20:55:29Z ggregory $
  */
 public class ByteArrayOutputStream extends OutputStream {

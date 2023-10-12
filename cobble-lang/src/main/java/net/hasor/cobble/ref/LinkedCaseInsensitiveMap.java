@@ -28,6 +28,9 @@ import java.util.function.Function;
  *
  * <p>Does <i>not</i> support <code>null</code> keys.
  *
+ * 2017-09-13 reduction based on SpringFramework, org.springframework.util.LinkedCaseInsensitiveMap
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Juergen Hoeller
  * @since 3.0
  */

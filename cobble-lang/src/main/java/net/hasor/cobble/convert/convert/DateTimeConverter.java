@@ -75,6 +75,9 @@ import java.util.TimeZone;
  * The <b>Time Zone</b> to use with the date format can be specified
  * using the <code>setTimeZone()</code> method.
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.DateTimeConverter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 640131 $ $Date: 2008-03-23 02:10:31 +0000 (Sun, 23 Mar 2008) $
  * @since 1.8.0
  */

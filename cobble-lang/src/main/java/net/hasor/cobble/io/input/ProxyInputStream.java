@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.input;
-
 import net.hasor.cobble.io.IOUtils;
 
 import java.io.FilterInputStream;
@@ -34,6 +33,9 @@ import java.io.InputStream;
  * See the protected methods for ways in which a subclass can easily decorate
  * a stream with custom pre-, post- or error processing functionality.
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.ProxyInputStream
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: ProxyInputStream.java 1603493 2014-06-18 15:46:07Z ggregory $
  */
 public abstract class ProxyInputStream extends FilterInputStream {

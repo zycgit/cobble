@@ -22,9 +22,12 @@ package net.hasor.cobble.convert;
  * <p>For more details, see <code>ConverterBean</code> which provides the
  * implementations for these methods.</p>
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.ConvertUtils
+ *
  * @author Craig R. McClanahan
  * @author Ralph Schaer
  * @author Chris Audley
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 556229 $ $Date: 2007-07-14 07:11:19 +0100 (Sat, 14 Jul 2007) $
  * @see ConverterBean
  */

@@ -36,6 +36,9 @@ import java.util.*;
  *
  * @version $Revision: 812176 $ $Date: 2009-09-07 15:59:25 +0100 (Mon, 07 Sep 2009) $
  *
+ * 2019-12-03 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.BeanMap
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author yongchun.zyc
  * @author James Strachan
  * @author Stephen Colebourne

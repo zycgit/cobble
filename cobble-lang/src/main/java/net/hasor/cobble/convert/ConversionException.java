@@ -19,6 +19,8 @@ package net.hasor.cobble.convert;
  * <p>A <strong>ConversionException</strong> indicates that a call to
  * <code>Converter.convert()</code> has failed to complete successfully.
  *
+ * copy from Apache Commons Beanutils, org.apache.commons.beanutils.ConversionException
+ *
  * @author Craig McClanahan
  * @author Paulo Gaspar
  * @since 1.3

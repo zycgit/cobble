@@ -31,6 +31,9 @@ import java.io.*;
  * you want to store it in memory (for speed), but if the file is large you want
  * to store it to file (to avoid memory issues).
  *
+ * reduction based on Apache Commons IO, org.apache.commons.io.output.DeferredFileOutputStream
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: DeferredFileOutputStream.java 1307462 2012-03-30 15:13:11Z ggregory $
  */
 public class DeferredFileOutputStream extends ThresholdingOutputStream {

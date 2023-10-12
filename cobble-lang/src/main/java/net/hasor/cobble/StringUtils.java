@@ -101,7 +101,11 @@ import java.util.stream.Stream;
  * The symbol <code>*</code> is used to indicate any input including <code>null</code>.</p>
  *
  * <p>#ThreadSafe#</p>
+ *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.StringUtils
+ *
  * @see String
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author <a href="http://jakarta.apache.org/turbine/">Apache Jakarta Turbine</a>
  * @author <a href="mailto:jon@latchkey.com">Jon S. Stevens</a>

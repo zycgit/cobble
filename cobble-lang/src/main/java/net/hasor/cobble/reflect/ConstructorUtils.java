@@ -39,6 +39,9 @@ import java.lang.reflect.Modifier;
  * succeed when the application has sufficient security privilages. If this call
  * fails then a warning will be logged and the method may fail.</p>
  *
+ * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.reflect.ConstructorUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Craig R. McClanahan
  * @author Ralph Schaer

@@ -94,10 +94,13 @@ import java.util.Collection;
  * AbstractArrayConverter for the supported input formats for these converters.
  * </p>
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.ConvertUtilsBean
+ *
  * @author Craig R. McClanahan
  * @author Ralph Schaer
  * @author Chris Audley
  * @author James Strachan
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 745079 $ $Date: 2009-02-17 14:04:10 +0000 (Tue, 17 Feb 2009) $
  * @since 1.7
  */

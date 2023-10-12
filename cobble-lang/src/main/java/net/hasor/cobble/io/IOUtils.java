@@ -57,6 +57,9 @@ import java.util.List;
  * <p>
  * Origin of code: Excalibur.
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.IOUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: IOUtils.java 1326636 2012-04-16 14:54:53Z ggregory $
  */
 public class IOUtils {

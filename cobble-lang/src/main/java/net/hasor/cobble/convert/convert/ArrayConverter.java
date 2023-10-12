@@ -117,6 +117,9 @@ import java.util.*;
  *    int[][] result = (int[][])matrixConverter.convert(int[][].class, matrixString);
  * </pre>
  *
+ * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.ArrayConverter
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 640131 $ $Date: 2008-03-23 02:10:31 +0000 (Sun, 23 Mar 2008) $
  * @since 1.8.0
  */

@@ -73,6 +73,9 @@ import java.util.Collection;
  * <p>
  * Origin of code: Excalibur, Alexandria, Tomcat, Commons-Utils.
  *
+ * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.FilenameUtils
+ *
+ * @author 赵永春 (zyc@hasor.net)
  * @version $Id: FilenameUtils.java 1307462 2012-03-30 15:13:11Z ggregory $
  * @since 1.1
  */
