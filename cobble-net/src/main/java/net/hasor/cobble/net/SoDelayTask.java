@@ -15,24 +15,27 @@
  */
 package net.hasor.cobble.net;
 /**
- * 延迟任务
+ * delay task
  * @version : 2023-09-24
  * @author 赵永春 (zyc@hasor.net)
  */
 public class SoDelayTask extends AbstractSoTask {
     private final int intervalMillis;
 
+    public SoDelayTask(int intervalMillis) {
+        this.intervalMillis = intervalMillis;
+    }
+
     public SoDelayTask(SoContext context) {
         this.intervalMillis = Math.max(10, context.getConfig().getRetryIntervalMs());
     }
 
     @Override
-    protected void doWork(boolean retry) {
-        if (!retry) {
+    protected void doWork(int retryCnt) {
+        if (retryCnt == 0 && this.intervalMillis > 0) {
             this.delayTask(this.intervalMillis);
-            return;
+        } else {
+            this.finishTask();
         }
-
-        finishTask();
     }
 }
