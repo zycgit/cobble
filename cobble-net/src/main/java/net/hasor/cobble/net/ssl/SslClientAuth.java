@@ -16,7 +16,7 @@
 package net.hasor.cobble.net.ssl;
 /**
  * Indicates the state of the {@link javax.net.ssl.SSLEngine} with respect to client authentication.
- * This configuration item really only applies when building the server-side {@link SslContext}.
+ * This configuration item really only applies when building the server-side {@link SslContextBasic}.
  * @version : 2023-09-24
  * @author 赵永春 (zyc@hasor.net)
  */
