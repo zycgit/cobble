@@ -189,7 +189,10 @@ public class BasicFuture<T> implements Future<T> {
     private void triggerListener(List<FutureListener<Future<T>>> listenerList) {
         if (listenerList != null) {
             for (FutureListener<Future<T>> callback : listenerList) {
-                callback.operationComplete(this);
+                try {
+                    callback.operationComplete(this);
+                } catch (Exception ignored) {
+                }
             }
         }
     }

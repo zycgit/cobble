@@ -142,3 +142,7 @@
 | ESupplier |     |
 | Property  |     |
 | Range     | 表示 A～B 的一个范围                                                  |
+
+
+- 支持 jdk14、log4j、log4j2、nologging、slf4j、stdout
+- 整个项目是从 MyBatis 包 org.apache.ibatis.logging 拷贝而来

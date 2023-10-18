@@ -19,11 +19,6 @@
         </dependency>
         <dependency>
             <groupId>net.hasor</groupId>
-            <artifactId>cobble-logging</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.hasor</groupId>
             <artifactId>cobble-dynamic</artifactId>
             <scope>compile</scope>
         </dependency>
@@ -39,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>net.hasor</groupId>
-            <artifactId>cobble-bytebuf</artifactId>
+            <artifactId>cobble-net</artifactId>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -242,9 +237,9 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <delete dir="${basedir}/target/src" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar" />
+                                <delete dir="${basedir}/target/src"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar"/>
                             </target>
                         </configuration>
                         <goals>
