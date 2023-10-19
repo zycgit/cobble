@@ -36,8 +36,6 @@ public interface SoResManager extends AutoCloseable {
 
     ByteBuf newLocalSndBuf();
 
-    ByteBuf newSndDownBuffer();
-
     /** always return null */
     <T> T freeObject(Object refObj);
 
