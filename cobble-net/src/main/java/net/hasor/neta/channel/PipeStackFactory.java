@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.neta.channel;
-import net.hasor.neta.bytebuf.ByteBuf;
-
 /**
  * Application protocol stack
  * @version : 2023-09-24
@@ -23,11 +21,5 @@ import net.hasor.neta.bytebuf.ByteBuf;
  */
 @FunctionalInterface
 public interface PipeStackFactory {
-    /**
-     * Processing received data
-     * @param pipeContext pipeContext
-     * @param rcvByteBuf received data
-     * @return The return {@link ByteBuf}`s, well be send to remote.
-     */
-    PipeStack create(NetChannel pipeContext);
+    PipeStack create(PipeContext pipeContext);
 }
