@@ -32,11 +32,6 @@
             <artifactId>cobble-loader</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>net.hasor</groupId>
-            <artifactId>cobble-net</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <properties>

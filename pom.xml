@@ -43,7 +43,6 @@
         <module>cobble-loader</module>
         <module>cobble-dynamic</module>
         <module>cobble-settings</module>
-        <module>cobble-net</module>
     </modules>
 
     <dependencyManagement>
@@ -66,11 +65,6 @@
             <dependency>
                 <groupId>net.hasor</groupId>
                 <artifactId>cobble-loader</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.hasor</groupId>
-                <artifactId>cobble-net</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
