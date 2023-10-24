@@ -2,7 +2,7 @@
 
 &emsp;&emsp; cobble 译名:鹅卵石，是一种非常常见的小石头。通常用来当作建筑辅材以及景观布置。
 
-分为 6 个部分（按字母序）：
+分为 4 个部分（按字母序）：
 
 - cobble-dynamic，基于 ASM 的 Java 动态代理、可平替 jdk 内置 Proxy类。
 - cobble-lang，一些整理工具类和组建。
