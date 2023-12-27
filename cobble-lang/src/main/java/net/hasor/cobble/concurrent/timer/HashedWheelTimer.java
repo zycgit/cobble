@@ -158,60 +158,36 @@ public class HashedWheelTimer implements Timer {
 
     /**
      * Creates a new timer.
-     *
-     * @param threadFactory  a {@link ThreadFactory} that creates a
-     *                       background {@link Thread} which is dedicated to
-     *                       {@link TimerTask} execution.
-     * @param tickDuration   the duration between tick
-     * @param unit           the time unit of the {@code tickDuration}
-     * @param ticksPerWheel  the size of the wheel
-     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @param threadFactory a {@link ThreadFactory} that creates a
+     * background {@link Thread} which is dedicated to
+     * {@link TimerTask} execution.
+     * @param tickDuration the duration between tick
+     * @param unit the time unit of the {@code tickDuration}
+     * @param ticksPerWheel the size of the wheel
+     * @throws NullPointerException if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
      */
     public HashedWheelTimer(ThreadFactory threadFactory, long tickDuration, TimeUnit unit, int ticksPerWheel) {
-        this(threadFactory, tickDuration, unit, ticksPerWheel, true);
+        this(threadFactory, tickDuration, unit, ticksPerWheel, -1);
     }
 
     /**
      * Creates a new timer.
-     *
-     * @param threadFactory        a {@link ThreadFactory} that creates a
-     *                             background {@link Thread} which is dedicated to
-     *                             {@link TimerTask} execution.
-     * @param tickDuration         the duration between tick
-     * @param unit                 the time unit of the {@code tickDuration}
-     * @param ticksPerWheel        the size of the wheel
-     * @param leakDetection        {@code true} if leak detection should be enabled always,
-     *                             if false it will only be enabled if the worker thread is not
-     *                             a daemon thread.
-     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @param threadFactory a {@link ThreadFactory} that creates a
+     * background {@link Thread} which is dedicated to
+     * {@link TimerTask} execution.
+     * @param tickDuration the duration between tick
+     * @param unit the time unit of the {@code tickDuration}
+     * @param ticksPerWheel the size of the wheel
+     * @param maxPendingTimeouts The maximum number of pending timeouts after which call to
+     * {@code newTimeout} will result in
+     * {@link RejectedExecutionException}
+     * being thrown. No maximum pending timeouts limit is assumed if
+     * this value is 0 or negative.
+     * @throws NullPointerException if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
      */
-    public HashedWheelTimer(ThreadFactory threadFactory, long tickDuration, TimeUnit unit, int ticksPerWheel, boolean leakDetection) {
-        this(threadFactory, tickDuration, unit, ticksPerWheel, leakDetection, -1);
-    }
-
-    /**
-     * Creates a new timer.
-     *
-     * @param threadFactory        a {@link ThreadFactory} that creates a
-     *                             background {@link Thread} which is dedicated to
-     *                             {@link TimerTask} execution.
-     * @param tickDuration         the duration between tick
-     * @param unit                 the time unit of the {@code tickDuration}
-     * @param ticksPerWheel        the size of the wheel
-     * @param leakDetection        {@code true} if leak detection should be enabled always,
-     *                             if false it will only be enabled if the worker thread is not
-     *                             a daemon thread.
-     * @param  maxPendingTimeouts  The maximum number of pending timeouts after which call to
-     *                             {@code newTimeout} will result in
-     *                             {@link java.util.concurrent.RejectedExecutionException}
-     *                             being thrown. No maximum pending timeouts limit is assumed if
-     *                             this value is 0 or negative.
-     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
-     * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
-     */
-    public HashedWheelTimer(ThreadFactory threadFactory, long tickDuration, TimeUnit unit, int ticksPerWheel, boolean leakDetection, long maxPendingTimeouts) {
+    public HashedWheelTimer(ThreadFactory threadFactory, long tickDuration, TimeUnit unit, int ticksPerWheel, long maxPendingTimeouts) {
 
         Objects.requireNonNull(threadFactory, "threadFactory");
         Objects.requireNonNull(unit, "unit");

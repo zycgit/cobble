@@ -122,62 +122,81 @@ public class BasicFuture<T> implements Future<T> {
 
     @Override
     public boolean completed(final T result) {
+        if (this.completed) {
+            return false;
+        }
+
         synchronized (this) {
             if (this.completed) {
                 return false;
             }
             this.completed = true;
             this.result = result;
+
+            if (this.callback != null) {
+                this.callback.completed(result);
+            }
+
+            this.triggerListener(this.completedListener);
+            this.triggerListener(this.finalListener);
+
             notifyAll();
         }
-
-        if (this.callback != null) {
-            this.callback.completed(result);
-        }
-        this.triggerListener(this.completedListener);
-        this.triggerListener(this.finalListener);
         return true;
     }
 
     @Override
     public boolean failed(final Throwable exception) {
+        if (this.completed) {
+            return false;
+        }
+
         synchronized (this) {
             if (this.completed) {
                 return false;
             }
             this.completed = true;
             this.ex = exception;
+
+            if (this.callback != null) {
+                this.callback.failed(exception);
+            }
+
+            this.triggerListener(this.failedListener);
+            this.triggerListener(this.finalListener);
+
             notifyAll();
         }
-
-        if (this.callback != null) {
-            this.callback.failed(exception);
-        }
-        this.triggerListener(this.failedListener);
-        this.triggerListener(this.finalListener);
         return true;
     }
 
     @Override
     public boolean cancel(final boolean mayInterruptIfRunning) {
+        if (this.completed) {
+            return false;
+        }
+
         synchronized (this) {
             if (this.completed) {
                 return false;
             }
             this.completed = true;
             this.cancelled = true;
+
+            if (this.callback != null) {
+                if (this.callback instanceof CancelFutureCallback) {
+                    ((CancelFutureCallback) this.callback).cancelled();
+                } else {
+                    this.failed(new CancellationException());
+                    return true;
+                }
+            }
+
+            this.triggerListener(this.cancelListener);
+            this.triggerListener(this.finalListener);
+
             notifyAll();
         }
-        if (this.callback != null) {
-            if (this.callback instanceof CancelFutureCallback) {
-                ((CancelFutureCallback) this.callback).cancelled();
-            } else {
-                this.failed(new CancellationException());
-            }
-        }
-
-        this.triggerListener(this.cancelListener);
-        this.triggerListener(this.finalListener);
         return true;
     }
 
@@ -203,21 +222,21 @@ public class BasicFuture<T> implements Future<T> {
             return this;
         }
 
-        if (this.completed && !this.cancelled && this.ex == null) {
-            listener.operationComplete(this);
-            return this;
-        }
+        synchronized (this) {
+            if (this.completed && !this.cancelled && this.ex == null) {
+                listener.operationComplete(this);
+                return this;
+            }
 
-        if (this.completedListener == null) {
-            synchronized (this) {
+            if (this.completedListener == null) {
                 if (this.completedListener == null) {
                     this.completedListener = new ArrayList<>();
                 }
             }
-        }
 
-        this.completedListener.add(listener);
-        return this;
+            this.completedListener.add(listener);
+            return this;
+        }
     }
 
     @Override
@@ -226,21 +245,21 @@ public class BasicFuture<T> implements Future<T> {
             return this;
         }
 
-        if (this.completed && !this.cancelled && this.ex != null) {
-            listener.operationComplete(this);
-            return this;
-        }
+        synchronized (this) {
+            if (this.completed && !this.cancelled && this.ex != null) {
+                listener.operationComplete(this);
+                return this;
+            }
 
-        if (this.failedListener == null) {
-            synchronized (this) {
+            if (this.failedListener == null) {
                 if (this.failedListener == null) {
                     this.failedListener = new ArrayList<>();
                 }
             }
-        }
 
-        this.failedListener.add(listener);
-        return this;
+            this.failedListener.add(listener);
+            return this;
+        }
     }
 
     @Override
@@ -249,21 +268,21 @@ public class BasicFuture<T> implements Future<T> {
             return this;
         }
 
-        if (this.completed && this.cancelled) {
-            listener.operationComplete(this);
-            return this;
-        }
+        synchronized (this) {
+            if (this.completed && this.cancelled) {
+                listener.operationComplete(this);
+                return this;
+            }
 
-        if (this.cancelListener == null) {
-            synchronized (this) {
+            if (this.cancelListener == null) {
                 if (this.cancelListener == null) {
                     this.cancelListener = new ArrayList<>();
                 }
             }
-        }
 
-        this.cancelListener.add(listener);
-        return this;
+            this.cancelListener.add(listener);
+            return this;
+        }
     }
 
     @Override
@@ -272,20 +291,20 @@ public class BasicFuture<T> implements Future<T> {
             return this;
         }
 
-        if (this.completed) {
-            listener.operationComplete(this);
-            return this;
-        }
+        synchronized (this) {
+            if (this.completed) {
+                listener.operationComplete(this);
+                return this;
+            }
 
-        if (this.finalListener == null) {
-            synchronized (this) {
+            if (this.finalListener == null) {
                 if (this.finalListener == null) {
                     this.finalListener = new ArrayList<>();
                 }
             }
-        }
 
-        this.finalListener.add(listener);
-        return this;
+            this.finalListener.add(listener);
+            return this;
+        }
     }
 }

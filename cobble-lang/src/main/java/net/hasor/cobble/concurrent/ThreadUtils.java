@@ -19,6 +19,7 @@ import net.hasor.cobble.StringUtils;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,7 +43,9 @@ public class ThreadUtils {
         final AtomicInteger cnt = new AtomicInteger(0);
         return run -> {
             Thread t = new Thread(run);
-            t.setContextClassLoader(loader);
+            if (loader != null) {
+                t.setContextClassLoader(loader);
+            }
             t.setName(String.format(template, cnt.incrementAndGet()));
             t.setDaemon(isDaemon);
             return t;
@@ -137,7 +140,17 @@ public class ThreadUtils {
         return Executors.newFixedThreadPool(nThreads, threadFactory);
     }
 
-    public static void sleep(int intervalMillis) {
+    public static void sleep(long interval, TimeUnit timeUnit) {
+        if (interval <= 0) {
+            return;
+        }
+        try {
+            Thread.sleep(timeUnit.toMillis(interval));
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void sleep(long intervalMillis) {
         if (intervalMillis <= 0) {
             return;
         }
