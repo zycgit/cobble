@@ -145,7 +145,7 @@ public class RandomUtils {
      * Returns a random BigInteger within the specified range.
      * </p>
      *
-     * @param startInclusive the smallest value that can be returned, must be non-negative
+     * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
      * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random long
@@ -197,14 +197,14 @@ public class RandomUtils {
      * Returns a random double within the specified range.
      * </p>
      *
-     * @param startInclusive the smallest value that can be returned, must be non-negative
+     * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
      * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random double
      */
     public static double nextDouble(final double startInclusive, final double endInclusive) {
         isTrue(endInclusive >= startInclusive, "Start value must be smaller or equal to end value.");
-        isTrue(startInclusive >= 0, "Both range values must be non-negative.");
+        isTrue(startInclusive >= 0, "Both range values support negative.");
 
         if (startInclusive == endInclusive) {
             return startInclusive;
@@ -229,14 +229,14 @@ public class RandomUtils {
      * Returns a random float within the specified range.
      * </p>
      *
-     * @param startInclusive the smallest value that can be returned, must be non-negative
+     * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
      * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random float
      */
     public static float nextFloat(final float startInclusive, final float endInclusive) {
         isTrue(endInclusive >= startInclusive, "Start value must be smaller or equal to end value.");
-        isTrue(startInclusive >= 0, "Both range values must be non-negative.");
+        isTrue(startInclusive >= 0, "Both range values support negative.");
 
         if (startInclusive == endInclusive) {
             return startInclusive;
@@ -260,7 +260,7 @@ public class RandomUtils {
      * Returns a random BigDecimal within the specified range.
      * </p>
      *
-     * @param startInclusive the smallest value that can be returned, must be non-negative
+     * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
      * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random BigDecimal

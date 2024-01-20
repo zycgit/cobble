@@ -17,6 +17,7 @@ package net.hasor.cobble.i18n;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.logging.Logger;
 import net.hasor.cobble.ref.LinkedCaseInsensitiveMap;
 import net.hasor.cobble.text.token.GenericTokenParser;
 
@@ -35,6 +36,7 @@ import java.util.function.Function;
  */
 public class I18nUtils {
 
+    private static final Logger              logger      = Logger.getLogger(I18nUtils.class);
     public static final  I18nUtils           DEFAULT     = new I18nUtils();
     private static final Map<String, Locale> LOCAL_CACHE = new LinkedCaseInsensitiveMap<>();
 
@@ -183,6 +185,10 @@ public class I18nUtils {
         this.defaultI18nKey = toI18nKey(defaultLocale);
     }
 
+    public Set<String> getI18nSources() {
+        return Collections.unmodifiableSet(this.i18nSource.keySet());
+    }
+
     protected void loadResources(String... i18nResources) throws IOException {
         ClassLoader classLoader = ClassUtils.getClassLoader(Thread.currentThread().getContextClassLoader());
         loadResources(classLoader, i18nResources);
@@ -198,7 +204,7 @@ public class I18nUtils {
         for (String i18n : i18nResources) {
             if (!this.i18nSource.containsKey(i18n)) {
                 this.i18nSource.put(i18n, resourceLoader);
-                
+
                 String i18nResource = i18n + ".properties";
                 try (InputStream stream = ResourcesUtils.getResourceAsStream(resourceLoader, i18nResource)) {
                     if (stream != null) {
@@ -353,6 +359,43 @@ public class I18nUtils {
             return this.variablesSource.apply(argName);
         } else {
             return argName;
+        }
+    }
+
+    public void checkDifference(String localName) throws IOException {
+        for (String resource : this.getI18nSources()) {
+            ClassLoader classLoader = this.i18nSource.get(resource);
+            checkDifference(resource, classLoader, localName);
+        }
+    }
+
+    private void checkDifference(String resource, ClassLoader classLoader, String localName) throws IOException {
+        if (StringUtils.isBlank(localName)) {
+            throw new IllegalArgumentException("localName is null.");
+        }
+        String srcPropFile = resource + ".properties";
+        String diffPropFile = resource + "_" + localName + ".properties";
+
+        checkDifference(classLoader, srcPropFile, diffPropFile);
+    }
+
+    protected void checkDifference(ClassLoader loader, String srcFile, String dstFile) throws IOException {
+        try (InputStream srcStream = ResourcesUtils.getResourceAsStream(loader, srcFile); InputStream dstStream = ResourcesUtils.getResourceAsStream(loader, dstFile)) {
+            Properties srcProps = new Properties();
+            srcProps.load(srcStream);
+
+            Properties dstProps = new Properties();
+            dstProps.load(dstStream);
+
+            for (String key : srcProps.stringPropertyNames()) {
+                String msgUs = dstProps.getProperty(key, null);
+                if (msgUs == null) {
+                    logger.warn("I18N: " + dstFile + " not exist " + key + " entry.");
+                }
+            }
+        } catch (IOException e) {
+            logger.error("I18N: open i18n file " + srcFile + "or" + dstFile + " failed.");
+            throw e;
         }
     }
 }

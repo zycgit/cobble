@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.concurrent;
+import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.function.Callable;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ThreadUtils {
+
     private static final AtomicInteger globalCnt = new AtomicInteger(0);
 
     public static ThreadFactory daemonThreadFactory(final ClassLoader loader) {
@@ -52,89 +55,98 @@ public class ThreadUtils {
         };
     }
 
-    //
+    private static Thread runnableRun(boolean run, Thread thread) {
+        if (run) {
+            thread.start();
+        }
+        return thread;
+    }
 
-    /** 创建一个前台线程，不启动它 */
-    public static Thread frontThread(Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+    private static Thread runnableThread(Runnable runnable) {
+        Thread thread = new Thread(runnable);
+        thread.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        return thread;
+    }
+
+    private static Thread callableThread(Callable runnable) {
+        Thread thread = new Thread(() -> {
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                throw ExceptionUtils.toRuntime(e);
+            }
+        });
+        thread.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+        return thread;
+    }
+
+    /** create front Thread, but not start */
+    public static Thread frontThread(boolean run, Runnable runnable) {
+        Thread t = runnableThread(runnable);
         t.setDaemon(false);
-        return t;
+        return runnableRun(run, t);
     }
 
-    /** 创建一个前台线程，不启动它 */
-    public static Thread frontThread(ClassLoader loader, Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setContextClassLoader(loader);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+    /** create front Thread, but not start */
+    public static Thread frontThread(boolean run, Callable runnable) {
+        Thread t = callableThread(runnable);
         t.setDaemon(false);
-        return t;
+        return runnableRun(run, t);
     }
 
-    /** 创建一个后台线程，不启动它 */
-    public static Thread daemonThread(Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
-        t.setDaemon(true);
-        return t;
-    }
-
-    /** 创建一个后台线程，不启动它 */
-    public static Thread daemonThread(ClassLoader loader, Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setContextClassLoader(loader);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
-        t.setDaemon(true);
-        return t;
-    }
-
-    //
-
-    /** 创建一个前台线程，并启动它 */
-    public static Thread runFrontThread(Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+    /** create front Thread, but not start */
+    public static Thread frontThread(boolean run, ClassLoader loader, Runnable runnable) {
+        Thread t = runnableThread(runnable);
         t.setDaemon(false);
-        t.start();
-        return t;
+        t.setContextClassLoader(loader);
+        return runnableRun(run, t);
     }
 
-    /** 创建一个前台线程，并启动它 */
-    public static Thread runFrontThread(ClassLoader loader, Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setContextClassLoader(loader);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
+    /** create front Thread, but not start */
+    public static Thread frontThread(boolean run, ClassLoader loader, Callable runnable) {
+        Thread t = callableThread(runnable);
         t.setDaemon(false);
-        t.start();
-        return t;
-    }
-
-    /** 创建一个后台线程，并启动它 */
-    public static Thread runDaemonThread(Runnable runnable) {
-        Thread t = new Thread(runnable);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
-        t.setDaemon(true);
-        t.start();
-        return t;
-    }
-
-    /** 创建一个后台线程，并启动它 */
-    public static Thread runDaemonThread(ClassLoader loader, Runnable runnable) {
-        Thread t = new Thread(runnable);
         t.setContextClassLoader(loader);
-        t.setName(String.format("Thread-%s", globalCnt.incrementAndGet()));
-        t.setDaemon(true);
-        t.start();
-        return t;
+        return runnableRun(run, t);
     }
 
-    /** 创建一个 ExecutorService 使用固定数量的后台线程 */
+    /** create daemon Thread, but not start */
+    public static Thread daemonThread(boolean run, Runnable runnable) {
+        Thread t = runnableThread(runnable);
+        t.setDaemon(true);
+        return runnableRun(run, t);
+    }
+
+    /** create daemon Thread, but not start */
+    public static Thread daemonThread(boolean run, Callable runnable) {
+        Thread t = callableThread(runnable);
+        t.setDaemon(true);
+        return runnableRun(run, t);
+    }
+
+    /** create daemon Thread, but not start */
+    public static Thread daemonThread(boolean run, ClassLoader loader, Runnable runnable) {
+        Thread t = runnableThread(runnable);
+        t.setDaemon(true);
+        t.setContextClassLoader(loader);
+        return runnableRun(run, t);
+    }
+
+    /** create daemon Thread, but not start */
+    public static Thread daemonThread(boolean run, ClassLoader loader, Callable runnable) {
+        Thread t = callableThread(runnable);
+        t.setDaemon(true);
+        t.setContextClassLoader(loader);
+        return runnableRun(run, t);
+    }
+
+    /** create ExecutorService use nThreads daemon Thread*/
     public static ExecutorService daemonFixedThreadPool(final ClassLoader loader, int nThreads) {
         ThreadFactory threadFactory = threadFactory(loader, "Thread-%s", true);
         return Executors.newFixedThreadPool(nThreads, threadFactory);
     }
 
-    /** 创建一个 ExecutorService 使用固定数量的前台线程 */
+    /** create ExecutorService use nThreads front Thread*/
     public static ExecutorService frontFixedThreadPool(final ClassLoader loader, int nThreads) {
         ThreadFactory threadFactory = threadFactory(loader, "Thread-%s", false);
         return Executors.newFixedThreadPool(nThreads, threadFactory);
