@@ -88,6 +88,11 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
+    public long getResourceSize(String resource) throws IOException {
+        return -1;
+    }
+
+    @Override
     public List<URL> getResources(String resource) throws IOException {
         resource = formatResourcePath(resource);
         List<URL> urls = new ArrayList<>();

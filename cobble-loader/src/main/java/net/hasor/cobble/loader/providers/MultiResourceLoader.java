@@ -111,6 +111,12 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Class
     }
 
     @Override
+    public long getResourceSize(String resource) throws IOException {
+        ResourceLoader loader = findLoader(resource);
+        return loader == null ? -1 : loader.getResourceSize(resource);
+    }
+
+    @Override
     public List<URL> getResources(String resource) throws IOException {
         List<URL> result = new ArrayList<>();
         for (ResourceLoader loads : this.loaders) {

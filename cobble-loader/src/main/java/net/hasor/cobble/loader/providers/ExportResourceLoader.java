@@ -171,6 +171,14 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
+    public long getResourceSize(String resource) throws IOException {
+        if (!testPath(resource)) {
+            return -1;
+        }
+        return this.resourceLoader.getResourceSize(resource);
+    }
+
+    @Override
     public List<URL> getResources(String resource) throws IOException {
         if (!testPath(resource)) {
             return Collections.emptyList();

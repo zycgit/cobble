@@ -50,6 +50,8 @@ public interface ResourceLoader {
 
     InputStream getResourceAsStream(String resource) throws IOException;
 
+    long getResourceSize(String resource) throws IOException;
+
     Class<?> getClass(String className) throws ClassNotFoundException;
 
     List<URL> getResources(String resource) throws IOException;

@@ -33,34 +33,34 @@ public class DefaultSettings extends MergedSettings {
 
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings() throws IOException {
-        refresh();
+        this.refresh();
     }
 
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(String mainSettings) throws IOException {
+        this();
         if (StringUtils.isNotBlank(mainSettings)) {
             this.resource = mainSettings;
             this.loadSettings();
         }
-        refresh();
     }
 
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(File mainSettings) throws IOException {
+        this();
         if (mainSettings != null) {
             this.resource = mainSettings.toURI().toURL().toString();
             this.loadSettings();
         }
-        refresh();
     }
 
     /** 创建{@link DefaultSettings}类型对象。 */
     public DefaultSettings(URI mainSettings) throws IOException {
+        this();
         if (mainSettings != null) {
             this.resource = mainSettings.toURL().toString();
             this.loadSettings();
         }
-        refresh();
     }
 
     @Override

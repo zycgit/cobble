@@ -171,7 +171,38 @@ public class BeanUtils {
     /*----------------------------------------------------------------------------------------*/
 
     /** 获取类定义的字段和继承父类中定义的字段以及父类的父类（子类重新定义同名字段也会被列入集合） */
-    public static Map<String, Field> getALLFields(final Class<?> target) {
+    public static List<Field> getALLFieldToList(final Class<?> target) {
+        if (target == null) {
+            return null;
+        }
+        ArrayList<Field> fList = new ArrayList<>();
+        findALLFields(target, fList);
+        return fList;
+    }
+
+    private static void findALLFields(final Class<?> target, final List<Field> fList) {
+        if (target == null) {
+            return;
+        }
+        for (Field field : target.getDeclaredFields()) {
+            if (!fList.contains(field)) {
+                fList.add(field);
+            }
+        }
+        for (Field field : target.getFields()) {
+            if (!fList.contains(field)) {
+                fList.add(field);
+            }
+        }
+        Class<?> superType = target.getSuperclass();
+        if (superType == null || superType == target) {
+            return;
+        }
+        findALLFields(superType, fList);
+    }
+
+    /** 获取类定义的字段和继承父类中定义的字段以及父类的父类（子类重新定义同名字段也会被列入集合） */
+    public static Map<String, Field> getALLFieldToMap(final Class<?> target) {
         if (target == null) {
             return null;
         }
@@ -205,7 +236,7 @@ public class BeanUtils {
     }
 
     /** 获取类定义的方法和继承父类中定义的方法以及父类的父类（子类的重写方法也会被返回） */
-    public static List<Method> findALLMethods(final Class<?> target) {
+    public static List<Method> getAllMethodToList(final Class<?> target) {
         if (target == null) {
             return null;
         }
@@ -387,7 +418,7 @@ public class BeanUtils {
 
     private static Map<String, Property> getPropertyFunc(final Class<?> target, Predicate<Method> test) {
         Map<String, Property> propertyMap = new LinkedHashMap<>();
-        Map<String, Field> allFields = getALLFields(target);
+        Map<String, Field> allFields = getALLFieldToMap(target);
 
         for (Method m : target.getMethods()) {
             if (m.getDeclaringClass() == Object.class || !test.test(m)) {

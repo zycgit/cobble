@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="https://www.hasor.net/sechma/main">
     <hasor>
-        <debug>${home}</debug>
+        <debug>${HOME}</debug>
     </hasor>
 </config>

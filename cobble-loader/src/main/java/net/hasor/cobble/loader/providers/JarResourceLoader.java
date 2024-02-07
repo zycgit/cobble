@@ -24,7 +24,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -118,6 +121,22 @@ public class JarResourceLoader extends AbstractResourceLoader {
             }
         }
         return null;
+    }
+
+    @Override
+    public long getResourceSize(String resource) throws IOException {
+        ZipEntry zipEntry = this.jarFile.getEntry(resource);
+        if (zipEntry != null) {
+            return zipEntry.getSize();
+        } else if (!this.nestedJarFile.isEmpty()) {
+            for (JarFile nestedJar : this.nestedJarFile) {
+                ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
+                if (nestedZipEntry != null) {
+                    return nestedZipEntry.getSize();
+                }
+            }
+        }
+        return -1;
     }
 
     @Override

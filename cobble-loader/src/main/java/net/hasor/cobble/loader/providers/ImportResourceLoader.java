@@ -252,12 +252,28 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
     public InputStream getResourceAsStream(String resource) throws IOException {
         Iterator<LoaderWrap> loaders = getLoader(resource);
         while (loaders.hasNext()) {
-            InputStream resourceStream = loaders.next().loader.getResourceAsStream(resource);
-            if (resourceStream != null) {
-                return resourceStream;
+            ResourceLoader loader = loaders.next().loader;
+            try (InputStream resourceStream = loader.getResourceAsStream(resource)) {
+                if (resourceStream != null) {
+                    return resourceStream;
+                }
             }
         }
         return null;
+    }
+
+    @Override
+    public long getResourceSize(String resource) throws IOException {
+        Iterator<LoaderWrap> loaders = getLoader(resource);
+        while (loaders.hasNext()) {
+            ResourceLoader loader = loaders.next().loader;
+            try (InputStream resourceStream = loader.getResourceAsStream(resource)) {
+                if (resourceStream != null) {
+                    return loader.getResourceSize(resource);
+                }
+            }
+        }
+        return -1;
     }
 
     @Override

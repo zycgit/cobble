@@ -89,6 +89,17 @@ public class PathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
+    public long getResourceSize(String resource) {
+        List<File> resourcePaths = formatResourcePath(resource);
+        for (File file : resourcePaths) {
+            if (file.exists() && file.isFile()) {
+                return file.length();
+            }
+        }
+        return -1;
+    }
+
+    @Override
     public List<URL> getResources(String resource) throws IOException {
         List<URL> result = new ArrayList<>();
         List<File> resourcePaths = formatResourcePath(resource);

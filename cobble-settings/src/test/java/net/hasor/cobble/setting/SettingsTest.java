@@ -49,7 +49,7 @@ public class SettingsTest {
         settings = new SettingsWrap(settings);
 
         String string = settings.getString("hasor.debug");
-        System.out.println(string);
+        System.out.println("::" + string);
     }
 
     @Test
