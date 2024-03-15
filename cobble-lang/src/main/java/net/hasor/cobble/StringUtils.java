@@ -143,6 +143,15 @@ public class StringUtils {
      * <p>The maximum size to which the padding constant(s) can expand.</p>
      */
     private static final int    PAD_LIMIT       = 8192;
+    /**
+     * <p>The system default newline character.</p>
+     */
+    public static final  String NEWLINE;
+
+    static {
+        String value = System.getProperty("line.separator");
+        NEWLINE = (value == null) ? "\n" : value;
+    }
 
     /**
      * <p><code>StringUtils</code> instances should NOT be constructed in

@@ -43,4 +43,8 @@ public class SingletonScope implements Scope {
     public Map<Object, Supplier<?>> getSingletonData() {
         return Collections.unmodifiableMap(this.scopeMap);
     }
+
+    public void clean() {
+        this.scopeMap.clear();
+    }
 }

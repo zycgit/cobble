@@ -253,10 +253,9 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
         Iterator<LoaderWrap> loaders = getLoader(resource);
         while (loaders.hasNext()) {
             ResourceLoader loader = loaders.next().loader;
-            try (InputStream resourceStream = loader.getResourceAsStream(resource)) {
-                if (resourceStream != null) {
-                    return resourceStream;
-                }
+            InputStream resourceStream = loader.getResourceAsStream(resource);
+            if (resourceStream != null) {
+                return resourceStream;
             }
         }
         return null;

@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 public class BeanUtils {
     private static final Annotation[] ANNOTATION_EMPTY = new Annotation[0];
 
-    /**获取指定类型的默认值 */
+    /** 获取指定类型的默认值 */
     public static Object getDefaultValue(final Class<?> returnType) {
         if (returnType == null || !returnType.isPrimitive()) {
             return null;
@@ -504,7 +504,7 @@ public class BeanUtils {
         return getField(target, property) != null;
     }
 
-    /**执行属性注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。返回值表示执行是否成功。注意：该方法会根据属性类型进行尝试类型转换 */
+    /** 执行属性注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。返回值表示执行是否成功。注意：该方法会根据属性类型进行尝试类型转换 */
     public static boolean writeProperty(final Object object, final String property, final Object value) {
         if (object == null || property == null) {
             return false;
@@ -527,7 +527,7 @@ public class BeanUtils {
         }
     }
 
-    /**执行字段注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。注意：该方法会根据属性类型进行尝试类型转换 */
+    /** 执行字段注入，除了注入int,short,long,等基本类型之外该方法还支持注入枚举类型。注意：该方法会根据属性类型进行尝试类型转换 */
     public static boolean writeField(final Object object, final String property, final Object value) {
         if (object == null || property == null) {
             return false;
@@ -590,7 +590,7 @@ public class BeanUtils {
         }
     }
 
-    /** */
+    /**  */
     public static Class<?> getPropertyType(final Class<?> target, final String property) {
         Property propertyFunc = getPropertyFunc(target, property);
         if (propertyFunc == null) {
@@ -631,7 +631,7 @@ public class BeanUtils {
         }
     }
 
-    /** */
+    /**  */
     public static Class<?> getFieldType(final Class<?> target, final String property) {
         Field readField = getField(target, property);
         if (readField != null) {
@@ -667,7 +667,7 @@ public class BeanUtils {
 
     /*----------------------------------------------------------------------------------------*/
 
-    /** */
+    /**  */
     public static void copyProperties(final Object dest, final Object orig) {
         if (dest == null) {
             throw new IllegalArgumentException("dest is null");
@@ -689,7 +689,7 @@ public class BeanUtils {
         }
     }
 
-    /** */
+    /**  */
     public static void copyProperty(final Object dest, final Object orig, final String property) {
         if (dest == null) {
             throw new IllegalArgumentException("dest is null");
