@@ -15,6 +15,7 @@
  */
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.SystemUtils;
 import net.hasor.cobble.function.ESupplier;
@@ -128,12 +129,21 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         final Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
         final Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
 
         List<T> result = new ArrayList<>();
         for (URL url : this.classpath) {
+            try {
+                if (!matcher.test(url.toURI())) {
+                    continue;
+                }
+            } catch (URISyntaxException e) {
+                logger.error("cannot convert URL to URI jar (" + url + ") " + e.getMessage(), e);
+                throw ExceptionUtils.toRuntime(e);
+            }
+
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
                 File contextDir = FileUtils.toFile(url);
@@ -164,14 +174,23 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         }
         return result;
     }
-
+    
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
         Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
 
         for (URL url : this.classpath) {
+            try {
+                if (!matcher.test(url.toURI())) {
+                    continue;
+                }
+            } catch (URISyntaxException e) {
+                logger.error("cannot convert URL to URI jar (" + url + ") " + e.getMessage(), e);
+                throw ExceptionUtils.toRuntime(e);
+            }
+
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
                 File contextDir = FileUtils.toFile(url);

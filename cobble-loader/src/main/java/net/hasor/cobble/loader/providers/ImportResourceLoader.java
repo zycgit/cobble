@@ -21,9 +21,11 @@ import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 /**
  * 允许将 ResourceLoader 的中的一部分资源设置为 '可见'，并将不同的 ResourceLoader 之间 '可见' 部分汇聚为一个新的 ResourceLoader。
@@ -210,32 +212,32 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        Scanner<T> scannerProxy = scannerProxy(scanner);
-        Iterator<LoaderWrap> loaders = getAllLoader();
-        while (loaders.hasNext()) {
-            T result = loaders.next().loader.scanOneResource(matchType, scannerProxy, scanPaths);
-            if (result != null) {
-                return result;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         Iterator<LoaderWrap> loaders = getAllLoader();
         Scanner<T> scannerProxy = scannerProxy(scanner);
         List<T> result = new ArrayList<>();
 
         while (loaders.hasNext()) {
             LoaderWrap loader = loaders.next();
-            List<T> foundResources = loader.loader.scanResources(matchType, scannerProxy, scanPaths);
+            List<T> foundResources = loader.loader.scanResources(matchType, matcher, scannerProxy, scanPaths);
             if (foundResources != null) {
                 result.addAll(foundResources);
             }
         }
         return result;
+    }
+
+    @Override
+    public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        Scanner<T> scannerProxy = scannerProxy(scanner);
+        Iterator<LoaderWrap> loaders = getAllLoader();
+        while (loaders.hasNext()) {
+            T result = loaders.next().loader.scanOneResource(matchType, matcher, scannerProxy, scanPaths);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
     }
 
     @Override

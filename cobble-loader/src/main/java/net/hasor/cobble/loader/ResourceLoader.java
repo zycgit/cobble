@@ -16,8 +16,10 @@
 package net.hasor.cobble.loader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * 资源加载器、资源扫描器
@@ -33,7 +35,11 @@ public interface ResourceLoader {
         return scanResources(matchType, scanner, new String[0]);
     }
 
-    <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
+    default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        return this.scanResources(matchType, t -> true, scanner, scanPaths);
+    }
+
+    <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
     default <T> T scanOneResource(Scanner<T> scanner) throws IOException {
         return scanOneResource(MatchType.None, scanner, new String[0]);
@@ -43,7 +49,11 @@ public interface ResourceLoader {
         return scanOneResource(matchType, scanner, new String[0]);
     }
 
-    <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
+    default <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        return this.scanOneResource(matchType, t -> true, scanner, scanPaths);
+    }
+
+    <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
     URL getResource(String resource) throws IOException;
 

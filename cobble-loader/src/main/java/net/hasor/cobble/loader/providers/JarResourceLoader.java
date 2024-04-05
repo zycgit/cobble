@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.MatchType;
@@ -239,32 +240,55 @@ public class JarResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
+    public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        try {
+            List<T> result = new ArrayList<>();
+            Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
 
-        this.scanJarFile(result, this.jarFile, scanner, tests, false);
-        if (!this.nestedJarFile.isEmpty()) {
-            for (JarFile nestedJar : this.nestedJarFile) {
-                this.scanJarFile(result, nestedJar, scanner, tests, false);
+            if (matcher.test(this.jarFile.getUrl().toURI())) {
+                this.scanJarFile(result, this.jarFile, scanner, tests, false);
             }
+
+            if (!this.nestedJarFile.isEmpty()) {
+                for (JarFile nestedJar : this.nestedJarFile) {
+                    if (matcher.test(nestedJar.getUrl().toURI())) {
+                        this.scanJarFile(result, nestedJar, scanner, tests, false);
+                    }
+                }
+            }
+            return result;
+        } catch (URISyntaxException e) {
+            logger.error("cannot convert URL to URI jar (" + this.jarFile.getUrl() + ") " + e.getMessage(), e);
+            throw ExceptionUtils.toRuntime(e);
         }
-        return result;
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
+    public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        try {
+            List<T> result = new ArrayList<>();
+            Predicate<JarEntry>[] tests = buildPredicate(matchType, scanPaths, ZipEntry::getName);
 
-        this.scanJarFile(result, this.jarFile, scanner, tests, true);
-        if (result.isEmpty() && !this.nestedJarFile.isEmpty()) {
-            for (JarFile nestedJar : this.nestedJarFile) {
-                if (result.isEmpty()) {
-                    this.scanJarFile(result, nestedJar, scanner, tests, true);
+            if (matcher.test(this.jarFile.getUrl().toURI())) {
+                this.scanJarFile(result, this.jarFile, scanner, tests, true);
+                if (!result.isEmpty()) {
+                    return result.get(0);
                 }
             }
+            if (!this.nestedJarFile.isEmpty()) {
+                for (JarFile nestedJar : this.nestedJarFile) {
+                    if (matcher.test(nestedJar.getUrl().toURI())) {
+                        this.scanJarFile(result, nestedJar, scanner, tests, true);
+                        if (!result.isEmpty()) {
+                            return result.get(0);
+                        }
+                    }
+                }
+            }
+            return null;
+        } catch (URISyntaxException e) {
+            logger.error("cannot convert URL to URI jar (" + this.jarFile.getUrl() + ") " + e.getMessage(), e);
+            throw ExceptionUtils.toRuntime(e);
         }
-        return result.isEmpty() ? null : result.get(0);
     }
 }

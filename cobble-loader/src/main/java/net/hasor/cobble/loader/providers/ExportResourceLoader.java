@@ -21,8 +21,10 @@ import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * 仅允许将 ResourceLoader 的中的一部分资源设置为 '可见'
@@ -131,29 +133,29 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         if (scanPaths.length == 0) {
-            scanPaths = exportPathSet.toArray(new String[0]);
+            scanPaths = this.exportPathSet.toArray(new String[0]);
         } else {
             scanPaths = Arrays.stream(scanPaths).filter(this::testPath).toArray(String[]::new);
         }
         if (scanPaths.length == 0) {
             return Collections.emptyList();
         }
-        return this.resourceLoader.scanResources(matchType, scanner, scanPaths);
+        return this.resourceLoader.scanResources(matchType, matcher, scanner, scanPaths);
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         if (scanPaths.length == 0) {
-            scanPaths = exportPathSet.toArray(new String[0]);
+            scanPaths = this.exportPathSet.toArray(new String[0]);
         } else {
             scanPaths = Arrays.stream(scanPaths).filter(this::testPath).toArray(String[]::new);
         }
         if (scanPaths.length == 0) {
             return null;
         }
-        return this.resourceLoader.scanOneResource(matchType, scanner, scanPaths);
+        return this.resourceLoader.scanOneResource(matchType, matcher, scanner, scanPaths);
     }
 
     @Override

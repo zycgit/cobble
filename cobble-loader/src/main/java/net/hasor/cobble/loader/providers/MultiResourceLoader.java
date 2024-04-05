@@ -21,10 +21,12 @@ import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 
 /**
  * 可以将不同的 ResourceLoader 汇聚到一起，不具备 '可见性' 控制。实现更加简单、效率更高。
@@ -144,19 +146,19 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Class
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         for (ResourceLoader loads : this.loaders) {
-            List<T> resources = loads.scanResources(matchType, scanner, scanPaths);
+            List<T> resources = loads.scanResources(matchType, matcher, scanner, scanPaths);
             result.addAll(resources);
         }
         return result;
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         for (ResourceLoader loads : this.loaders) {
-            T resources = loads.scanOneResource(matchType, scanner, scanPaths);
+            T resources = loads.scanOneResource(matchType, matcher, scanner, scanPaths);
             if (resources != null) {
                 return resources;
             }

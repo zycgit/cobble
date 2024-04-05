@@ -25,6 +25,7 @@ import net.hasor.cobble.loader.Scanner;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -194,12 +195,12 @@ public class PathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<String>[] tests = buildPredicate(matchType, scanPaths, s -> s);
 
         for (File baseDir : this.dirPathList) {
-            if (baseDir.exists()) {
+            if (baseDir.exists() && matcher.test(baseDir.toURI())) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests, false);
             }
         }
@@ -207,15 +208,18 @@ public class PathResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+    public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();
         Predicate<String>[] tests = buildPredicate(matchType, scanPaths, s -> s);
 
         for (File baseDir : this.dirPathList) {
-            if (baseDir.exists()) {
+            if (baseDir.exists() && matcher.test(baseDir.toURI())) {
                 scanDirFile(baseDir, result, baseDir, scanner, tests, true);
             }
+            if (!result.isEmpty()) {
+                return result.get(0);
+            }
         }
-        return result.isEmpty() ? null : result.get(0);
+        return null;
     }
 }
