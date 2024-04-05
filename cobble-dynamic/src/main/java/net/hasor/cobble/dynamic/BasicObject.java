@@ -19,5 +19,5 @@ package net.hasor.cobble.dynamic;
  * @version : 2014年11月29日
  * @author 赵永春 (zyc@hasor.net)
  */
-public class BasicObject extends Object {
+public class BasicObject {
 }

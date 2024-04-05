@@ -123,7 +123,7 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
 
     private static String pathOrResource(String dirPath) {
         dirPath = dirPath.replace("\\", "/");
-        if (dirPath.length() > 0 && dirPath.charAt(0) == '/') {
+        if (!dirPath.isEmpty() && dirPath.charAt(0) == '/') {
             dirPath = dirPath.substring(1);
         }
         return dirPath;

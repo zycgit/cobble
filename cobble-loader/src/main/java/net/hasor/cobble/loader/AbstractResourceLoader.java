@@ -23,9 +23,8 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-    protected final  ClassLoader      parentClassLoader;
-    private volatile InnerClassLoader innerClassLoader;
-    private          SecurityManager  securityManager;
+    protected final  ClassLoader         parentClassLoader;
+    private volatile ResourceClassLoader innerClassLoader;
 
     public AbstractResourceLoader() {
         this.parentClassLoader = null;
@@ -33,11 +32,6 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
 
     public AbstractResourceLoader(ClassLoader parent) {
         this.parentClassLoader = parent;
-    }
-
-    /** 获取沙箱环境 */
-    public SecurityManager getSecurityManager() {
-        return this.securityManager;
     }
 
     protected ResourceLoader loaderForClassLoader() {
@@ -48,7 +42,7 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
         if (this.innerClassLoader == null) {
             synchronized (this) {
                 if (this.innerClassLoader == null) {
-                    this.innerClassLoader = new InnerClassLoader(this.parentClassLoader, loaderForClassLoader(), this.securityManager);
+                    this.innerClassLoader = new ResourceClassLoader(this.parentClassLoader, loaderForClassLoader());
                 }
             }
         }

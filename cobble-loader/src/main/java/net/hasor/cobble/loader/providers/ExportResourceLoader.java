@@ -97,7 +97,7 @@ public class ExportResourceLoader extends AbstractResourceLoader {
         }
 
         dirPath = dirPath.replace("\\", "/");
-        if (dirPath.length() > 0 && dirPath.charAt(0) == '/') {
+        if (!dirPath.isEmpty() && dirPath.charAt(0) == '/') {
             dirPath = dirPath.substring(1);
         }
         return dirPath;

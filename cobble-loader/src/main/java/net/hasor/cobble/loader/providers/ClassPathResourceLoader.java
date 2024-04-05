@@ -128,10 +128,10 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
     @Override
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        List<T> result = new ArrayList<>();
-        Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
-        Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
+        final Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
+        final Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
 
+        List<T> result = new ArrayList<>();
         for (URL url : this.classpath) {
             String protocol = url.getProtocol();
             if (protocol.equals("file")) {
