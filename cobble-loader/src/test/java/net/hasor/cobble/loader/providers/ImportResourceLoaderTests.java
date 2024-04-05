@@ -17,7 +17,9 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ScanEvent;
+import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Before;
 import org.junit.Test;
@@ -175,7 +177,7 @@ public class ImportResourceLoaderTests {
             }
         }
 
-        ResourceLoader.Scanner<Info> scanner = event -> {
+        Scanner<Info> scanner = event -> {
             if (event.getName().startsWith("app/only") && event.getName().endsWith(".java")) {
                 return new Info(event.getName(), event.getStream());
             } else {
@@ -201,8 +203,8 @@ public class ImportResourceLoaderTests {
 
     @Test
     public void importLoaderTest10() throws Exception {
-        assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
-        assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
+        assert loader.scanOneResource(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }) == null;
+        assert loader.scanResources(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
     }
 
     @Test
@@ -233,10 +235,10 @@ public class ImportResourceLoaderTests {
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
 
-        List<Object> list1 = loader.scanResources(ResourceLoader.ScanEvent::getName);
+        List<Object> list1 = loader.scanResources(ScanEvent::getName);
         assert list1.size() == 2;
 
-        List<Object> list2 = loader.scanResources(ResourceLoader.MatchType.Suffix, ResourceLoader.ScanEvent::getName, new String[] { "App1.class" });
+        List<Object> list2 = loader.scanResources(MatchType.Suffix, ScanEvent::getName, new String[] { "App1.class" });
         assert list2.contains("ApplicationForApp1.class");
     }
 

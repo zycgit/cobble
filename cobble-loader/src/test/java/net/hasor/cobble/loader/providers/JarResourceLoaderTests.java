@@ -17,8 +17,9 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.loader.ResourceLoader.Scanner;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.Scanner;
+import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Test;
 
@@ -135,8 +136,8 @@ public class JarResourceLoaderTests {
     public void jarLoaderTest8() throws Exception {
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file));
-        assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
-        assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
+        assert loader.scanOneResource(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }) == null;
+        assert loader.scanResources(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
     }
 
     @Test

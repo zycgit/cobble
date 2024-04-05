@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.loader.AbstractResourceLoader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ScanEvent;
+import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
 import net.hasor.cobble.logging.Logger;
 
@@ -216,7 +220,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
 
             try {
                 URI uri = new URL(jarFile.getUrl(), entry.getName()).toURI();
-                InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
+                ESupplier<InputStream, IOException> inputStream = () -> jarFile.getInputStream(entry);
                 T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), uri, inputStream));
                 if (res != null) {
                     result.add(res);

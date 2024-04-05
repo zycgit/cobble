@@ -15,7 +15,9 @@
  */
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.loader.AbstractResourceLoader;
+import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.loader.Scanner;
 
 import java.io.IOException;
 import java.io.InputStream;

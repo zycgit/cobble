@@ -17,9 +17,10 @@ package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.SystemUtils;
+import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.io.FileUtils;
-import net.hasor.cobble.loader.AbstractResourceLoader;
-import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.loader.Scanner;
+import net.hasor.cobble.loader.*;
 import net.hasor.cobble.logging.Logger;
 
 import java.io.File;
@@ -217,7 +218,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
             try {
                 URI uri = new URL("jar:" + content + "!/" + entry.getName()).toURI();
-                InputStreamGet inputStream = () -> jarFile.getInputStream(entry);
+                ESupplier<InputStream, IOException> inputStream = () -> jarFile.getInputStream(entry);
                 T res = scanner.found(new ScanEvent(entry.getName(), entry.getSize(), uri, inputStream));
                 if (res != null) {
                     result.add(res);
@@ -278,7 +279,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             if (!dirTestFound(resourceName, testDir)) {
                 continue;
             }
-            InputStreamGet inputStream = () -> {
+            ESupplier<InputStream, IOException> inputStream = () -> {
                 if (fileItem.canRead()) {
                     return Files.newInputStream(fileItem.toPath());
                 } else {

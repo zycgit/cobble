@@ -16,7 +16,6 @@
 package net.hasor.cobble.loader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -59,64 +58,4 @@ public interface ResourceLoader {
     List<InputStream> getResourcesAsStream(String resource) throws IOException;
 
     boolean exist(String resource);
-
-    interface InputStreamGet {
-        InputStream getStream() throws IOException;
-    }
-
-    /** 扫描的资源 */
-    class ScanEvent {
-        private final String         name;
-        private final long           size;
-        private final URI            resource;
-        private final InputStreamGet streamGetter;
-
-        public ScanEvent(String name, long size, URI resource, InputStreamGet streamGetter) {
-            this.name = name;
-            this.size = size;
-            this.resource = resource;
-            this.streamGetter = streamGetter;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public long getSize() {
-            return this.size;
-        }
-
-        public URI getResource() {
-            return this.resource;
-        }
-
-        public InputStream getStream() throws IOException {
-            return this.streamGetter.getStream();
-        }
-    }
-
-    /** 扫描classpath时找到资源的回调接口方法 */
-    interface Scanner<T> {
-        /**
-         * 找了一个资源
-         * @param event 找到资源事件。
-         */
-        T found(ScanEvent event) throws IOException;
-    }
-
-    /** 扫描器资源匹配类型 */
-    enum MatchType {
-        /** 扫描所有资源 */
-        None,
-        /** 前缀匹配 */
-        Prefix,
-        /** 含有字符串 */
-        ContainsAny,
-        /** 尾缀匹配 */
-        Suffix,
-        /** 全字匹配 */
-        Match,
-        /** 正则表达式匹配 */
-        Regex,
-    }
 }

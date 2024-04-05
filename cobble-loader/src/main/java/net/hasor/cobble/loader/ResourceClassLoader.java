@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.loader.ResourceLoader.MatchType;
 
 import java.io.*;
 import java.net.URL;
@@ -165,7 +164,7 @@ public class ResourceClassLoader extends URLClassLoader {
      * @param inf JAR entry information.
      * @return temporary file object presenting JAR entry.
      */
-    private File createTempFile(ResourceLoader.ScanEvent inf) throws IOException {
+    private File createTempFile(ScanEvent inf) throws IOException {
         // Temp files directory:
         //   WinXP: C:/Documents and Settings/username/Local Settings/Temp/cobbleLoader/xxxxx
         //   Unix: /var/tmp/cobbleLoader/xxxxx

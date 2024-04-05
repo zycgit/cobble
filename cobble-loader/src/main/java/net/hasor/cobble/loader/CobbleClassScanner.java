@@ -101,7 +101,7 @@ public class CobbleClassScanner {
             packages[i] = loadPackages[i].replace(".", "/");
         }
         try {
-            List<Class<?>> classes = this.classLoader.scanResources(ResourceLoader.MatchType.Prefix, event -> {
+            List<Class<?>> classes = this.classLoader.scanResources(MatchType.Prefix, event -> {
                 String className = event.getName();
                 if (!className.endsWith(".class")) {
                     return null;

@@ -17,11 +17,8 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import net.hasor.cobble.loader.AbstractResourceLoader;
-import net.hasor.cobble.loader.ClassMatchers;
-import net.hasor.cobble.loader.CobbleClassScanner;
-import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.loader.ResourceLoader.Scanner;
+import net.hasor.cobble.loader.*;
+import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
 import org.junit.Test;
 
@@ -122,8 +119,8 @@ public class ClassResourceLoaderTests {
     @Test
     public void classpathLoaderTest8() throws Exception {
         ClassPathResourceLoader loader = new ClassPathResourceLoader();
-        assert loader.scanOneResource(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }) == null;
-        assert loader.scanResources(ResourceLoader.MatchType.Prefix, ResourceLoader.ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
+        assert loader.scanOneResource(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }) == null;
+        assert loader.scanResources(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
     }
 
     @Test

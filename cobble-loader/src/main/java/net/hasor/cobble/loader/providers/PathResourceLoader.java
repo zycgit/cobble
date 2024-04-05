@@ -16,7 +16,11 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.SystemUtils;
+import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.loader.AbstractResourceLoader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ScanEvent;
+import net.hasor.cobble.loader.Scanner;
 
 import java.io.File;
 import java.io.IOException;
@@ -175,7 +179,7 @@ public class PathResourceLoader extends AbstractResourceLoader {
                 scanDirFile(baseDir, result, fileItem, scanner, scanPaths, matchOnce);
                 continue;
             }
-            InputStreamGet inputStream = () -> {
+            ESupplier<InputStream, IOException> inputStream = () -> {
                 if (fileItem.canRead()) {
                     return Files.newInputStream(fileItem.toPath());
                 } else {
