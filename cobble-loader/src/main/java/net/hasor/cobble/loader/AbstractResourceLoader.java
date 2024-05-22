@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
+import java.io.IOException;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -47,6 +49,30 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
             }
         }
         return this.innerClassLoader.loadClass(className);
+    }
+
+    public <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
+        return scanResources(MatchType.None, scanner, new String[0]);
+    }
+
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
+        return scanResources(matchType, scanner, new String[0]);
+    }
+
+    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        return this.scanResources(matchType, t -> true, scanner, scanPaths);
+    }
+
+    public <T> T scanOneResource(Scanner<T> scanner) throws IOException {
+        return scanOneResource(MatchType.None, scanner, new String[0]);
+    }
+
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
+        return scanOneResource(matchType, scanner, new String[0]);
+    }
+
+    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        return this.scanOneResource(matchType, t -> true, scanner, scanPaths);
     }
 
     protected <T> Predicate<T>[] buildPredicate(MatchType matchType, String[] scanPaths, Function<T, String> nameFunc) {

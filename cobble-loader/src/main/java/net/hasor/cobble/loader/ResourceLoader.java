@@ -27,31 +27,19 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  */
 public interface ResourceLoader {
-    default <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
-        return scanResources(MatchType.None, scanner, new String[0]);
-    }
+    <T> List<T> scanResources(Scanner<T> scanner) throws IOException;
 
-    default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanResources(matchType, scanner, new String[0]);
-    }
+    <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException;
 
-    default <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        return this.scanResources(matchType, t -> true, scanner, scanPaths);
-    }
+    <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
     <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
-    default <T> T scanOneResource(Scanner<T> scanner) throws IOException {
-        return scanOneResource(MatchType.None, scanner, new String[0]);
-    }
+    <T> T scanOneResource(Scanner<T> scanner) throws IOException;
 
-    default <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanOneResource(matchType, scanner, new String[0]);
-    }
+    <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException;
 
-    default <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
-        return this.scanOneResource(matchType, t -> true, scanner, scanPaths);
-    }
+    <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException;
 
     <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException;
 

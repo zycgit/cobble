@@ -315,7 +315,7 @@ public class BeanUtils {
         AccessibleObject readerHandler = propertyFunc.getReaderHandler();
         AccessibleObject writerHandler = propertyFunc.getWriterHandler();
 
-        Annotation[] arrays1 = readerHandler == null ? ANNOTATION_EMPTY : propertyField.getAnnotations();
+        Annotation[] arrays1 = propertyField == null ? ANNOTATION_EMPTY : propertyField.getAnnotations();
         Annotation[] arrays2 = readerHandler == null ? ANNOTATION_EMPTY : readerHandler.getAnnotations();
         Annotation[] arrays3 = writerHandler == null ? ANNOTATION_EMPTY : writerHandler.getAnnotations();
 
