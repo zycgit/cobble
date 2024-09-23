@@ -16,10 +16,7 @@
  */
 package net.hasor.cobble;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -133,20 +130,24 @@ public class StringUtils {
      * The empty String <code>""</code>.
      * @since 2.0
      */
-    public static final  String EMPTY           = "";
+    public static final  String EMPTY               = "";
     /**
      * Represents a failed index search.
      * @since 2.1
      */
-    public static final  int    INDEX_NOT_FOUND = -1;
+    public static final  int    INDEX_NOT_FOUND     = -1;
     /**
      * <p>The maximum size to which the padding constant(s) can expand.</p>
      */
-    private static final int    PAD_LIMIT       = 8192;
+    private static final int    PAD_LIMIT           = 8192;
     /**
      * <p>The system default newline character.</p>
      */
     public static final  String NEWLINE;
+    /**
+     * <p>The default StringBuilder capacity.</p>
+     */
+    private static final int    STRING_BUILDER_SIZE = 256;
 
     static {
         String value = System.getProperty("line.separator");
@@ -3257,8 +3258,15 @@ public class StringUtils {
     public static String join(final Object[] array, final String separator) {
         if (array == null) {
             return null;
+        } else if (array.length == 1) {
+            if (array[0] == null) {
+                return "";
+            } else {
+                return String.valueOf(array[0]);
+            }
+        } else {
+            return join(array, separator, 0, array.length);
         }
-        return join(array, separator, 0, array.length);
     }
 
     /**
@@ -3313,6 +3321,138 @@ public class StringUtils {
         }
         return buf.toString();
     }
+
+    /**
+     * <p>Joins the elements of the provided {@code Iterable} into
+     * a single String containing the provided elements.</p>
+     *
+     * <p>No delimiter is added before or after the list. Null objects or empty
+     * strings within the iteration are represented by empty strings.</p>
+     *
+     * <p>See the examples here: {@link #join(Object[], char)}. </p>
+     *
+     * @param iterable  the {@code Iterable} providing the values to join together, may be null
+     * @param separator  the separator character to use
+     * @return the joined String, {@code null} if null iterator input
+     * @since 2.3
+     */
+    public static String join(final Iterable<?> iterable, final char separator) {
+        if (iterable == null) {
+            return null;
+        }
+        return join(iterable.iterator(), separator);
+    }
+
+    /**
+     * <p>Joins the elements of the provided {@code Iterable} into
+     * a single String containing the provided elements.</p>
+     *
+     * <p>No delimiter is added before or after the list.
+     * A {@code null} separator is the same as an empty String ("").</p>
+     *
+     * <p>See the examples here: {@link #join(Object[], String)}. </p>
+     *
+     * @param iterable  the {@code Iterable} providing the values to join together, may be null
+     * @param separator  the separator character to use, null treated as ""
+     * @return the joined String, {@code null} if null iterator input
+     * @since 2.3
+     */
+    public static String join(final Iterable<?> iterable, final String separator) {
+        if (iterable == null) {
+            return null;
+        }
+        return join(iterable.iterator(), separator);
+    }
+
+    /**
+     * <p>Joins the elements of the provided {@code Iterator} into
+     * a single String containing the provided elements.</p>
+     *
+     * <p>No delimiter is added before or after the list. Null objects or empty
+     * strings within the iteration are represented by empty strings.</p>
+     *
+     * <p>See the examples here: {@link #join(Object[], char)}. </p>
+     *
+     * @param iterator  the {@code Iterator} of values to join together, may be null
+     * @param separator  the separator character to use
+     * @return the joined String, {@code null} if null iterator input
+     * @since 2.0
+     */
+    public static String join(final Iterator<?> iterator, final char separator) {
+
+        // handle null, zero and one elements before building a buffer
+        if (iterator == null) {
+            return null;
+        }
+        if (!iterator.hasNext()) {
+            return EMPTY;
+        }
+        final Object first = iterator.next();
+        if (!iterator.hasNext()) {
+            return Objects.toString(first, EMPTY);
+        }
+
+        // two or more elements
+        final StringBuilder buf = new StringBuilder(STRING_BUILDER_SIZE); // Java default is 16, probably too small
+        if (first != null) {
+            buf.append(first);
+        }
+
+        while (iterator.hasNext()) {
+            buf.append(separator);
+            final Object obj = iterator.next();
+            if (obj != null) {
+                buf.append(obj);
+            }
+        }
+
+        return buf.toString();
+    }
+
+    /**
+     * <p>Joins the elements of the provided {@code Iterator} into
+     * a single String containing the provided elements.</p>
+     *
+     * <p>No delimiter is added before or after the list.
+     * A {@code null} separator is the same as an empty String ("").</p>
+     *
+     * <p>See the examples here: {@link #join(Object[], String)}. </p>
+     *
+     * @param iterator  the {@code Iterator} of values to join together, may be null
+     * @param separator  the separator character to use, null treated as ""
+     * @return the joined String, {@code null} if null iterator input
+     */
+    public static String join(final Iterator<?> iterator, final String separator) {
+        // handle null, zero and one elements before building a buffer
+        if (iterator == null) {
+            return null;
+        }
+        if (!iterator.hasNext()) {
+            return EMPTY;
+        }
+        final Object first = iterator.next();
+        if (!iterator.hasNext()) {
+            return Objects.toString(first, "");
+        }
+
+        // two or more elements
+        final StringBuilder buf = new StringBuilder(STRING_BUILDER_SIZE); // Java default is 16, probably too small
+        if (first != null) {
+            buf.append(first);
+        }
+
+        while (iterator.hasNext()) {
+            if (separator != null) {
+                buf.append(separator);
+            }
+            final Object obj = iterator.next();
+            if (obj != null) {
+                buf.append(obj);
+            }
+        }
+        return buf.toString();
+    }
+
     // Delete
     //-----------------------------------------------------------------------
 
