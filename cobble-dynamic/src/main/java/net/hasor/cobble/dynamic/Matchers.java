@@ -28,25 +28,24 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- *
- * @version : 2013-8-20
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-8-20
  */
 public class Matchers {
     private Matchers() {
     }
 
-    /** 匹配任意类型*/
+    /** 匹配任意类型 */
     public static Predicate<Class<?>> anyClass() {
         return t -> true;
     }
 
-    /** 匹配任意方法*/
+    /** 匹配任意方法 */
     public static Predicate<Method> anyMethod() {
         return t -> true;
     }
 
-    /** 匹配任意方法*/
+    /** 匹配任意方法 */
     public static Predicate<Method> withMethod(Method method) {
         return t -> t.equals(method);
     }
@@ -66,8 +65,10 @@ public class Matchers {
         return new SubClassesOf(superclass);
     }
 
-    /** 将表达式解析为<code>Matcher&lt;Method&gt;</code>。
-     *  格式为：<code>&lt;包名&gt;.&lt;类名&gt;</code>，可以使用通配符。*/
+    /**
+     * 将表达式解析为<code>Matcher&lt;Method&gt;</code>。
+     * 格式为：<code>&lt;包名&gt;.&lt;类名&gt;</code>，可以使用通配符。
+     */
     public static Predicate<Class<?>> expressionClass(final String matcherExpression) {
         return new ClassOf(MatchUtils.MatchTypeEnum.Wild, matcherExpression);
     }

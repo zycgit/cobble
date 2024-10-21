@@ -18,8 +18,8 @@ import java.util.Observable;
 
 /**
  * PropertyDelegate 默认简单实现
- * @version : 2020-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2020-09-29
  */
 public class SimpleDynamicProperty extends Observable implements DynamicProperty {
     private Object value = null;

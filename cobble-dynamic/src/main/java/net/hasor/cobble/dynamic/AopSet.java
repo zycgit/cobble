@@ -21,8 +21,8 @@ import java.lang.annotation.Target;
 
 /**
  * 标记在类或方法上，为类或方法指定拦截器。
- * @version : 2013-3-20
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-3-20
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE })

@@ -31,8 +31,8 @@ import java.util.function.Supplier;
 
 /**
  * 策略执行顺序：1. superClass、2. interceptorMethods、3. dynamicPropertyMap、4. implementMap、
- * @version : 2014年9月7日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年9月7日
  */
 public class DynamicConfig {
     private final String                           specialNamePrefix;

@@ -16,6 +16,7 @@
  */
 package net.hasor.cobble.convert.convert;
 import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.NumberUtils;
 import net.hasor.cobble.convert.ConversionException;
 import net.hasor.cobble.convert.Converter;
 
@@ -46,11 +47,8 @@ import net.hasor.cobble.convert.Converter;
  *   ConvertUtils.register(bac, bac.MODEL);
  * </pre>
  * </p>
- *
  * <p>Case is ignored when converting values to true or false.</p>
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.BooleanConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Craig R. McClanahan
  * @version $Revision: 801644 $ $Date: 2009-08-06 14:38:56 +0100 (Thu, 06 Aug 2009) $
@@ -72,13 +70,12 @@ public final class BooleanConverter extends AbstractConverter {
      * Create a {@link Converter} that will return the specified default value
      * if a conversion error occurs, ie the string value being converted is
      * not one of the known true strings, nor one of the known false strings.
-     *
      * @param defaultValue The default value to be returned if the value
-     *  being converted is not recognised. This value may be null, in which
-     *  case null will be returned on conversion failure. When non-null, it is
-     *  expected that this value will be either Boolean.TRUE or Boolean.FALSE.
-     *  The special value BooleanConverter.NO_DEFAULT can also be passed here,
-     *  in which case this constructor acts like the no-argument one.
+     * being converted is not recognised. This value may be null, in which
+     * case null will be returned on conversion failure. When non-null, it is
+     * expected that this value will be either Boolean.TRUE or Boolean.FALSE.
+     * The special value BooleanConverter.NO_DEFAULT can also be passed here,
+     * in which case this constructor acts like the no-argument one.
      */
     public BooleanConverter(final Object defaultValue) {
         super();
@@ -92,14 +89,12 @@ public final class BooleanConverter extends AbstractConverter {
      * <p>
      * The provided string arrays are copied, so that changes to the elements
      * of the array after this call is made do not affect this object.
-     *
      * @param trueStrings is the set of strings which should convert to the
-     *  value Boolean.TRUE. The value null must not be present. Case is
-     *  ignored.
-     *
+     * value Boolean.TRUE. The value null must not be present. Case is
+     * ignored.
      * @param falseStrings is the set of strings which should convert to the
-     *  value Boolean.TRUE. The value null must not be present. Case is
-     *  ignored.
+     * value Boolean.TRUE. The value null must not be present. Case is
+     * ignored.
      * @since 1.8.0
      */
     public BooleanConverter(final String[] trueStrings, final String[] falseStrings) {
@@ -114,21 +109,18 @@ public final class BooleanConverter extends AbstractConverter {
      * <p>
      * The provided string arrays are copied, so that changes to the elements
      * of the array after this call is made do not affect this object.
-     *
      * @param trueStrings is the set of strings which should convert to the
-     *  value Boolean.TRUE. The value null must not be present. Case is
-     *  ignored.
-     *
+     * value Boolean.TRUE. The value null must not be present. Case is
+     * ignored.
      * @param falseStrings is the set of strings which should convert to the
-     *  value Boolean.TRUE. The value null must not be present. Case is
-     *  ignored.
-     *
+     * value Boolean.TRUE. The value null must not be present. Case is
+     * ignored.
      * @param defaultValue The default value to be returned if the value
-     *  being converted is not recognised. This value may be null, in which
-     *  case null will be returned on conversion failure. When non-null, it is
-     *  expected that this value will be either Boolean.TRUE or Boolean.FALSE.
-     *  The special value BooleanConverter.NO_DEFAULT can also be passed here,
-     *  in which case an exception will be thrown on conversion failure.
+     * being converted is not recognised. This value may be null, in which
+     * case null will be returned on conversion failure. When non-null, it is
+     * expected that this value will be either Boolean.TRUE or Boolean.FALSE.
+     * The special value BooleanConverter.NO_DEFAULT can also be passed here,
+     * in which case an exception will be thrown on conversion failure.
      * @since 1.8.0
      */
     public BooleanConverter(final String[] trueStrings, final String[] falseStrings, final Object defaultValue) {
@@ -150,7 +142,6 @@ public final class BooleanConverter extends AbstractConverter {
 
     /**
      * Return the default type this <code>Converter</code> handles.
-     *
      * @return The default type this <code>Converter</code> handles.
      * @since 1.8.0
      */
@@ -162,19 +153,15 @@ public final class BooleanConverter extends AbstractConverter {
     /**
      * Convert the specified input object into an output object of the
      * specified type.
-     *
      * @param type is the type to which this value should be converted. In the
-     *  case of this BooleanConverter class, this value is ignored.
-     *
+     * case of this BooleanConverter class, this value is ignored.
      * @param value is the input value to be converted. The toString method
-     *  shall be invoked on this object, and the result compared (ignoring
-     *  case) against the known "true" and "false" string values.
-     *
+     * shall be invoked on this object, and the result compared (ignoring
+     * case) against the known "true" and "false" string values.
      * @return Boolean.TRUE if the value was a recognised "true" value,
-     *  Boolean.FALSE if the value was a recognised "false" value, or
-     *  the default value if the value was not recognised and the constructor
-     *  was provided with a default value.
-     *
+     * Boolean.FALSE if the value was a recognised "false" value, or
+     * the default value if the value was not recognised and the constructor
+     * was provided with a default value.
      * @throws Throwable if an error occurs converting to the specified type
      * @since 1.8.0
      */
@@ -184,6 +171,18 @@ public final class BooleanConverter extends AbstractConverter {
         // guaranteed to be lower-case. By converting the input value
         // to lowercase too, we can use the efficient String.equals method
         // instead of the less-efficient String.equalsIgnoreCase method.
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue() != 0;
+        }
+        if (value instanceof String) {
+            if (NumberUtils.isNumber((String) value)) {
+                return NumberUtils.createNumber((String) value).doubleValue() != 0;
+            }
+        }
+
         String stringValue = value.toString().toLowerCase();
         if ("".equals(stringValue)) {
             return BeanUtils.getDefaultValue(type);

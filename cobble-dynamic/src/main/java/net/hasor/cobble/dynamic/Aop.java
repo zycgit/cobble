@@ -20,8 +20,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * 标记在类或方法上，为类或方法指定拦截器。
- * @version : 2013-3-20
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-3-20
  */
 @Repeatable(AopSet.class)
 @Retention(RetentionPolicy.RUNTIME)

@@ -15,8 +15,8 @@
  */
 package net.hasor.cobble.dynamic;
 /**
- * @version : 2020-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2020-09-29
  */
 public interface ProxyFactory<T> {
     T apply(T original) throws ReflectiveOperationException;

@@ -20,7 +20,6 @@ package net.hasor.cobble.dynamic;
  * The user should implement the {@link #invoke(MethodInvocation)} method to
  * modify the original behavior. E.g. the following class implements a tracing
  * interceptor (traces all the calls on the intercepted method(s)):
- *
  * <pre class=code>
  * class TracingInterceptor implements MethodInterceptor {
  * 	Object invoke(MethodInvocation i) throws Throwable {
@@ -32,7 +31,6 @@ package net.hasor.cobble.dynamic;
  *    }
  * }
  * </pre>
- *
  * copy from org.aopalliance.intercept.MethodInterceptor
  * @author Rod Johnson
  */

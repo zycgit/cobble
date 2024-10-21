@@ -37,8 +37,8 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * Proxy 代理类，可以代替 java Proxy代理类，并提供更强大的支持。
  * - 支持增强：类、抽象类、接口
- * @version : 2022-06-05
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2022-06-05
  */
 public final class Proxy {
     private static final AtomicLong                                         spinIndex         = new AtomicLong(0);

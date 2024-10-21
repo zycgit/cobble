@@ -18,9 +18,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- *
- * @version : 2013-4-13
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-13
  */
 public class InvokerImplementInvocation implements MethodInvocation {
     private final boolean           isProxy;

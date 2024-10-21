@@ -19,14 +19,12 @@ import java.lang.reflect.Method;
 /**
  * Description of an invocation to a method, given to an interceptor
  * upon method-call.
- *
  * <p>A method invocation is a joinpoint and can be intercepted by a
  * method interceptor.
- *
  * copy from org.aopalliance.intercept.MethodInvocation,and its extends types
- * @version : 2014-7-17
  * @author Rod Johnson
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014-7-17
  * @see MethodInterceptor
  */
 public interface MethodInvocation {
@@ -54,7 +52,8 @@ public interface MethodInvocation {
      */
     Object proceed() throws Throwable;
 
-    /** Returns the object that holds the current join point's static part.
+    /**
+     * Returns the object that holds the current join point's static part.
      * <p>For instance, the target object for an invocation.
      * @return the object (can be null if the accessible object is
      */

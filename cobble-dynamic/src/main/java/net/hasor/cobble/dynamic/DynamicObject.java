@@ -16,8 +16,8 @@
 package net.hasor.cobble.dynamic;
 /**
  * 动态对象
- * @version : 2017年07月28日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2017年07月28日
  */
 public interface DynamicObject extends DynamicClass {
     Object getOriginalObject();

@@ -17,9 +17,8 @@ package net.hasor.cobble.dynamic;
 import java.util.function.Supplier;
 
 /**
- *
- * @version : 2020-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2020-09-29
  */
 public class InvokerDynamicProperty {
     public static void setProperty(boolean isProxy, DynamicConfig dynamicConfig, String cacheKey, Object target, String name, Object newValue) throws Throwable {

@@ -16,8 +16,8 @@
 package net.hasor.cobble.dynamic;
 /**
  * 属性的读写特性
- * @version : 2020-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2020-09-29
  */
 public enum ReadWriteType {
     /** 只读 */

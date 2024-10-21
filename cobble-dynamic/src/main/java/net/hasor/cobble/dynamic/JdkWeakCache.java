@@ -25,9 +25,8 @@ final class JdkWeakCache<K, P, V> {
 
     /**
      * Construct an instance of {@code WeakCache}
-     *
      * @param subKeyFactory a function mapping a pair of {@code (key, parameter) -> sub-key}
-     * @param valueFactory  a function mapping a pair of {@code (key, parameter) -> value}
+     * @param valueFactory a function mapping a pair of {@code (key, parameter) -> value}
      * @throws NullPointerException if {@code subKeyFactory} or {@code valueFactory} is null.
      */
     public JdkWeakCache(BiFunction<K, P, ?> subKeyFactory, BiFunction<K, P, V> valueFactory) {
@@ -40,12 +39,11 @@ final class JdkWeakCache<K, P, V> {
      * {@code subKeyFactory} function and optionally evaluates
      * {@code valueFactory} function if there is no entry in the cache for given
      * pair of (key, subKey) or the entry has already been cleared.
-     *
-     * @param key       possibly null key
+     * @param key possibly null key
      * @param parameter parameter used together with key to create sub-key and value (should not be null)
      * @return the cached value (never null)
      * @throws NullPointerException if {@code parameter} passed in or {@code sub-key} calculated by
-     *                              {@code subKeyFactory} or {@code value} calculated by {@code valueFactory} is null.
+     * {@code subKeyFactory} or {@code value} calculated by {@code valueFactory} is null.
      */
     public V get(K key, P parameter) {
         Objects.requireNonNull(parameter);
@@ -110,7 +108,6 @@ final class JdkWeakCache<K, P, V> {
     /**
      * Checks whether the specified non-null value is already present in this {@code WeakCache}.
      * The check is made using identity comparison regardless of whether value's class overrides {@link Object#equals} or not.
-     *
      * @param value the non-null value to check
      * @return true if given {@code value} is already cached
      * @throws NullPointerException if value is null
