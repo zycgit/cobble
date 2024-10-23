@@ -15,38 +15,83 @@
  * limitations under the License.
  */
 package net.hasor.cobble.reflect;
-import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.CollectionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.convert.ConverterUtils;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author 赵永春 (zyc@hasor.net)
  */
 public class Annotation {
-    private final Map<String, List<Object>> confData;
+    private static final Annotation                EMPTY = new Annotation();
+    private final        Map<String, List<Object>> confData;
 
     Annotation() {
         this.confData = new HashMap<>();
     }
 
-    void putData(String name, String value) {
+    public void putData(String name, boolean value) {
         this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, byte value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, short value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, int value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, long value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, float value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, double value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, char value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, String value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    }
+
+    public void putData(String name, Enum<?> value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value.name());
+    }
+
+    public void putData(String name, Class<?> value) {
+        this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value.getName());
     }
 
     void putData(String name, List<?> value) {
         this.confData.computeIfAbsent(name, s -> new ArrayList<>()).addAll(value);
     }
 
-    void putData(String name, Annotation value) {
+    public void putData(String name, Annotation value) {
         this.confData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
     }
 
     public boolean getBoolean(String name) {
-        return this.castValue(name, Boolean.TYPE);
+        return this.castValue(name, Boolean.TYPE, false);
+    }
+
+    public boolean getBoolean(String name, boolean defaultValue) {
+        return this.castValue(name, Boolean.TYPE, defaultValue);
     }
 
     public List<Boolean> getBooleanArray(String name) {
@@ -54,7 +99,11 @@ public class Annotation {
     }
 
     public byte getByte(String name) {
-        return this.castValue(name, Byte.TYPE);
+        return this.castValue(name, Byte.TYPE, (byte) 0);
+    }
+
+    public byte getByte(String name, byte defaultValue) {
+        return this.castValue(name, Byte.TYPE, defaultValue);
     }
 
     public List<Byte> getByteArray(String name) {
@@ -62,7 +111,11 @@ public class Annotation {
     }
 
     public short getShort(String name) {
-        return this.castValue(name, Short.TYPE);
+        return this.castValue(name, Short.TYPE, (short) 0);
+    }
+
+    public short getShort(String name, short defaultValue) {
+        return this.castValue(name, Short.TYPE, defaultValue);
     }
 
     public List<Short> getShortArray(String name) {
@@ -70,7 +123,11 @@ public class Annotation {
     }
 
     public int getInt(String name) {
-        return this.castValue(name, Integer.TYPE);
+        return this.castValue(name, Integer.TYPE, 0);
+    }
+
+    public int getInt(String name, int defaultValue) {
+        return this.castValue(name, Integer.TYPE, defaultValue);
     }
 
     public List<Integer> getIntArray(String name) {
@@ -78,7 +135,11 @@ public class Annotation {
     }
 
     public long getLong(String name) {
-        return this.castValue(name, Long.TYPE);
+        return this.castValue(name, Long.TYPE, 0L);
+    }
+
+    public long getLong(String name, long defaultValue) {
+        return this.castValue(name, Long.TYPE, defaultValue);
     }
 
     public List<Long> getLongArray(String name) {
@@ -86,7 +147,11 @@ public class Annotation {
     }
 
     public float getFloat(String name) {
-        return this.castValue(name, Float.TYPE);
+        return this.castValue(name, Float.TYPE, 0.0f);
+    }
+
+    public float getFloat(String name, float defaultValue) {
+        return this.castValue(name, Float.TYPE, defaultValue);
     }
 
     public List<Float> getFloatArray(String name) {
@@ -94,7 +159,11 @@ public class Annotation {
     }
 
     public double getDouble(String name) {
-        return this.castValue(name, Double.TYPE);
+        return this.castValue(name, Double.TYPE, 0.0d);
+    }
+
+    public double getDouble(String name, double defaultValue) {
+        return this.castValue(name, Double.TYPE, defaultValue);
     }
 
     public List<Double> getDoubleArray(String name) {
@@ -102,7 +171,11 @@ public class Annotation {
     }
 
     public char getChar(String name) {
-        return this.castValue(name, Character.class);
+        return this.castValue(name, Character.class, '\0');
+    }
+
+    public char getChar(String name, char defaultValue) {
+        return this.castValue(name, Character.class, defaultValue);
     }
 
     public List<Character> getCharArray(String name) {
@@ -110,7 +183,11 @@ public class Annotation {
     }
 
     public String getString(String name) {
-        return this.castValue(name, String.class);
+        return this.castValue(name, String.class, null);
+    }
+
+    public String getString(String name, String defaultValue) {
+        return this.castValue(name, String.class, defaultValue);
     }
 
     public List<String> getStringArray(String name) {
@@ -149,6 +226,30 @@ public class Annotation {
         return this.castClasses(name, classLoader, initialize);
     }
 
+    public Enum<?> getEnum(String name, Enum<?>[] values) {
+        return this.castEnum(name, values, null, null);
+    }
+
+    public Enum<?> getEnum(String name, Enum<?>[] values, Enum<?> defaultValue) {
+        return this.castEnum(name, values, defaultValue, null);
+    }
+
+    public List<Enum<?>> getEnumArray(String name, Enum<?>[] values) {
+        return this.castEnums(name, values, null);
+    }
+
+    public Enum<?> getEnum(String name, Enum<?>[] values, Function<String, Enum<?>> passer) {
+        return this.castEnum(name, values, null, passer);
+    }
+
+    public Enum<?> getEnum(String name, Enum<?>[] values, Enum<?> defaultValue, Function<String, Enum<?>> passer) {
+        return this.castEnum(name, values, defaultValue, passer);
+    }
+
+    public List<Enum<?>> getEnumArray(String name, Enum<?>[] values, Function<String, Enum<?>> passer) {
+        return this.castEnums(name, values, passer);
+    }
+
     public Annotation getAnnotation(String name) {
         return this.castAnnotation(name);
     }
@@ -165,14 +266,10 @@ public class Annotation {
         return this.castAnnotations(name.getName());
     }
 
-    protected <T> T castValue(String name, Class<?> toType) {
-        Object data = this.confData.getOrDefault(name, null);
+    protected <T> T castValue(String name, Class<?> toType, T defaultValue) {
+        Object data = this.confData.get(name);
         if (data == null || ((List) data).isEmpty()) {
-            if (toType.isPrimitive()) {
-                return (T) BeanUtils.getDefaultValue(toType);
-            } else {
-                return null;
-            }
+            return defaultValue;
         }
 
         return (T) ConverterUtils.convert(toType, ((List<?>) data).get(0));
@@ -242,6 +339,67 @@ public class Annotation {
             }
         }
         return Collections.unmodifiableList(result);
+    }
+
+    private Enum<?> castEnum(String name, Enum<?>[] values, Enum<?> defaultValue, Function<String, Enum<?>> passer) {
+        if (values == null || values.length == 0) {
+            return null;
+        }
+
+        String value = this.castValue(name, String.class, defaultValue != null ? defaultValue.name() : null);
+        if (passer != null) {
+            Enum<?> test = passer.apply(value);
+            if (test != null) {
+                return test;
+            } else {
+                return defaultValue;
+            }
+        }
+
+        if (!StringUtils.isBlank(value)) {
+            for (Enum<?> test : values) {
+                if (StringUtils.equalsIgnoreCase(test.name(), value)) {
+                    return test;
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    private List<Enum<?>> castEnums(String name, Enum<?>[] values, Function<String, Enum<?>> passer) {
+        if (values == null || values.length == 0) {
+            return Collections.emptyList();
+        }
+
+        List<String> value = this.castValues(name, String.class);
+        if (CollectionUtils.isEmpty(value)) {
+            return Collections.emptyList();
+        }
+
+        List<Enum<?>> result = new ArrayList<>();
+        for (String s : value) {
+            if (passer != null) {
+                Enum<?> test = passer.apply(s);
+                if (test != null) {
+                    result.add(test);
+                }
+            } else {
+                for (Enum<?> test : values) {
+                    if (StringUtils.equalsIgnoreCase(test.name(), s)) {
+                        result.add(test);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Annotation empty() {
+        return EMPTY;
+    }
+
+    public static Annotation create() {
+        return new Annotation();
     }
 
     boolean isEmpty() {

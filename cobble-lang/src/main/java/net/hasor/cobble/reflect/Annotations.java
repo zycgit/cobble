@@ -30,8 +30,7 @@ public class Annotations {
     private final        Map<String, List<Annotation>> typeData;
     private final        Map<String, Annotations>      fieldData;
     private final        Map<String, Annotations>      methodData;
-    private static final Annotation                    EMPTY_ANNO  = new Annotation();
-    private static final Annotations                   EMPTY_ANNOS = new Annotations();
+    private static final Annotations                   EMPTY = new Annotations();
 
     private Annotations() {
         this.typeData = new LinkedHashMap<>();
@@ -41,12 +40,12 @@ public class Annotations {
 
     public Annotation getAnnotation(Class<?> annoType) {
         if (annoType == null) {
-            return EMPTY_ANNO;
+            return null;
         }
 
         List<Annotation> annotations = this.typeData.get(annoType.getName());
         if (annotations == null || annotations.isEmpty()) {
-            return EMPTY_ANNO;
+            return null;
         } else {
             return annotations.get(0);
         }
@@ -67,12 +66,12 @@ public class Annotations {
 
     public Annotations getField(String field) {
         if (StringUtils.isBlank(field)) {
-            return EMPTY_ANNOS;
+            return null;
         }
 
         Annotations annotations = this.fieldData.get(field);
         if (annotations == null) {
-            return EMPTY_ANNOS;
+            return null;
         }
 
         return annotations;
@@ -80,12 +79,12 @@ public class Annotations {
 
     public Annotation getField(String field, Class<?> annoType) {
         if (StringUtils.isBlank(field)) {
-            return EMPTY_ANNO;
+            return null;
         }
 
         Annotations annotations = this.fieldData.get(field);
         if (annotations == null) {
-            return EMPTY_ANNO;
+            return null;
         }
 
         return annotations.getAnnotation(annoType);
@@ -106,12 +105,12 @@ public class Annotations {
 
     public Annotations getMethod(String methodDesc) {
         if (StringUtils.isBlank(methodDesc)) {
-            return EMPTY_ANNOS;
+            return null;
         }
 
         Annotations annotations = this.methodData.get(methodDesc);
         if (annotations == null) {
-            return EMPTY_ANNOS;
+            return null;
         }
 
         return annotations;
@@ -119,12 +118,12 @@ public class Annotations {
 
     public Annotation getMethod(String methodDesc, Class<?> annoType) {
         if (StringUtils.isBlank(methodDesc)) {
-            return EMPTY_ANNO;
+            return null;
         }
 
         Annotations annotations = this.methodData.get(methodDesc);
         if (annotations == null) {
-            return EMPTY_ANNO;
+            return null;
         }
 
         return annotations.getAnnotation(annoType);
@@ -143,16 +142,39 @@ public class Annotations {
         return annotations.getAnnotations(annoType);
     }
 
-    void putTypeData(String name, Annotation value) {
+    public void putTypeData(String name, Annotation value) {
         this.typeData.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
     }
 
-    void putFieldData(String name, Annotations value) {
+    public void putFieldData(String name, Annotations value) {
         this.fieldData.put(name, value);
     }
 
-    void putMethodData(String method, Annotations value) {
+    public void putMethodData(String method, Annotations value) {
         this.methodData.put(method, value);
+    }
+
+    void merge(Annotations other) {
+        if (other == null) {
+            return;
+        }
+        other.typeData.forEach((name, annotations) -> {
+            this.typeData.computeIfAbsent(name, s -> new ArrayList<>()).addAll(annotations);
+        });
+        other.fieldData.forEach((name, annotations) -> {
+            if (this.fieldData.containsKey(name)) {
+                this.fieldData.get(name).merge(annotations);
+            } else {
+                this.fieldData.put(name, annotations);
+            }
+        });
+        other.methodData.forEach((name, annotations) -> {
+            if (this.methodData.containsKey(name)) {
+                this.methodData.get(name).merge(annotations);
+            } else {
+                this.methodData.put(name, annotations);
+            }
+        });
     }
 
     boolean isEmpty() {
@@ -168,7 +190,7 @@ public class Annotations {
         }
         InputStream asStream = loader.getResourceAsStream(packageName + ".class");
         if (asStream == null) {
-            return EMPTY_ANNOS;
+            return EMPTY;
         }
 
         final Annotations typeData = new Annotations();
@@ -179,9 +201,7 @@ public class Annotations {
                 return new ObjectAnnotationVisitor(api, av) {
                     @Override
                     public void visitEnd() {
-                        if (!this.data.isEmpty()) {
-                            typeData.putTypeData(ByteCodeTools.toJavaType(desc), this.data);
-                        }
+                        typeData.putTypeData(ByteCodeTools.toJavaType(desc), this.data);
                         super.visitEnd();
                     }
                 };
@@ -205,9 +225,7 @@ public class Annotations {
 
                     @Override
                     public void visitEnd() {
-                        if (!fieldData.isEmpty()) {
-                            typeData.putFieldData(name, fieldData);
-                        }
+                        typeData.putFieldData(name, fieldData);
                         super.visitEnd();
                     }
                 };
@@ -232,9 +250,7 @@ public class Annotations {
 
                     @Override
                     public void visitEnd() {
-                        if (!methodData.isEmpty()) {
-                            typeData.putMethodData(methodName, methodData);
-                        }
+                        typeData.putMethodData(methodName, methodData);
                         super.visitEnd();
                     }
                 };
@@ -250,6 +266,22 @@ public class Annotations {
 
     public static String toConstructorName(Class<?>... args) {
         return "(" + ByteCodeTools.toAsmType(args) + ")";
+    }
+
+    public static Annotations merge(Annotations... args) {
+        Annotations merged = new Annotations();
+        for (Annotations item : args) {
+            merged.merge(item);
+        }
+        return merged;
+    }
+
+    public static Annotations empty() {
+        return EMPTY;
+    }
+
+    public static Annotations create() {
+        return new Annotations();
     }
 
     private static class ObjectAnnotationVisitor extends AnnotationVisitor {
