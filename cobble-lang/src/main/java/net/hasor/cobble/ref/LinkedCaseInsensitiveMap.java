@@ -22,14 +22,10 @@ import java.util.function.Function;
 /**
  * {@link LinkedHashMap} variant that stores String keys in a case-insensitive
  * manner, for example for key-based access in a results table.
- *
  * <p>Preserves the original order as well as the original casing of keys,
  * while allowing for contains, get and remove calls with any case of key.
- *
  * <p>Does <i>not</i> support <code>null</code> keys.
- *
  * 2017-09-13 reduction based on SpringFramework, org.springframework.util.LinkedCaseInsensitiveMap
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Juergen Hoeller
  * @since 3.0
@@ -185,21 +181,23 @@ public class LinkedCaseInsensitiveMap<V> extends LinkedHashMap<String, V> {
     }
 
     @Override
-    public V get(final Object key) {
-        if (key instanceof String) {
-            return super.get(this.caseInsensitiveKeys.get(this.convertKey((String) key)));
+    public V getOrDefault(Object key, V defaultValue) {
+        V res = super.get(this.caseInsensitiveKeys.get(this.convertKey((String) key)));
+        if (res == null) {
+            return defaultValue;
         } else {
-            return null;
+            return res;
         }
     }
 
     @Override
+    public V get(final Object key) {
+        return super.get(this.caseInsensitiveKeys.get(this.convertKey((String) key)));
+    }
+
+    @Override
     public V remove(final Object key) {
-        if (key instanceof String) {
-            return super.remove(this.caseInsensitiveKeys.remove(this.convertKey((String) key)));
-        } else {
-            return null;
-        }
+        return super.remove(this.caseInsensitiveKeys.remove(this.convertKey((String) key)));
     }
 
     @Override

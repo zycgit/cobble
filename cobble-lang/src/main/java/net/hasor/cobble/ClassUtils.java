@@ -1045,6 +1045,15 @@ public class ClassUtils {
         return (Class<?>) params[index];
     }
 
+    public static int getSuperClassGenricTypeCount(final Class<?> clazz) {
+        Type genType = clazz.getGenericSuperclass();
+        if (!(genType instanceof ParameterizedType)) {
+            return 0;
+        }
+        Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
+        return params.length;
+    }
+
     public static <T> T newInstance(final Class<?> clazz) {
         try {
             return (T) clazz.newInstance();

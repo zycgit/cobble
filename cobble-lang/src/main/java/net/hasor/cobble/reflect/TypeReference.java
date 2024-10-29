@@ -17,11 +17,19 @@ package net.hasor.cobble.reflect;
 import net.hasor.cobble.ClassUtils;
 
 /**
- * @version : 2020-10-31
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2020-10-31
  */
 public abstract class TypeReference<T> {
-    private final Class<?> rawType = ClassUtils.getSuperClassGenricType(getClass(), 0);
+    protected Class<?> rawType;
+
+    public TypeReference() {
+        if (ClassUtils.getSuperClassGenricTypeCount(getClass()) > 0) {
+            rawType = ClassUtils.getSuperClassGenricType(getClass(), 0);
+        } else {
+            rawType = null;
+        }
+    }
 
     public final Class<?> getRawType() {
         return this.rawType;
