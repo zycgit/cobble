@@ -25,9 +25,7 @@ import net.hasor.cobble.convert.Converter;
  * This implementation can be used to prevent registered {@link Converter}
  * implementations that provide configuration options from being
  * retrieved and modified.
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.ConverterFacade
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 552084 $ $Date: 2007-06-30 04:04:13 +0100 (Sat, 30 Jun 2007) $
  * @since 1.8.0
@@ -38,7 +36,6 @@ public final class ConverterFacade implements Converter {
     /**
      * Construct a converter which delegates to the specified
      * {@link Converter} implementation.
-     *
      * @param converter The converter to delegate to
      */
     public ConverterFacade(final Converter converter) {
@@ -52,7 +49,6 @@ public final class ConverterFacade implements Converter {
      * Convert the input object into an output object of the
      * specified type by delegating to the underlying {@link Converter}
      * implementation.
-     *
      * @param type Data type to which this value should be converted
      * @param value The input value to be converted
      * @return The converted value.
@@ -65,7 +61,6 @@ public final class ConverterFacade implements Converter {
     /**
      * Provide a String representation of this facade implementation
      * sand the underlying {@link Converter} it delegates to.
-     *
      * @return A String representation of this facade implementation
      * sand the underlying {@link Converter} it delegates to
      */

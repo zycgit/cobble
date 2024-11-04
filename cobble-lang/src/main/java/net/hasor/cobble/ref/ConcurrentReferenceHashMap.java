@@ -30,29 +30,24 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * A {@link ConcurrentHashMap} that uses {@link ReferenceType#SOFT soft} or
  * {@linkplain ReferenceType#WEAK weak} references for both {@code keys} and {@code values}.
- *
  * <p>This class can be used as an alternative to
  * {@code Collections.synchronizedMap(new WeakHashMap<K, Reference<V>>())} in order to
  * support better performance when accessed concurrently. This implementation follows the
  * same design constraints as {@link ConcurrentHashMap} with the exception that
  * {@code null} values and {@code null} keys are supported.
- *
  * <p><b>NOTE:</b> The use of references means that there is no guarantee that items
  * placed into the map will be subsequently available. The garbage collector may discard
  * references at any time, so it may appear that an unknown thread is silently removing
  * entries.
- *
  * <p>If not explicitly specified, this implementation will use
  * {@linkplain SoftReference soft entry references}.
- *
  * 2019-12-03 reduction based on SpringFramework, org.springframework.util.ConcurrentReferenceHashMap
- *
+ * @param <K> the key type
+ * @param <V> the value type
  * @author 赵永春 (zyc@hasor.net)
  * @author Phillip Webb
  * @author Juergen Hoeller
  * @since 3.2
- * @param <K> the key type
- * @param <V> the value type
  */
 public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
     private static final int                  DEFAULT_INITIAL_CAPACITY  = 16;

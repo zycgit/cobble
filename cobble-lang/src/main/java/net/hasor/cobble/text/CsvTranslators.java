@@ -27,7 +27,6 @@ import java.io.Writer;
  * In general the use a high level API like <a href="https://commons.apache.org/proper/commons-csv/">Apache Commons
  * CSV</a> should be preferred over these low level classes.
  * </p>
- *
  * @see <a href="https://commons.apache.org/proper/commons-csv/apidocs/index.html">Apache Commons CSV</a>
  */
 public final class CsvTranslators {

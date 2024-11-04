@@ -18,7 +18,6 @@ import java.io.IOException;
 
 /**
  * A ZIP File "End of central directory record" (EOCD).
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Camille Vienot
@@ -131,7 +130,6 @@ class CentralDirectoryEndRecord {
 
     /**
      * A Zip64 end of central directory record.
-     *
      * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
      * 4.3.14 of Zip64 specification</a>
      */
@@ -185,7 +183,6 @@ class CentralDirectoryEndRecord {
 
     /**
      * A Zip64 end of central directory locator.
-     *
      * @see <a href="https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT">Chapter
      * 4.3.15 of Zip64 specification</a>
      */

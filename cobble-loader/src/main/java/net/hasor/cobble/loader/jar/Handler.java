@@ -26,11 +26,10 @@ import java.util.regex.Pattern;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.0.0
  * @see JarFile#registerUrlProtocolHandler()
+ * @since 1.0.0
  */
 public class Handler extends URLStreamHandler {
     // NOTE: in order to be found as a URL protocol handler, this class must be public,

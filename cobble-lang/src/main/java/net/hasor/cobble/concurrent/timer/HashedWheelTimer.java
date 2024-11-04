@@ -27,11 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 /**
- *
  * A {@link Timer} optimized for approximated I/O timeout scheduling.
- *
  * <h3>Tick Duration</h3>
- *
  * As described with 'approximated', this timer does not execute the scheduled
  * {@link TimerTask} on time.  {@link HashedWheelTimer}, on every tick, will
  * check if there are any {@link TimerTask}s behind the schedule and execute
@@ -42,29 +39,22 @@ import java.util.logging.Logger;
  * network applications, I/O timeout does not need to be accurate.  Therefore,
  * the default tick duration is 100 milliseconds and you will not need to try
  * different configurations in most cases.
- *
  * <h3>Ticks per Wheel (Wheel Size)</h3>
- *
  * {@link HashedWheelTimer} maintains a data structure called 'wheel'.
  * To put simply, a wheel is a hash table of {@link TimerTask}s whose hash
  * function is 'dead line of the task'.  The default number of ticks per wheel
  * (i.e. the size of the wheel) is 512.  You could specify a larger value
  * if you are going to schedule a lot of timeouts.
- *
  * <h3>Do not create many instances.</h3>
- *
  * {@link HashedWheelTimer} creates a new thread whenever it is instantiated and
  * started.  Therefore, you should make sure to create only one instance and
  * share it across your application.  One of the common mistakes, that makes
  * your application unresponsive, is to create a new instance for every connection.
- *
  * <h3>Implementation Details</h3>
- *
  * {@link HashedWheelTimer} is based on <a href="https://cseweb.ucsd.edu/users/varghese/">George Varghese</a> and
  * Tony Lauck's paper, <a href="https://cseweb.ucsd.edu/users/varghese/PAPERS/twheel.ps.Z">'Hashed
  * and Hierarchical Timing Wheels: data structures to efficiently implement a timer facility'</a>.
  * More comprehensive slides are located <a href="https://www.cse.wustl.edu/~cdgill/courses/cs6874/TimingWheels.ppt">here</a>.
- *
  * this class copy from netty io.netty.util.HashedWheelTimer
  */
 public class HashedWheelTimer implements Timer {
@@ -104,10 +94,9 @@ public class HashedWheelTimer implements Timer {
      * Creates a new timer with the default thread factory
      * ({@link Executors#defaultThreadFactory()}) and default number of ticks
      * per wheel.
-     *
-     * @param tickDuration   the duration between tick
-     * @param unit           the time unit of the {@code tickDuration}
-     * @throws NullPointerException     if {@code unit} is {@code null}
+     * @param tickDuration the duration between tick
+     * @param unit the time unit of the {@code tickDuration}
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @throws IllegalArgumentException if {@code tickDuration} is &lt;= 0
      */
     public HashedWheelTimer(long tickDuration, TimeUnit unit) {
@@ -117,11 +106,10 @@ public class HashedWheelTimer implements Timer {
     /**
      * Creates a new timer with the default thread factory
      * ({@link Executors#defaultThreadFactory()}).
-     *
-     * @param tickDuration   the duration between tick
-     * @param unit           the time unit of the {@code tickDuration}
-     * @param ticksPerWheel  the size of the wheel
-     * @throws NullPointerException     if {@code unit} is {@code null}
+     * @param tickDuration the duration between tick
+     * @param unit the time unit of the {@code tickDuration}
+     * @param ticksPerWheel the size of the wheel
+     * @throws NullPointerException if {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
      */
     public HashedWheelTimer(long tickDuration, TimeUnit unit, int ticksPerWheel) {
@@ -131,10 +119,9 @@ public class HashedWheelTimer implements Timer {
     /**
      * Creates a new timer with the default tick duration and default number of
      * ticks per wheel.
-     *
-     * @param threadFactory  a {@link ThreadFactory} that creates a
-     *                       background {@link Thread} which is dedicated to
-     *                       {@link TimerTask} execution.
+     * @param threadFactory a {@link ThreadFactory} that creates a
+     * background {@link Thread} which is dedicated to
+     * {@link TimerTask} execution.
      * @throws NullPointerException if {@code threadFactory} is {@code null}
      */
     public HashedWheelTimer(ThreadFactory threadFactory) {
@@ -143,13 +130,12 @@ public class HashedWheelTimer implements Timer {
 
     /**
      * Creates a new timer with the default number of ticks per wheel.
-     *
-     * @param threadFactory  a {@link ThreadFactory} that creates a
-     *                       background {@link Thread} which is dedicated to
-     *                       {@link TimerTask} execution.
-     * @param tickDuration   the duration between tick
-     * @param unit           the time unit of the {@code tickDuration}
-     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @param threadFactory a {@link ThreadFactory} that creates a
+     * background {@link Thread} which is dedicated to
+     * {@link TimerTask} execution.
+     * @param tickDuration the duration between tick
+     * @param unit the time unit of the {@code tickDuration}
+     * @throws NullPointerException if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if {@code tickDuration} is &lt;= 0
      */
     public HashedWheelTimer(ThreadFactory threadFactory, long tickDuration, TimeUnit unit) {
@@ -264,9 +250,8 @@ public class HashedWheelTimer implements Timer {
     /**
      * Starts the background thread explicitly.  The background thread will
      * start automatically on demand even if you did not call this method.
-     *
      * @throws IllegalStateException if this timer has been
-     *                               {@linkplain #stop() stopped} already
+     * {@linkplain #stop() stopped} already
      */
     public void start() {
         switch (WORKER_STATE_UPDATER.get(this)) {

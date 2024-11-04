@@ -23,9 +23,7 @@ import java.util.EnumSet;
 /**
  * Translate XML numeric entities of the form &amp;#[xX]?\d+;? to
  * the specific codepoint.
- *
  * Note that the semi-colon is optional.
- *
  * @since 1.0
  */
 public class NumericEntityUnescaper extends CharSequenceTranslator {
@@ -52,18 +50,14 @@ public class NumericEntityUnescaper extends CharSequenceTranslator {
 
     /**
      * Create a UnicodeUnescaper.
-     *
      * The constructor takes a list of options, only one type of which is currently
      * available (whether to allow, error or ignore the semi-colon on the end of a
      * numeric entity to being missing).
-     *
      * For example, to support numeric entities without a ';':
-     *    new NumericEntityUnescaper(NumericEntityUnescaper.OPTION.semiColonOptional)
+     * new NumericEntityUnescaper(NumericEntityUnescaper.OPTION.semiColonOptional)
      * and to throw an IllegalArgumentException when they're missing:
-     *    new NumericEntityUnescaper(NumericEntityUnescaper.OPTION.errorIfNoSemiColon)
-     *
+     * new NumericEntityUnescaper(NumericEntityUnescaper.OPTION.errorIfNoSemiColon)
      * Note that the default behavior is to ignore them.
-     *
      * @param options to apply to this unescaper
      */
     public NumericEntityUnescaper(final OPTION... options) {
@@ -76,7 +70,6 @@ public class NumericEntityUnescaper extends CharSequenceTranslator {
 
     /**
      * Whether the passed in option is currently set.
-     *
      * @param option to check state of
      * @return whether the option is set
      */

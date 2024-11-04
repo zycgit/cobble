@@ -31,9 +31,7 @@ import java.io.InputStream;
  * stream as soon as possible even if the client application (by not explicitly
  * closing the stream when no longer needed) or the underlying stream (by not
  * releasing resources once the last byte has been read) do not do that.
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.AutoCloseInputStream
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: AutoCloseInputStream.java 1586350 2014-04-10 15:57:20Z ggregory $
  * @since 1.4
@@ -42,7 +40,6 @@ public class AutoCloseInputStream extends ProxyInputStream {
 
     /**
      * Creates an automatically closing proxy for the given input stream.
-     *
      * @param in underlying input stream
      */
     public AutoCloseInputStream(final InputStream in) {
@@ -59,7 +56,6 @@ public class AutoCloseInputStream extends ProxyInputStream {
      * Note that it is safe to call this method any number of times. The original
      * underlying input stream is closed and discarded only once when this
      * method is first called.
-     *
      * @throws IOException if the underlying input stream can not be closed
      */
     @Override
@@ -70,7 +66,6 @@ public class AutoCloseInputStream extends ProxyInputStream {
 
     /**
      * Automatically closes the stream if the end of stream was reached.
-     *
      * @param n number of bytes read, or -1 if no more bytes are available
      * @throws IOException if the stream could not be closed
      * @since 2.0

@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
 
 /**
  * 将一个 File 对象所代表的路径作为根路径。
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public class PathResourceLoader extends AbstractResourceLoader {
     private final List<File> dirPathList;

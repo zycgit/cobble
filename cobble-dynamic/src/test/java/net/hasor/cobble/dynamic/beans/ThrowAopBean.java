@@ -15,8 +15,8 @@
  */
 package net.hasor.cobble.dynamic.beans;
 /**
- * @version : 2014-1-3
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014-1-3
  */
 public class ThrowAopBean {
     public String fooCall(String string) throws Exception {

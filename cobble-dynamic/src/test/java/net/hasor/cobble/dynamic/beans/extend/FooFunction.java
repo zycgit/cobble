@@ -16,8 +16,8 @@
 package net.hasor.cobble.dynamic.beans.extend;
 /**
  * Bean测试
- * @version : 2015年1月12日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2015年1月12日
  */
 public interface FooFunction {
     public default String fooCall(String string) {

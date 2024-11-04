@@ -28,12 +28,10 @@ import java.util.Locale;
  * <p>
  * #ThreadSafe#
  * </p>
- *
  * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.StringUtils
- *
- * @since 1.0
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: SystemUtils.java 1671043 2015-04-03 12:09:07Z britter $
+ * @since 1.0
  */
 public final class SystemUtils {
     private static final boolean IS_WINDOWS       = isWindows0();
@@ -48,7 +46,6 @@ public final class SystemUtils {
     /**
      * <p><code>NumberUtils</code> instances should NOT be constructed in standard programming.
      * Instead, the class should be used as <code>NumberUtils.stringToInt("6");</code>.</p>
-     *
      * <p>This constructor is public to permit tools that require a JavaBean instance to operate.</p>
      */
     public SystemUtils() {
@@ -60,7 +57,6 @@ public final class SystemUtils {
     /**
      * Returns the value of the Java system property with the specified
      * {@code key}, while falling back to {@code null} if the property access fails.
-     *
      * @return the property value or {@code null}
      */
     public static String getSystemProperty(String key) {
@@ -70,7 +66,6 @@ public final class SystemUtils {
     /**
      * Returns the value of the Java system property with the specified {@code key},
      * while falling back to the specified default value if the property access fails.
-     *
      * @return the property value. {@code def} if there's no such property or if an access to the specified property is not allowed.
      */
     public static String getSystemProperty(final String key, String defaultValue) {

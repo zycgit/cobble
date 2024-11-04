@@ -20,7 +20,6 @@ import java.security.Permission;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Rostyslav Dudka

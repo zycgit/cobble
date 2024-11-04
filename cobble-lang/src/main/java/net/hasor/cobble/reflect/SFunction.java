@@ -19,8 +19,8 @@ import java.util.function.Function;
 
 /**
  * 辅助 lambda 写法的工具接口
- * @version : 2020-10-31
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2020-10-31
  */
 public interface SFunction<T> extends Function<T, Object>, Serializable {
 }

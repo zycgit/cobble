@@ -20,8 +20,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * 标记国际化资源文件位置
- * @version : 2023-08-17
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2023-08-17
  */
 @Repeatable(I18nResourceSet.class)
 @Retention(RetentionPolicy.RUNTIME)

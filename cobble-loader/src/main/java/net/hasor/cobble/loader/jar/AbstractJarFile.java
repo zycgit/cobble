@@ -23,7 +23,6 @@ import java.security.Permission;
 
 /**
  * Base class for extended variants of {@link java.util.jar.JarFile}.
- *
  * @author Phillip Webb
  */
 abstract class AbstractJarFile extends java.util.jar.JarFile {

@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 标准事件处理器接口的实现类
- * @version : 2013-5-6
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-5-6
  */
 public class EventBus implements BusContext {
     private final ConcurrentMap<String, ListenerPool> listenerMap = new ConcurrentHashMap<>();

@@ -23,9 +23,8 @@ import java.util.function.Predicate;
 
 /**
  * 属性节点。
- *
- * @version : 2021-02-01
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-02-01
  */
 public interface SettingNode {
     /** @return 获取父节点 */

@@ -43,7 +43,6 @@ import java.util.zip.ZipEntry;
  * <li>A nested {@link JarFile} can be {@link #getNestedJarFile(ZipEntry) obtained} for
  * embedded JAR files (as long as their entry is not compressed).</li>
  * </ul>
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.0.0

@@ -15,9 +15,8 @@
  */
 package net.hasor.cobble.concurrent.future;
 /**
- *
- * @version : 2014年11月15日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年11月15日
  */
 public interface Cancellable {
     /** 取消调用 */

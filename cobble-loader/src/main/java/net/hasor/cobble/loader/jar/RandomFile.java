@@ -18,7 +18,6 @@ import java.io.*;
 
 /**
  * {@link RandomFile} implementation backed by a {@link RandomAccessFile}.
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.0.0

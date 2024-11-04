@@ -24,9 +24,8 @@ import java.io.Reader;
 import java.util.Properties;
 
 /**
- *
- * @version : 2021-02-01
  * @author 赵永春 (zyc@byshell.org)
+ * @version : 2021-02-01
  */
 public class PropertiesSettingsReader implements SettingsReader {
     @Override

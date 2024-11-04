@@ -16,7 +16,6 @@
 
 package net.hasor.cobble.loader.jar;
 import net.hasor.cobble.ResourcesUtils;
-import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.io.IOUtils;
 import org.junit.Test;
 

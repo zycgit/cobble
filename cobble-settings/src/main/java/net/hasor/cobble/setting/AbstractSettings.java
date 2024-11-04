@@ -27,9 +27,8 @@ import java.util.Map;
 
 /**
  * Settings接口的抽象实现。
- *
- * @version : 2013-4-2
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-2
  */
 public abstract class AbstractSettings implements Settings {
     protected abstract Map<String, String> envMap();

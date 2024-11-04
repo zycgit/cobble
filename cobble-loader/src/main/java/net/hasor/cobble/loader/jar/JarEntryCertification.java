@@ -20,7 +20,6 @@ import java.security.cert.Certificate;
 /**
  * {@link Certificate} and {@link CodeSigner} details for a {@link JarEntry} from a signed
  * {@link JarFile}.
- *
  * @author Phillip Webb
  */
 class JarEntryCertification {

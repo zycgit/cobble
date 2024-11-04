@@ -22,9 +22,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- *
- * @version : 2021-02-01
  * @author 赵永春 (zyc@byshell.org)
+ * @version : 2021-02-01
  */
 public interface SettingsReader {
     void readSetting(Reader reader, Settings readTo) throws IOException;

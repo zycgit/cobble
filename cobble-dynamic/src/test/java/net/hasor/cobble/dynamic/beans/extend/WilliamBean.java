@@ -16,8 +16,8 @@
 package net.hasor.cobble.dynamic.beans.extend;
 /**
  * 威廉
- * @version : 2015年1月12日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2015年1月12日
  */
 public class WilliamBean extends GrandFatherBean {
 }

@@ -16,7 +16,6 @@
 package net.hasor.cobble.loader.jar;
 /**
  * Callback visitor triggered by {@link CentralDirectoryParser}.
- *
  * @author Phillip Webb
  */
 interface CentralDirectoryVisitor {

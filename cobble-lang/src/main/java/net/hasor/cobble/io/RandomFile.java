@@ -18,9 +18,7 @@ import java.io.*;
 
 /**
  * {@link RandomFile} implementation backed by a {@link RandomAccessFile}.
- *
  * 2021-09-29 reduction based on Spring
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.0.0

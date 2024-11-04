@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * @version : 2013-7-13
  * @author 赵永春 (zyc@byshell.org)
+ * @version : 2013-7-13
  */
 class SaxXmlParser extends DefaultHandler {
     private final Map<String, TreeNode>        root    = new HashMap<>();

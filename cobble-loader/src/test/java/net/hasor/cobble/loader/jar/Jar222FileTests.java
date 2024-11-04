@@ -17,7 +17,6 @@
 package net.hasor.cobble.loader.jar;
 /**
  * Tests for {@link JarFile}.
- *
  * @author Phillip Webb
  * @author Martin Lau
  * @author Andy Wilkinson

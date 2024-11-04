@@ -36,7 +36,6 @@ abstract class SinglePassTranslator extends CharSequenceTranslator {
 
     /**
      * A utility method to be used in the {@link #translate(CharSequence, int, Writer)} method.
-     *
      * @return The name of this or the extending class.
      */
     private String getClassName() {
@@ -46,7 +45,6 @@ abstract class SinglePassTranslator extends CharSequenceTranslator {
 
     /**
      * Translate whole set of code points passed in input.
-     *
      * @param input CharSequence that is being translated
      * @param out Writer to translate the text to
      * @throws IOException if and only if the Writer produces an IOException

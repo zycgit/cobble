@@ -20,9 +20,8 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- *
- * @version : 2014年11月17日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年11月17日
  */
 public class NetworkUtils {
     private static void isPortAvailable(String host, int port) throws Exception {
@@ -52,7 +51,7 @@ public class NetworkUtils {
         return ipParts;
     }
 
-    /** 根据名字获取地址，local代表本机（如果本机有多网卡那么请明确指定ip）*/
+    /** 根据名字获取地址，local代表本机（如果本机有多网卡那么请明确指定ip） */
     public static InetAddress finalBindAddress(String hostString) throws UnknownHostException, SocketException {
         if ("local".equalsIgnoreCase(hostString)) {
             List<String> localAddr = localAddrForIPv4();

@@ -41,25 +41,23 @@ import java.util.Collection;
  *     <li><code>convertToType(Class, value)</code> - convert
  *         to the specified type</li>
  * </ul>
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.AbstractConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 640131 $ $Date: 2008-03-23 02:10:31 +0000 (Sun, 23 Mar 2008) $
  * @since 1.8.0
  */
 public abstract class AbstractConverter implements Converter {
-    /** 当转换出错时是否返回默认值。*/
+    /** 当转换出错时是否返回默认值。 */
     private boolean useDefault   = false;
-    /**默认值*/
+    /** 默认值 */
     private Object  defaultValue = null;
     // ----------------------------------------------------------- Constructors
 
-    /**创建创造<i>Converter</i>转换器，可能会引发<code>ConversionException</code>异常。*/
+    /** 创建创造<i>Converter</i>转换器，可能会引发<code>ConversionException</code>异常。 */
     public AbstractConverter() {
     }
 
-    /**创建创造<i>Converter</i>转换器，可能会引发<code>ConversionException</code>异常。*/
+    /** 创建创造<i>Converter</i>转换器，可能会引发<code>ConversionException</code>异常。 */
     public AbstractConverter(final Object defaultValue) {
         this.setDefaultValue(defaultValue);
     }
@@ -76,7 +74,6 @@ public abstract class AbstractConverter implements Converter {
     /**
      * Convert the input object into an output object of the
      * specified type.
-     *
      * @param type Data type to which this value should be converted
      * @param value The input value to be converted
      * @return The converted value.
@@ -132,15 +129,13 @@ public abstract class AbstractConverter implements Converter {
         return value.toString();
     }
 
-    /**执行类型转换代码。*/
+    /** 执行类型转换代码。 */
     protected abstract Object convertToType(Class<?> type, Object value) throws Throwable;
 
     /**
      * Return the first element from an Array (or Collection)
      * or the value unchanged if not an Array (or Collection).
-     *
      * N.B. This needs to be overriden for array/Collection converters.
-     *
      * @param value The value to convert
      * @return The first element in an Array (or Collection)
      * or the value unchanged if not an Array (or Collection)
@@ -167,7 +162,7 @@ public abstract class AbstractConverter implements Converter {
         return value;
     }
 
-    /**设置默认值 */
+    /** 设置默认值 */
     protected void setDefaultValue(final Object defaultValue) {
         this.useDefault = false;
         if (defaultValue == null) {
@@ -178,10 +173,10 @@ public abstract class AbstractConverter implements Converter {
         this.useDefault = true;
     }
 
-    /**获取默认值*/
+    /** 获取默认值 */
     protected abstract Class<?> getDefaultType();
 
-    /**返回指定类型的默认值.*/
+    /** 返回指定类型的默认值. */
     protected Object getDefault(final Class<?> type) {
         if (type.equals(String.class)) {
             return null;
@@ -199,7 +194,7 @@ public abstract class AbstractConverter implements Converter {
         return this.toString(this.getClass()) + "[UseDefault=" + this.useDefault + "]";
     }
 
-    /**当遇到空值传入或者返回值为空的时候*/
+    /** 当遇到空值传入或者返回值为空的时候 */
     protected Object handleMissing(final Class<?> type) {
         if (this.useDefault || type.equals(String.class)) {
             Object value = this.getDefault(type);

@@ -23,7 +23,6 @@ import java.util.WeakHashMap;
 /**
  * An instance of this class represents a value that is provided per (thread)
  * context classloader.
- *
  * <p>Occasionally it is necessary to store data in "global" variables
  * (including uses of the Singleton pattern). In applications which have only
  * a single classloader such data can simply be stored as "static" members on
@@ -37,25 +36,21 @@ import java.util.WeakHashMap;
  * "global" variable rather than unexpectedly sharing a single copy of the
  * variable with other components that happen to be running in the same
  * container at the same time (eg servlets or EJBs.)</p>
- *
  * <p>This class is strongly patterned after the java.lang.ThreadLocal
  * class, which performs a similar task in allowing data to be associated
  * with a particular thread.</p>
- *
  * <p>When code that uses this class is run as a "normal" application, ie
- * not within a container, the effect is identical to just using a static 
+ * not within a container, the effect is identical to just using a static
  * member variable to store the data, because Thread.getContextClassLoader
  * always returns the same classloader (the system classloader).</p>
- *
  * <p>Expected usage is as follows:<br>
  * <pre>
  *  public class SomeClass {
- *    private static final ContextClassLoaderLocal global 
+ *    private static final ContextClassLoaderLocal global
  *      = new ContextClassLoaderLocal() {
  *          protected Object initialValue() {
  *              return new String("Initial value");
  *          };
- *
  *    public void testGlobal() {
  *      String s = (String) global.get();
  *      System.out.println("global value:" + s);
@@ -63,7 +58,6 @@ import java.util.WeakHashMap;
  *    }
  * </pre>
  * </p>
- *
  * <p><strong>Note:</strong> This class takes some care to ensure that when
  * a component which uses this class is "undeployed" by a container the
  * component-specific classloader and all its associated classes (and their
@@ -89,16 +83,12 @@ import java.util.WeakHashMap;
  * classes which use this class are BeanUtilsBean and ConvertUtilsBean and
  * there is no obvious reason for a user of the beanutils library to subclass
  * either of those classes.</p>
- *
- * <p><strong>Note:</strong> A WeakHashMap bug in several 1.3 JVMs results in 
+ * <p><strong>Note:</strong> A WeakHashMap bug in several 1.3 JVMs results in
  * a memory leak for those JVMs.</p>
- *
  * <p><strong>Note:</strong> Of course all of this would be unnecessary if
  * containers required each component to load the full set of classes it
  * needs, ie avoided providing classes loaded via a "shared" classloader.</p>
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.ContextClassLoaderLocal
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Eric Pabst
  * @see Thread#getContextClassLoader
@@ -124,14 +114,13 @@ public class ContextClassLoaderLocal<T> {
     /**
      * Returns the initial value for this ContextClassLoaderLocal
      * variable. This method will be called once per Context ClassLoader for
-     * each ContextClassLoaderLocal, the first time it is accessed 
+     * each ContextClassLoaderLocal, the first time it is accessed
      * with get or set.  If the programmer desires ContextClassLoaderLocal variables
      * to be initialized to some value other than null, ContextClassLoaderLocal must
      * be subclassed, and this method overridden.  Typically, an anonymous
      * inner class will be used.  Typical implementations of initialValue
      * will call an appropriate constructor and return the newly constructed
      * object.
-     *
      * @return a new Object to be used as an initial value for this ContextClassLoaderLocal
      */
     protected T initialValue() {
@@ -141,8 +130,8 @@ public class ContextClassLoaderLocal<T> {
     /**
      * Gets the instance which provides the functionality for {@link BeanUtils}.
      * This is a pseudo-singleton - an single instance is provided per (thread) context classloader.
-     * This mechanism provides isolation for web apps deployed in the same container. 
-     * @return the object currently associated with the context-classloader of the current thread. 
+     * This mechanism provides isolation for web apps deployed in the same container.
+     * @return the object currently associated with the context-classloader of the current thread.
      */
     public synchronized T get() {
         // synchronizing the whole method is a bit slower 
@@ -171,8 +160,7 @@ public class ContextClassLoaderLocal<T> {
 
     /**
      * Sets the value - a value is provided per (thread) context classloader.
-     * This mechanism provides isolation for web apps deployed in the same container. 
-     *
+     * This mechanism provides isolation for web apps deployed in the same container.
      * @param value the object to be associated with the entrant thread's context classloader
      */
     public synchronized void set(final T value) {

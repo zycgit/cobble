@@ -28,12 +28,9 @@ import java.util.Optional;
  * Helper class that encapsulates the specification of a method parameter, i.e. a {@link Method}
  * or {@link Constructor} plus a parameter index and a nested type index for a declared generic
  * type. Useful as a specification object to pass along.
- *
  * subclass available which synthesizes annotations with attribute aliases. That subclass is used
  * for web and message endpoint processing, in particular.
- *
  * 2021-11-01 reduction based on SpringFramework, org.springframework.core.MethodParameter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Juergen Hoeller
  * @author Rob Harrop

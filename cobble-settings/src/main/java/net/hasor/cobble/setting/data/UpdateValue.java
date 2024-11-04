@@ -17,8 +17,8 @@ package net.hasor.cobble.setting.data;
 import net.hasor.cobble.setting.Settings;
 
 /**
- * @version : 2014年10月11日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年10月11日
  */
 public interface UpdateValue {
     void update(DataNode dataNode, Settings context);

@@ -18,12 +18,11 @@ package net.hasor.cobble.concurrent.future;
  * Basic implementation of the {@link java.util.concurrent.Future} interface. <tt>BasicFuture<tt>
  * can be put into a completed state by invoking any of the following methods:
  * {@link #cancel()}, {@link #failed(Throwable)}, or {@link #completed(Object)}.
- *
  * @param <T> the future result type of an asynchronous operation.
  */
 public interface Future<T> extends java.util.concurrent.Future<T> {
 
-    /** 不阻塞，不抛异常，获取结果如果 completed 则返回 result，如果 failed 或 cancel 则返回空。*/
+    /** 不阻塞，不抛异常，获取结果如果 completed 则返回 result，如果 failed 或 cancel 则返回空。 */
     T getResult();
 
     /** 阻塞等待直到成功或失败 */

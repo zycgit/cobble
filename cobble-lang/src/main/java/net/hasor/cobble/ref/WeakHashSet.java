@@ -19,8 +19,8 @@ import java.util.*;
 /**
  * 参照{@link java.util.HashSet}实现的 WeakHashSet.
  * 详细介绍参看{@link java.util.Set}和{@link java.util.WeakHashMap}功能
- * @version : 2013-11-8
  * @author (网络收集)
+ * @version : 2013-11-8
  */
 public class WeakHashSet<E> extends AbstractSet<E> implements Set<E> {
     private final transient WeakHashMap<E, Object> map;

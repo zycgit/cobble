@@ -22,8 +22,8 @@ import java.net.URI;
 
 /**
  * 扫描的资源
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public class ScanEvent {
     private final String                              name;

@@ -23,13 +23,9 @@ import static java.math.BigDecimal.ROUND_DOWN;
 
 /**
  * <p>Utility library that supplements the standard {@link Random} class.</p>
- *
  * <p>Caveat: Instances of {@link Random} are not cryptographically secure.</p>
- *
  * <p>Provides randomness between any two numbers, For example: arbitrarily large numbers, negative numbers</p>
- *
  * <p>that may be a better choice for applications with more stringent requirements</p>
- *
  * @author 赵永春 (zyc@hasor.net)
  */
 public class RandomUtils {
@@ -45,7 +41,6 @@ public class RandomUtils {
      * programming. Instead, the class should be used as
      * {@code RandomUtils.nextBytes(5);}.
      * </p>
-     *
      * <p>
      * This constructor is public to permit tools that require a JavaBean instance to operate.
      * </p>
@@ -62,7 +57,6 @@ public class RandomUtils {
 
     /**
      * <p> Returns a random boolean value </p>
-     *
      * @return the random boolean
      */
     public static boolean nextBoolean() {
@@ -71,7 +65,6 @@ public class RandomUtils {
 
     /**
      * <p> Creates an array of random bytes. </p>
-     *
      * @param count the size of the returned array
      * @return the random byte array
      * @throws IllegalArgumentException if {@code count} is negative
@@ -86,7 +79,6 @@ public class RandomUtils {
 
     /**
      * <p> fill an array of random bytes. </p>
-     *
      * @param b fill array
      * @throws IllegalArgumentException if {@code count} is negative
      */
@@ -96,11 +88,10 @@ public class RandomUtils {
 
     /**
      * <p> Returns a random integer within the specified range. </p>
-     *
      * @param startInclusive the smallest value that can be returned, must be non-negative
      * @param endInclusive the upper bound (included)
-     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random integer
+     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      */
     public static int nextInt(int startInclusive, int endInclusive) {
         return nextBigInteger(startInclusive, endInclusive).intValue();
@@ -108,7 +99,6 @@ public class RandomUtils {
 
     /**
      * <p> Returns a random int within 0 - Integer.MAX_VALUE </p>
-     *
      * @return the random integer
      * @see #nextInt(int, int)
      */
@@ -120,11 +110,10 @@ public class RandomUtils {
      * <p>
      * Returns a random long within the specified range.
      * </p>
-     *
      * @param startInclusive the smallest value that can be returned, must be non-negative
      * @param endInclusive the upper bound (included)
-     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random long
+     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      */
     public static long nextLong(long startInclusive, long endInclusive) {
         return nextBigInteger(startInclusive, endInclusive).longValue();
@@ -132,7 +121,6 @@ public class RandomUtils {
 
     /**
      * <p> Returns a random long within 0 - Long.MAX_VALUE </p>
-     *
      * @return the random long
      * @see #nextLong(long, long)
      */
@@ -144,11 +132,10 @@ public class RandomUtils {
      * <p>
      * Returns a random BigInteger within the specified range.
      * </p>
-     *
      * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
-     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random long
+     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      */
     public static BigInteger nextBigInteger(Number startInclusive, Number endInclusive) {
         BigInteger minBig = (startInclusive instanceof BigInteger) ? (BigInteger) startInclusive : (startInclusive instanceof BigDecimal) ? ((BigDecimal) startInclusive).toBigInteger() : (BigInteger.valueOf(startInclusive.longValue()));
@@ -196,11 +183,10 @@ public class RandomUtils {
      * <p>
      * Returns a random double within the specified range.
      * </p>
-     *
      * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
-     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random double
+     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      */
     public static double nextDouble(final double startInclusive, final double endInclusive) {
         isTrue(endInclusive >= startInclusive, "Start value must be smaller or equal to end value.");
@@ -215,7 +201,6 @@ public class RandomUtils {
 
     /**
      * <p> Returns a random double within 0 - Double.MAX_VALUE </p>
-     *
      * @return the random double
      * @see #nextDouble(double, double)
      * @since 3.5
@@ -228,11 +213,10 @@ public class RandomUtils {
      * <p>
      * Returns a random float within the specified range.
      * </p>
-     *
      * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
-     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random float
+     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      */
     public static float nextFloat(final float startInclusive, final float endInclusive) {
         isTrue(endInclusive >= startInclusive, "Start value must be smaller or equal to end value.");
@@ -247,7 +231,6 @@ public class RandomUtils {
 
     /**
      * <p> Returns a random float within 0 - Float.MAX_VALUE </p>
-     *
      * @return the random float
      * @see #nextFloat()
      */
@@ -259,11 +242,10 @@ public class RandomUtils {
      * <p>
      * Returns a random BigDecimal within the specified range.
      * </p>
-     *
      * @param startInclusive the smallest value that can be returned, support negative
      * @param endInclusive the upper bound (included)
-     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      * @return the random BigDecimal
+     * @throws IllegalArgumentException if {@code startInclusive > endInclusive} or if {@code startInclusive} is negative
      */
     public static BigDecimal nextDecimal(Number startInclusive, Number endInclusive, Integer scale) {
         BigDecimal minBig = (startInclusive instanceof BigDecimal) ? (BigDecimal) startInclusive : (startInclusive instanceof BigInteger) ? new BigDecimal((BigInteger) startInclusive) : (BigDecimal.valueOf(startInclusive.doubleValue()));
@@ -292,7 +274,6 @@ public class RandomUtils {
      * <p>
      * Returns a random BigDecimal within the specified range.
      * </p>
-     *
      * @param precision precision of random number
      * @param scale scale of random number
      * @return the random BigDecimal

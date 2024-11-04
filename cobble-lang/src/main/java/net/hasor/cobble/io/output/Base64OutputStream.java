@@ -45,11 +45,11 @@ import java.io.Writer;
 /**
  * <p>Provides a mechanism to accept and Base64 encode bytes into
  * chars which will be flushed to the provided writer as the
- * internal buffer fills.</p> 
+ * internal buffer fills.</p>
  */
 public class Base64OutputStream extends OutputStream {
     /**
-     * The buffer where data is stored. 
+     * The buffer where data is stored.
      */
     private              byte[] buf;
     /**
@@ -58,7 +58,7 @@ public class Base64OutputStream extends OutputStream {
      */
     private              char[] chars;
     /**
-     * The number of valid bytes in the buffer. 
+     * The number of valid bytes in the buffer.
      */
     private              int    count;
     /**
@@ -79,11 +79,9 @@ public class Base64OutputStream extends OutputStream {
     /**
      * Creates a new byte array output stream, with a buffer capacity of
      * the specified size, in bytes.
-     *
-     * @param size   the initial size.
+     * @param size the initial size.
      * @param writer the writer we'll flush to once
-     *               we reach our capacity
-     *
+     * we reach our capacity
      * @throws IllegalArgumentException if size is negative.
      */
     public Base64OutputStream(final int size, final Writer writer) {
@@ -98,7 +96,6 @@ public class Base64OutputStream extends OutputStream {
 
     /**
      * Writes the specified byte to this byte array output stream.
-     *
      * @param b the byte to be written.
      */
     @Override
@@ -109,8 +106,7 @@ public class Base64OutputStream extends OutputStream {
     /**
      * Writes <code>len</code> bytes from the specified byte array
      * starting at offset <code>off</code> to this byte array output stream.
-     *
-     * @param b   the data.
+     * @param b the data.
      * @param off the start offset in the data.
      * @param len the number of bytes to write.
      */
@@ -129,7 +125,7 @@ public class Base64OutputStream extends OutputStream {
     }
 
     /**
-     * <p>Calls through to {@link #write(byte[], int, int)}/</p> 
+     * <p>Calls through to {@link #write(byte[], int, int)}/</p>
      * @param b the bytes to write
      * @throws IOException if an error occurs
      */
@@ -146,7 +142,6 @@ public class Base64OutputStream extends OutputStream {
     /**
      * <p>Encodes the remaining bytes and flushes the <code>char[]</code>
      * to the wrapped <code>Writer</code>.</p>
-     *
      * @throws IOException if an error occurs writing the remaining bytes
      */
     public void finish() throws IOException {
@@ -161,12 +156,12 @@ public class Base64OutputStream extends OutputStream {
     }
 
     /**
-     * <p>Base64 encode any bytes found in <code>buf</code> and 
+     * <p>Base64 encode any bytes found in <code>buf</code> and
      * store the result as characters in <code>chars</code>.  This method
      * will automatically write the contents of <code>chars</code> when
      * necessary.
      * @param pad flag to signal we're finalizing the encoding processes.
-     * @throws IOException if an error occurs 
+     * @throws IOException if an error occurs
      */
     private void encodePendingBytes(final boolean pad) throws IOException {
         int eLen = this.count / 3 * 3; // Length of even 24-bits.

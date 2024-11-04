@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @version : 2014年10月11日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年10月11日
  */
 public class DataNode {
     private final TreeNode     parent;

@@ -20,7 +20,6 @@ import java.io.Writer;
 
 /**
  * Translates codepoints to their Unicode escaped value.
- *
  * @since 1.0
  */
 public class UnicodeEscaper extends CodePointTranslator {
@@ -44,7 +43,6 @@ public class UnicodeEscaper extends CodePointTranslator {
      * the underlying method for the other constructors/builders. The {@code below}
      * and {@code above} boundaries are inclusive when {@code between} is
      * {@code true} and exclusive when it is {@code false}.</p>
-     *
      * @param below int value representing the lowest codepoint boundary
      * @param above int value representing the highest codepoint boundary
      * @param between whether to escape between the boundaries or outside them
@@ -57,7 +55,6 @@ public class UnicodeEscaper extends CodePointTranslator {
 
     /**
      * <p>Constructs a {@code UnicodeEscaper} below the specified value (exclusive).</p>
-     *
      * @param codepoint below which to escape
      * @return The newly created {@code UnicodeEscaper} instance
      */
@@ -67,7 +64,6 @@ public class UnicodeEscaper extends CodePointTranslator {
 
     /**
      * <p>Constructs a {@code UnicodeEscaper} above the specified value (exclusive).</p>
-     *
      * @param codepoint above which to escape
      * @return The newly created {@code UnicodeEscaper} instance
      */
@@ -77,7 +73,6 @@ public class UnicodeEscaper extends CodePointTranslator {
 
     /**
      * <p>Constructs a {@code UnicodeEscaper} outside of the specified values (exclusive).</p>
-     *
      * @param codepointLow below which to escape
      * @param codepointHigh above which to escape
      * @return The newly created {@code UnicodeEscaper} instance
@@ -88,7 +83,6 @@ public class UnicodeEscaper extends CodePointTranslator {
 
     /**
      * <p>Constructs a {@code UnicodeEscaper} between the specified values (inclusive).</p>
-     *
      * @param codepointLow above which to escape
      * @param codepointHigh below which to escape
      * @return The newly created {@code UnicodeEscaper} instance
@@ -126,11 +120,8 @@ public class UnicodeEscaper extends CodePointTranslator {
 
     /**
      * Converts the given codepoint to a hex string of the form {@code "\\uXXXX"}.
-     *
-     * @param codepoint
-     *            a Unicode code point
+     * @param codepoint a Unicode code point
      * @return The hex string for the given codepoint
-     *
      */
     protected String toUtf16Escape(final int codepoint) {
         return "\\u" + hex(codepoint);

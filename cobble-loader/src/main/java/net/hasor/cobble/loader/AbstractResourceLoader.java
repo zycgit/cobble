@@ -21,8 +21,8 @@ import java.util.function.Predicate;
 
 /**
  * Loader 基类
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
     protected final  ClassLoader         parentClassLoader;

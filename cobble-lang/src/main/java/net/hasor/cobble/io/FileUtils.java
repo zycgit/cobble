@@ -43,9 +43,7 @@ import java.util.List;
  * </ul>
  * <p>
  * Origin of code: Excalibur, Alexandria, Commons-Utils
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.FileUtils
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: FileUtils.java 1349509 2012-06-12 20:39:23Z ggregory $
  */
@@ -53,9 +51,8 @@ public class FileUtils {
     /**
      * Reads the contents of a file into a String.
      * The file is always closed.
-     *
-     * @param file  the file to read, must not be <code>null</code>
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to read, must not be <code>null</code>
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @return the file contents, never <code>null</code>
      * @throws IOException in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
@@ -71,10 +68,9 @@ public class FileUtils {
     }
 
     /**
-     * Reads the contents of a file into a String using the default encoding for the VM. 
+     * Reads the contents of a file into a String using the default encoding for the VM.
      * The file is always closed.
-     *
-     * @param file  the file to read, must not be <code>null</code>
+     * @param file the file to read, must not be <code>null</code>
      * @return the file contents, never <code>null</code>
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.3.1
@@ -86,8 +82,7 @@ public class FileUtils {
     /**
      * Reads the contents of a file into a byte array.
      * The file is always closed.
-     *
-     * @param file  the file to read, must not be <code>null</code>
+     * @param file the file to read, must not be <code>null</code>
      * @return the file contents, never <code>null</code>
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.1
@@ -105,9 +100,8 @@ public class FileUtils {
     /**
      * Reads the contents of a file line by line to a List of Strings.
      * The file is always closed.
-     *
-     * @param file  the file to read, must not be <code>null</code>
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to read, must not be <code>null</code>
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @return the list of Strings representing each line in the file, never <code>null</code>
      * @throws IOException in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
@@ -126,8 +120,7 @@ public class FileUtils {
     /**
      * Reads the contents of a file line by line to a List of Strings using the default encoding for the VM.
      * The file is always closed.
-     *
-     * @param file  the file to read, must not be <code>null</code>
+     * @param file the file to read, must not be <code>null</code>
      * @return the list of Strings representing each line in the file, never <code>null</code>
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.3
@@ -139,8 +132,7 @@ public class FileUtils {
     /**
      * Reads the contents of a file from back to front of Strings using the default encoding for the VM.
      * The file is always closed.
-     *
-     * @param file  the file to read, must not be <code>null</code>
+     * @param file the file to read, must not be <code>null</code>
      * @return the list of Strings representing each line in the file, never <code>null</code>
      * @throws IOException in case of an I/O error
      */
@@ -187,9 +179,8 @@ public class FileUtils {
      * <p>
      * If an exception occurs during the creation of the iterator, the
      * underlying stream is closed.
-     *
-     * @param file  the file to open for input, must not be <code>null</code>
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to open for input, must not be <code>null</code>
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @return an Iterator of the lines in the file, never <code>null</code>
      * @throws IOException in case of an I/O error (file closed)
      * @since Commons IO 1.2
@@ -207,12 +198,11 @@ public class FileUtils {
 
     /**
      * Returns an Iterator for the lines in a <code>File</code> using the default encoding for the VM.
-     *
-     * @param file  the file to open for input, must not be <code>null</code>
+     * @param file the file to open for input, must not be <code>null</code>
      * @return an Iterator of the lines in the file, never <code>null</code>
      * @throws IOException in case of an I/O error (file closed)
-     * @since Commons IO 1.3
      * @see #lineIterator(File, String)
+     * @since Commons IO 1.3
      */
     public static LineIterator lineIterator(File file) throws IOException {
         return lineIterator(file, null);
@@ -221,13 +211,11 @@ public class FileUtils {
 
     /**
      * Writes a String to a file creating the file if it does not exist.
-     *
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to write
+     * @param data the content to write to the file
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @throws IOException in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      */
@@ -237,10 +225,9 @@ public class FileUtils {
 
     /**
      * Writes a String to a file creating the file if it does not exist.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to write
+     * @param data the content to write to the file
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @param append if <code>true</code>, then the String will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -259,9 +246,8 @@ public class FileUtils {
 
     /**
      * Writes a String to a file creating the file if it does not exist using the default encoding for the VM.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
+     * @param file the file to write
+     * @param data the content to write to the file
      * @throws IOException in case of an I/O error
      */
     public static void writeStringToFile(File file, String data) throws IOException {
@@ -270,9 +256,8 @@ public class FileUtils {
 
     /**
      * Writes a String to a file creating the file if it does not exist using the default encoding for the VM.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
+     * @param file the file to write
+     * @param data the content to write to the file
      * @param append if <code>true</code>, then the String will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -284,9 +269,8 @@ public class FileUtils {
 
     /**
      * Writes a CharSequence to a file creating the file if it does not exist using the default encoding for the VM.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
+     * @param file the file to write
+     * @param data the content to write to the file
      * @throws IOException in case of an I/O error
      * @since Commons IO 2.0
      */
@@ -296,9 +280,8 @@ public class FileUtils {
 
     /**
      * Writes a CharSequence to a file creating the file if it does not exist using the default encoding for the VM.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
+     * @param file the file to write
+     * @param data the content to write to the file
      * @param append if <code>true</code>, then the data will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -310,10 +293,9 @@ public class FileUtils {
 
     /**
      * Writes a CharSequence to a file creating the file if it does not exist.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to write
+     * @param data the content to write to the file
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @throws IOException in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      * @since Commons IO 2.0
@@ -324,10 +306,9 @@ public class FileUtils {
 
     /**
      * Writes a CharSequence to a file creating the file if it does not exist.
-     *
-     * @param file  the file to write
-     * @param data  the content to write to the file
-     * @param encoding  the encoding to use, <code>null</code> means platform default
+     * @param file the file to write
+     * @param data the content to write to the file
+     * @param encoding the encoding to use, <code>null</code> means platform default
      * @param append if <code>true</code>, then the data will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -344,9 +325,8 @@ public class FileUtils {
      * <p>
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
-     *
-     * @param file  the file to write to
-     * @param data  the content to write to the file
+     * @param file the file to write to
+     * @param data the content to write to the file
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.1
      */
@@ -356,9 +336,8 @@ public class FileUtils {
 
     /**
      * Writes a byte array to a file creating the file if it does not exist.
-     *
-     * @param file  the file to write to
-     * @param data  the content to write to the file
+     * @param file the file to write to
+     * @param data the content to write to the file
      * @param append if <code>true</code>, then bytes will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -381,10 +360,9 @@ public class FileUtils {
      * <p>
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
-     *
-     * @param file  the file to write to
-     * @param encoding  the encoding to use, <code>null</code> means platform default
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
+     * @param file the file to write to
+     * @param encoding the encoding to use, <code>null</code> means platform default
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
      * @throws IOException in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      * @since Commons IO 1.1
@@ -397,10 +375,9 @@ public class FileUtils {
      * Writes the <code>toString()</code> value of each item in a collection to
      * the specified <code>File</code> line by line, optionally appending.
      * The specified character encoding and the default line ending will be used.
-     *
-     * @param file  the file to write to
-     * @param encoding  the encoding to use, <code>null</code> means platform default
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
+     * @param file the file to write to
+     * @param encoding the encoding to use, <code>null</code> means platform default
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
      * @param append if <code>true</code>, then the lines will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -415,9 +392,8 @@ public class FileUtils {
      * Writes the <code>toString()</code> value of each item in a collection to
      * the specified <code>File</code> line by line.
      * The default VM encoding and the default line ending will be used.
-     *
-     * @param file  the file to write to
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
+     * @param file the file to write to
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.3
      */
@@ -429,9 +405,8 @@ public class FileUtils {
      * Writes the <code>toString()</code> value of each item in a collection to
      * the specified <code>File</code> line by line.
      * The default VM encoding and the default line ending will be used.
-     *
-     * @param file  the file to write to
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
+     * @param file the file to write to
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
      * @param append if <code>true</code>, then the lines will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -448,11 +423,10 @@ public class FileUtils {
      * <p>
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
-     *
-     * @param file  the file to write to
-     * @param encoding  the encoding to use, <code>null</code> means platform default
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
-     * @param lineEnding  the line separator to use, <code>null</code> is system default
+     * @param file the file to write to
+     * @param encoding the encoding to use, <code>null</code> means platform default
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
+     * @param lineEnding the line separator to use, <code>null</code> is system default
      * @throws IOException in case of an I/O error
      * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      * @since Commons IO 1.1
@@ -465,11 +439,10 @@ public class FileUtils {
      * Writes the <code>toString()</code> value of each item in a collection to
      * the specified <code>File</code> line by line.
      * The specified character encoding and the line ending will be used.
-     *
-     * @param file  the file to write to
-     * @param encoding  the encoding to use, <code>null</code> means platform default
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
-     * @param lineEnding  the line separator to use, <code>null</code> is system default
+     * @param file the file to write to
+     * @param encoding the encoding to use, <code>null</code> means platform default
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
+     * @param lineEnding the line separator to use, <code>null</code> is system default
      * @param append if <code>true</code>, then the lines will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -490,10 +463,9 @@ public class FileUtils {
      * Writes the <code>toString()</code> value of each item in a collection to
      * the specified <code>File</code> line by line.
      * The default VM encoding and the specified line ending will be used.
-     *
-     * @param file  the file to write to
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
-     * @param lineEnding  the line separator to use, <code>null</code> is system default
+     * @param file the file to write to
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
+     * @param lineEnding the line separator to use, <code>null</code> is system default
      * @throws IOException in case of an I/O error
      * @since Commons IO 1.3
      */
@@ -505,10 +477,9 @@ public class FileUtils {
      * Writes the <code>toString()</code> value of each item in a collection to
      * the specified <code>File</code> line by line.
      * The default VM encoding and the specified line ending will be used.
-     *
-     * @param file  the file to write to
-     * @param lines  the lines to write, <code>null</code> entries produce blank lines
-     * @param lineEnding  the line separator to use, <code>null</code> is system default
+     * @param file the file to write to
+     * @param lines the lines to write, <code>null</code> entries produce blank lines
+     * @param lineEnding the line separator to use, <code>null</code> is system default
      * @param append if <code>true</code>, then the lines will be added to the
      * end of the file rather than overwriting
      * @throws IOException in case of an I/O error
@@ -529,8 +500,7 @@ public class FileUtils {
      * An exception is thrown if the file does not exist.
      * An exception is thrown if the file object exists but is a directory.
      * An exception is thrown if the file exists but cannot be read.
-     *
-     * @param file  the file to open for input, must not be <code>null</code>
+     * @param file the file to open for input, must not be <code>null</code>
      * @return a new {@link FileInputStream} for the specified file
      * @throws FileNotFoundException if the file does not exist
      * @throws IOException if the file object is a directory
@@ -564,8 +534,7 @@ public class FileUtils {
      * An exception is thrown if the file object exists but is a directory.
      * An exception is thrown if the file exists but cannot be written to.
      * An exception is thrown if the parent directory cannot be created.
-     *
-     * @param file  the file to open for output, must not be <code>null</code>
+     * @param file the file to open for output, must not be <code>null</code>
      * @return a new {@link FileOutputStream} for the specified file
      * @throws IOException if the file object is a directory
      * @throws IOException if the file cannot be written to
@@ -588,8 +557,7 @@ public class FileUtils {
      * An exception is thrown if the file object exists but is a directory.
      * An exception is thrown if the file exists but cannot be written to.
      * An exception is thrown if the parent directory cannot be created.
-     *
-     * @param file  the file to open for output, must not be <code>null</code>
+     * @param file the file to open for output, must not be <code>null</code>
      * @param append if <code>true</code>, then bytes will be added to the
      * end of the file rather than overwriting
      * @return a new {@link FileOutputStream} for the specified file
@@ -619,9 +587,8 @@ public class FileUtils {
     //-----------------------------------------------------------------------
 
     /**
-     * Deletes a directory recursively. 
-     *
-     * @param directory  directory to delete
+     * Deletes a directory recursively.
+     * @param directory directory to delete
      * @throws IOException in case deletion is unsuccessful
      */
     public static void deleteDirectory(File directory) throws IOException {
@@ -639,7 +606,6 @@ public class FileUtils {
 
     /**
      * Cleans a directory without deleting it.
-     *
      * @param directory directory to clean
      * @throws IOException in case cleaning is unsuccessful
      */
@@ -677,11 +643,9 @@ public class FileUtils {
      * <li>A directory to be deleted does not have to be empty.</li>
      * <li>No exceptions are thrown when a file or directory cannot be deleted.</li>
      * </ul>
-     *
-     * @param file  file or directory to delete, can be {@code null}
+     * @param file file or directory to delete, can be {@code null}
      * @return {@code true} if the file or directory was deleted, otherwise
      * {@code false}
-     *
      * @since 1.4
      */
     public static boolean deleteQuietly(File file) {
@@ -703,8 +667,7 @@ public class FileUtils {
 
     /**
      * Schedules a directory recursively for deletion on JVM exit.
-     *
-     * @param directory  directory to delete, must not be {@code null}
+     * @param directory directory to delete, must not be {@code null}
      * @throws NullPointerException if the directory is {@code null}
      * @throws IOException in case deletion is unsuccessful
      */
@@ -720,8 +683,7 @@ public class FileUtils {
 
     /**
      * Cleans a directory without deleting it.
-     *
-     * @param directory  directory to clean, must not be {@code null}
+     * @param directory directory to clean, must not be {@code null}
      * @throws NullPointerException if the directory is {@code null}
      * @throws IOException in case cleaning is unsuccessful
      */
@@ -759,7 +721,6 @@ public class FileUtils {
      * <p>
      * <b>Note:</b> the current implementation always returns {@code false} if the system
      * is detected as Windows using {@link FilenameUtils#isSystemWindows()}
-     *
      * @param file the file to check
      * @return true if the file is a Symbolic Link
      * @throws IOException if an IO error occurs while checking the file
@@ -791,8 +752,7 @@ public class FileUtils {
      * <li>You get exceptions when a file or directory cannot be deleted.
      *      (java.io.File methods returns a boolean)</li>
      * </ul>
-     *
-     * @param file  file or directory to delete, must not be {@code null}
+     * @param file file or directory to delete, must not be {@code null}
      * @throws NullPointerException if the directory is {@code null}
      * @throws FileNotFoundException if the file was not found
      * @throws IOException in case deletion is unsuccessful
@@ -815,8 +775,7 @@ public class FileUtils {
     /**
      * Schedules a file to be deleted when JVM exits.
      * If file is directory delete it and all sub-directories.
-     *
-     * @param file  file or directory to delete, must not be {@code null}
+     * @param file file or directory to delete, must not be {@code null}
      * @throws NullPointerException if the file is {@code null}
      * @throws IOException in case deletion is unsuccessful
      */

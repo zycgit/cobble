@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 
 /**
  * 控制操作生成比率
- * @version : 2022-07-25
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2022-07-25
  */
 public class RandomRatio<T> {
     private final    List<Boundary<T>> opsBoundary = new CopyOnWriteArrayList<>();

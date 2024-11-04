@@ -73,7 +73,6 @@ import java.util.*;
  *                 </ul>
  *         </ul>
  * </ul>
- *
  * <h3>Parsing Delimited Lists</h3>
  * This implementation can convert a delimited list in <code>String</code> format
  * into an array of the appropriate type. By default, it uses a comma as the delimiter
@@ -85,7 +84,6 @@ import java.util.*;
  *         (to the default alphabetic/numeric) to those considered to be
  *         valid token characters.
  * </ul>
- *
  * <h3>Multi Dimensional Arrays</h3>
  * It is possible to convert a <code>String</code> to mulit-dimensional arrays by using
  * {@link ArrayConverter} as the element {@link Converter}
@@ -97,12 +95,10 @@ import java.util.*;
  * <pre>
  *    // Construct an Integer Converter
  *    IntegerConverter integerConverter = new IntegerConverter();
- *
  *    // Construct an array Converter for an integer array (i.e. int[]) using
  *    // an IntegerConverter as the element converter.
  *    // N.B. Uses the default comma (i.e. ",") as the delimiter between individual numbers
  *    ArrayConverter arrayConverter = new ArrayConverter(int[].class, integerConverter);
- *
  *    // Construct a "Matrix" Converter which converts arrays of integer arrays using
  *    // the pre-ceeding ArrayConverter as the element Converter.
  *    // N.B. Uses a semi-colon (i.e. ";") as the delimiter to separate the different sets of numbers.
@@ -111,14 +107,11 @@ import java.util.*;
  *    ArrayConverter matrixConverter = new ArrayConverter(int[][].class, arrayConverter);
  *    matrixConverter.setDelimiter(';');
  *    matrixConverter.setAllowedChars(new char[] {','});
- *
  *    // Do the Conversion
  *    String matrixString = "11,12,13 ; 21,22,23 ; 31,32,33 ; 41,42,43";
  *    int[][] result = (int[][])matrixConverter.convert(int[][].class, matrixString);
  * </pre>
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.ArrayConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 640131 $ $Date: 2008-03-23 02:10:31 +0000 (Sun, 23 Mar 2008) $
  * @since 1.8.0
@@ -136,11 +129,10 @@ public class ArrayConverter extends AbstractConverter {
      * Construct an <b>array</b> <code>Converter</code> with the specified
      * <b>component</b> <code>Converter</code> that throws a
      * <code>ConversionException</code> if an error occurs.
-     *
      * @param defaultType The default array type this
-     *  <code>Converter</code> handles
+     * <code>Converter</code> handles
      * @param elementConverter Converter used to convert
-     *  individual array elements.
+     * individual array elements.
      */
     public ArrayConverter(final Class<?> defaultType, final Converter elementConverter) {
         super();
@@ -161,13 +153,12 @@ public class ArrayConverter extends AbstractConverter {
      * Construct an <b>array</b> <code>Converter</code> with the specified
      * <b>component</b> <code>Converter</code> that returns a default
      * array of the specified size (or <code>null</code>) if an error occurs.
-     *
      * @param defaultType The default array type this
-     *  <code>Converter</code> handles
+     * <code>Converter</code> handles
      * @param elementConverter Converter used to convert
-     *  individual array elements.
+     * individual array elements.
      * @param defaultSize Specifies the size of the default array value or if less
-     *  than zero indicates that a <code>null</code> default value should be used.
+     * than zero indicates that a <code>null</code> default value should be used.
      */
     public ArrayConverter(final Class<?> defaultType, final Converter elementConverter, final int defaultSize) {
         this(defaultType, elementConverter);
@@ -181,7 +172,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Set the delimiter to be used for parsing a delimited String.
-     *
      * @param delimiter The delimiter [default ',']
      */
     public void setDelimiter(final char delimiter) {
@@ -190,7 +180,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Set the allowed characters to be used for parsing a delimited String.
-     *
      * @param allowedChars Characters which are to be considered as part of
      * the tokens when parsing a delimited String [default is '.' and '-']
      */
@@ -201,7 +190,6 @@ public class ArrayConverter extends AbstractConverter {
     /**
      * Indicates whether converting to a String should create
      * a delimited list or just convert the first value.
-     *
      * @param onlyFirstToString <code>true</code> converts only
      * the first value in the array to a String, <code>false</code>
      * converts all values in the array into a delimited list (default
@@ -213,7 +201,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Return the default type this <code>Converter</code> handles.
-     *
      * @return The default type this <code>Converter</code> handles.
      */
     @Override
@@ -223,7 +210,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Handles conversion to a String.
-     *
      * @param value The value to be converted.
      * @return the converted String value.
      * @throws Throwable if an error occurs converting to a String
@@ -263,7 +249,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Handles conversion to an array of the specified type.
-     *
      * @param type The type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
@@ -300,7 +285,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Returns the value unchanged.
-     *
      * @param value The value to convert
      * @return The value unchanged
      */
@@ -320,12 +304,10 @@ public class ArrayConverter extends AbstractConverter {
      *   <li>All other types are converted to a String and parsed
      *       as a delimited list.</li>
      * </ul>
-     *
      * <strong>N.B.</strong> The method is called by both the
      * {@link ArrayConverter#convertToType(Class, Object)} and
      * {@link ArrayConverter#convertToString(Object)} methods for
      * <i>non-array</i> types.
-     *
      * @param type The type to convert the value to
      * @param value value to be converted
      * @return Collection elements.
@@ -366,7 +348,6 @@ public class ArrayConverter extends AbstractConverter {
 
     /**
      * Provide a String representation of this array converter.
-     *
      * @return A String representation of this array converter
      */
     @Override
@@ -393,15 +374,13 @@ public class ArrayConverter extends AbstractConverter {
      * <li>Elements in the list may be delimited by single or double quotes.
      *  Within a quoted elements, the normal Java escape sequences are valid.</li>
      * </ul>
-     *
      * @param type The type to convert the value to
      * @param value String value to be parsed
      * @return List of parsed elements.
-     *
      * @throws ConversionException if the syntax of <code>svalue</code>
-     *  is not syntactically valid
+     * is not syntactically valid
      * @throws NullPointerException if <code>svalue</code>
-     *  is <code>null</code>
+     * is <code>null</code>
      */
     private List<?> parseElements(final Class<?> type, String value) {
         // Trim any matching '{' and '}' delimiters

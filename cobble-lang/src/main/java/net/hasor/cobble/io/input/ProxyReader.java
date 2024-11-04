@@ -31,9 +31,7 @@ import java.nio.CharBuffer;
  * It is an alternative base class to FilterReader
  * to increase reusability, because FilterReader changes the
  * methods being called, such as read(char[]) to read(char[], int, int).
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.ProxyReader
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: ProxyReader.java 1586350 2014-04-10 15:57:20Z ggregory $
  */
@@ -41,8 +39,7 @@ public abstract class ProxyReader extends FilterReader {
 
     /**
      * Constructs a new ProxyReader.
-     *
-     * @param proxy  the Reader to delegate to
+     * @param proxy the Reader to delegate to
      */
     public ProxyReader(final Reader proxy) {
         super(proxy);
@@ -220,10 +217,9 @@ public abstract class ProxyReader extends FilterReader {
      * Note this method is <em>not</em> called from {@link #skip(long)} or
      * {@link #reset()}. You need to explicitly override those methods if
      * you want to add pre-processing steps also to them.
-     *
-     * @since 2.0
      * @param n number of chars that the caller asked to be read
      * @throws IOException if the pre-processing fails
+     * @since 2.0
      */
     protected void beforeRead(final int n) throws IOException {
     }
@@ -240,10 +236,9 @@ public abstract class ProxyReader extends FilterReader {
      * Note this method is <em>not</em> called from {@link #skip(long)} or
      * {@link #reset()}. You need to explicitly override those methods if
      * you want to add post-processing steps also to them.
-     *
-     * @since 2.0
      * @param n number of chars read, or -1 if the end of stream was reached
      * @throws IOException if the post-processing fails
+     * @since 2.0
      */
     protected void afterRead(final int n) throws IOException {
     }

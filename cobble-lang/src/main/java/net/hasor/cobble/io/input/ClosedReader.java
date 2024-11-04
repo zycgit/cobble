@@ -24,7 +24,6 @@ import java.io.Reader;
  * Typically uses of this class include testing for corner cases in methods
  * that accept input streams and acting as a sentinel value instead of a
  * {@code null} reader.
- *
  * @author 赵永春 (zyc@hasor.net)
  */
 public class ClosedReader extends Reader {

@@ -40,8 +40,8 @@ import java.util.zip.ZipEntry;
 
 /**
  * 用于创建一个可以从 classpath 中获取资源的 ResourceLoader
- * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-10-10
  */
 public class ClassPathResourceLoader extends AbstractResourceLoader {
     private static final Logger         logger    = Logger.getLogger(ClassPathResourceLoader.class);
@@ -174,7 +174,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
         }
         return result;
     }
-    
+
     @Override
     public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
         List<T> result = new ArrayList<>();

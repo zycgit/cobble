@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version : 2014-1-3
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014-1-3
  */
 public class GenericsMethodAopBean {
     public <T, V, Z> String fooCall1(T v1, V v2, Z v3) {

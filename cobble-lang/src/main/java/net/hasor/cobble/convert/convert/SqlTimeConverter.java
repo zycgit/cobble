@@ -31,9 +31,7 @@ import java.util.TimeZone;
  * <p>
  * Can be configured to either return a <i>default value</i> or throw a
  * <code>ConversionException</code> if a conversion error occurs.
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.SqlTimeConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Craig R. McClanahan
  * @version $Revision: 690380 $ $Date: 2008-08-29 21:04:38 +0100 (Fri, 29 Aug 2008) $
@@ -49,7 +47,6 @@ public final class SqlTimeConverter extends DateTimeConverter {
 
     /**
      * Construct a <b>java.sql.Time</b> <i>Converter</i> that returns a default value if an error occurs.
-     *
      * @param defaultValue The default value to be returned if the value to be converted is missing or an error occurs converting the value.
      */
     public SqlTimeConverter(final Object defaultValue) {

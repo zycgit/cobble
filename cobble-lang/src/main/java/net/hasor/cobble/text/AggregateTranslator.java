@@ -23,7 +23,6 @@ import java.util.List;
 /**
  * Executes a sequence of translators one after the other. Execution ends whenever
  * the first translator consumes codepoints from the input.
- *
  * @since 1.0
  */
 public class AggregateTranslator extends CharSequenceTranslator {
@@ -34,7 +33,6 @@ public class AggregateTranslator extends CharSequenceTranslator {
 
     /**
      * Specify the translators to be used at creation time.
-     *
      * @param translators CharSequenceTranslator array to aggregate
      */
     public AggregateTranslator(final CharSequenceTranslator... translators) {

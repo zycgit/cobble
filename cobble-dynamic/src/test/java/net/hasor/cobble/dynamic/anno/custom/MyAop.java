@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * 自定义的Aop注解只让它在方法上生效。
- * @version : 2015年11月9日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2015年11月9日
  */
 @Aop(MyAopInterceptor.class)
 @Retention(RetentionPolicy.RUNTIME)

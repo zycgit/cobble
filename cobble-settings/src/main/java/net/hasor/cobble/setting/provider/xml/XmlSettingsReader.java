@@ -28,9 +28,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- *
- * @version : 2021-02-01
  * @author 赵永春 (zyc@byshell.org)
+ * @version : 2021-02-01
  */
 public class XmlSettingsReader implements SettingsReader {
     @Override

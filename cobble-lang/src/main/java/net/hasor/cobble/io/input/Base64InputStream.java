@@ -87,7 +87,6 @@ public class Base64InputStream extends InputStream {
      * <p/>
      * If no mark has been set, then the value of mark is the offset
      * passed to the constructor (or 0 if the offset was not supplied).
-     *
      * @since JDK1.1
      */
     protected int  mark = 0;
@@ -104,7 +103,6 @@ public class Base64InputStream extends InputStream {
 
     /**
      * Creates a <code>Base64InputStream</code>.
-     *
      * @param encodedString the Base64 encoded String
      */
     public Base64InputStream(final String encodedString) {
@@ -122,9 +120,8 @@ public class Base64InputStream extends InputStream {
      * <p/>
      * This <code>read</code> method
      * cannot block.
-     *
      * @return the next byte of data, or <code>-1</code> if the end of the
-     *         stream has been reached.
+     * stream has been reached.
      */
     @Override
     public int read() {
@@ -148,14 +145,12 @@ public class Base64InputStream extends InputStream {
      * and <code>k</code> is returned.
      * <p/>
      * This <code>read</code> method cannot block.
-     *
-     * @param b   the buffer into which the data is read.
+     * @param b the buffer into which the data is read.
      * @param off the start offset of the data.
      * @param len the maximum number of bytes read.
-     *
      * @return the total number of bytes read into the buffer, or
-     *         <code>-1</code> if there is no more data because the end of
-     *         the stream has been reached.
+     * <code>-1</code> if there is no more data because the end of
+     * the stream has been reached.
      */
     @Override
     public int read(final byte b[], final int off, int len) {
@@ -186,9 +181,7 @@ public class Base64InputStream extends InputStream {
      * of <code>n</code> and  <code>count-pos</code>.
      * The value <code>k</code> is added into <code>pos</code>
      * and <code>k</code> is returned.
-     *
      * @param n the number of bytes to be skipped.
-     *
      * @return the actual number of bytes skipped.
      */
     @Override
@@ -209,9 +202,8 @@ public class Base64InputStream extends InputStream {
      * The value returned is
      * <code>count&nbsp;- pos</code>,
      * which is the number of bytes remaining to be read from the input buffer.
-     *
      * @return the number of bytes that can be read from the input stream
-     *         without blocking.
+     * without blocking.
      */
     @Override
     public int available() {
@@ -222,7 +214,6 @@ public class Base64InputStream extends InputStream {
      * Tests if this <code>InputStream</code> supports mark/reset. The
      * <code>markSupported</code> method of <code>ByteArrayInputStream</code>
      * always returns <code>true</code>.
-     *
      * @since JDK1.1
      */
     @Override
@@ -242,7 +233,6 @@ public class Base64InputStream extends InputStream {
      * <p/>
      * <p> Note: The <code>readAheadLimit</code> for this class
      * has no meaning.
-     *
      * @since JDK1.1
      */
     @Override
@@ -272,7 +262,7 @@ public class Base64InputStream extends InputStream {
 
     /**
      * <p>Base64 decodes the source string.  NOTE:  This method doesn't
-     *  consider line breaks</p>
+     * consider line breaks</p>
      * @param source a Base64 encoded string
      * @return the bytes of the decode process
      */

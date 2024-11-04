@@ -28,14 +28,12 @@ import java.util.Iterator;
  * The ability is provided to break the scoping restrictions coded by the
  * programmer. This can allow fields to be changed that shouldn't be. This
  * facility should be used with care.
- *
  * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.reflect.FieldUtils
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Matt Benson
- * @since 2.5
  * @version $Id: FieldUtils.java 1057009 2011-01-09 19:48:06Z niallp $
+ * @since 2.5
  */
 public class FieldUtils {
     /**
@@ -51,9 +49,8 @@ public class FieldUtils {
     /**
      * Gets an accessible <code>Field</code> by name respecting scope.
      * Superclasses/interfaces will be considered.
-     *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -66,12 +63,11 @@ public class FieldUtils {
     /**
      * Gets an accessible <code>Field</code> by name breaking scope
      * if requested. Superclasses/interfaces will be considered.
-     *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -132,9 +128,8 @@ public class FieldUtils {
     /**
      * Gets an accessible <code>Field</code> by name respecting scope.
      * Only the specified class will be considered.
-     *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -145,11 +140,10 @@ public class FieldUtils {
     /**
      * Gets an accessible <code>Field</code> by name breaking scope
      * if requested. Only the specified class will be considered.
-     *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. False will only match public fields.
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. False will only match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -190,8 +184,8 @@ public class FieldUtils {
     /**
      * Read a static Field.
      * @param field to read
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method.
      * @return the field value
      * @throws IllegalArgumentException if the field is null or not static
      * @throws IllegalAccessException if the field is not made accessible
@@ -208,8 +202,8 @@ public class FieldUtils {
 
     /**
      * Read the named public static field. Superclasses will be considered.
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the field is not accessible
@@ -220,11 +214,11 @@ public class FieldUtils {
 
     /**
      * Read the named static field. Superclasses will be considered.
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the field is not made accessible
@@ -241,9 +235,8 @@ public class FieldUtils {
     /**
      * Gets a static Field value by name. The field must be public.
      * Only the specified class will be considered.
-     *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the field is not accessible
@@ -255,12 +248,11 @@ public class FieldUtils {
     /**
      * Gets a static Field value by name. Only the specified class will
      * be considered.
-     *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param cls the class to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the field is not made accessible
@@ -276,8 +268,8 @@ public class FieldUtils {
 
     /**
      * Read an accessible Field.
-     * @param field  the field to use
-     * @param target  the object to call on, may be null for static fields
+     * @param field the field to use
+     * @param target the object to call on, may be null for static fields
      * @return the field value
      * @throws IllegalArgumentException if the field is null
      * @throws IllegalAccessException if the field is not accessible
@@ -288,10 +280,10 @@ public class FieldUtils {
 
     /**
      * Read a Field.
-     * @param field  the field to use
-     * @param target  the object to call on, may be null for static fields
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method.
+     * @param field the field to use
+     * @param target the object to call on, may be null for static fields
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method.
      * @return the field value
      * @throws IllegalArgumentException if the field is null
      * @throws IllegalAccessException if the field is not made accessible
@@ -310,8 +302,8 @@ public class FieldUtils {
 
     /**
      * Read the named public field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the named field is not public
@@ -322,11 +314,11 @@ public class FieldUtils {
 
     /**
      * Read the named field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @return the field value
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the named field is not made accessible
@@ -346,8 +338,8 @@ public class FieldUtils {
 
     /**
      * Read the named public field. Only the class of the specified object will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class or field name is null
      * @throws IllegalAccessException if the named field is not public
@@ -359,12 +351,11 @@ public class FieldUtils {
     /**
      * <p<>Gets a Field value by name. Only the class of the specified
      * object will be considered.
-     *
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
      * @throws IllegalAccessException if the field is not made accessible
@@ -397,9 +388,9 @@ public class FieldUtils {
      * Write a static Field.
      * @param field to write
      * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @throws IllegalArgumentException if the field is null or not static
      * @throws IllegalAccessException if the field is not made accessible or is final
      */
@@ -430,9 +421,9 @@ public class FieldUtils {
      * @param cls Class on which the Field is to be found
      * @param fieldName to write
      * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @throws IllegalArgumentException if the field cannot be located or is not static
      * @throws IllegalAccessException if the field is not made accessible or is final
      */
@@ -462,9 +453,9 @@ public class FieldUtils {
      * @param cls Class on which the Field is to be found
      * @param fieldName to write
      * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @throws IllegalArgumentException if the field cannot be located or is not static
      * @throws IllegalAccessException if the field is not made accessible or is final
      */
@@ -480,7 +471,7 @@ public class FieldUtils {
     /**
      * Write an accessible field.
      * @param field to write
-     * @param target  the object to call on, may be null for static fields
+     * @param target the object to call on, may be null for static fields
      * @param value to set
      * @throws IllegalArgumentException if the field is null
      * @throws IllegalAccessException if the field is not accessible or is final
@@ -492,11 +483,11 @@ public class FieldUtils {
     /**
      * Write a field.
      * @param field to write
-     * @param target  the object to call on, may be null for static fields
+     * @param target the object to call on, may be null for static fields
      * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @throws IllegalArgumentException if the field is null
      * @throws IllegalAccessException if the field is not made accessible or is final
      */
@@ -514,8 +505,8 @@ public class FieldUtils {
 
     /**
      * Write a public field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @param value to set
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
      * @throws IllegalAccessException if the field is not accessible
@@ -526,12 +517,12 @@ public class FieldUtils {
 
     /**
      * Write a field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
      * @throws IllegalAccessException if the field is not made accessible
      */
@@ -550,8 +541,8 @@ public class FieldUtils {
 
     /**
      * Write a public field. Only the specified class will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @param value to set
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
      * @throws IllegalAccessException if the field is not made accessible
@@ -562,12 +553,12 @@ public class FieldUtils {
 
     /**
      * Write a public field. Only the specified class will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param target the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param forceAccess whether to break scope restrictions using the
+     * <code>setAccessible</code> method. <code>False</code> will only
+     * match public fields.
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
      * @throws IllegalAccessException if the field is not made accessible
      */

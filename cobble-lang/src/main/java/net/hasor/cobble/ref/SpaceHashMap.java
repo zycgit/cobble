@@ -21,8 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 可以将多个 Map 合并成一个 Map 对象进行操作，同时每个 Map 可以根据名字独立操作它。
- * @version : 2016-07-17
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2016-07-17
  */
 public class SpaceHashMap<K, T> {
     protected Map<String, Map<K, T>> spaceMap = new LinkedHashMap<>();

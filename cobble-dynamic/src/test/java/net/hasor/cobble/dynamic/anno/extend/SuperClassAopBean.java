@@ -16,8 +16,8 @@
 package net.hasor.cobble.dynamic.anno.extend;
 /**
  * 继承
- * @version : 2014-1-3
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014-1-3
  */
 public class SuperClassAopBean extends ClassAopBean {
 }

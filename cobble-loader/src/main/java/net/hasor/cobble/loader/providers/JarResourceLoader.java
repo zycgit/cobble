@@ -40,8 +40,8 @@ import java.util.zip.ZipEntry;
 
 /**
  * 可以处理 jar 包的 ResourceLoader，并且支持 jar in jar
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public class JarResourceLoader extends AbstractResourceLoader {
     private static final Logger        logger = Logger.getLogger(JarResourceLoader.class);

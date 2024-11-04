@@ -16,8 +16,8 @@
 package net.hasor.cobble.function;
 /**
  * Property 定义了属性的两个操作方法。
- * @version 2021-10-20
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2021-10-20
  */
 public interface Property {
     boolean isReadOnly();

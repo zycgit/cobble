@@ -26,7 +26,6 @@ import java.util.concurrent.TimeoutException;
  * Basic implementation of the {@link Future} interface. <tt>BasicFuture<tt>
  * can be put into a completed state by invoking any of the following methods:
  * {@link #cancel()}, {@link #failed(Throwable)}, or {@link #completed(Object)}.
- *
  * @param <T> the future result type of an asynchronous operation.
  * @since 4.2
  */

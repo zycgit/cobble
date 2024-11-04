@@ -16,9 +16,8 @@
  */
 package net.hasor.cobble;
 /**
- *
- * @version : 2014年9月20日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年9月20日
  */
 public class ByteUtils {
     /***/

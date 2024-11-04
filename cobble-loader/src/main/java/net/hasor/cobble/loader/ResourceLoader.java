@@ -23,8 +23,8 @@ import java.util.function.Predicate;
 
 /**
  * 资源加载器、资源扫描器
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public interface ResourceLoader {
     <T> List<T> scanResources(Scanner<T> scanner) throws IOException;

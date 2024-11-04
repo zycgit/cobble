@@ -21,9 +21,7 @@ import java.math.RoundingMode;
 
 /**
  * <p>Provides extra functionality for Java Number classes.</p>
- *
  * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.math.NumberUtils
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author <a href="mailto:rand_mcneely@yahoo.com">Rand McNeely</a>
@@ -39,7 +37,6 @@ public final class NumberUtils {
     /**
      * <p><code>NumberUtils</code> instances should NOT be constructed in standard programming.
      * Instead, the class should be used as <code>NumberUtils.stringToInt("6");</code>.</p>
-     *
      * <p>This constructor is public to permit tools that require a JavaBean instance
      * to operate.</p>
      */
@@ -51,10 +48,9 @@ public final class NumberUtils {
     /**
      * <p>Convert a <code>String</code> to an <code>int</code>, returning
      * <code>zero</code> if the conversion fails.</p>
-     *
-     * @param str  the string to convert
+     * @param str the string to convert
      * @return the int represented by the string, or <code>zero</code> if
-     *  conversion fails
+     * conversion fails
      */
     public static int stringToInt(String str) {
         return stringToInt(str, 0);
@@ -63,9 +59,8 @@ public final class NumberUtils {
     /**
      * <p>Convert a <code>String</code> to an <code>int</code>, returning a
      * default value if the conversion fails.</p>
-     *
-     * @param str  the string to convert
-     * @param defaultValue  the default value
+     * @param str the string to convert
+     * @param defaultValue the default value
      * @return the int represented by the string, or the default if conversion fails
      */
     public static int stringToInt(String str, int defaultValue) {
@@ -79,21 +74,17 @@ public final class NumberUtils {
 
     /**
      * <p>Turns a string value into a java.lang.Number.</p>
-     *
      * <p>First, the value is examined for a type qualifier on the end
-     * (<code>'f','F','d','D','l','L'</code>).  If it is found, it starts 
+     * (<code>'f','F','d','D','l','L'</code>).  If it is found, it starts
      * trying to create successively larger types from the type specified
      * until one is found that can hold the value.</p>
-     *
      * <p>If a type specifier is not found, it will check for a decimal point
      * and then try successively larger types from <code>Integer</code> to
      * <code>BigInteger</code> and from <code>Float</code> to
      * <code>BigDecimal</code>.</p>
-     *
      * <p>If the string starts with <code>0x</code> or <code>-0x</code>, it
      * will be interpreted as a hexadecimal integer.  Values with leading
      * <code>0</code>'s will not be interpreted as octal.</p>
-     *
      * @param val String containing a number
      * @return Number created from the string
      * @throws NumberFormatException if the value cannot be converted
@@ -242,9 +233,7 @@ public final class NumberUtils {
 
     /**
      * <p>Utility method for {@link #createNumber(String)}.</p>
-     *
      * <p>Returns <code>true</code> if s is <code>null</code>.</p>
-     *
      * @param s the String to check
      * @return if it is all zeros or <code>null</code>
      */
@@ -263,8 +252,7 @@ public final class NumberUtils {
 
     /**
      * <p>Convert a <code>String</code> to a <code>Float</code>.</p>
-     *
-     * @param val  a <code>String</code> to convert
+     * @param val a <code>String</code> to convert
      * @return converted <code>Float</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -274,8 +262,7 @@ public final class NumberUtils {
 
     /**
      * <p>Convert a <code>String</code> to a <code>Double</code>.</p>
-     *
-     * @param val  a <code>String</code> to convert
+     * @param val a <code>String</code> to convert
      * @return converted <code>Double</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -286,8 +273,7 @@ public final class NumberUtils {
     /**
      * <p>Convert a <code>String</code> to a <code>Integer</code>, handling
      * hex and octal notations.</p>
-     *
-     * @param val  a <code>String</code> to convert
+     * @param val a <code>String</code> to convert
      * @return converted <code>Integer</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -298,8 +284,7 @@ public final class NumberUtils {
 
     /**
      * <p>Convert a <code>String</code> to a <code>Long</code>.</p>
-     *
-     * @param val  a <code>String</code> to convert
+     * @param val a <code>String</code> to convert
      * @return converted <code>Long</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -309,8 +294,7 @@ public final class NumberUtils {
 
     /**
      * <p>Convert a <code>long</code> to a Unsigned <code>Long</code>.</p>
-     *
-     * @param value  a <code>String</code> to convert
+     * @param value a <code>String</code> to convert
      * @return converted <code>Long</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -325,8 +309,7 @@ public final class NumberUtils {
 
     /**
      * <p>Convert a <code>String</code> to a <code>BigInteger</code>.</p>
-     *
-     * @param val  a <code>String</code> to convert
+     * @param val a <code>String</code> to convert
      * @return converted <code>BigInteger</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -336,8 +319,7 @@ public final class NumberUtils {
 
     /**
      * <p>Convert a <code>String</code> to a <code>BigDecimal</code>.</p>
-     *
-     * @param val  a <code>String</code> to convert
+     * @param val a <code>String</code> to convert
      * @return converted <code>BigDecimal</code>
      * @throws NumberFormatException if the value cannot be converted
      */
@@ -349,10 +331,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the minimum of three <code>long</code> values.</p>
-     *
-     * @param a  value 1
-     * @param b  value 2
-     * @param c  value 3
+     * @param a value 1
+     * @param b value 2
+     * @param c value 3
      * @return the smallest of the values
      */
     public static long minimum(long a, long b, long c) {
@@ -367,10 +348,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the minimum of three <code>int</code> values.</p>
-     *
-     * @param a  value 1
-     * @param b  value 2
-     * @param c  value 3
+     * @param a value 1
+     * @param b value 2
+     * @param c value 3
      * @return the smallest of the values
      */
     public static int minimum(int a, int b, int c) {
@@ -385,10 +365,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the maximum of three <code>long</code> values.</p>
-     *
-     * @param a  value 1
-     * @param b  value 2
-     * @param c  value 3
+     * @param a value 1
+     * @param b value 2
+     * @param c value 3
      * @return the largest of the values
      */
     public static long maximum(long a, long b, long c) {
@@ -403,10 +382,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the maximum of three <code>int</code> values.</p>
-     *
-     * @param a  value 1
-     * @param b  value 2
-     * @param c  value 3
+     * @param a value 1
+     * @param b value 2
+     * @param c value 3
      * @return the largest of the values
      */
     public static int maximum(int a, int b, int c) {
@@ -422,9 +400,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the between num of min,max <code>long</code> values.</p>
-     * @param value  value 1
-     * @param min  value 2
-     * @param max  value 3
+     * @param value value 1
+     * @param min value 2
+     * @param max value 3
      */
     public static long between(long value, long min, long max) {
         if (min > max) {
@@ -441,9 +419,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the between num of min,max <code>int</code> values.</p>
-     * @param value  value 1
-     * @param min  value 2
-     * @param max  value 3
+     * @param value value 1
+     * @param min value 2
+     * @param max value 3
      */
     public static int between(int value, int min, int max) {
         if (min > max) {
@@ -460,9 +438,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the between num of min,max <code>float</code> values.</p>
-     * @param value  value 1
-     * @param min  value 2
-     * @param max  value 3
+     * @param value value 1
+     * @param min value 2
+     * @param max value 3
      */
     public static float between(float value, float min, float max) {
         if (min > max) {
@@ -479,9 +457,9 @@ public final class NumberUtils {
 
     /**
      * <p>Gets the between num of min,max <code>double</code> values.</p>
-     * @param value  value 1
-     * @param min  value 2
-     * @param max  value 3
+     * @param value value 1
+     * @param min value 2
+     * @param max value 3
      */
     public static double between(double value, double min, double max) {
         if (min > max) {
@@ -500,7 +478,6 @@ public final class NumberUtils {
 
     /**
      * <p>Compares two <code>doubles</code> for order.</p>
-     *
      * <p>This method is more comprehensive than the standard Java greater
      * than, less than and equals operators.</p>
      * <ul>
@@ -508,7 +485,6 @@ public final class NumberUtils {
      *  <li>It returns <code>+1</code> if the first value is greater than the second.
      *  <li>It returns <code>0</code> if the values are equal.
      * </ul>
-     *
      * <p>
      * The ordering is as follows, largest to smallest:
      * <ul>
@@ -523,14 +499,12 @@ public final class NumberUtils {
      *  <li>Negative infinity
      * </ul>
      * </p>
-     *
      * <p>Comparing <code>NaN</code> with <code>NaN</code> will
      * return <code>0</code>.</p>
-     *
-     * @param lhs  the first <code>double</code>
-     * @param rhs  the second <code>double</code>
+     * @param lhs the first <code>double</code>
+     * @param rhs the second <code>double</code>
      * @return <code>-1</code> if lhs is less, <code>+1</code> if greater,
-     *  <code>0</code> if equal to rhs
+     * <code>0</code> if equal to rhs
      */
     public static int compare(double lhs, double rhs) {
         if (lhs < rhs) {
@@ -563,7 +537,6 @@ public final class NumberUtils {
 
     /**
      * <p>Compares two floats for order.</p>
-     *
      * <p>This method is more comprehensive than the standard Java greater than,
      * less than and equals operators.</p>
      * <ul>
@@ -571,7 +544,6 @@ public final class NumberUtils {
      *  <li>It returns <code>+1</code> if the first value is greater than the second.
      *  <li>It returns <code>0</code> if the values are equal.
      * </ul>
-     *
      * <p> The ordering is as follows, largest to smallest:
      * <ul>
      * <li>NaN
@@ -584,14 +556,12 @@ public final class NumberUtils {
      * <li>Minimum float (-Float.MAX_VALUE)
      * <li>Negative infinity
      * </ul>
-     *
      * <p>Comparing <code>NaN</code> with <code>NaN</code> will return
      * <code>0</code>.</p>
-     *
-     * @param lhs  the first <code>float</code>
-     * @param rhs  the second <code>float</code>
+     * @param lhs the first <code>float</code>
+     * @param rhs the second <code>float</code>
      * @return <code>-1</code> if lhs is less, <code>+1</code> if greater,
-     *  <code>0</code> if equal to rhs
+     * <code>0</code> if equal to rhs
      */
     public static int compare(float lhs, float rhs) {
         if (lhs < rhs) {
@@ -626,11 +596,9 @@ public final class NumberUtils {
     /**
      * <p>Checks whether the <code>String</code> contains only
      * digit characters.</p>
-     *
      * <p><code>Null</code> and empty String will return
      * <code>false</code>.</p>
-     *
-     * @param str  the <code>String</code> to check
+     * @param str the <code>String</code> to check
      * @return <code>true</code> if str contains only unicode numeric
      */
     public static boolean isDigits(String str) {
@@ -647,15 +615,12 @@ public final class NumberUtils {
 
     /**
      * <p>Checks whether the String a valid Java number.</p>
-     *
      * <p>Valid numbers include hexadecimal marked with the <code>0x</code>
      * qualifier, scientific notation and numbers marked with a type
      * qualifier (e.g. 123L).</p>
-     *
      * <p><code>Null</code> and empty String will return
      * <code>false</code>.</p>
-     *
-     * @param str  the <code>String</code> to check
+     * @param str the <code>String</code> to check
      * @return <code>true</code> if the string is a correctly formatted number
      */
     public static boolean isNumber(String str) {
@@ -1555,8 +1520,7 @@ public final class NumberUtils {
      * 保留固定位数小数<br>
      * 采用四舍五入策略 {@link RoundingMode#HALF_UP}<br>
      * 例如保留2位小数：123.456789 => 123.46
-     *
-     * @param v     值
+     * @param v 值
      * @param scale 保留小数位数
      * @return 新值
      */
@@ -1568,8 +1532,7 @@ public final class NumberUtils {
      * 保留固定位数小数<br>
      * 采用四舍五入策略 {@link RoundingMode#HALF_UP}<br>
      * 例如保留2位小数：123.456789 => 123.46
-     *
-     * @param v     值
+     * @param v 值
      * @param scale 保留小数位数
      * @return 新值
      */
@@ -1581,9 +1544,8 @@ public final class NumberUtils {
      * 保留固定位数小数<br>
      * 采用四舍五入策略 {@link RoundingMode#HALF_UP}<br>
      * 例如保留2位小数：123.456789 => 123.46
-     *
      * @param numberStr 数字值的字符串表现形式
-     * @param scale     保留小数位数
+     * @param scale 保留小数位数
      * @return 新值
      */
     public static BigDecimal round(String numberStr, int scale) {
@@ -1594,9 +1556,8 @@ public final class NumberUtils {
      * 保留固定位数小数<br>
      * 采用四舍五入策略 {@link RoundingMode#HALF_UP}<br>
      * 例如保留2位小数：123.456789 => 123.46
-     *
      * @param number 数字值
-     * @param scale  保留小数位数
+     * @param scale 保留小数位数
      * @return 新值
      * @since 4.1.0
      */
@@ -1608,9 +1569,8 @@ public final class NumberUtils {
      * 保留固定位数小数<br>
      * 采用四舍五入策略 {@link RoundingMode#HALF_UP}<br>
      * 例如保留2位小数：123.456789 => 123.46
-     *
      * @param numberStr 数字值的字符串表现形式
-     * @param scale     保留小数位数
+     * @param scale 保留小数位数
      * @return 新值
      * @since 3.2.2
      */
@@ -1621,9 +1581,8 @@ public final class NumberUtils {
     /**
      * 保留固定位数小数<br>
      * 例如保留四位小数：123.456789 => 123.4567
-     *
-     * @param v            值
-     * @param scale        保留小数位数
+     * @param v 值
+     * @param scale 保留小数位数
      * @param roundingMode 保留小数的模式 {@link RoundingMode}
      * @return 新值
      */
@@ -1634,9 +1593,8 @@ public final class NumberUtils {
     /**
      * 保留固定位数小数<br>
      * 例如保留四位小数：123.456789 => 123.4567
-     *
-     * @param v            值
-     * @param scale        保留小数位数
+     * @param v 值
+     * @param scale 保留小数位数
      * @param roundingMode 保留小数的模式 {@link RoundingMode}
      * @return 新值
      * @since 3.2.2
@@ -1648,9 +1606,8 @@ public final class NumberUtils {
     /**
      * 保留固定位数小数<br>
      * 例如保留四位小数：123.456789 => 123.4567
-     *
-     * @param numberStr    数字值的字符串表现形式
-     * @param scale        保留小数位数，如果传入小于0，则默认0
+     * @param numberStr 数字值的字符串表现形式
+     * @param scale 保留小数位数，如果传入小于0，则默认0
      * @param roundingMode 保留小数的模式 {@link RoundingMode}，如果传入null则默认四舍五入
      * @return 新值
      */
@@ -1667,9 +1624,8 @@ public final class NumberUtils {
     /**
      * 保留固定位数小数<br>
      * 例如保留四位小数：123.456789 => 123.4567
-     *
-     * @param number       数字值
-     * @param scale        保留小数位数，如果传入小于0，则默认0
+     * @param number 数字值
+     * @param scale 保留小数位数，如果传入小于0，则默认0
      * @param roundingMode 保留小数的模式 {@link RoundingMode}，如果传入null则默认四舍五入
      * @return 新值
      */
@@ -1690,9 +1646,8 @@ public final class NumberUtils {
     /**
      * 保留固定位数小数<br>
      * 例如保留四位小数：123.456789 => 123.4567
-     *
-     * @param numberStr    数字值的字符串表现形式
-     * @param scale        保留小数位数
+     * @param numberStr 数字值的字符串表现形式
+     * @param scale 保留小数位数
      * @param roundingMode 保留小数的模式 {@link RoundingMode}
      * @return 新值
      * @since 3.2.2
@@ -1706,7 +1661,6 @@ public final class NumberUtils {
      * <p>
      * 四舍六入五成双是一种比较精确比较科学的计数保留法，是一种数字修约规则。
      * </p>
-     *
      * <pre>
      * 算法规则:
      * 四舍六入五考虑，
@@ -1715,9 +1669,8 @@ public final class NumberUtils {
      * 五前为偶应舍去，
      * 五前为奇要进一。
      * </pre>
-     *
      * @param number 需要科学计算的数据
-     * @param scale  保留的小数位
+     * @param scale 保留的小数位
      * @return 结果
      * @since 4.1.0
      */
@@ -1742,7 +1695,6 @@ public final class NumberUtils {
      * 五前为偶应舍去，
      * 五前为奇要进一。
      * </pre>
-     *
      * @param value 需要科学计算的数据
      * @param scale 保留的小数位
      * @return 结果
@@ -1755,7 +1707,7 @@ public final class NumberUtils {
     /**
      * 保留固定小数位数，舍去多余位数
      * @param number 需要科学计算的数据
-     * @param scale  保留的小数位
+     * @param scale 保留的小数位
      * @return 结果
      * @since 4.1.0
      */
@@ -1771,7 +1723,6 @@ public final class NumberUtils {
 
     /**
      * 保留固定小数位数，舍去多余位数
-     *
      * @param value 需要科学计算的数据
      * @param scale 保留的小数位
      * @return 结果

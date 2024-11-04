@@ -40,7 +40,6 @@ import java.util.TimeZone;
  *     <li><code>java.sql.Time</code></li>
  *     <li><code>java.sql.Timestamp</code></li>
  * </ul>
- *
  * <h3>String Conversions (to and from)</h3>
  * This class provides a number of ways in which date/time
  * conversions to/from Strings can be achieved:
@@ -70,13 +69,10 @@ import java.util.TimeZone;
  *        <code>toString()</code> method used to convert from
  *        Date to String.</li>
  * </ul>
- *
  * <p>
  * The <b>Time Zone</b> to use with the date format can be specified
  * using the <code>setTimeZone()</code> method.
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.DateTimeConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 640131 $ $Date: 2008-03-23 02:10:31 +0000 (Sun, 23 Mar 2008) $
  * @since 1.8.0
@@ -100,7 +96,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
     /**
      * Construct a Date/Time <i>Converter</i> that returns a default
      * value if an error occurs.
-     *
      * @param defaultValue The default value to be returned
      * if the value to be converted is missing or an error
      * occurs converting the value.
@@ -112,7 +107,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
 
     /**
      * Indicate whether conversion should use a format/pattern or not.
-     *
      * @param useLocaleFormat <code>true</code> if the format
      * for the locale should be used, otherwise <code>false</code>
      */
@@ -123,7 +117,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
     /**
      * Return the Time Zone to use when converting dates
      * (or <code>null</code> if none specified.
-     *
      * @return The Time Zone.
      */
     public TimeZone getTimeZone() {
@@ -132,7 +125,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
 
     /**
      * Set the Time Zone to use when converting dates.
-     *
      * @param timeZone The Time Zone.
      */
     public void setTimeZone(final TimeZone timeZone) {
@@ -142,7 +134,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
     /**
      * Return the Locale for the <i>Converter</i>
      * (or <code>null</code> if none specified).
-     *
      * @return The locale to use for conversion
      */
     public Locale getLocale() {
@@ -151,7 +142,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
 
     /**
      * Set the Locale for the <i>Converter</i>.
-     *
      * @param locale The Locale.
      */
     public void setLocale(final Locale locale) {
@@ -162,9 +152,8 @@ public abstract class DateTimeConverter extends AbstractConverter {
     /**
      * Set a date format pattern to use to convert
      * dates to/from a <code>java.lang.String</code>.
-     *
-     * @see SimpleDateFormat
      * @param pattern The format pattern.
+     * @see SimpleDateFormat
      */
     public void setPattern(final String pattern) {
         this.setPatterns(new String[] { pattern });
@@ -174,9 +163,8 @@ public abstract class DateTimeConverter extends AbstractConverter {
      * Return the date format patterns used to convert
      * dates to/from a <code>java.lang.String</code>
      * (or <code>null</code> if none specified).
-     *
-     * @see SimpleDateFormat
      * @return Array of format patterns.
+     * @see SimpleDateFormat
      */
     public String[] getPatterns() {
         return this.patterns;
@@ -185,9 +173,8 @@ public abstract class DateTimeConverter extends AbstractConverter {
     /**
      * Set the date format patterns to use to convert
      * dates to/from a <code>java.lang.String</code>.
-     *
-     * @see SimpleDateFormat
      * @param patterns Array of format patterns.
+     * @see SimpleDateFormat
      */
     public void setPatterns(final String[] patterns) {
         this.patterns = patterns;
@@ -221,7 +208,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
      * the first pattern will be used to format the date into a String.
      * Otherwise the default <code>DateFormat</code> for the default locale
      * (and <i>style</i> if configured) will be used.
-     *
      * @param value The input value to be converted
      * @return the converted String value.
      * @throws Throwable if an error occurs converting to a String
@@ -264,17 +250,14 @@ public abstract class DateTimeConverter extends AbstractConverter {
      *     <li><code>java.sql.Time</code></li>
      *     <li><code>java.sql.Timestamp</code></li>
      * </ul>
-     *
      * It also handles conversion from a <code>String</code> to
      * any of the above types.
      * <p>
-     *
      * For <code>String</code> conversion, if the converter has been configured
      * with one or more patterns (using <code>setPatterns()</code>), then
      * the conversion is attempted with each of the specified patterns.
      * Otherwise the default <code>DateFormat</code> for the default locale
      * (and <i>style</i> if configured) will be used.
-     *
      * @param targetType Data type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
@@ -344,7 +327,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
      * Convert a long value to the specified Date type for this
      * <i>Converter</i>.
      * <p>
-     *
      * This method handles conversion to the following types:
      * <ul>
      *     <li><code>java.util.Date</code></li>
@@ -353,7 +335,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
      *     <li><code>java.sql.Time</code></li>
      *     <li><code>java.sql.Timestamp</code></li>
      * </ul>
-     *
      * @param type The Date type to convert to
      * @param value The long value to convert.
      * @return The converted date value.
@@ -408,7 +389,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
      * <strong>N.B.</strong> No default String conversion
      * mechanism is provided for <code>java.util.Date</code>
      * and <code>java.util.Calendar</code> type.
-     *
      * @param type The Number type to convert to
      * @param value The String value to convert.
      * @return The converted Number value.
@@ -446,7 +426,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
      * Return a <code>DateFormat<code> for the Locale.
      * @param locale The Locale to create the Format with (may be null)
      * @param timeZone The Time Zone create the Format with (may be null)
-     *
      * @return A Date Format.
      */
     protected DateFormat getFormat(final Locale locale, final TimeZone timeZone) {
@@ -464,7 +443,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
 
     /**
      * Create a date format for the specified pattern.
-     *
      * @param pattern The date pattern
      * @return The DateFormat
      */
@@ -478,11 +456,9 @@ public abstract class DateTimeConverter extends AbstractConverter {
 
     /**
      * Parse a String date value using the set of patterns.
-     *
      * @param sourceType The type of the value being converted
      * @param targetType The type to convert the value to.
      * @param value The String date value.
-     *
      * @return The converted Date object.
      * @throws Exception if an error occurs parsing the date.
      */
@@ -508,12 +484,10 @@ public abstract class DateTimeConverter extends AbstractConverter {
     /**
      * Parse a String into a <code>Calendar</code> object
      * using the specified <code>DateFormat</code>.
-     *
      * @param sourceType The type of the value being converted
      * @param targetType The type to convert the value to
      * @param value The String date value.
      * @param format The DateFormat to parse the String value.
-     *
      * @return The converted Calendar object.
      * @throws ConversionException if the String cannot be converted.
      */
@@ -533,7 +507,6 @@ public abstract class DateTimeConverter extends AbstractConverter {
 
     /**
      * Provide a String representation of this date/time converter.
-     *
      * @return A String representation of this date/time converter
      */
     @Override

@@ -22,8 +22,8 @@ import java.util.NoSuchElementException;
 /**
  * 通常使用 Iterator 只能单方向一直迭代下去，使用 BufferedIterator 允许迭代器 mark 一个位置。
  * 并在允许的缓冲范围内随时回退到 mark 位置上。
- * @version : 2016-07-17
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2016-07-17
  */
 public class BufferedIterator<T> implements Iterator<T> {
     private final Iterator<T>   dataIterator;

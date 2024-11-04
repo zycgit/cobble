@@ -20,7 +20,6 @@ import java.util.Objects;
  * A {@link CharSequence} backed by a single shared {@link String}. Unlike a regular
  * {@link String}, {@link #subSequence(int, int)} operations will not copy the underlying
  * character array.
- *
  * @author Phillip Webb
  */
 final class StringSequence implements CharSequence {

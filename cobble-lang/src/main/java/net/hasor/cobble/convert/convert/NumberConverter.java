@@ -46,7 +46,6 @@ import java.util.Locale;
  *     <li><code>java.math.BigDecimal</code></li>
  *     <li><code>java.math.BigInteger</code></li>
  * </ul>
- *
  * <h3>String Conversions (to and from)</h3>
  * This class provides a number of ways in which number
  * conversions to/from Strings can be achieved:
@@ -74,15 +73,12 @@ import java.util.Locale;
  *        <code>toString()</code> method used to convert from
  *        Number to String.</li>
  * </ul>
- *
  * <p>
  * <strong>N.B.</strong>Patterns can only be specified used the <i>standard</i>
  * pattern characters and NOT in <i>localized</i> form (see <code>java.text.SimpleDateFormat</code>).
  * For example to cater for number styles used in Germany such as <code>0.000,00</code> the pattern
  * is specified in the normal form <code>0,000.00</code> and the locale set to <code>Locale.GERMANY</code>.
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.NumberConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Revision: 745081 $ $Date: 2009-02-17 14:05:20 +0000 (Tue, 17 Feb 2009) $
  * @since 1.8.0
@@ -100,7 +96,6 @@ public abstract class NumberConverter extends AbstractConverter {
     /**
      * Construct a <b>java.lang.Number</b> <i>Converter</i>
      * that throws a <code>ConversionException</code> if a error occurs.
-     *
      * @param allowDecimals Indicates whether decimals are allowed
      */
     public NumberConverter(final boolean allowDecimals) {
@@ -111,7 +106,6 @@ public abstract class NumberConverter extends AbstractConverter {
     /**
      * Construct a <code>java.lang.Number</code> <i>Converter</i> that returns
      * a default value if an error occurs.
-     *
      * @param allowDecimals Indicates whether decimals are allowed
      * @param defaultValue The default value to be returned
      */
@@ -124,7 +118,6 @@ public abstract class NumberConverter extends AbstractConverter {
 
     /**
      * Return whether decimals are allowed in the number.
-     *
      * @return Whether decimals are allowed in the number
      */
     public boolean isAllowDecimals() {
@@ -134,7 +127,6 @@ public abstract class NumberConverter extends AbstractConverter {
     /**
      * Set whether a format should be used to convert
      * the Number.
-     *
      * @param useLocaleFormat <code>true</code> if a number format
      * should be used.
      */
@@ -149,7 +141,6 @@ public abstract class NumberConverter extends AbstractConverter {
      * <p>
      * See <code>java.text.SimpleDateFormat</code> for details
      * of how to specify the pattern.
-     *
      * @return The format pattern.
      */
     public String getPattern() {
@@ -162,7 +153,6 @@ public abstract class NumberConverter extends AbstractConverter {
      * <p>
      * See <code>java.text.SimpleDateFormat</code> for details
      * of how to specify the pattern.
-     *
      * @param pattern The format pattern.
      */
     public void setPattern(final String pattern) {
@@ -173,7 +163,6 @@ public abstract class NumberConverter extends AbstractConverter {
     /**
      * Return the Locale for the <i>Converter</i>
      * (or <code>null</code> if none specified).
-     *
      * @return The locale to use for conversion
      */
     public Locale getLocale() {
@@ -182,7 +171,6 @@ public abstract class NumberConverter extends AbstractConverter {
 
     /**
      * Set the Locale for the <i>Converter</i>.
-     *
      * @param locale The locale to use for conversion
      */
     public void setLocale(final Locale locale) {
@@ -193,7 +181,6 @@ public abstract class NumberConverter extends AbstractConverter {
 
     /**
      * Convert an input Number object into a String.
-     *
      * @param value The input value to be converted
      * @return the converted String value.
      * @throws Throwable if an error occurs converting to a String
@@ -212,7 +199,6 @@ public abstract class NumberConverter extends AbstractConverter {
     /**
      * Convert the input object into a Number object of the
      * specified type.
-     *
      * @param targetType Data type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
@@ -272,7 +258,6 @@ public abstract class NumberConverter extends AbstractConverter {
      * @param sourceType The type being converted from
      * @param targetType The Number type to convert to
      * @param value The Number to convert.
-     *
      * @return The converted value.
      */
     private Number toNumber(final Class sourceType, final Class targetType, final Number value) {
@@ -367,7 +352,6 @@ public abstract class NumberConverter extends AbstractConverter {
      * @param sourceType The type being converted from
      * @param targetType The Number type to convert to
      * @param value The String value to convert.
-     *
      * @return The converted Number value.
      */
     private Number toNumber(final Class sourceType, final Class targetType, final String value) {
@@ -409,7 +393,6 @@ public abstract class NumberConverter extends AbstractConverter {
 
     /**
      * Provide a String representation of this number converter.
-     *
      * @return A String representation of this number converter
      */
     @Override
@@ -434,7 +417,6 @@ public abstract class NumberConverter extends AbstractConverter {
 
     /**
      * Return a NumberFormat to use for Conversion.
-     *
      * @return The NumberFormat.
      */
     private NumberFormat getFormat() {
@@ -465,7 +447,6 @@ public abstract class NumberConverter extends AbstractConverter {
      * @param targetType The type to convert the value to
      * @param value The String date value.
      * @param format The NumberFormat to parse the String value.
-     *
      * @return The converted Number object.
      * @throws ConversionException if the String cannot be converted.
      */

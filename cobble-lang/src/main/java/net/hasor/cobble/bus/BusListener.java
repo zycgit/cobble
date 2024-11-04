@@ -16,8 +16,8 @@
 package net.hasor.cobble.bus;
 /**
  * 应用程序事件监听器
- * @version : 2013-7-10
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-7-10
  */
 @FunctionalInterface
 public interface BusListener extends java.util.EventListener {

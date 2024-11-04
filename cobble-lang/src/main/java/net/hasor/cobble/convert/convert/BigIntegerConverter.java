@@ -28,9 +28,7 @@ import java.math.BigInteger;
  * <p>
  * Can be configured to either return a <i>default value</i> or throw a
  * <code>ConversionException</code> if a conversion error occurs.
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.converters.BigIntegerConverter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Craig R. McClanahan
  * @version $Revision: 690380 $ $Date: 2008-08-29 21:04:38 +0100 (Fri, 29 Aug 2008) $
@@ -48,7 +46,6 @@ public final class BigIntegerConverter extends NumberConverter {
     /**
      * Construct a <b>java.math.BigInteger</b> <i>Converter</i> that returns
      * a default value if an error occurs.
-     *
      * @param defaultValue The default value to be returned
      * if the value to be converted is missing or an error
      * occurs converting the value.
@@ -59,7 +56,6 @@ public final class BigIntegerConverter extends NumberConverter {
 
     /**
      * Return the default type this <code>Converter</code> handles.
-     *
      * @return The default type this <code>Converter</code> handles.
      * @since 1.8.0
      */

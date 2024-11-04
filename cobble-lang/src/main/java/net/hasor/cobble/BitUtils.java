@@ -16,9 +16,8 @@
  */
 package net.hasor.cobble;
 /**
- *
- * @version : 2013-4-12
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-12
  */
 public class BitUtils {
     /** 通过位运算决定check是否在data里 */

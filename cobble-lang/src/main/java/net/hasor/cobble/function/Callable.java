@@ -15,8 +15,8 @@
  */
 package net.hasor.cobble.function;
 /**
- * @version 2024-01-08
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2024-01-08
  */
 @FunctionalInterface
 public interface Callable {

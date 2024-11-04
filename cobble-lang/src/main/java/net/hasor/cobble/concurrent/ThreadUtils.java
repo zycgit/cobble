@@ -25,9 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
- * @version : 2015年3月28日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2015年3月28日
  */
 public class ThreadUtils {
 
@@ -140,13 +139,13 @@ public class ThreadUtils {
         return runnableRun(run, t);
     }
 
-    /** create ExecutorService use nThreads daemon Thread*/
+    /** create ExecutorService use nThreads daemon Thread */
     public static ExecutorService daemonFixedThreadPool(final ClassLoader loader, int nThreads) {
         ThreadFactory threadFactory = threadFactory(loader, "Thread-%s", true);
         return Executors.newFixedThreadPool(nThreads, threadFactory);
     }
 
-    /** create ExecutorService use nThreads front Thread*/
+    /** create ExecutorService use nThreads front Thread */
     public static ExecutorService frontFixedThreadPool(final ClassLoader loader, int nThreads) {
         ThreadFactory threadFactory = threadFactory(loader, "Thread-%s", false);
         return Executors.newFixedThreadPool(nThreads, threadFactory);

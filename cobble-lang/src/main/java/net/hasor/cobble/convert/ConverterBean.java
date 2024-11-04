@@ -54,7 +54,6 @@ import java.util.Collection;
  * <li>java.sql.Time (no default value)</li>
  * <li>java.sql.Timestamp (no default value)</li>
  * </ul>
- *
  * <p>For backwards compatibility, the standard Converters for primitive
  * types (and the corresponding wrapper classes) return a defined
  * default value when a conversion error occurs.  If you prefer to have a
@@ -68,7 +67,6 @@ import java.util.Collection;
  *   ConverterUtils.register(myConverter, Integer.TYPE);    // Native type
  *   ConverterUtils.register(myConverter, Integer.class);   // Wrapper class
  * </pre>
- *
  * <p>
  * Converters generally treat null input as if it were invalid
  * input, ie they return their default value if one was specified when the
@@ -78,7 +76,6 @@ import java.util.Collection;
  * null to the converter constructor (and of course registering that converter
  * only for the .class target).
  * </p>
- *
  * <p>
  * When a converter is listed above as having no default value, then that
  * converter will throw an exception when passed null or an invalid value
@@ -86,16 +83,13 @@ import java.util.Collection;
  * converters have no default (and are therefore somewhat inconsistent
  * with the other numerical converters which all have zero as their default).
  * </p>
- *
  * <p>
  * Converters that generate <i>arrays</i> of each of the primitive types are
  * also automatically configured (including String[]). When passed null
  * or invalid input, these return an empty array (not null). See class
  * AbstractArrayConverter for the supported input formats for these converters.
  * </p>
- *
  * 2017-09-13 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.ConvertUtilsBean
- *
  * @author Craig R. McClanahan
  * @author Ralph Schaer
  * @author Chris Audley
@@ -148,7 +142,6 @@ public class ConverterBean {
      * <code>java.lang.String</code> class will be used, which allows
      * applications to customize Object->String conversions (the default
      * implementation simply uses toString()).
-     *
      * @param value Value to be converted (may be null)
      * @return The converted String value
      */
@@ -175,12 +168,10 @@ public class ConverterBean {
     /**
      * Convert the specified value to an object of the specified class (if
      * possible).  Otherwise, return a String representation of the value.
-     *
      * @param value Value to be converted (may be null)
      * @param clazz Java class to be converted to
      * @return The converted value
-     *
-     * @exception ConversionException if thrown by an underlying Converter
+     * @throws ConversionException if thrown by an underlying Converter
      */
     public Object convert(final String value, final Class<?> clazz) {
         Converter converter = this.lookup(clazz);
@@ -196,12 +187,10 @@ public class ConverterBean {
      * an array class, this class will be the type of the returned value.
      * Otherwise, an array will be constructed whose component type is the
      * specified class.
-     *
      * @param values Array of values to be converted
      * @param clazz Java array or element class to be converted to
      * @return The converted value
-     *
-     * @exception ConversionException if thrown by an underlying Converter
+     * @throws ConversionException if thrown by an underlying Converter
      */
     public Object convert(final String[] values, final Class<?> clazz) {
         Class<?> type = clazz;
@@ -222,12 +211,10 @@ public class ConverterBean {
     /**
      * <p>Convert the value to an object of the specified class (if
      * possible).</p>
-     *
      * @param value Value to be converted (may be null)
      * @param targetType Class of the value to be converted to
      * @return The converted value
-     *
-     * @exception ConversionException if thrown by an underlying Converter
+     * @throws ConversionException if thrown by an underlying Converter
      */
     public <T> T convert(final T value, final Class<? extends T> targetType) {
         Class<?> sourceType = value == null ? null : value.getClass();
@@ -266,7 +253,6 @@ public class ConverterBean {
 
     /**
      * Register the provided converters with the specified defaults.
-     *
      * @param throwException <code>true</code> if the converters should
      * throw an exception when a conversion error occurs, otherwise <code>
      * <code>false</code> if a default value should be used.
@@ -394,7 +380,6 @@ public class ConverterBean {
 
     /**
      * Register array converters.
-     *
      * @param throwException <code>true</code> if the converters should
      * throw an exception when a conversion error occurs, otherwise <code>
      * <code>false</code> if a default value should be used.
@@ -439,7 +424,6 @@ public class ConverterBean {
     /**
      * Register a new ArrayConverter with the specified element delegate converter
      * that returns a default array of the specified size in the event of conversion errors.
-     *
      * @param componentType The component type of the array
      * @param componentConverter The converter to delegate to for the array elements
      * @param throwException Whether a conversion exception should be thrown or a default
@@ -465,7 +449,6 @@ public class ConverterBean {
     /**
      * Remove any registered {@link Converter} for the specified destination
      * <code>Class</code>.
-     *
      * @param clazz Class for which to remove a registered Converter
      */
     public void deregister(final Class<?> clazz) {
@@ -476,7 +459,6 @@ public class ConverterBean {
      * Look up and return any registered {@link Converter} for the specified
      * destination class; if there is no registered Converter, return
      * <code>null</code>.
-     *
      * @param clazz Class for which to return a registered Converter
      * @return The registered {@link Converter} or <code>null</code> if not found
      */
@@ -497,7 +479,6 @@ public class ConverterBean {
      * Look up and return any registered {@link Converter} for the specified
      * source and destination class; if there is no registered Converter,
      * return <code>null</code>.
-     *
      * @param sourceType Class of the value being converted
      * @param targetType Class of the value to be converted to
      * @return The registered {@link Converter} or <code>null</code> if not found
@@ -537,10 +518,9 @@ public class ConverterBean {
     /**
      * Register a custom {@link Converter} for the specified destination
      * <code>Class</code>, replacing any previously registered Converter.
-     *
      * @param converter Converter to be registered
      * @param clazz Destination class for conversions performed by this
-     *  Converter
+     * Converter
      */
     public void register(final Converter converter, final Class<?> clazz) {
         this.converters.put(clazz, converter);

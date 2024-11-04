@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 
 /**
  * 多例
- * @version : 2015年6月28日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2015年6月28日
  */
 public class PrototypeScope implements Scope {
     public final static PrototypeScope PROTOTYPE = new PrototypeScope();

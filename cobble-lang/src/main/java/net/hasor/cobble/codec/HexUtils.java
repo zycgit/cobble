@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.io.StringReader;
 
 /**
- *
- * @version : 2012-6-21
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2012-6-21
  */
 public class HexUtils {
     /** 字节数组 转换为 十六进制字符串 */

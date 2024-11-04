@@ -32,9 +32,7 @@ import java.io.InputStream;
  * <p>
  * See the protected methods for ways in which a subclass can easily decorate
  * a stream with custom pre-, post- or error processing functionality.
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.ProxyInputStream
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: ProxyInputStream.java 1603493 2014-06-18 15:46:07Z ggregory $
  */
@@ -42,8 +40,7 @@ public abstract class ProxyInputStream extends FilterInputStream {
 
     /**
      * Constructs a new ProxyInputStream.
-     *
-     * @param proxy  the InputStream to delegate to
+     * @param proxy the InputStream to delegate to
      */
     public ProxyInputStream(final InputStream proxy) {
         super(proxy);
@@ -196,10 +193,9 @@ public abstract class ProxyInputStream extends FilterInputStream {
      * Note this method is <em>not</em> called from {@link #skip(long)} or
      * {@link #reset()}. You need to explicitly override those methods if
      * you want to add pre-processing steps also to them.
-     *
-     * @since 2.0
      * @param n number of bytes that the caller asked to be read
      * @throws IOException if the pre-processing fails
+     * @since 2.0
      */
     protected void beforeRead(final int n) throws IOException {
         // no-op
@@ -217,10 +213,9 @@ public abstract class ProxyInputStream extends FilterInputStream {
      * Note this method is <em>not</em> called from {@link #skip(long)} or
      * {@link #reset()}. You need to explicitly override those methods if
      * you want to add post-processing steps also to them.
-     *
-     * @since 2.0
      * @param n number of bytes read, or -1 if the end of stream was reached
      * @throws IOException if the post-processing fails
+     * @since 2.0
      */
     protected void afterRead(final int n) throws IOException {
         // no-op

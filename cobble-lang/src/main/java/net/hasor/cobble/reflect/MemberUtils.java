@@ -28,15 +28,13 @@ import java.lang.reflect.Modifier;
  * Contains common code for working with Methods/Constructors, extracted and
  * refactored from <code>MethodUtils</code> when it was imported from Commons
  * BeanUtils.
- *
  * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.reflect.MemberUtils
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Steve Cohen
  * @author Matt Benson
- * @since 2.5
  * @version $Id: MemberUtils.java 1057013 2011-01-09 20:04:16Z niallp $
+ * @since 2.5
  */
 abstract class MemberUtils {
     // TODO extract an interface to implement compareParameterSets(...)?
@@ -113,7 +111,6 @@ abstract class MemberUtils {
 
     /**
      * XXX Default access superclass workaround
-     *
      * When a public class has a default access superclass with public members,
      * these members are accessible. Calling them from compiled code works fine.
      * Unfortunately, on some JVMs, using reflection to invoke these members
@@ -175,7 +172,6 @@ abstract class MemberUtils {
      * matching a third set of runtime parameter types, such that a list ordered
      * by the results of the comparison would return the best match first
      * (least).
-     *
      * @param left the "left" parameter set
      * @param right the "right" parameter set
      * @param actual the runtime parameter types to match against

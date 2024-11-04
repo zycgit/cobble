@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 /**
  * Simple wrapper around a byte array that represents an ASCII. Used for performance
  * reasons to save constructing Strings for ZIP data.
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

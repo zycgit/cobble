@@ -16,7 +16,6 @@
 package net.hasor.cobble.loader.jar;
 /**
  * Interface that can be used to filter and optionally rename jar entries.
- *
  * @author Phillip Webb
  */
 interface JarEntryFilter {

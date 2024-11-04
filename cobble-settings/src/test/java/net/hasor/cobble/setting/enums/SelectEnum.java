@@ -15,9 +15,8 @@
  */
 package net.hasor.cobble.setting.enums;
 /**
- *
- * @version : 2013-8-11
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-8-11
  */
 public enum SelectEnum {
     One,

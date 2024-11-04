@@ -26,9 +26,8 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
- *
- * @version : 2011-6-3
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2011-6-3
  */
 public class BeanUtils {
     private static final Annotation[] ANNOTATION_EMPTY = new Annotation[0];

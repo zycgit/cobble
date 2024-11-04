@@ -18,8 +18,8 @@ import java.io.OutputStream;
 
 /**
  * 黑洞 OutputStream
- * @version 2021-03-02
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2021-03-02
  */
 public class BlackHoleOutputStream extends OutputStream {
     @Override

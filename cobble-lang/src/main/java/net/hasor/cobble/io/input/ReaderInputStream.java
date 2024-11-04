@@ -69,11 +69,8 @@ import java.nio.charset.CodingErrorAction;
  * will always return 0. Also, this class doesn't support {@link InputStream#mark(int)}.
  * <p>
  * Instances of {@link ReaderInputStream} are not thread safe.
- *
  * ref org.apache.commons.io.output.WriterOutputStream
- *
  * reduction based on Apache Commons IO, org.apache.commons.io.input.ReaderInputStream
- *
  * @author 赵永春 (zyc@hasor.net)
  * @since 2.0
  */
@@ -101,7 +98,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Construct a new {@link ReaderInputStream}.
-     *
      * @param reader the target {@link Reader}
      * @param encoder the charset encoder
      * @since 2.1
@@ -112,7 +108,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Construct a new {@link ReaderInputStream}.
-     *
      * @param reader the target {@link Reader}
      * @param encoder the charset encoder
      * @param bufferSize the size of the input buffer in number of characters
@@ -129,7 +124,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Construct a new {@link ReaderInputStream}.
-     *
      * @param reader the target {@link Reader}
      * @param charset the charset encoding
      * @param bufferSize the size of the input buffer in number of characters
@@ -140,7 +134,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Construct a new {@link ReaderInputStream} with a default input buffer size of 1024 characters.
-     *
      * @param reader the target {@link Reader}
      * @param charset the charset encoding
      */
@@ -150,7 +143,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Construct a new {@link ReaderInputStream}.
-     *
      * @param reader the target {@link Reader}
      * @param charsetName the name of the charset encoding
      * @param bufferSize the size of the input buffer in number of characters
@@ -161,7 +153,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Construct a new {@link ReaderInputStream} with a default input buffer size of 1024 characters.
-     *
      * @param reader the target {@link Reader}
      * @param charsetName the name of the charset encoding
      */
@@ -172,7 +163,6 @@ public class ReaderInputStream extends InputStream {
     /**
      * Construct a new {@link ReaderInputStream} that uses the default character encoding
      * with a default input buffer size of 1024 characters.
-     *
      * @param reader the target {@link Reader}
      * @deprecated 2.5 use {@link #ReaderInputStream(Reader, Charset)} instead
      */
@@ -183,7 +173,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Fills the internal char buffer from the reader.
-     *
      * @throws IOException If an I/O error occurs
      */
     private void fillBuffer() throws IOException {
@@ -208,7 +197,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Read the specified number of bytes into an array.
-     *
      * @param b the byte array to read into
      * @param off the offset to start reading bytes into
      * @param len the number of bytes to read
@@ -246,7 +234,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Read the specified number of bytes into an array.
-     *
      * @param b the byte array to read into
      * @return the number of bytes read or <code>-1</code> if the end of the stream has been reached
      * @throws IOException if an I/O error occurs
@@ -258,7 +245,6 @@ public class ReaderInputStream extends InputStream {
 
     /**
      * Read a single byte.
-     *
      * @return either the byte read or <code>-1</code> if the end of the stream has been reached
      * @throws IOException if an I/O error occurs
      */

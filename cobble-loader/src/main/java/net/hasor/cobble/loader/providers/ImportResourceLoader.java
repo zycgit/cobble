@@ -31,8 +31,8 @@ import java.util.function.Predicate;
  * 允许将 ResourceLoader 的中的一部分资源设置为 '可见'，并将不同的 ResourceLoader 之间 '可见' 部分汇聚为一个新的 ResourceLoader。
  * --
  * -- ExportResourceLoader 强调的是对外部分可见、ImportResourceLoader 强调的是按需汇聚。
- * @version : 2021-10-10
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-10-10
  */
 public class ImportResourceLoader extends AbstractResourceLoader implements ClassLoaderStrategy {
     private final Map<String, List<LoaderWrap>> packageLoaders;

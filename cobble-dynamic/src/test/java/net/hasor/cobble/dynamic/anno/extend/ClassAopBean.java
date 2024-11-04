@@ -19,8 +19,8 @@ import net.hasor.cobble.dynamic.anno.custom.MyAopInterceptor;
 
 /**
  * 类级别
- * @version : 2014-1-3
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014-1-3
  */
 @Aop(MyAopInterceptor.class)
 public class ClassAopBean {

@@ -26,9 +26,7 @@ import java.io.Writer;
  * (i.e. for use in a single thread) implementation for better performance.
  * For safe usage with multiple {@link Thread}s then
  * <code>java.io.StringWriter</code> should be used.
- *
  * reduction based on Apache Commons IO, org.apache.commons.io.output.StringBuilderWriter
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: StringBuilderWriter.java 1304052 2012-03-22 20:55:29Z ggregory $
  * @since 2.0
@@ -46,7 +44,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Construct a new {@link StringBuilder} instance with the specified capacity.
-     *
      * @param capacity The initial capacity of the underlying {@link StringBuilder}
      */
     public StringBuilderWriter(final int capacity) {
@@ -55,7 +52,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Construct a new instance with the specified {@link StringBuilder}.
-     *
      * @param builder The String builder
      */
     public StringBuilderWriter(final StringBuilder builder) {
@@ -64,7 +60,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Append a single character to this Writer.
-     *
      * @param value The character to append
      * @return This writer instance
      */
@@ -76,7 +71,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Append a character sequence to this Writer.
-     *
      * @param value The character to append
      * @return This writer instance
      */
@@ -88,7 +82,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Append a portion of a character sequence to the {@link StringBuilder}.
-     *
      * @param value The character to append
      * @param start The index of the first character
      * @param end The index of the last character + 1
@@ -101,14 +94,14 @@ public class StringBuilderWriter extends Writer implements Serializable {
     }
 
     /**
-     * Closing this writer has no effect. 
+     * Closing this writer has no effect.
      */
     @Override
     public void close() {
     }
 
     /**
-     * Flushing this writer has no effect. 
+     * Flushing this writer has no effect.
      */
     @Override
     public void flush() {
@@ -116,7 +109,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Write a String to the {@link StringBuilder}.
-     *
      * @param value The value to write
      */
     @Override
@@ -128,7 +120,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Write a portion of a character array to the {@link StringBuilder}.
-     *
      * @param value The value to write
      * @param offset The index of the first character
      * @param length The number of characters to write
@@ -142,7 +133,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Return the underlying builder.
-     *
      * @return The underlying builder
      */
     public StringBuilder getBuilder() {
@@ -151,7 +141,6 @@ public class StringBuilderWriter extends Writer implements Serializable {
 
     /**
      * Returns {@link StringBuilder#toString()}.
-     *
      * @return The contents of the String builder.
      */
     @Override

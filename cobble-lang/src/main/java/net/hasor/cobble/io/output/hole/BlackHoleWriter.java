@@ -18,8 +18,8 @@ import java.io.Writer;
 
 /**
  * 黑洞 Writer
- * @version 2021-03-02
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2021-03-02
  */
 public class BlackHoleWriter extends Writer {
     @Override

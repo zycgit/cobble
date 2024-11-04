@@ -3,8 +3,8 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * MD5算法提供
- * @version : 2011-11-7
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2011-11-7
  */
 public abstract class MD5 {
     public static String encodeMD5(final byte[] source) throws NoSuchAlgorithmException {

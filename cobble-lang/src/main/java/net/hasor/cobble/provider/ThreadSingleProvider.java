@@ -19,8 +19,8 @@ import java.util.function.Supplier;
 
 /**
  * 线程单例对象的{@link Supplier}封装形式。
- * @version : 2014年7月8日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年7月8日
  */
 public class ThreadSingleProvider<T> implements Provider<T> {
     private final ThreadLocal<T> instance;

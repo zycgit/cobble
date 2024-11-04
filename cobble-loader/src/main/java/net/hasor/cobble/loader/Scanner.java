@@ -18,8 +18,8 @@ import java.io.IOException;
 
 /**
  * 扫描classpath时找到资源的回调接口方法
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public interface Scanner<T> {
     /**

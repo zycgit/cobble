@@ -59,7 +59,6 @@ import java.util.Collection;
  * C:a\b\c.txt         --> "C:"        --> drive relative
  * C:\a\b\c.txt        --> "C:\"       --> absolute
  * \\server\a\b\c.txt  --> "\\server\" --> UNC
- *
  * Unix:
  * a/b/c.txt           --> ""          --> relative
  * /a/b/c.txt          --> "/"         --> absolute
@@ -72,9 +71,7 @@ import java.util.Collection;
  * currently running on.
  * <p>
  * Origin of code: Excalibur, Alexandria, Tomcat, Commons-Utils.
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.FilenameUtils
- *
  * @author 赵永春 (zyc@hasor.net)
  * @version $Id: FilenameUtils.java 1307462 2012-03-30 15:13:11Z ggregory $
  * @since 1.1
@@ -125,7 +122,6 @@ public class FilenameUtils {
 
     /**
      * Determines if Windows file system is in use.
-     *
      * @return true if the system is Windows
      */
     static boolean isSystemWindows() {
@@ -135,8 +131,7 @@ public class FilenameUtils {
 
     /**
      * Checks if the character is a separator.
-     *
-     * @param ch  the character to check
+     * @param ch the character to check
      * @return true if it is a separator character
      */
     private static boolean isSeparator(char ch) {
@@ -180,8 +175,7 @@ public class FilenameUtils {
      * ~/../bar             -->   null
      * </pre>
      * (Note the file separator returned will be correct for Windows/Unix)
-     *
-     * @param filename  the filename to normalize, null returns null
+     * @param filename the filename to normalize, null returns null
      * @return the normalized filename, or null if invalid
      */
     public static String normalize(String filename) {
@@ -225,8 +219,7 @@ public class FilenameUtils {
      * </pre>
      * The output will be the same on both Unix and Windows including
      * the separator character.
-     *
-     * @param filename  the filename to normalize, null returns null
+     * @param filename the filename to normalize, null returns null
      * @param unixSeparator {@code true} if a unix separator should
      * be used or {@code false} if a windows separator should be used.
      * @return the normalized filename, or null if invalid
@@ -275,8 +268,7 @@ public class FilenameUtils {
      * ~/../bar             -->   null
      * </pre>
      * (Note the file separator returned will be correct for Windows/Unix)
-     *
-     * @param filename  the filename to normalize, null returns null
+     * @param filename the filename to normalize, null returns null
      * @return the normalized filename, or null if invalid
      */
     public static String normalizeNoEndSeparator(String filename) {
@@ -319,8 +311,7 @@ public class FilenameUtils {
      * ~/foo/../bar/        -->   ~/bar
      * ~/../bar             -->   null
      * </pre>
-     *
-     * @param filename  the filename to normalize, null returns null
+     * @param filename the filename to normalize, null returns null
      * @param unixSeparator {@code true} if a unix separator should
      * be used or {@code false} if a windows separtor should be used.
      * @return the normalized filename, or null if invalid
@@ -333,10 +324,9 @@ public class FilenameUtils {
 
     /**
      * Internal method to perform the normalization.
-     *
-     * @param filename  the filename
+     * @param filename the filename
      * @param separator The separator character to use
-     * @param keepSeparator  true to keep the final separator
+     * @param keepSeparator true to keep the final separator
      * @return the normalized filename
      */
     private static String doNormalize(String filename, char separator, boolean keepSeparator) {
@@ -459,9 +449,8 @@ public class FilenameUtils {
      * (!) Note that the first parameter must be a path. If it ends with a name, then
      * the name will be built into the concatenated path. If this might be a problem,
      * use {@link #getFullPath(String)} on the base path argument.
-     *
-     * @param basePath  the base path to attach to, always treated as a path
-     * @param fullFilenameToAdd  the filename (or path) to attach to the base
+     * @param basePath the base path to attach to, always treated as a path
+     * @param fullFilenameToAdd the filename (or path) to attach to the base
      * @return the concatenated path, or null if invalid
      */
     public static String concat(String basePath, String fullFilenameToAdd) {
@@ -490,8 +479,7 @@ public class FilenameUtils {
 
     /**
      * Converts all separators to the Unix separator of forward slash.
-     *
-     * @param path  the path to be changed, null ignored
+     * @param path the path to be changed, null ignored
      * @return the updated path
      */
     public static String separatorsToUnix(String path) {
@@ -503,8 +491,7 @@ public class FilenameUtils {
 
     /**
      * Converts all separators to the Windows separator of backslash.
-     *
-     * @param path  the path to be changed, null ignored
+     * @param path the path to be changed, null ignored
      * @return the updated path
      */
     public static String separatorsToWindows(String path) {
@@ -516,8 +503,7 @@ public class FilenameUtils {
 
     /**
      * Converts all separators to the system separator.
-     *
-     * @param path  the path to be changed, null ignored
+     * @param path the path to be changed, null ignored
      * @return the updated path
      */
     public static String separatorsToSystem(String path) {
@@ -547,7 +533,6 @@ public class FilenameUtils {
      * C:a\b\c.txt         --> "C:"        --> drive relative
      * C:\a\b\c.txt        --> "C:\"       --> absolute
      * \\server\a\b\c.txt  --> "\\server\" --> UNC
-     *
      * Unix:
      * a/b/c.txt           --> ""          --> relative
      * /a/b/c.txt          --> "/"         --> absolute
@@ -559,8 +544,7 @@ public class FilenameUtils {
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
      * ie. both Unix and Windows prefixes are matched regardless.
-     *
-     * @param filename  the filename to find the prefix in, null returns -1
+     * @param filename the filename to find the prefix in, null returns -1
      * @return the length of the prefix, -1 if invalid or null
      */
     public static int getPrefixLength(String filename) {
@@ -623,8 +607,7 @@ public class FilenameUtils {
      * The position of the last forward or backslash is returned.
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to find the last path separator in, null returns -1
+     * @param filename the filename to find the last path separator in, null returns -1
      * @return the index of the last separator character, or -1 if there
      * is no such character
      */
@@ -645,8 +628,7 @@ public class FilenameUtils {
      * handle a file in either Unix or Windows format.
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to find the last path separator in, null returns -1
+     * @param filename the filename to find the last path separator in, null returns -1
      * @return the index of the last separator character, or -1 if there
      * is no such character
      */
@@ -673,7 +655,6 @@ public class FilenameUtils {
      * C:a\b\c.txt         --> "C:"        --> drive relative
      * C:\a\b\c.txt        --> "C:\"       --> absolute
      * \\server\a\b\c.txt  --> "\\server\" --> UNC
-     *
      * Unix:
      * a/b/c.txt           --> ""          --> relative
      * /a/b/c.txt          --> "/"         --> absolute
@@ -685,8 +666,7 @@ public class FilenameUtils {
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
      * ie. both Unix and Windows prefixes are matched regardless.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the prefix of the file, null if invalid
      */
     public static String getPrefix(String filename) {
@@ -721,8 +701,7 @@ public class FilenameUtils {
      * <p>
      * This method drops the prefix from the result.
      * See {@link #getFullPath(String)} for the method that retains the prefix.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the path of the file, an empty string if none exists, null if invalid
      */
     public static String getPath(String filename) {
@@ -748,8 +727,7 @@ public class FilenameUtils {
      * <p>
      * This method drops the prefix from the result.
      * See {@link #getFullPathNoEndSeparator(String)} for the method that retains the prefix.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the path of the file, an empty string if none exists, null if invalid
      */
     public static String getPathNoEndSeparator(String filename) {
@@ -758,9 +736,8 @@ public class FilenameUtils {
 
     /**
      * Does the work of getting the path.
-     *
-     * @param filename  the filename
-     * @param separatorAdd  0 to omit the end separator, 1 to return it
+     * @param filename the filename
+     * @param separatorAdd 0 to omit the end separator, 1 to return it
      * @return the path
      */
     private static String doGetPath(String filename, int separatorAdd) {
@@ -800,8 +777,7 @@ public class FilenameUtils {
      * </pre>
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the path of the file, an empty string if none exists, null if invalid
      */
     public static String getFullPath(String filename) {
@@ -830,8 +806,7 @@ public class FilenameUtils {
      * </pre>
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the path of the file, an empty string if none exists, null if invalid
      */
     public static String getFullPathNoEndSeparator(String filename) {
@@ -840,9 +815,8 @@ public class FilenameUtils {
 
     /**
      * Does the work of getting the path.
-     *
-     * @param filename  the filename
-     * @param includeSeparator  true to include the end separator
+     * @param filename the filename
+     * @param includeSeparator true to include the end separator
      * @return the path
      */
     private static String doGetFullPath(String filename, boolean includeSeparator) {
@@ -884,8 +858,7 @@ public class FilenameUtils {
      * </pre>
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the name of the file without the path, or an empty string if none exists
      */
     public static String getName(String filename) {
@@ -909,8 +882,7 @@ public class FilenameUtils {
      * </pre>
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the name of the file without the path, or an empty string if none exists
      */
     public static String getBaseName(String filename) {
@@ -930,7 +902,6 @@ public class FilenameUtils {
      * </pre>
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
      * @param filename the filename to retrieve the extension of.
      * @return the extension of the file or an empty string if none exists or {@code null}
      * if the filename is {@code null}.
@@ -961,8 +932,7 @@ public class FilenameUtils {
      * </pre>
      * <p>
      * The output will be the same irrespective of the machine that the code is running on.
-     *
-     * @param filename  the filename to query, null returns null
+     * @param filename the filename to query, null returns null
      * @return the filename minus the extension
      */
     public static String removeExtension(String filename) {
@@ -984,9 +954,8 @@ public class FilenameUtils {
      * This method obtains the extension as the textual part of the filename
      * after the last dot. There must be no directory separator after the dot.
      * The extension check is case-sensitive on all platforms.
-     *
-     * @param filename  the filename to query, null returns false
-     * @param extension  the extension to check for, null or empty checks for no extension
+     * @param filename the filename to query, null returns false
+     * @param extension the extension to check for, null or empty checks for no extension
      * @return true if the filename has the specified extension
      */
     public static boolean isExtension(String filename, String extension) {
@@ -1006,9 +975,8 @@ public class FilenameUtils {
      * This method obtains the extension as the textual part of the filename
      * after the last dot. There must be no directory separator after the dot.
      * The extension check is case-sensitive on all platforms.
-     *
-     * @param filename  the filename to query, null returns false
-     * @param extensions  the extensions to check for, null checks for no extension
+     * @param filename the filename to query, null returns false
+     * @param extensions the extensions to check for, null checks for no extension
      * @return true if the filename is one of the extensions
      */
     public static boolean isExtension(String filename, String[] extensions) {
@@ -1033,9 +1001,8 @@ public class FilenameUtils {
      * This method obtains the extension as the textual part of the filename
      * after the last dot. There must be no directory separator after the dot.
      * The extension check is case-sensitive on all platforms.
-     *
-     * @param filename  the filename to query, null returns false
-     * @param extensions  the extensions to check for, null checks for no extension
+     * @param filename the filename to query, null returns false
+     * @param extensions the extensions to check for, null checks for no extension
      * @return true if the filename is one of the extensions
      */
     public static boolean isExtension(String filename, Collection<String> extensions) {

@@ -21,21 +21,17 @@ import java.io.FilenameFilter;
 
 /**
  * An interface which brings the FileFilter and FilenameFilter interfaces together.
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.filefilter.IOFileFilter
- *
  * @author 赵永春 (zyc@hasor.net)
- * @since Commons IO 1.0
- * @version $Revision: 1178224 $ $Date: 2011-10-02 15:09:57 -0400 (Sun, 02 Oct 2011) $
  * @author Stephen Colebourne
- *
+ * @version $Revision: 1178224 $ $Date: 2011-10-02 15:09:57 -0400 (Sun, 02 Oct 2011) $
+ * @since Commons IO 1.0
  */
 @FunctionalInterface
 public interface WalkFilter extends FileFilter, FilenameFilter {
     /**
      * Checks to see if the File should be accepted by this filter. <p>
      * Defined in {@link FileFilter}.
-     *
      * @param file the File to check
      * @return true if this file matches the test
      */
@@ -44,7 +40,6 @@ public interface WalkFilter extends FileFilter, FilenameFilter {
     /**
      * Checks to see if the File should be accepted by this filter. <p>
      * Defined in {@link FilenameFilter}.
-     *
      * @param dir the directory File to check
      * @param name the filename within the directory to check
      * @return true if this file matches the test

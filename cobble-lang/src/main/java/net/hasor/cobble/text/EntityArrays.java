@@ -23,7 +23,6 @@ import java.util.Map;
  * Class holding various entity data for HTML and XML - generally for use with
  * the LookupTranslator.
  * All Maps are generated using {@code java.util.Collections.unmodifiableMap()}.
- *
  * @since 1.0
  */
 public class EntityArrays {
@@ -363,7 +362,6 @@ public class EntityArrays {
     /**
      * A Map&lt;CharSequence, CharSequence&gt; to escape the basic XML and HTML
      * character entities.
-     *
      * Namely: {@code " & < >}
      */
     public static final Map<CharSequence, CharSequence> BASIC_ESCAPE;
@@ -410,7 +408,6 @@ public class EntityArrays {
     /**
      * A Map&lt;CharSequence, CharSequence&gt; to escape the Java
      * control characters.
-     *
      * Namely: {@code \b \n \t \f \r}
      */
     public static final Map<CharSequence, CharSequence> JAVA_CTRL_CHARS_ESCAPE;

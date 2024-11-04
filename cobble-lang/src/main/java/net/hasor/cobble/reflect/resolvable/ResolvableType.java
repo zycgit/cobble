@@ -31,7 +31,6 @@ import java.util.*;
  * {@link #getSuperType() supertypes}, {@link #getInterfaces() interfaces}, and
  * {@link #getGeneric(int...) generic parameters} along with the ability to ultimately
  * {@link #resolve() resolve} to a {@link java.lang.Class}.
- *
  * <p>{@code ResolvableTypes} may be obtained from {@link #forField(Field) fields},
  * {@link #forMethodParameter(Method, int) method parameters},
  * {@link #forMethodReturnType(Method) method returns} or
@@ -39,7 +38,6 @@ import java.util.*;
  * {@link ResolvableType ResolvableTypes}, allowing easy navigation. For example:
  * <pre class="code">
  * private HashMap&lt;Integer, List&lt;String&gt;&gt; myMap;
- *
  * public void example() {
  *     ResolvableType t = ResolvableType.forField(getClass().getDeclaredField("myMap"));
  *     t.getSuperType(); // AbstractMap&lt;Integer, List&lt;String&gt;&gt;
@@ -50,20 +48,18 @@ import java.util.*;
  *     t.resolveGeneric(1, 0); // String
  * }
  * </pre>
- *
  * 2021-11-01 reduction based on SpringFramework, org.springframework.core.ResolvableType
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Phillip Webb
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 4.0
  * @see #forField(Field)
  * @see #forMethodParameter(Method, int)
  * @see #forMethodReturnType(Method)
  * @see #forConstructorParameter(Constructor, int)
  * @see #forClass(Class)
  * @see #forType(Type)
+ * @since 4.0
  */
 public class ResolvableType implements Serializable {
     /**
@@ -190,9 +186,9 @@ public class ResolvableType implements Serializable {
      * Return this type as a resolved {@code Class}, falling back to
      * {@link java.lang.Object} if no specific class can be resolved.
      * @return the resolved {@link Class} or the {@code Object} fallback
-     * @since 5.1
      * @see #getRawClass()
      * @see #resolve(Class)
+     * @since 5.1
      */
     public Class<?> toClass() {
         return resolve(Object.class);
@@ -201,8 +197,8 @@ public class ResolvableType implements Serializable {
     /**
      * Determine whether this {@code ResolvableType} is assignable from the specified other type.
      * @param other the type to be checked against (as a {@code Class})
-     * @since 4.2
      * @see #isAssignableFrom(ResolvableType)
+     * @since 4.2
      */
     public boolean isAssignableFrom(Class<?> other) {
         return isAssignableFrom(forClass(other), null);
@@ -840,9 +836,9 @@ public class ResolvableType implements Serializable {
      * @param clazz the class to introspect ({@code null} is semantically
      * equivalent to {@code Object.class} for typical use cases here)
      * @return a {@link ResolvableType} for the specified class
-     * @since 4.2
      * @see #forClass(Class)
      * @see #getRawClass()
+     * @since 4.2
      */
     public static ResolvableType forRawClass(Class<?> clazz) {
         return new ResolvableType(clazz) {
@@ -1133,8 +1129,8 @@ public class ResolvableType implements Serializable {
      * @param targetType the type to resolve (a part of the method parameter's type)
      * @param nestingLevel the nesting level to use
      * @return a {@link ResolvableType} for the specified method parameter
-     * @since 5.2
      * @see #forMethodParameter(Method, int)
+     * @since 5.2
      */
     static ResolvableType forMethodParameter(MethodParameter methodParameter, Type targetType, int nestingLevel) {
 

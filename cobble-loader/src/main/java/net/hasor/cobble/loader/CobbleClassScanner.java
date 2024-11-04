@@ -29,8 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ResourceLoader 的 ClassFinder 接口实现
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public class CobbleClassScanner {
     private final ResourceLoader         classLoader;

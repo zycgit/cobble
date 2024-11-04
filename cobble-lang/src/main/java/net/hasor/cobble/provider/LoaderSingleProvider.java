@@ -22,8 +22,8 @@ import java.util.function.Supplier;
 
 /**
  * ClassLoader单例对象的{@link Supplier}封装形式。
- * @version : 2014年7月8日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年7月8日
  */
 public class LoaderSingleProvider<T> implements Provider<T> {
     private final ContextClassLoaderLocal<T> instance;

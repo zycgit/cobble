@@ -19,8 +19,8 @@ import java.util.function.Supplier;
 
 /**
  * 单例对象的{@link Supplier}封装形式。
- * @version : 2014年7月8日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年7月8日
  */
 public class SingleProvider<T> implements Provider<T> {
     private          Provider<T> provider = null;

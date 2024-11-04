@@ -20,9 +20,8 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
 /**
- *
- * @version : 2013-4-12
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-12
  */
 public class Handler extends URLStreamHandler {
     @Override

@@ -16,7 +16,6 @@
 package net.hasor.cobble.loader.jar;
 /**
  * Utilities for dealing with bytes from ZIP files.
- *
  * @author Phillip Webb
  */
 final class Bytes {

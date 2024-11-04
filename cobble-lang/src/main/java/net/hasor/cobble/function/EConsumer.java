@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 
 /**
  * Consumer 允许异常抛出。
- * @version 2021-01-23
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2021-01-23
  */
 @FunctionalInterface
 public interface EConsumer<T, E extends Throwable> extends Consumer<T> {

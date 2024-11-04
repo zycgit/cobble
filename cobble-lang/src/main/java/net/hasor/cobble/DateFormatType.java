@@ -22,9 +22,8 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
- *
- * @version : 2013-4-12
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-12
  */
 public enum DateFormatType {
     // date

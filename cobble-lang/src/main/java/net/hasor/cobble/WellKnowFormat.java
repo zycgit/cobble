@@ -25,8 +25,8 @@ import java.util.function.Function;
 
 /**
  * 时间日期格式
- * @version : 2022-07-25
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2022-07-25
  */
 public enum WellKnowFormat {
     // java DateTimeFormatter 定义的

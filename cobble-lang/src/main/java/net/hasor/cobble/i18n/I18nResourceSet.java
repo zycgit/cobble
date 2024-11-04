@@ -21,8 +21,8 @@ import java.lang.annotation.Target;
 
 /**
  * 标记国际化资源文件位置
- * @version : 2023-08-17
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2023-08-17
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })

@@ -18,8 +18,8 @@ import java.io.IOException;
 
 /**
  * 资源加载器、资源扫描器
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 @FunctionalInterface
 public interface ClassMatcher {

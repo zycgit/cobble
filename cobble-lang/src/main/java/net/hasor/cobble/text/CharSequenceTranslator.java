@@ -25,7 +25,6 @@ import java.util.Objects;
  * An API for translating text.
  * Its core use is to escape and unescape text. Because escaping and unescaping
  * is completely contextual, the API does not present two separate signatures.
- *
  * @since 1.0
  */
 public abstract class CharSequenceTranslator {
@@ -39,7 +38,6 @@ public abstract class CharSequenceTranslator {
      * into another set of codepoints. The number of codepoints consumed must be returned,
      * and the only IOExceptions thrown must be from interacting with the Writer so that
      * the top level API may reliably ignore StringWriter IOExceptions.
-     *
      * @param input CharSequence that is being translated
      * @param index int representing the current point of translation
      * @param out Writer to translate the text to
@@ -70,7 +68,6 @@ public abstract class CharSequenceTranslator {
     /**
      * Translate an input onto a Writer. This is intentionally final as its algorithm is
      * tightly coupled with the abstract method of this class.
-     *
      * @param input CharSequence that is being translated
      * @param out Writer to translate the text to
      * @throws IOException if and only if the Writer produces an IOException
@@ -110,7 +107,6 @@ public abstract class CharSequenceTranslator {
     /**
      * Helper method to create a merger of this translator with another set of
      * translators. Useful in customizing the standard functionality.
-     *
      * @param translators CharSequenceTranslator array of translators to merge with this one
      * @return CharSequenceTranslator merging this translator with the others
      */
@@ -124,7 +120,6 @@ public abstract class CharSequenceTranslator {
     /**
      * <p>Returns an upper case hexadecimal {@code String} for the given
      * character.</p>
-     *
      * @param codepoint The codepoint to convert.
      * @return An upper case hexadecimal {@code String}
      */

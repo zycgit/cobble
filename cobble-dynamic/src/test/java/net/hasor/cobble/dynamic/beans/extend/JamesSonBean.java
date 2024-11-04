@@ -16,8 +16,8 @@
 package net.hasor.cobble.dynamic.beans.extend;
 /**
  * 詹姆斯的孩子
- * @version : 2015年1月12日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2015年1月12日
  */
 public class JamesSonBean extends JamesBean {
 }

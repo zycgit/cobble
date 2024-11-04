@@ -28,8 +28,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * @version : 2014年10月11日
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2014年10月11日
  */
 public class TreeNode implements SettingNode {
     public static final TreeNode[]                  EMPTY      = new TreeNode[0];

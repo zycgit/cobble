@@ -17,7 +17,6 @@ package net.hasor.cobble.logging;
 
 /**
  * <p>copy form mybatis org.apache.ibatis.logging.Log</p>
- *
  * 新增了 getLogger 方法
  * @author Clinton Begin
  * @author 赵永春 (zyc@hasor.net)

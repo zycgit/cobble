@@ -28,7 +28,6 @@ import java.util.zip.ZipEntry;
 /**
  * A wrapper used to create a copy of a {@link JarFile} so that it can be safely closed
  * without closing the original.
- *
  * @author Phillip Webb
  */
 class JarFileWrapper extends AbstractJarFile {

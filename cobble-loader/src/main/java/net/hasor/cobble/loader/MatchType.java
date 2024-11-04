@@ -16,8 +16,8 @@
 package net.hasor.cobble.loader;
 /**
  * 扫描器资源匹配类型
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public enum MatchType {
     /** 扫描所有资源 */

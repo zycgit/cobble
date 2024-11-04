@@ -30,8 +30,8 @@ import java.util.function.Predicate;
 
 /**
  * 可以将不同的 ResourceLoader 汇聚到一起，不具备 '可见性' 控制。实现更加简单、效率更高。
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public class MultiResourceLoader extends AbstractResourceLoader implements ClassLoaderStrategy {
     private final List<ResourceLoader> loaders = new CopyOnWriteArrayList<>();
@@ -83,7 +83,7 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Class
         }
     }
 
-    /**添加一个 {@link ResourceLoader} */
+    /** 添加一个 {@link ResourceLoader} */
     public void addLoader(ResourceLoader loader) {
         if (loader == null) {
             return;

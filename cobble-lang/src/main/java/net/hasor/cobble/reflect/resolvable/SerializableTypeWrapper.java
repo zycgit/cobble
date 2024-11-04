@@ -30,18 +30,14 @@ import java.util.Objects;
 /**
  * Internal utility class that can be used to obtain wrapped {@link Serializable}
  * variants of {@link java.lang.reflect.Type java.lang.reflect.Types}.
- *
  * <p>{@link #forField(Field) Fields} can be used as the root source for a serializable type.
  * Alternatively, a regular {@link Class} can also be used as source.
- *
  * <p>The returned type will either be a {@link Class} or a serializable proxy of
  * {@link GenericArrayType}, {@link ParameterizedType}, {@link TypeVariable} or
  * {@link WildcardType}. With the exception of {@link Class} (which is final) calls
  * to methods that return further {@link Type Types} (for example
  * {@link GenericArrayType#getGenericComponentType()}) will be automatically wrapped.
- *
  * 2021-11-01 reduction based on SpringFramework, org.springframework.core.SerializableTypeWrapper
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Phillip Webb
  * @author Juergen Hoeller

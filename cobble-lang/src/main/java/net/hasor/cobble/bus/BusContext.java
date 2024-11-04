@@ -20,9 +20,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
- * @version : 2014年5月22日
  * @author 赵永春 (zyc@byshell.org)
+ * @version : 2014年5月22日
  */
 public interface BusContext {
     BusContext DEFAULT = new EventBus();

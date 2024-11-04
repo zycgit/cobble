@@ -26,8 +26,8 @@ import java.util.List;
 
 /**
  * ResourceLoader 转 ClassLoader
- * @version : 2021-09-29
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-09-29
  */
 public class ResourceClassLoader extends URLClassLoader {
     private final String         tempDirectory = "cobbleLoader/" + System.currentTimeMillis();
@@ -97,8 +97,8 @@ public class ResourceClassLoader extends URLClassLoader {
     }
 
     /**
-     * @see ClassLoader#findLibrary(String)
      * @return The absolute path of the native library.
+     * @see ClassLoader#findLibrary(String)
      */
     @Override
     protected String findLibrary(String sLib) {
@@ -116,12 +116,11 @@ public class ResourceClassLoader extends URLClassLoader {
 
     /**
      * Finds native library entry.
-     *
      * @param sLib Library name. For example for the library name "Native"
-     *  - Windows returns entry "Native.dll"
-     *  - Linux returns entry "libNative.so"
-     *  - Mac returns entry "libNative.jnilib" or "libNative.dylib"
-     *    (depending on Apple or Oracle JDK and/or JDK version)
+     * - Windows returns entry "Native.dll"
+     * - Linux returns entry "libNative.so"
+     * - Mac returns entry "libNative.jnilib" or "libNative.dylib"
+     * (depending on Apple or Oracle JDK and/or JDK version)
      * @return Native library entry.
      */
     private File findJarNativeEntry(String sLib) throws IOException {
@@ -150,17 +149,16 @@ public class ResourceClassLoader extends URLClassLoader {
     /**
      * Using temp files (one per inner JAR/DLL) solves many issues:
      * 1. There are no ways to load JAR defined in a JarEntry directly
-     *    into the JarFile object (see also #6 below).
+     * into the JarFile object (see also #6 below).
      * 2. Cannot use memory-mapped files because they are using
-     *    nio channels, which are not supported by JarFile ctor.
+     * nio channels, which are not supported by JarFile ctor.
      * 3. JarFile object keeps opened JAR files handlers for fast access.
      * 4. Deep resource in a jar-in-jar does not have well defined URL.
-     *    Making temp file with JAR solves this problem.
+     * Making temp file with JAR solves this problem.
      * 5. Similar issues with native libraries:
-     *    <code>ClassLoader.findLibrary()</code> accepts ONLY string with
-     *    absolute path to the file with native library.
+     * <code>ClassLoader.findLibrary()</code> accepts ONLY string with
+     * absolute path to the file with native library.
      * 6. Option "java.protocol.handler.pkgs" does not allow access to nested JARs(?).
-     *
      * @param inf JAR entry information.
      * @return temporary file object presenting JAR entry.
      */

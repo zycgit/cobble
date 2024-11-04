@@ -20,8 +20,8 @@ import java.io.Writer;
 
 /**
  * 使用OutputStream输出Writer的工具类
- * @version 2009-5-13
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2009-5-13
  */
 public class WriterOutputStream extends OutputStream {
     private Writer writer   = null;
@@ -31,7 +31,7 @@ public class WriterOutputStream extends OutputStream {
 
     /**
      * 带Writer和字符编码格式参数的构造函数
-     * @param writer   - OutputStream使用的Reader
+     * @param writer - OutputStream使用的Reader
      * @param encoding - OutputStream使用的字符编码格式。
      */
     public WriterOutputStream(final Writer writer, final String encoding) {

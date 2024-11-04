@@ -24,9 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Reads lines in a file reversely (similar to a BufferedReader, but starting at the last line). Useful for e.g. searching in log files.
- *
  * 2017-09-13 reduction based on Apache Commons IO, org.apache.commons.io.input.ReversedLinesFileReader
- *
  * @author 赵永春 (zyc@hasor.net)
  * @since 2.2
  */
@@ -45,11 +43,9 @@ public class ReversedLinesFileReader implements Closeable {
     /**
      * Creates a ReversedLinesFileReader with default block size of 4KB and the
      * specified encoding.
-     *
-     * @param file
-     *            the file to be read
+     * @param file the file to be read
      * @param charset the encoding to use
-     * @throws IOException  if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      * @since 2.5
      */
     public ReversedLinesFileReader(final File file, final Charset charset) throws IOException {
@@ -58,15 +54,11 @@ public class ReversedLinesFileReader implements Closeable {
 
     /**
      * Creates a ReversedLinesFileReader with the given block size and encoding.
-     *
-     * @param file
-     *            the file to be read
-     * @param blockSize
-     *            size of the internal buffer (for ideal performance this should
-     *            match with the block size of the underlying file system).
-     * @param encoding
-     *            the encoding of the file
-     * @throws IOException  if an I/O error occurs
+     * @param file the file to be read
+     * @param blockSize size of the internal buffer (for ideal performance this should
+     * match with the block size of the underlying file system).
+     * @param encoding the encoding of the file
+     * @throws IOException if an I/O error occurs
      * @since 2.3
      */
     public ReversedLinesFileReader(final File file, final int blockSize, final Charset encoding) throws IOException {
@@ -119,14 +111,11 @@ public class ReversedLinesFileReader implements Closeable {
 
     /**
      * Creates a ReversedLinesFileReader with the given block size and encoding.
-     *
-     * @param file  the file to be read
-     * @param blockSize
-     *            size of the internal buffer (for ideal performance this should
-     *            match with the block size of the underlying file system).
-     * @param encoding
-     *            the encoding of the file
-     * @throws IOException  if an I/O error occurs
+     * @param file the file to be read
+     * @param blockSize size of the internal buffer (for ideal performance this should
+     * match with the block size of the underlying file system).
+     * @param encoding the encoding of the file
+     * @throws IOException if an I/O error occurs
      * @throws java.nio.charset.UnsupportedCharsetException thrown instead of {@link UnsupportedEncodingException} in
      * version 2.2 if the encoding is not supported.
      */
@@ -136,9 +125,8 @@ public class ReversedLinesFileReader implements Closeable {
 
     /**
      * Returns the lines of the file from bottom to top.
-     *
      * @return the next line or null if the start of the file is reached
-     * @throws IOException  if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public String readLine() throws IOException {
         String line = currentFilePart.readLine();
@@ -161,8 +149,7 @@ public class ReversedLinesFileReader implements Closeable {
 
     /**
      * Closes underlying resources.
-     *
-     * @throws IOException  if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     public void close() throws IOException {
@@ -205,7 +192,6 @@ public class ReversedLinesFileReader implements Closeable {
 
         /**
          * Handles block rollover
-         *
          * @return the new FilePart or null
          * @throws IOException if there was a problem reading the file
          */
@@ -226,7 +212,6 @@ public class ReversedLinesFileReader implements Closeable {
 
         /**
          * Reads a line.
-         *
          * @return the line or null
          * @throws IOException if there is an error reading from the file
          */
@@ -289,7 +274,6 @@ public class ReversedLinesFileReader implements Closeable {
 
         /**
          * Finds the new-line sequence and return its length.
-         *
          * @param data buffer to scan
          * @param i start offset in buffer
          * @return length of newline sequence or 0 if none found

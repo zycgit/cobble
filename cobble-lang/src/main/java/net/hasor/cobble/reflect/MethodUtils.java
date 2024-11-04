@@ -34,21 +34,17 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Differences from the BeanUtils version may be noted, especially where similar functionality
  * already existed within Lang.
  * </p>
- *
  * <h3>Known Limitations</h3>
  * <h4>Accessing Public Methods In A Default Access Superclass</h4>
  * <p>There is an issue when invoking public methods contained in a default access superclass on JREs prior to 1.4.
  * Reflection locates these methods fine and correctly assigns them as public.
  * However, an <code>IllegalAccessException</code> is thrown if the method is invoked.</p>
- *
- * <p><code>MethodUtils</code> contains a workaround for this situation. 
+ * <p><code>MethodUtils</code> contains a workaround for this situation.
  * It will attempt to call <code>setAccessible</code> on this method.
  * If this call succeeds, then the method can be invoked as normal.
- * This call will only succeed when the application has sufficient security privileges. 
+ * This call will only succeed when the application has sufficient security privileges.
  * If this call fails then the method may fail.</p>
- *
  * 2021-11-01 reduction based on Apache Commons lang3, org.apache.commons.lang3.reflect.MethodUtils
- *
  * @author 赵永春 (zyc@hasor.net)
  * @author Apache Software Foundation
  * @author Craig R. McClanahan
@@ -59,15 +55,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author Jan Sorensen
  * @author Robert Burrell Donkin
  * @author Matt Benson
- * @since 2.5
  * @version $Id: MethodUtils.java 911986 2010-02-19 21:19:05Z niallp $
+ * @since 2.5
  */
 public class MethodUtils {
     /**
      * <p>MethodUtils instances should NOT be constructed in standard programming.
      * Instead, the class should be used as
      * <code>MethodUtils.getAccessibleMethod(method)</code>.</p>
-     *
      * <p>This constructor is public to permit tools that require a JavaBean
      * instance to operate.</p>
      */
@@ -77,22 +72,17 @@ public class MethodUtils {
 
     /**
      * <p>Invoke a named method whose parameter type matches the object type.</p>
-     *
      * <p>This method delegates the method search to {@link #getMatchingAccessibleMethod(Class, String, Class[])}.</p>
-     *
-     * <p>This method supports calls to methods taking primitive parameters 
+     * <p>This method supports calls to methods taking primitive parameters
      * via passing in wrapping classes. So, for example, a <code>Boolean</code> object
      * would match a <code>boolean</code> primitive.</p>
-     *
      * <p> This is a convenient wrapper for
      * {@link #invokeMethod(Object object, String methodName, Object[] args)}.
      * </p>
-     *
      * @param object invoke method on this object
      * @param methodName get method with this name
      * @param arg use this argument
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the method invoked
      * @throws IllegalAccessException if the requested method is not accessible via reflection
@@ -103,22 +93,17 @@ public class MethodUtils {
 
     /**
      * <p>Invoke a named method whose parameter type matches the object type.</p>
-     *
      * <p>This method delegates the method search to {@link #getMatchingAccessibleMethod(Class, String, Class[])}.</p>
-     *
-     * <p>This method supports calls to methods taking primitive parameters 
+     * <p>This method supports calls to methods taking primitive parameters
      * via passing in wrapping classes. So, for example, a <code>Boolean</code> object
      * would match a <code>boolean</code> primitive.</p>
-     *
      * <p> This is a convenient wrapper for
      * {@link #invokeMethod(Object object, String methodName, Object[] args, Class[] parameterTypes)}.
      * </p>
-     *
      * @param object invoke method on this object
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the method invoked
      * @throws IllegalAccessException if the requested method is not accessible via reflection
@@ -137,19 +122,15 @@ public class MethodUtils {
 
     /**
      * <p>Invoke a named method whose parameter type matches the object type.</p>
-     *
      * <p>This method delegates the method search to {@link #getMatchingAccessibleMethod(Class, String, Class[])}.</p>
-     *
-     * <p>This method supports calls to methods taking primitive parameters 
+     * <p>This method supports calls to methods taking primitive parameters
      * via passing in wrapping classes. So, for example, a <code>Boolean</code> object
      * would match a <code>boolean</code> primitive.</p>
-     *
      * @param object invoke method on this object
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @param parameterTypes match these parameters - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the method invoked
      * @throws IllegalAccessException if the requested method is not accessible via reflection
@@ -171,21 +152,18 @@ public class MethodUtils {
     /**
      * <p>Invoke a method whose parameter type matches exactly the object
      * type.</p>
-     *
      * <p> This is a convenient wrapper for
      * {@link #invokeExactMethod(Object object, String methodName, Object [] args)}.
      * </p>
-     *
      * @param object invoke method on this object
      * @param methodName get method with this name
      * @param arg use this argument
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeExactMethod(final Object object, final String methodName, final Object arg) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return MethodUtils.invokeExactMethod(object, methodName, new Object[] { arg });
@@ -194,20 +172,17 @@ public class MethodUtils {
     /**
      * <p>Invoke a method whose parameter types match exactly the object
      * types.</p>
-     *
      * <p> This uses reflection to invoke the method obtained from a call to
      * <code>getAccessibleMethod()</code>.</p>
-     *
      * @param object invoke method on this object
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeExactMethod(final Object object, final String methodName, Object[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (args == null) {
@@ -224,21 +199,18 @@ public class MethodUtils {
     /**
      * <p>Invoke a method whose parameter types match exactly the parameter
      * types given.</p>
-     *
      * <p>This uses reflection to invoke the method obtained from a call to
      * <code>getAccessibleMethod()</code>.</p>
-     *
      * @param object invoke method on this object
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @param parameterTypes match these parameters - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeExactMethod(final Object object, final String methodName, Object[] args, Class<?>[] parameterTypes) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (args == null) {
@@ -257,21 +229,18 @@ public class MethodUtils {
     /**
      * <p>Invoke a static method whose parameter types match exactly the parameter
      * types given.</p>
-     *
      * <p>This uses reflection to invoke the method obtained from a call to
      * {@link #getAccessibleMethod(Class, String, Class[])}.</p>
-     *
      * @param cls invoke static method on this class
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @param parameterTypes match these parameters - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeExactStaticMethod(final Class<?> cls, final String methodName, Object[] args, Class<?>[] parameterTypes) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (args == null) {
@@ -289,27 +258,22 @@ public class MethodUtils {
 
     /**
      * <p>Invoke a named static method whose parameter type matches the object type.</p>
-     *
      * <p>This method delegates the method search to {@link #getMatchingAccessibleMethod(Class, String, Class[])}.</p>
-     *
-     * <p>This method supports calls to methods taking primitive parameters 
+     * <p>This method supports calls to methods taking primitive parameters
      * via passing in wrapping classes. So, for example, a <code>Boolean</code> class
      * would match a <code>boolean</code> primitive.</p>
-     *
      * <p> This is a convenient wrapper for
      * {@link #invokeStaticMethod(Class objectClass, String methodName, Object [] args)}.
      * </p>
-     *
      * @param cls invoke static method on this class
      * @param methodName get method with this name
      * @param arg use this argument
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeStaticMethod(final Class<?> cls, final String methodName, final Object arg) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return MethodUtils.invokeStaticMethod(cls, methodName, new Object[] { arg });
@@ -317,23 +281,19 @@ public class MethodUtils {
 
     /**
      * <p>Invoke a named static method whose parameter type matches the object type.</p>
-     *
      * <p>This method delegates the method search to {@link #getMatchingAccessibleMethod(Class, String, Class[])}.</p>
-     *
-     * <p>This method supports calls to methods taking primitive parameters 
+     * <p>This method supports calls to methods taking primitive parameters
      * via passing in wrapping classes. So, for example, a <code>Boolean</code> class
      * would match a <code>boolean</code> primitive.</p>
-     *
      * @param objectClass invoke static method on this class
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeStaticMethod(final Class<?> objectClass, final String methodName, Object[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (args == null) {
@@ -349,25 +309,20 @@ public class MethodUtils {
 
     /**
      * <p>Invoke a named static method whose parameter type matches the object type.</p>
-     *
      * <p>This method delegates the method search to {@link #getMatchingAccessibleMethod(Class, String, Class[])}.</p>
-     *
-     * <p>This method supports calls to methods taking primitive parameters 
+     * <p>This method supports calls to methods taking primitive parameters
      * via passing in wrapping classes. So, for example, a <code>Boolean</code> class
      * would match a <code>boolean</code> primitive.</p>
-     *
-     *
      * @param cls invoke static method on this class
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @param parameterTypes match these parameters - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeStaticMethod(final Class<?> cls, final String methodName, Object[] args, Class<?>[] parameterTypes) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (parameterTypes == null) {
@@ -386,21 +341,18 @@ public class MethodUtils {
     /**
      * <p>Invoke a static method whose parameter type matches exactly the object
      * type.</p>
-     *
      * <p> This is a convenient wrapper for
      * {@link #invokeExactStaticMethod(Class objectClass, String methodName, Object [] args)}.
      * </p>
-     *
      * @param cls invoke static method on this class
      * @param methodName get method with this name
      * @param arg use this argument
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeExactStaticMethod(final Class<?> cls, final String methodName, final Object arg) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         return MethodUtils.invokeExactStaticMethod(cls, methodName, new Object[] { arg });
@@ -409,20 +361,17 @@ public class MethodUtils {
     /**
      * <p>Invoke a static method whose parameter types match exactly the object
      * types.</p>
-     *
      * <p> This uses reflection to invoke the method obtained from a call to
      * {@link #getAccessibleMethod(Class, String, Class[])}.</p>
-     *
      * @param cls invoke static method on this class
      * @param methodName get method with this name
      * @param args use these arguments - treat null as empty array
      * @return The value returned by the invoked method
-     *
      * @throws NoSuchMethodException if there is no such accessible method
      * @throws InvocationTargetException wraps an exception thrown by the
-     *  method invoked
+     * method invoked
      * @throws IllegalAccessException if the requested method is not accessible
-     *  via reflection
+     * via reflection
      */
     public static Object invokeExactStaticMethod(final Class<?> cls, final String methodName, Object[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (args == null) {
@@ -442,7 +391,6 @@ public class MethodUtils {
      * can be found, return <code>null</code>.
      * Basically, a convenience wrapper that constructs a <code>Class</code>
      * array for you.</p>
-     *
      * @param cls get method from this class
      * @param methodName get method with this name
      * @param parameterType taking this type of parameter
@@ -458,7 +406,6 @@ public class MethodUtils {
      * can be found, return <code>null</code>.
      * This is just a convenient wrapper for
      * {@link #getAccessibleMethod(Method method)}.</p>
-     *
      * @param cls get method from this class
      * @param methodName get method with this name
      * @param parameterTypes with these parameters types
@@ -476,7 +423,6 @@ public class MethodUtils {
      * <p>Return an accessible method (that is, one that can be invoked via
      * reflection) that implements the specified Method.  If no such method
      * can be found, return <code>null</code>.</p>
-     *
      * @param method The method that we wish to call
      * @return The accessible method
      */
@@ -504,7 +450,6 @@ public class MethodUtils {
      * <p>Return an accessible method (that is, one that can be invoked via
      * reflection) by scanning through the superclasses. If no such method
      * can be found, return <code>null</code>.</p>
-     *
      * @param cls Class to be checked
      * @param methodName Method name of the method we wish to call
      * @param parameterTypes The parameter type signatures
@@ -530,11 +475,9 @@ public class MethodUtils {
      * reflection) that implements the specified method, by scanning through
      * all implemented interfaces and subinterfaces.  If no such method
      * can be found, return <code>null</code>.</p>
-     *
      * <p> There isn't any good reason why this method must be private.
      * It is because there doesn't seem any reason why other classes should
      * call this rather than the higher level methods.</p>
-     *
      * @param cls Parent class for the interfaces to be checked
      * @param methodName Method name of the method we wish to call
      * @param parameterTypes The parameter type signatures
@@ -575,22 +518,19 @@ public class MethodUtils {
 
     /**
      * <p>Find an accessible method that matches the given name and has compatible parameters.
-     * Compatible parameters mean that every method parameter is assignable from 
+     * Compatible parameters mean that every method parameter is assignable from
      * the given parameters.
-     * In other words, it finds a method with the given name 
+     * In other words, it finds a method with the given name
      * that will take the parameters given.<p>
-     *
-     * <p>This method is used by 
+     * <p>This method is used by
      * {@link
      * #invokeMethod(Object object, String methodName, Object[] args, Class[] parameterTypes)}.
-     *
      * <p>This method can match primitive parameter by passing in wrapper classes.
      * For example, a <code>Boolean</code> will match a primitive <code>boolean</code>
      * parameter.
-     *
      * @param cls find method in this class
      * @param methodName find method with this name
-     * @param parameterTypes find method with most compatible parameters 
+     * @param parameterTypes find method with most compatible parameters
      * @return The accessible method
      */
     public static Method getMatchingAccessibleMethod(final Class<?> cls, final String methodName, final Class<?>[] parameterTypes) {
@@ -665,7 +605,7 @@ public class MethodUtils {
         }
     }
 
-    /**将一个Ljava/lang/Object;形式的字符串转化为java/lang/Object形式。*/
+    /** 将一个Ljava/lang/Object;形式的字符串转化为java/lang/Object形式。 */
     private static String asmTypeToType(final String asmType) {
         if (asmType.charAt(0) == 'L') {
             return asmType.substring(1, asmType.length() - 1);

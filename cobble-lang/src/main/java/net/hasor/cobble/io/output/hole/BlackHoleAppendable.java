@@ -16,8 +16,8 @@
 package net.hasor.cobble.io.output.hole;
 /**
  * 黑洞 Appendable
- * @version 2021-03-02
  * @author 赵永春 (zyc@hasor.net)
+ * @version 2021-03-02
  */
 public class BlackHoleAppendable implements Appendable {
     @Override

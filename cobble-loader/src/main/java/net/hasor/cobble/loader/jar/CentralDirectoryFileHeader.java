@@ -23,7 +23,6 @@ import java.time.temporal.ValueRange;
 
 /**
  * A ZIP File "Central directory file header record" (CDFH).
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Dmytro Nosan

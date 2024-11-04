@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * Parses the central directory from a JAR file.
- *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @see CentralDirectoryVisitor

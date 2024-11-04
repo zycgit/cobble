@@ -20,12 +20,12 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 /**
- *  提供者实现这个接口就相当于同时实现了
- *      <li>java.util.function.Supplier</li>
- *      <li>java.util.concurrent.Callable</li>
- *  三个接口
- * @version : 2014年5月22日
+ * 提供者实现这个接口就相当于同时实现了
+ * <li>java.util.function.Supplier</li>
+ * <li>java.util.concurrent.Callable</li>
+ * 三个接口
  * @author 赵永春 (zyc@byshell.org)
+ * @version : 2014年5月22日
  */
 @FunctionalInterface
 public interface Provider<T> extends Supplier<T>, Callable<T> {

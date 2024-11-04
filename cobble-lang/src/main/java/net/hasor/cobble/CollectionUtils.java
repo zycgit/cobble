@@ -23,9 +23,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- *
- * @version : 2013-4-12
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2013-4-12
  */
 public class CollectionUtils {
     // Empty utilities
@@ -292,9 +291,8 @@ public class CollectionUtils {
      * <p>
      * In other words, this method returns <code>true</code> iff the
      * intersection of <i>coll1</i> and <i>coll2</i> is not empty.
-     *
-     * @param coll1  the first collection, must not be null
-     * @param coll2  the first collection, must not be null
+     * @param coll1 the first collection, must not be null
+     * @param coll2 the first collection, must not be null
      * @return <code>true</code> iff the intersection of the collections is non-empty
      * @since 2.1
      */

@@ -23,8 +23,8 @@ import java.util.Collection;
 
 /**
  * 弱引用列表，WeakArrayList是修改自 org.arakhne.util.ref 下的 WeakArrayList
- * @version : 2013-11-8
  * @author (网络收集)
+ * @version : 2013-11-8
  */
 public class WeakArrayList<T> extends AbstractList<T> {
     private static final    Object            NULL_VALUE = new Object();

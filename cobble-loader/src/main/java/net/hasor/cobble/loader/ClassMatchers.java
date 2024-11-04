@@ -20,8 +20,8 @@ import java.util.function.Predicate;
 
 /**
  * 扫描过程中的匹配器
- * @version : 2021-10-01
  * @author 赵永春 (zyc@hasor.net)
+ * @version : 2021-10-01
  */
 public class ClassMatchers {
     private ClassMatchers() {

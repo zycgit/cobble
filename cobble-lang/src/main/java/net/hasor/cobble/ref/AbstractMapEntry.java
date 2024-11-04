@@ -20,14 +20,12 @@ import java.util.Map;
 /**
  * Abstract pair class to assist with creating <code>KeyValue</code>
  * and {@link Map.Entry Map.Entry} implementations.
- *
- * @since Commons Collections 3.0
- * @version $Revision: 646777 $ $Date: 2008-04-10 13:33:15 +0100 (Thu, 10 Apr 2008) $
- *
  * @author James Strachan
  * @author Michael A. Smith
  * @author Neil O'Toole
  * @author Stephen Colebourne
+ * @version $Revision: 646777 $ $Date: 2008-04-10 13:33:15 +0100 (Thu, 10 Apr 2008) $
+ * @since Commons Collections 3.0
  */
 abstract class AbstractMapEntry<T, V> implements Map.Entry<T, V> {
     /** The key */
@@ -37,8 +35,8 @@ abstract class AbstractMapEntry<T, V> implements Map.Entry<T, V> {
 
     /**
      * Constructs a new pair with the specified key and given value.
-     * @param key  the key for the entry, may be null
-     * @param value  the value for the entry, may be null
+     * @param key the key for the entry, may be null
+     * @param value the value for the entry, may be null
      */
     protected AbstractMapEntry(T key, V value) {
         super();
@@ -48,7 +46,7 @@ abstract class AbstractMapEntry<T, V> implements Map.Entry<T, V> {
 
     /**
      * Gets the key from the pair.
-     * @return the key 
+     * @return the key
      */
     public T getKey() {
         return key;
