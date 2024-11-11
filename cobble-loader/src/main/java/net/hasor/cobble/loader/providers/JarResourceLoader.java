@@ -105,7 +105,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             for (JarFile nestedJar : this.nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    return new URL(nestedJar.getUrl(), nestedZipEntry.getName());
+                    return new URL(nestedJar.getUrl(), resource);
                 }
             }
         }
@@ -156,7 +156,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             for (JarFile nestedJar : nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    result.add(new URL(nestedJar.getUrl(), nestedJar.getName()));
+                    result.add(new URL(nestedJar.getUrl(), resource));
                 }
             }
         }
