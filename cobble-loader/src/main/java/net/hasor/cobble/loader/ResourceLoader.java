@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.jar.Manifest;
 
 /**
  * 资源加载器、资源扫描器
@@ -49,11 +50,13 @@ public interface ResourceLoader {
 
     long getResourceSize(String resource) throws IOException;
 
-    Class<?> getClass(String className) throws ClassNotFoundException;
+    CobbleClassLoader toClassLoader(ClassLoader parent);
 
     List<URL> getResources(String resource) throws IOException;
 
     List<InputStream> getResourcesAsStream(String resource) throws IOException;
 
     boolean exist(String resource);
+
+    Manifest getManifest(String resource) throws IOException;
 }

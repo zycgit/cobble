@@ -25,38 +25,12 @@ import java.util.function.Predicate;
  * @version : 2021-09-29
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-    protected final  ClassLoader         parentClassLoader;
-    private volatile ResourceClassLoader innerClassLoader;
-
-    public AbstractResourceLoader() {
-        this.parentClassLoader = null;
-    }
-
-    public AbstractResourceLoader(ClassLoader parent) {
-        this.parentClassLoader = parent;
-    }
-
-    protected ResourceLoader loaderForClassLoader() {
-        return this;
-    }
-
-    public Class<?> getClass(String className) throws ClassNotFoundException {
-        if (this.innerClassLoader == null) {
-            synchronized (this) {
-                if (this.innerClassLoader == null) {
-                    this.innerClassLoader = new ResourceClassLoader(this.parentClassLoader, loaderForClassLoader());
-                }
-            }
-        }
-        return this.innerClassLoader.loadClass(className);
-    }
-
     public <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
-        return scanResources(MatchType.None, scanner, new String[0]);
+        return this.scanResources(MatchType.None, scanner, new String[0]);
     }
 
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanResources(matchType, scanner, new String[0]);
+        return this.scanResources(matchType, scanner, new String[0]);
     }
 
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
@@ -64,11 +38,11 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
     }
 
     public <T> T scanOneResource(Scanner<T> scanner) throws IOException {
-        return scanOneResource(MatchType.None, scanner, new String[0]);
+        return this.scanOneResource(MatchType.None, scanner, new String[0]);
     }
 
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return scanOneResource(matchType, scanner, new String[0]);
+        return this.scanOneResource(matchType, scanner, new String[0]);
     }
 
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
@@ -114,5 +88,10 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
             }
         }
         return tests;
+    }
+
+    @Override
+    public CobbleClassLoader toClassLoader(ClassLoader parent) {
+        return new CobbleClassLoader(parent, this);
     }
 }

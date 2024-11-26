@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.jar.Manifest;
 
 /**
  * 允许将 ResourceLoader 的中的一部分资源设置为 '可见'，并将不同的 ResourceLoader 之间 '可见' 部分汇聚为一个新的 ResourceLoader。
@@ -34,69 +35,12 @@ import java.util.function.Predicate;
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2021-10-10
  */
-public class ImportResourceLoader extends AbstractResourceLoader implements ClassLoaderStrategy {
+public class ImportResourceLoader extends AbstractResourceLoader implements MergedLoader {
+
     private final Map<String, List<LoaderWrap>> packageLoaders;
-    private final MultiResourceLoader           mergeResourceLoader;
-    private final int                           classLoadMode;
 
-    public ImportResourceLoader(int mode) {
-        this(mode, null);
-    }
-
-    public ImportResourceLoader(int mode, ClassLoader parent) {
-        super(parent);
+    public ImportResourceLoader() {
         this.packageLoaders = new ConcurrentHashMap<>();
-        this.classLoadMode = mode;
-        this.mergeResourceLoader = new MultiResourceLoader(MERGE, parent);
-    }
-
-    protected ResourceLoader loaderForClassLoader() {
-        if (classLoadMode == ISOLATION) {
-            return this;
-        } else {
-            return this.mergeResourceLoader;
-        }
-    }
-
-    public Class<?> getClass(String className) throws ClassNotFoundException {
-        if (classLoadMode == ISOLATION) {
-            return this.loadClassByIsolation(className);
-        } else {
-            return this.loadClassByMerge(className);
-        }
-    }
-
-    private Class<?> loadClassByMerge(String className) throws ClassNotFoundException {
-        String resource = className.replace(".", "/") + ".class";
-        if (this.exist(resource)) {
-            return this.mergeResourceLoader.getClass(className);
-        } else {
-            throw new ClassNotFoundException(className);
-        }
-    }
-
-    private Class<?> loadClassByIsolation(String className) throws ClassNotFoundException {
-        try {
-            // parent first
-            if (super.parentClassLoader != null) {
-                Class<?> aClass = super.parentClassLoader.loadClass(className);
-                if (aClass != null) {
-                    return aClass;
-                }
-            }
-            throw new ClassNotFoundException(className);
-        } catch (ClassNotFoundException e) {
-            // isolation
-            String resource = className.replace(".", "/") + ".class";
-            Iterator<LoaderWrap> loaders = getLoader(resource);
-            while (loaders.hasNext()) {
-                ResourceLoader loader = loaders.next().loader;
-                if (loader.exist(resource)) {
-                    return loader.getClass(className);
-                }
-            }
-            throw e;
-        }
     }
 
     /** import all path */
@@ -121,7 +65,6 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
         LoaderWrap wrap = new LoaderWrap(order, loader);
         if (!loaders.contains(wrap)) {
             loaders.add(wrap);
-            this.mergeResourceLoader.addLoader(loader);
         }
     }
 
@@ -155,7 +98,7 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
 
     protected Iterator<LoaderWrap> getLoader(String resource) {
         String fmtResource = pathOrResource(resource);
-        if (fmtResource.length() == 0) {
+        if (fmtResource.isEmpty()) {
             return getAllLoader();
         }
 
@@ -188,6 +131,7 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
         return loaders.iterator();
     }
 
+    @Override
     public ResourceLoader findLoader(String resource) {
         Iterator<LoaderWrap> loaders = getLoader(resource);
         while (loaders.hasNext()) {
@@ -256,8 +200,7 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
     public InputStream getResourceAsStream(String resource) throws IOException {
         Iterator<LoaderWrap> loaders = getLoader(resource);
         while (loaders.hasNext()) {
-            ResourceLoader loader = loaders.next().loader;
-            InputStream resourceStream = loader.getResourceAsStream(resource);
+            InputStream resourceStream = loaders.next().loader.getResourceAsStream(resource);
             if (resourceStream != null) {
                 return resourceStream;
             }
@@ -345,5 +288,11 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Clas
         public int compareTo(LoaderWrap o) {
             return Integer.compare(this.order, o.order);
         }
+    }
+
+    @Override
+    public Manifest getManifest(String resource) throws IOException {
+        ResourceLoader loader = findLoader(resource);
+        return loader == null ? null : loader.getManifest(resource);
     }
 }

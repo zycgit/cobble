@@ -16,6 +16,7 @@
 package net.hasor.cobble.concurrent;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.SystemUtils;
 import net.hasor.cobble.function.Callable;
 
 import java.util.concurrent.ExecutorService;
@@ -169,5 +170,11 @@ public class ThreadUtils {
             Thread.sleep(intervalMillis);
         } catch (Exception ignored) {
         }
+    }
+
+    public static boolean isTerminated(Thread thread) {
+        // Do not use `Thread.getState()` in J9 JVM because it's known to have a performance issue.
+        // See: https://github.com/netty/netty/issues/13347#issuecomment-1518537895
+        return SystemUtils.isJ9Jvm() ? !thread.isAlive() : thread.getState() == Thread.State.TERMINATED;
     }
 }

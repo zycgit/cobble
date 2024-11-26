@@ -15,6 +15,7 @@
  */
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ExceptionUtils;
+import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.function.ESupplier;
 import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.MatchType;
@@ -30,9 +31,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -44,22 +46,17 @@ import java.util.zip.ZipEntry;
  * @version : 2021-09-29
  */
 public class JarResourceLoader extends AbstractResourceLoader {
-    private static final Logger        logger = Logger.getLogger(JarResourceLoader.class);
-    private final        JarFile       jarFile;
-    private final        List<JarFile> nestedJarFile;
+    private static final Logger                logger        = Logger.getLogger(JarResourceLoader.class);
+    private final        JarFile               jarFile;
+    private final        List<JarFile>         nestedJarFile;
+    private final        Map<String, Manifest> manifestCache = new ConcurrentHashMap<>();
 
     public JarResourceLoader(File file) throws IOException {
-        this(null, file, Collections.emptyList());
-    }
-
-    public JarResourceLoader(ClassLoader parent, File file) throws IOException {
-        super(parent);
         this.jarFile = new JarFile(file);
         this.nestedJarFile = new ArrayList<>();
     }
 
-    public JarResourceLoader(ClassLoader parent, File file, List<String> nestedList) throws IOException {
-        super(parent);
+    public JarResourceLoader(File file, List<String> nestedList) throws IOException {
         this.jarFile = new JarFile(file);
         this.nestedJarFile = new ArrayList<>();
         for (String nestedJar : nestedList) {
@@ -70,8 +67,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
         }
     }
 
-    public JarResourceLoader(ClassLoader parent, File file, Predicate<JarEntry> nestedPredicate) throws IOException {
-        super(parent);
+    public JarResourceLoader(File file, Predicate<JarEntry> nestedPredicate) throws IOException {
         this.jarFile = new JarFile(file);
         this.nestedJarFile = new ArrayList<>();
         if (nestedPredicate != null) {
@@ -87,13 +83,42 @@ public class JarResourceLoader extends AbstractResourceLoader {
         return this.jarFile.getManifest();
     }
 
-    public Manifest getManifest(String nestedJarName) throws IOException {
-        for (JarFile jarFile : this.nestedJarFile) {
-            if (jarFile.getName().equals(nestedJarName)) {
-                return jarFile.getManifest();
-            }
+    @Override
+    public Manifest getManifest(String resource) throws IOException {
+        if (StringUtils.isEmpty(resource)) {
+            return null;
         }
-        return null;
+        URL url = getResource(resource);
+        if (url == null) {
+            return null;
+        }
+        String path = url.getPath();
+        String[] split = path.split("!/");
+        if (split.length == 1) {
+            return jarFile.getManifest();
+        }
+        String entryName = split[1];
+        Manifest manifest = manifestCache.get(entryName);
+        if (manifest == null) {
+            for (JarFile jarFile : this.nestedJarFile) {
+                String pathFromRoot = jarFile.getPathFromRoot();
+                if (StringUtils.isEmpty(pathFromRoot))
+                    continue;
+                if (pathFromRoot.startsWith("!/")) {
+                    pathFromRoot = pathFromRoot.substring(2);
+                }
+                manifestCache.computeIfAbsent(pathFromRoot, key -> {
+                    try {
+                        return jarFile.getManifest();
+                    } catch (IOException e) {
+                        return null;
+                    }
+                });
+            }
+            return manifestCache.get(entryName);
+        } else {
+            return manifest;
+        }
     }
 
     @Override
@@ -105,7 +130,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             for (JarFile nestedJar : this.nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    return new URL(nestedJar.getUrl(), resource);
+                    return new URL(nestedJar.getUrl(), nestedZipEntry.getName());
                 }
             }
         }
@@ -156,7 +181,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             for (JarFile nestedJar : nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    result.add(new URL(nestedJar.getUrl(), resource));
+                    result.add(new URL(nestedJar.getUrl(), nestedJar.getName()));
                 }
             }
         }

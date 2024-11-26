@@ -17,6 +17,7 @@
 package net.hasor.cobble.loader.providers;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
+import net.hasor.cobble.loader.CobbleClassLoader;
 import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
@@ -147,7 +148,7 @@ public class JarResourceLoaderTests {
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("/dir/app-2.zip/app/onlyzip/FooOnlyZip.class"));
 
         String file = ResourcesUtils.getResource("/nested-jars/nested-package-all.jar").getFile();
-        JarResourceLoader loader = new JarResourceLoader(null, new File(file), Arrays.asList("basic.jar", "app-1.jar", "app-2.zip"));
+        JarResourceLoader loader = new JarResourceLoader(new File(file), Arrays.asList("basic.jar", "app-1.jar", "app-2.zip"));
 
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(loader.getResourceAsStream("app/lib/Foo.class")));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(loader.getResourceAsStream("app/onlyjar/FooOnlyJar.class")));
@@ -158,11 +159,12 @@ public class JarResourceLoaderTests {
     public void nestedJar_2() throws Exception {
 
         String file = ResourcesUtils.getResource("/nested-jars/nested-package-all.jar").getFile();
-        JarResourceLoader loader = new JarResourceLoader(null, new File(file), Arrays.asList("basic.jar", "app-1.jar", "app-2.zip"));
+        JarResourceLoader loader = new JarResourceLoader(new File(file), Arrays.asList("basic.jar", "app-1.jar", "app-2.zip"));
+        CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
 
-        Class<?> aClass1 = loader.getClass("app.lib.Foo");
-        Class<?> aClass2 = loader.getClass("app.onlyjar.FooOnlyJar");
-        Class<?> aClass3 = loader.getClass("app.onlyzip.FooOnlyZip");
+        Class<?> aClass1 = classLoader.loadClass("app.lib.Foo");
+        Class<?> aClass2 = classLoader.loadClass("app.onlyjar.FooOnlyJar");
+        Class<?> aClass3 = classLoader.loadClass("app.onlyzip.FooOnlyZip");
 
         assert aClass1.getClassLoader() == aClass2.getClassLoader();
         assert aClass2.getClassLoader() == aClass3.getClassLoader();

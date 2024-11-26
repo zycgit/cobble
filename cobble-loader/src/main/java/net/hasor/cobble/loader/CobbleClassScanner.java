@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,36 +14,42 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.loader.ClassMatcher.ClassInfo;
-import net.hasor.cobble.loader.ClassMatcher.ClassMatcherContext;
 import net.hasor.cobble.loader.providers.ClassPathResourceLoader;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ResourceLoader 的 ClassFinder 接口实现
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2021-09-29
  */
-public class CobbleClassScanner {
-    private final ResourceLoader         classLoader;
-    private final Map<String, ClassInfo> classInfoMap = new ConcurrentHashMap<>();
+public class CobbleClassScanner extends CobbleResourceScanner {
 
-    /** Scanner 在进行类扫描的时候将会使用 ClassPathResourceLoader 来扫描资源 */
-    public CobbleClassScanner() {
-        this.classLoader = new ClassPathResourceLoader();
+    private final CobbleClassLoader classLoader;
+
+    /** Scanner using ClassPathResourceLoader scan,load class using new ClassLoader */
+    public CobbleClassScanner(ClassLoader parent) {
+        super(new ClassPathResourceLoader());
+        this.classLoader = this.loader.toClassLoader(parent);
     }
 
-    /** Scanner 在进行类扫描的时候将会使用 ResourceLoader 来扫描资源 */
-    public CobbleClassScanner(ResourceLoader classLoader) {
-        this.classLoader = classLoader;
+    /** Scanner using ClassPathResourceLoader scan,load class using new ClassLoader */
+    public CobbleClassScanner(ClassPathResourceLoader loader) {
+        super(loader);
+        this.classLoader = this.loader.toClassLoader(loader.getClassLoader());
+    }
+
+    /** Scanner using ResourceLoader scan,load class using new ClassLoader */
+    public CobbleClassScanner(ClassLoader parent, ResourceLoader loader) {
+        super(loader);
+        this.classLoader = this.loader.toClassLoader(parent);
+    }
+
+    /** Scanner using loader scan,load class using loader */
+    public CobbleClassScanner(CobbleClassLoader loader) {
+        super(loader.getResourceLoader());
+        this.classLoader = loader;
     }
 
     /**
@@ -53,7 +59,7 @@ public class CobbleClassScanner {
      */
     public Set<Class<?>> getClassSet(String[] loadPackages, Class<?> matcherType) {
         return this.getClassSet(loadPackages, context -> {
-            ClassInfo classInfo = context.getClassInfo();
+            ClassMatcher.ClassInfo classInfo = context.getClassInfo();
             String matcherTypeName = matcherType.getName();
 
             if (classInfo != null) {
@@ -96,151 +102,15 @@ public class CobbleClassScanner {
      * @return 返回扫描结果。
      */
     public Set<Class<?>> getClassSet(String[] loadPackages, ClassMatcher matcher) {
-        String[] packages = new String[loadPackages.length];
-        for (int i = 0; i < loadPackages.length; i++) {
-            packages[i] = loadPackages[i].replace(".", "/");
-        }
+        Set<String> classNamesSet = this.getClassNamesSet(loadPackages, matcher);
+        Set<Class<?>> classes = new HashSet<>();
         try {
-            List<Class<?>> classes = this.classLoader.scanResources(MatchType.Prefix, event -> {
-                String className = event.getName();
-                if (!className.endsWith(".class")) {
-                    return null;
-                } else {
-                    className = className.substring(0, className.length() - 6);
-                    className = className.replace("/", ".");
-                    try {
-                        return testAndLoad(className, matcher);
-                    } catch (ClassNotFoundException e) {
-                        throw new IOException(e);
-                    }
-                }
-            }, packages);
-            return new HashSet<>(classes);
+            for (String className : classNamesSet) {
+                classes.add(this.classLoader.loadClass(className));
+            }
+            return classes;
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    protected Class<?> testAndLoad(String className, ClassMatcher matcher) throws IOException, ClassNotFoundException {
-        ClassInfo classInfo = null;
-        if (this.classInfoMap.containsKey(className)) {
-            classInfo = this.classInfoMap.get(className);
-        }
-        if (classInfo == null) {
-            classInfo = loadClassInfo(className);
-            if (classInfo == null) {
-                return null;
-            }
-            this.classInfoMap.put(className, classInfo);
-        }
-
-        ClassMatcherContext context = new ClassMatcherContext(classInfo) {
-            @Override
-            public ClassInfo loadClass(String className) throws IOException {
-                return loadClassInfo(className);
-            }
-        };
-        if (matcher.matcher(context)) {
-            return this.classLoader.getClass(className);
-        } else {
-            return null;
-        }
-    }
-
-    /** 分析类的字节码，分析过程中会递归解析父类和实现的接口 */
-    public ClassInfo loadClassInfo(String className) throws IOException {
-        try (InputStream classStream = this.classLoader.getResourceAsStream(className.replace('.', '/') + ".class")) {
-            if (classStream == null) {
-                return null;
-            } else {
-                return loadClassInfo(className, classStream);
-            }
-        }
-    }
-
-    /** 分析类的字节码，分析过程中会递归解析父类和实现的接口 */
-    private ClassInfo loadClassInfo(String className, final InputStream inStream) throws IOException {
-        /* use ClassReader read basic info. */
-        ClassReader classReader = new ClassReader(inStream);
-
-        /* read className, parentType, interfaces、annos */
-        final ClassInfo info = new ClassInfo();
-        classReader.accept(new ClassVisitor(Opcodes.ASM9) {
-            @Override
-            public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
-                info.className = name.replace('/', '.');
-                if (superName != null) {
-                    info.superName = superName.replace('/', '.');
-                }
-                info.interFaces = interfaces;
-                for (int i = 0; i < info.interFaces.length; i++) {
-                    info.interFaces[i] = info.interFaces[i].replace('/', '.');
-                }
-                super.visit(version, access, name, signature, superName, interfaces);
-            }
-
-            @Override
-            public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-                /* convert "Ljava/lang/Object;" to "java/lang/Object" */
-                String[] annoArrays = info.annos == null ? new String[0] : info.annos;
-                String[] newAnnoArrays = new String[annoArrays.length + 1];
-                System.arraycopy(annoArrays, 0, newAnnoArrays, 0, annoArrays.length);
-
-                String annnoType = desc.substring(1, desc.length() - 1);
-                newAnnoArrays[newAnnoArrays.length - 1] = annnoType.replace('/', '.');
-                info.annos = newAnnoArrays;
-                return super.visitAnnotation(desc, visible);
-            }
-        }, ClassReader.SKIP_CODE);
-
-        /* parents */
-        if (info.superName != null) {
-            try (InputStream superStream = this.classLoader.getResourceAsStream(info.superName.replace('.', '/') + ".class")) {
-                if (superStream != null) {
-                    this.loadClassInfo(info.superName, superStream);//加载父类
-                }
-            }
-        }
-
-        /* interfaces */
-        for (String faces : info.interFaces) {
-            try (InputStream superStream = this.classLoader.getResourceAsStream(faces.replace('.', '/') + ".class")) {
-                if (superStream != null) {
-                    this.loadClassInfo(faces, superStream);//load parent
-                }
-            }
-        }
-        /* 六、类型链 */
-        Set<String> castTypeList = new TreeSet<>();/* 可转换的类型 */
-        String superName = info.superName;
-        addCastTypeList(info, castTypeList);//this
-
-        if (superName != null) {
-            while (superName != null && this.classInfoMap.containsKey(superName)) {
-                ClassInfo superInfo = this.classInfoMap.get(superName);
-                addCastTypeList(superInfo, castTypeList);//super
-                superName = superInfo.superName;
-            }
-        }
-        info.castType = castTypeList.toArray(new String[0]);
-
-        this.classInfoMap.put(info.className, info);
-        return info;
-    }
-
-    private void addCastTypeList(final ClassInfo info, final Set<String> addTo) {
-        if (info == null) {
-            return;
-        }
-        addTo.add(info.className);
-        if (info.superName != null) {
-            addTo.add(info.superName);
-        }
-        if (info.interFaces != null) {
-            for (String atFaces : info.interFaces) {
-                addTo.add(atFaces);
-                this.addCastTypeList(this.classInfoMap.get(atFaces), addTo);
-            }
         }
     }
 }

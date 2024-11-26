@@ -124,14 +124,15 @@ public class ClassResourceLoaderTests {
 
     @Test
     public void classpathLoaderTest9() throws ClassNotFoundException {
-        ClassPathResourceLoader classLoader1 = new ClassPathResourceLoader();
+        ClassPathResourceLoader resLoader1 = new ClassPathResourceLoader();
 
-        Class<?> clazz1 = classLoader1.getClass(ClassPathResourceLoader.class.getName());
+        CobbleClassLoader classLoader1 = resLoader1.toClassLoader(Thread.currentThread().getContextClassLoader());
+        Class<?> clazz1 = classLoader1.loadClass(ClassPathResourceLoader.class.getName());
         assert clazz1 == ClassPathResourceLoader.class;
 
-        ClassPathResourceLoader classLoader2 = new ClassPathResourceLoader();
-
-        Class<?> clazz2 = classLoader2.getClass(ClassPathResourceLoader.class.getName());
+        ClassPathResourceLoader resLoader2 = new ClassPathResourceLoader();
+        CobbleClassLoader classLoader2 = resLoader2.toClassLoader(Thread.currentThread().getContextClassLoader());
+        Class<?> clazz2 = classLoader2.loadClass(ClassPathResourceLoader.class.getName());
         assert clazz2 == ClassPathResourceLoader.class;
     }
 

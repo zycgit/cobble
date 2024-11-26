@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+
 import net.hasor.cobble.loader.AbstractResourceLoader;
 import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ResourceLoader;
@@ -25,6 +26,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.jar.Manifest;
 
 /**
  * 仅允许将 ResourceLoader 的中的一部分资源设置为 '可见'
@@ -39,22 +41,7 @@ public class ExportResourceLoader extends AbstractResourceLoader {
     private final ResourceLoader resourceLoader;
 
     public ExportResourceLoader(ResourceLoader resourceLoader) {
-        this(null, resourceLoader);
-    }
-
-    public ExportResourceLoader(ClassLoader parent, ResourceLoader resourceLoader) {
-        super(parent);
         this.resourceLoader = resourceLoader;
-    }
-
-    public Class<?> getClass(String className) throws ClassNotFoundException {
-        String resource = className.replace(".", "/") + ".class";
-
-        if (this.exist(resource)) {
-            return resourceLoader.getClass(className);
-        } else {
-            throw new ClassNotFoundException(className);
-        }
     }
 
     public boolean isExportAll() {
@@ -203,5 +190,10 @@ public class ExportResourceLoader extends AbstractResourceLoader {
             return false;
         }
         return this.resourceLoader.exist(resource);
+    }
+
+    @Override
+    public Manifest getManifest(String resource) throws IOException {
+        return resourceLoader.getManifest(resource);
     }
 }

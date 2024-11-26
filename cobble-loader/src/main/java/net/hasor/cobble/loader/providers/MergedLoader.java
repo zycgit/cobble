@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
+import net.hasor.cobble.loader.ResourceLoader;
+
 /**
- * 汇聚多个 ResourceLoader 之后它们之间的类加载的策略
  * @author 赵永春 (zyc@hasor.net)
- * @version : 2021-09-29
+ * @version : 2024-11-26
  */
-public interface ClassLoaderStrategy {
-    /** 隔离策略，多个资源加载器汇聚在一起之后仅仅起到了一个门户的作用。彼此之间 classloader 不共享。 */
-    int ISOLATION = 0;
-    /** 合并策略，多个资源加载器汇聚在一起之后它们之间彼此共享同一个 classloader，相互之间类的引用是可见的。 */
-    int MERGE     = 1;
+public interface MergedLoader {
+    ResourceLoader findLoader(String resource);
 }

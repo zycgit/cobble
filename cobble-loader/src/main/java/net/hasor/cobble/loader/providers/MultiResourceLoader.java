@@ -27,59 +27,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
+import java.util.jar.Manifest;
 
 /**
  * 可以将不同的 ResourceLoader 汇聚到一起，不具备 '可见性' 控制。实现更加简单、效率更高。
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2021-09-29
  */
-public class MultiResourceLoader extends AbstractResourceLoader implements ClassLoaderStrategy {
+public class MultiResourceLoader extends AbstractResourceLoader implements MergedLoader {
+
     private final List<ResourceLoader> loaders = new CopyOnWriteArrayList<>();
-    private final int                  classLoadMode;
 
     /**
      * Creates a new multi resource Loader that will use the specified loaders.
      * @param loaders the loaders that are used to load resources.
      */
-    public MultiResourceLoader(int mode, ResourceLoader... loaders) {
-        this(mode, null, loaders);
-    }
-
-    /**
-     * Creates a new multi resource Loader that will use the specified loaders.
-     * @param loaders the loaders that are used to load resources.
-     */
-    public MultiResourceLoader(int mode, ClassLoader parent, ResourceLoader... loaders) {
-        super(parent);
-        this.classLoadMode = mode;
-
+    public MultiResourceLoader(ResourceLoader... loaders) {
         if (loaders == null) {
             return;
         }
         for (ResourceLoader loader : loaders) {
             addLoader(loader);
-        }
-    }
-
-    public Class<?> getClass(String className) throws ClassNotFoundException {
-        if (classLoadMode == ISOLATION) {
-            return this.loadClassByIsolation(className);
-        } else {
-            return this.loadClassByMerge(className);
-        }
-    }
-
-    private Class<?> loadClassByMerge(String className) throws ClassNotFoundException {
-        return super.getClass(className);
-    }
-
-    private Class<?> loadClassByIsolation(String className) throws ClassNotFoundException {
-        String resource = className.replace(".", "/") + ".class";
-        ResourceLoader loader = findLoader(resource);
-        if (loader == null) {
-            throw new ClassNotFoundException(className);
-        } else {
-            return loader.getClass(className);
         }
     }
 
@@ -93,7 +61,8 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Class
         }
     }
 
-    protected ResourceLoader findLoader(String resource) {
+    @Override
+    public ResourceLoader findLoader(String resource) {
         for (ResourceLoader loads : this.loaders) {
             if (loads != null && loads.exist(resource)) {
                 return loads;
@@ -164,5 +133,11 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Class
             }
         }
         return null;
+    }
+
+    @Override
+    public Manifest getManifest(String resource) throws IOException {
+        ResourceLoader loader = findLoader(resource);
+        return loader == null ? null : loader.getManifest(resource);
     }
 }

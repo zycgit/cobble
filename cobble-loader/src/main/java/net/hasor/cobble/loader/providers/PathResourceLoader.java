@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 /**
@@ -40,21 +41,13 @@ import java.util.stream.Collectors;
  */
 public class PathResourceLoader extends AbstractResourceLoader {
     private final List<File> dirPathList;
+    private       Manifest   manifest = null;
 
     public PathResourceLoader() {
-        this(null, null);
+        this(null);
     }
 
     public PathResourceLoader(File dirFile) {
-        this(null, dirFile);
-    }
-
-    public PathResourceLoader(ClassLoader parent) {
-        this(parent, null);
-    }
-
-    public PathResourceLoader(ClassLoader parent, File dirFile) {
-        super(parent);
         this.dirPathList = new ArrayList<>();
         if (dirFile != null) {
             this.addPath(dirFile);
@@ -221,5 +214,20 @@ public class PathResourceLoader extends AbstractResourceLoader {
             }
         }
         return null;
+    }
+
+    @Override
+    public Manifest getManifest(String resource) throws IOException {
+        if (manifest != null) {
+            return manifest;
+        }
+        for (File file : dirPathList) {
+            if (file.exists() && file.isFile() && file.getName().equalsIgnoreCase("MANIFEST.MF")) {
+                try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+                    manifest = new Manifest(inputStream);
+                }
+            }
+        }
+        return manifest;
     }
 }

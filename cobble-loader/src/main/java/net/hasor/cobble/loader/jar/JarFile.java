@@ -358,7 +358,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
         this.entries.clearCache();
     }
 
-    protected String getPathFromRoot() {
+    public String getPathFromRoot() {
         return this.pathFromRoot;
     }
 

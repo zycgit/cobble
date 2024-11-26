@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
@@ -49,21 +50,20 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     private final        ClassLoader    classLoader;
     private final        List<URL>      classpath;
     private final        String[]       ZIP_TYPES = new String[] { ".jar", ".JAR", ".zip", ".ZIP" };
+    private              Manifest       manifest  = null;
 
     public ClassPathResourceLoader() {
-        super(Thread.currentThread().getContextClassLoader());
         this.classLoader = Thread.currentThread().getContextClassLoader();
         this.classpath = getClassPath(this.classLoader);
     }
 
     public ClassPathResourceLoader(ClassLoader parent) {
-        super(parent);
         this.classLoader = Objects.requireNonNull(parent);
         this.classpath = getClassPath(this.classLoader);
     }
 
-    public Class<?> getClass(String className) throws ClassNotFoundException {
-        return this.classLoader.loadClass(className);
+    public ClassLoader getClassLoader() {
+        return this.classLoader;
     }
 
     /** 获取ClassPath路径 */
@@ -207,7 +207,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                     }
 
                     try {
-                        JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
+                        JarFile jarFile = new JarFile(contextDir);
                         jarScan(result, jarFile, testJar, scanner, true);
                     } catch (Exception e) {
                         logger.error("cannot open jar (" + jarName + ") " + e.getMessage(), e);
@@ -324,5 +324,28 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
             }
             return false;
         }
+    }
+
+    @Override
+    public Manifest getManifest(String resource) throws IOException {
+        if (manifest != null) {
+            return manifest;
+        }
+        //classpath:/META-INF/MANIFEST.MF, 从classpath中获取
+        for (URL url : classpath) {
+            if (url.getProtocol().equals("file")) {
+                File file = FileUtils.toFile(url);
+                if (file != null && file.isDirectory()) {
+                    file = new File(file, "META-INF/MANIFEST.MF");
+                    if (file.exists()) {
+                        try {
+                            manifest = new Manifest(Files.newInputStream(file.toPath()));
+                        } catch (IOException ignored) {
+                        }
+                    }
+                }
+            }
+        }
+        return manifest;
     }
 }
