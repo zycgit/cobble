@@ -41,9 +41,17 @@ public class Annotations {
     public Annotation getAnnotation(Class<?> annoType) {
         if (annoType == null) {
             return null;
+        } else {
+            return getAnnotation(annoType.getName());
+        }
+    }
+
+    public Annotation getAnnotation(String annoType) {
+        if (annoType == null) {
+            return null;
         }
 
-        List<Annotation> annotations = this.typeData.get(annoType.getName());
+        List<Annotation> annotations = this.typeData.get(annoType);
         if (annotations == null || annotations.isEmpty()) {
             return null;
         } else {
@@ -53,10 +61,18 @@ public class Annotations {
 
     public List<Annotation> getAnnotations(Class<?> annoType) {
         if (annoType == null) {
+            return null;
+        } else {
+            return getAnnotations(annoType.getName());
+        }
+    }
+
+    public List<Annotation> getAnnotations(String annoType) {
+        if (annoType == null) {
             return Collections.emptyList();
         }
 
-        List<Annotation> annotations = this.typeData.get(annoType.getName());
+        List<Annotation> annotations = this.typeData.get(annoType);
         if (annotations == null || annotations.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -78,6 +94,14 @@ public class Annotations {
     }
 
     public Annotation getField(String field, Class<?> annoType) {
+        if (field == null || annoType == null) {
+            return null;
+        } else {
+            return getField(field, annoType.getName());
+        }
+    }
+
+    public Annotation getField(String field, String annoType) {
         if (StringUtils.isBlank(field)) {
             return null;
         }
@@ -91,6 +115,14 @@ public class Annotations {
     }
 
     public List<Annotation> getFields(String field, Class<?> annoType) {
+        if (field == null || annoType == null) {
+            return null;
+        } else {
+            return getFields(field, annoType.getName());
+        }
+    }
+
+    public List<Annotation> getFields(String field, String annoType) {
         if (StringUtils.isBlank(field)) {
             return Collections.emptyList();
         }
@@ -117,6 +149,14 @@ public class Annotations {
     }
 
     public Annotation getMethod(String methodDesc, Class<?> annoType) {
+        if (methodDesc == null || annoType == null) {
+            return null;
+        } else {
+            return getMethod(methodDesc, annoType.getName());
+        }
+    }
+
+    public Annotation getMethod(String methodDesc, String annoType) {
         if (StringUtils.isBlank(methodDesc)) {
             return null;
         }
@@ -130,6 +170,14 @@ public class Annotations {
     }
 
     public List<Annotation> getMethods(String methodDesc, Class<?> annoType) {
+        if (methodDesc == null || annoType == null) {
+            return null;
+        } else {
+            return getMethods(methodDesc, annoType.getName());
+        }
+    }
+
+    public List<Annotation> getMethods(String methodDesc, String annoType) {
         if (StringUtils.isBlank(methodDesc)) {
             return Collections.emptyList();
         }
