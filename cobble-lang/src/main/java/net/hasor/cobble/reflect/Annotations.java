@@ -21,6 +21,7 @@ import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -83,25 +84,20 @@ public class Annotations {
     public Annotations getField(String field) {
         if (StringUtils.isBlank(field)) {
             return null;
+        } else {
+            return this.fieldData.get(field);
         }
-
-        Annotations annotations = this.fieldData.get(field);
-        if (annotations == null) {
-            return null;
-        }
-
-        return annotations;
     }
 
-    public Annotation getField(String field, Class<?> annoType) {
+    public Annotation getFieldAnnotation(String field, Class<?> annoType) {
         if (field == null || annoType == null) {
             return null;
         } else {
-            return getField(field, annoType.getName());
+            return getFieldAnnotation(field, annoType.getName());
         }
     }
 
-    public Annotation getField(String field, String annoType) {
+    public Annotation getFieldAnnotation(String field, String annoType) {
         if (StringUtils.isBlank(field)) {
             return null;
         }
@@ -109,20 +105,20 @@ public class Annotations {
         Annotations annotations = this.fieldData.get(field);
         if (annotations == null) {
             return null;
+        } else {
+            return annotations.getAnnotation(annoType);
         }
-
-        return annotations.getAnnotation(annoType);
     }
 
-    public List<Annotation> getFields(String field, Class<?> annoType) {
+    public List<Annotation> getFieldAnnotations(String field, Class<?> annoType) {
         if (field == null || annoType == null) {
             return null;
         } else {
-            return getFields(field, annoType.getName());
+            return getFieldAnnotations(field, annoType.getName());
         }
     }
 
-    public List<Annotation> getFields(String field, String annoType) {
+    public List<Annotation> getFieldAnnotations(String field, String annoType) {
         if (StringUtils.isBlank(field)) {
             return Collections.emptyList();
         }
@@ -130,33 +126,46 @@ public class Annotations {
         Annotations annotations = this.fieldData.get(field);
         if (annotations == null) {
             return Collections.emptyList();
+        } else {
+            return annotations.getAnnotations(annoType);
         }
+    }
 
-        return annotations.getAnnotations(annoType);
+    public Annotations getMethod(Method methodDesc) {
+        if (methodDesc == null) {
+            return null;
+        } else {
+            return getMethod(toMethodName(methodDesc.getName(), methodDesc.getParameterTypes()));
+        }
     }
 
     public Annotations getMethod(String methodDesc) {
         if (StringUtils.isBlank(methodDesc)) {
             return null;
+        } else {
+            return this.methodData.get(methodDesc);
         }
-
-        Annotations annotations = this.methodData.get(methodDesc);
-        if (annotations == null) {
-            return null;
-        }
-
-        return annotations;
     }
 
-    public Annotation getMethod(String methodDesc, Class<?> annoType) {
-        if (methodDesc == null || annoType == null) {
+    public Annotation getMethodAnnotation(Method method, Class<?> annoType) {
+        if (method == null || annoType == null) {
             return null;
         } else {
-            return getMethod(methodDesc, annoType.getName());
+            String methodDesc = toMethodName(method.getName(), method.getParameterTypes());
+            return getMethodAnnotation(methodDesc, annoType.getName());
         }
     }
 
-    public Annotation getMethod(String methodDesc, String annoType) {
+    public Annotation getMethodAnnotation(Method method, String annoType) {
+        if (method == null || StringUtils.isBlank(annoType)) {
+            return null;
+        } else {
+            String methodDesc = toMethodName(method.getName(), method.getParameterTypes());
+            return getMethodAnnotation(methodDesc, annoType);
+        }
+    }
+
+    public Annotation getMethodAnnotation(String methodDesc, String annoType) {
         if (StringUtils.isBlank(methodDesc)) {
             return null;
         }
@@ -164,20 +173,30 @@ public class Annotations {
         Annotations annotations = this.methodData.get(methodDesc);
         if (annotations == null) {
             return null;
+        } else {
+            return annotations.getAnnotation(annoType);
         }
-
-        return annotations.getAnnotation(annoType);
     }
 
-    public List<Annotation> getMethods(String methodDesc, Class<?> annoType) {
-        if (methodDesc == null || annoType == null) {
+    public List<Annotation> getMethodAnnotations(Method method, Class<?> annoType) {
+        if (method == null || annoType == null) {
             return null;
         } else {
-            return getMethods(methodDesc, annoType.getName());
+            String methodDesc = toMethodName(method.getName(), method.getParameterTypes());
+            return getMethodAnnotations(methodDesc, annoType.getName());
         }
     }
 
-    public List<Annotation> getMethods(String methodDesc, String annoType) {
+    public List<Annotation> getMethodAnnotations(Method method, String annoType) {
+        if (method == null || StringUtils.isBlank(annoType)) {
+            return null;
+        } else {
+            String methodDesc = toMethodName(method.getName(), method.getParameterTypes());
+            return getMethodAnnotations(methodDesc, annoType);
+        }
+    }
+
+    public List<Annotation> getMethodAnnotations(String methodDesc, String annoType) {
         if (StringUtils.isBlank(methodDesc)) {
             return Collections.emptyList();
         }
@@ -185,9 +204,9 @@ public class Annotations {
         Annotations annotations = this.methodData.get(methodDesc);
         if (annotations == null) {
             return Collections.emptyList();
+        } else {
+            return annotations.getAnnotations(annoType);
         }
-
-        return annotations.getAnnotations(annoType);
     }
 
     public void putTypeData(String name, Annotation value) {
