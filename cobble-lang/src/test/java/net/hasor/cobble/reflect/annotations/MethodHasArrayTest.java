@@ -10,7 +10,7 @@ public class MethodHasArrayTest {
     @Test
     public void booleanArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasBooleanArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayBooleanDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayBooleanDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 2;
@@ -53,7 +53,7 @@ public class MethodHasArrayTest {
     @Test
     public void byteArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasByteArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayByteDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayByteDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -105,7 +105,7 @@ public class MethodHasArrayTest {
     @Test
     public void shortArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasShortArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayShortDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayShortDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -157,7 +157,7 @@ public class MethodHasArrayTest {
     @Test
     public void intArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasIntegerArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayIntegerDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayIntegerDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -209,7 +209,7 @@ public class MethodHasArrayTest {
     @Test
     public void longArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasLongArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayLongDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayLongDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -261,7 +261,7 @@ public class MethodHasArrayTest {
     @Test
     public void floatArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasFloatArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayFloatDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayFloatDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -313,7 +313,7 @@ public class MethodHasArrayTest {
     @Test
     public void doubleArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasDoubleArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayDoubleDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayDoubleDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -365,7 +365,7 @@ public class MethodHasArrayTest {
     @Test
     public void stringArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(MethodHasStringArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayStringDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayStringDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 2;
@@ -408,7 +408,7 @@ public class MethodHasArrayTest {
     @Test
     public void classArray_Test() throws IOException, ClassNotFoundException {
         Annotations annotations = Annotations.ofClass(MethodHasClassArrayTestBean.class);
-        Annotation annotation = annotations.getMethod(Annotations.toMethodName("filed"), ArrayClassDim1.class);
+        Annotation annotation = annotations.getMethodAnnotation(Annotations.toMethodName("filed"), ArrayClassDim1.class);
 
         assert annotation.getString("value").equals(MethodHasStringArrayTestBean.class.getName());
         assert annotation.getStringArray("value").size() == 2;

@@ -94,24 +94,23 @@ public class ResourcesUtils {
 
     /** 获取 classpath 中可能存在的资源。 */
     public static URL getResource(String resourcePath) throws IOException {
-        if (StringUtils.isBlank(resourcePath)) {
-            return null;
-        }
-        //
-        if (resourcePath.startsWith("classpath:")) {
-            resourcePath = resourcePath.substring("classpath:".length());
-            return getResource(getCurrentLoader(), resourcePath);
-        } else if (resourcePath.startsWith("http:") || resourcePath.startsWith("https:") || resourcePath.startsWith("file:") || resourcePath.startsWith("jar:") || resourcePath.startsWith("ftp:")) {
-            return new URL(resourcePath);
-        } else {
-            return getResource(getCurrentLoader(), resourcePath);
-        }
+        return getResource(getCurrentLoader(), resourcePath);
     }
 
     /** 获取 classpath 中可能存在的资源。 */
     public static URL getResource(ClassLoader classLoader, String resourcePath) throws IOException {
-        resourcePath = formatResource(resourcePath);
-        return classLoader.getResource(resourcePath);
+        if (StringUtils.isBlank(resourcePath)) {
+            return null;
+        }
+
+        if (resourcePath.startsWith("classpath:")) {
+            resourcePath = resourcePath.substring("classpath:".length());
+            return classLoader.getResource(formatResource(resourcePath));
+        } else if (resourcePath.startsWith("http:") || resourcePath.startsWith("https:") || resourcePath.startsWith("file:") || resourcePath.startsWith("jar:") || resourcePath.startsWith("ftp:")) {
+            return new URL(resourcePath);
+        } else {
+            return classLoader.getResource(formatResource(resourcePath));
+        }
     }
 
     /** 获取 classpath 中可能存在的资源列表。 */
@@ -122,14 +121,14 @@ public class ResourcesUtils {
     /** 获取 classpath 中可能存在的资源列表。 */
     public static List<URL> getResources(ClassLoader classLoader, String resourcePath) throws IOException {
         if (resourcePath == null) {
-            return new ArrayList<>(0);
+            return Collections.emptyList();
         }
-        //
+
         resourcePath = formatResource(resourcePath);
         ArrayList<URL> urls = new ArrayList<>();
-        Enumeration<URL> urlEnumeration = classLoader.getResources(resourcePath);
-        while (urlEnumeration.hasMoreElements()) {
-            URL url = urlEnumeration.nextElement();
+        Enumeration<URL> enumeration = classLoader.getResources(resourcePath);
+        while (enumeration.hasMoreElements()) {
+            URL url = enumeration.nextElement();
             urls.add(url);
         }
         return urls;
@@ -152,8 +151,9 @@ public class ResourcesUtils {
         URL resource = getResource(resourcePath);
         if (resource == null) {
             return null;
+        } else {
+            return getResourceAsStream(getCurrentLoader(), resource);
         }
-        return getResourceAsStream(getCurrentLoader(), resource);
     }
 
     /** 获取classpath中可能存在的资源，以流的形式返回。 */
@@ -168,15 +168,7 @@ public class ResourcesUtils {
 
     /** 获取classpath中可能存在的资源，以流的形式返回。 */
     public static InputStream getResourceAsStream(ClassLoader classLoader, String resourcePath) throws IOException {
-        resourcePath = formatResource(resourcePath);
-        URL resource;
-        if (classLoader != null) {
-            resource = classLoader.getResource(resourcePath);
-        } else {
-            classLoader = getCurrentLoader();
-            resource = getResource(resourcePath);
-        }
-
+        URL resource = getResource(classLoader, resourcePath);
         if (resource == null) {
             return null;
         }

@@ -165,6 +165,14 @@ public class Annotations {
         }
     }
 
+    public Annotation getMethodAnnotation(String methodDesc, Class<?> annoType) {
+        if (StringUtils.isBlank(methodDesc) || annoType == null) {
+            return null;
+        } else {
+            return getMethodAnnotation(methodDesc, annoType.getName());
+        }
+    }
+
     public Annotation getMethodAnnotation(String methodDesc, String annoType) {
         if (StringUtils.isBlank(methodDesc)) {
             return null;

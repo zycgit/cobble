@@ -10,7 +10,7 @@ public class FieldHasArrayTest {
     @Test
     public void booleanArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasBooleanArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayBooleanDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayBooleanDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 2;
@@ -53,7 +53,7 @@ public class FieldHasArrayTest {
     @Test
     public void byteArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasByteArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayByteDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayByteDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -105,7 +105,7 @@ public class FieldHasArrayTest {
     @Test
     public void shortArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasShortArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayShortDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayShortDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -157,7 +157,7 @@ public class FieldHasArrayTest {
     @Test
     public void intArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasIntegerArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayIntegerDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayIntegerDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -209,7 +209,7 @@ public class FieldHasArrayTest {
     @Test
     public void longArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasLongArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayLongDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayLongDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -261,7 +261,7 @@ public class FieldHasArrayTest {
     @Test
     public void floatArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasFloatArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayFloatDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayFloatDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -313,7 +313,7 @@ public class FieldHasArrayTest {
     @Test
     public void doubleArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasDoubleArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayDoubleDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayDoubleDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 3;
@@ -365,7 +365,7 @@ public class FieldHasArrayTest {
     @Test
     public void stringArray_Test() throws IOException {
         Annotations annotations = Annotations.ofClass(FieldHasStringArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayStringDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayStringDim1.class);
 
         assert annotation.getBoolean("value");
         assert annotation.getBooleanArray("value").size() == 2;
@@ -408,7 +408,7 @@ public class FieldHasArrayTest {
     @Test
     public void classArray_Test() throws IOException, ClassNotFoundException {
         Annotations annotations = Annotations.ofClass(FieldHasClassArrayTestBean.class);
-        Annotation annotation = annotations.getField("filed", ArrayClassDim1.class);
+        Annotation annotation = annotations.getFieldAnnotation("filed", ArrayClassDim1.class);
 
         assert annotation.getString("value").equals(FieldHasStringArrayTestBean.class.getName());
         assert annotation.getStringArray("value").size() == 2;
