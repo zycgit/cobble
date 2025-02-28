@@ -217,6 +217,8 @@ public class I18nUtils {
                 }
             }
         }
+
+        i18nLoaded.clear();
     }
 
     public void loadResources(Class<?>... i18nResources) throws IOException {
@@ -246,6 +248,8 @@ public class I18nUtils {
                 }
             }
         }
+
+        i18nLoaded.clear();
     }
 
     /** 添加可替换变量 */
