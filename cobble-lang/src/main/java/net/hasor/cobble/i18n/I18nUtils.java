@@ -101,7 +101,7 @@ public class I18nUtils {
 
     private static class I18nMessageSourceImpl implements I18nMessageSource {
         private final Map<String, String>              defaultDictionary = new ConcurrentHashMap<>();
-        private final Map<String, Map<Locale, String>> i18nDictionary    = new ConcurrentHashMap<>();
+        private final Map<String, Map<String, String>> i18nDictionary    = new ConcurrentHashMap<>();
 
         @Override
         public String getMessage(String code, Object[] args, Locale locale) {
@@ -109,14 +109,15 @@ public class I18nUtils {
                 locale = Locale.getDefault();
             }
 
-            Map<Locale, String> localeMap = this.i18nDictionary.get(code);
-            if (localeMap == null || !localeMap.containsKey(locale)) {
+            String localeKey = toI18nKey(locale);
+            Map<String, String> localeMap = this.i18nDictionary.get(code);
+            if (localeMap == null || !localeMap.containsKey(localeKey)) {
                 if (this.defaultDictionary.containsKey(code)) {
                     return this.defaultDictionary.get(code);
                 }
                 return null;
             }
-            return localeMap.get(locale);
+            return localeMap.get(localeKey);
         }
 
         public void putDictionary(String code, String message) {
@@ -131,7 +132,9 @@ public class I18nUtils {
             if (!this.i18nDictionary.containsKey(code)) {
                 this.i18nDictionary.put(code, new ConcurrentHashMap<>());
             }
-            this.i18nDictionary.get(code).put(locale, message);
+
+            String localeKey = toI18nKey(locale);
+            this.i18nDictionary.get(code).put(localeKey, message);
         }
     }
 
