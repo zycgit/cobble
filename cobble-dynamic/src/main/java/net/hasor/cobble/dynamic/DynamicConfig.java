@@ -138,6 +138,9 @@ public class DynamicConfig {
     public void addAopInterceptor(Predicate<Method> matcher, MethodInterceptor... interceptors) {
         Objects.requireNonNull(matcher, "args matcher is null.");
         Objects.requireNonNull(interceptors, "args interceptors is null.");
+        if (interceptors.length == 0) {
+            return;
+        }
 
         Method[] targetMethodArrays = this.getSuperClass().getMethods();
         for (Method targetMethod : targetMethodArrays) {
