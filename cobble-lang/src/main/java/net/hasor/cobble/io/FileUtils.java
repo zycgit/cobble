@@ -20,6 +20,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -858,5 +859,15 @@ public class FileUtils {
                 walkAppend(parent, false, filter, append, depth--);
             }
         }
+    }
+
+    public static String readableFileSize(long size) {
+        if (size <= 0) {
+            return "0";
+        }
+
+        final String[] units = new String[] { "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB", "BB", "NB", "DB", "CB", "XB" };
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }
