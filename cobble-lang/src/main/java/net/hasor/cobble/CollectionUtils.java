@@ -548,4 +548,16 @@ public class CollectionUtils {
 
         waitInsert.add(pos, item);
     }
+
+    /** 将一个 List 按照 groupBy 函数进行分组 */
+    public static <T, G> Map<G, List<T>> groupBy(List<T> list, Function<T, G> groupBy) {
+        if (list == null) {
+            return Collections.emptyMap();
+        }
+        Map<G, List<T>> groupMap = new HashMap<>();
+        for (T t : list) {
+            groupMap.computeIfAbsent(groupBy.apply(t), k -> new ArrayList<>()).add(t);
+        }
+        return groupMap;
+    }
 }
