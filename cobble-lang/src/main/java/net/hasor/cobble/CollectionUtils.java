@@ -551,12 +551,17 @@ public class CollectionUtils {
 
     /** 将一个 List 按照 groupBy 函数进行分组 */
     public static <T, G> Map<G, List<T>> groupBy(List<T> list, Function<T, G> groupBy) {
+        return groupBy(list, groupBy, t -> t);
+    }
+
+    /** 将一个 List 按照 groupBy 函数进行分组并使用 convert 函数进行转换 */
+    public static <T, G, V> Map<G, List<V>> groupBy(List<T> list, Function<T, G> groupBy, Function<T, V> convert) {
         if (list == null) {
             return Collections.emptyMap();
         }
-        Map<G, List<T>> groupMap = new HashMap<>();
+        Map<G, List<V>> groupMap = new HashMap<>();
         for (T t : list) {
-            groupMap.computeIfAbsent(groupBy.apply(t), k -> new ArrayList<>()).add(t);
+            groupMap.computeIfAbsent(groupBy.apply(t), k -> new ArrayList<>()).add(convert.apply(t));
         }
         return groupMap;
     }

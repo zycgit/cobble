@@ -40,12 +40,60 @@ public class Tuple {
         return new Tuple(values);
     }
 
+    public <T> T get0() {
+        return this.getByIndex(0);
+    }
+
+    public <T> T get1() {
+        return this.getByIndex(1);
+    }
+
+    public <T> T get2() {
+        return this.getByIndex(2);
+    }
+
+    public <T> T get3() {
+        return this.getByIndex(3);
+    }
+
+    public <T> T get4() {
+        return this.getByIndex(4);
+    }
+
+    public <T> T get5() {
+        return this.getByIndex(5);
+    }
+
+    public <T> T get6() {
+        return this.getByIndex(6);
+    }
+
+    public <T> T get7() {
+        return this.getByIndex(7);
+    }
+
+    public <T> T get8() {
+        return this.getByIndex(8);
+    }
+
+    public <T> T get9() {
+        return this.getByIndex(9);
+    }
+
+    private <T> T getByIndex(int index) {
+        if (this.values.size() > index) {
+            return (T) this.values.get(index);
+        } else {
+            return null;
+        }
+    }
+
     public Object[] toArray() {
         return this.values.toArray();
     }
 
-    public List<Object> toList() {
-        return this.values;
+    public <T> List<T> toList() {
+        return (List<T>) this.values;
     }
 
     @Override

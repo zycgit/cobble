@@ -925,6 +925,14 @@ public class IOUtils {
     }
 
     public static String readToString(Reader input) throws IOException {
+        return readToString(input, -1);
+    }
+
+    public static String readToString(Reader input, int len) throws IOException {
+        if (len == 0) {
+            return "";
+        }
+
         List<String> stringList = readLines(input);
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < stringList.size(); i++) {
@@ -933,8 +941,17 @@ public class IOUtils {
             }
             String str = stringList.get(i);
             builder.append(str);
+
+            if (len > 0 && builder.length() >= len) {
+                break;
+            }
         }
-        return builder.toString();
+
+        if (builder.length() >= len) {
+            return builder.substring(0, len);
+        } else {
+            return builder.toString();
+        }
     }
     // lineIterator
     //-----------------------------------------------------------------------
