@@ -912,15 +912,18 @@ public class IOUtils {
     }
 
     public static String readToString(InputStream input, String charset) throws IOException {
-        List<String> stringList = readLines(input, charset);
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < stringList.size(); i++) {
-            if (i > 0) {
-                builder.append("\n");
-            }
-            String str = stringList.get(i);
-            builder.append(str);
+        if (input == null) {
+            return null;
         }
+
+        InputStreamReader reader = new InputStreamReader(input, Charsets.toCharset(charset));
+        StringBuilder builder = new StringBuilder();
+        char[] buffer = new char[8192];
+        int charsRead;
+        while ((charsRead = reader.read(buffer)) != -1) {
+            builder.append(buffer, 0, charsRead);
+        }
+
         return builder.toString();
     }
 
@@ -933,22 +936,23 @@ public class IOUtils {
     }
 
     public static String readToString(Reader input, long len) throws IOException {
-        if (len == 0) {
+        if (input == null) {
+            return null;
+        } else if (len == 0) {
             return "";
         }
 
-        BufferedReader reader = IOUtils.toBufferedReader(input);
         StringBuilder builder = new StringBuilder();
         char[] buffer = new char[8192];
         int charsRead;
 
         if (len < 0) {
-            while ((charsRead = reader.read(buffer)) != -1) {
+            while ((charsRead = input.read(buffer)) != -1) {
                 builder.append(buffer, 0, charsRead);
             }
         } else {
             long readLen = len;
-            while ((charsRead = reader.read(buffer)) != -1) {
+            while ((charsRead = input.read(buffer)) != -1) {
                 if (readLen >= charsRead) {
                     builder.append(buffer, 0, charsRead);
                     readLen -= charsRead;
