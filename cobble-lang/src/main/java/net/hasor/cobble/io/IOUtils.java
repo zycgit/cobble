@@ -925,33 +925,41 @@ public class IOUtils {
     }
 
     public static String readToString(Reader input) throws IOException {
-        return readToString(input, -1);
+        return readToString(input, (long) -1);
     }
 
     public static String readToString(Reader input, int len) throws IOException {
+        return readToString(input, (long) len);
+    }
+
+    public static String readToString(Reader input, long len) throws IOException {
         if (len == 0) {
             return "";
         }
 
-        List<String> stringList = readLines(input);
+        BufferedReader reader = IOUtils.toBufferedReader(input);
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < stringList.size(); i++) {
-            if (i > 0) {
-                builder.append("\n");
-            }
-            String str = stringList.get(i);
-            builder.append(str);
+        char[] buffer = new char[8192];
+        int charsRead;
 
-            if (len > 0 && builder.length() >= len) {
-                break;
+        if (len < 0) {
+            while ((charsRead = reader.read(buffer)) != -1) {
+                builder.append(buffer, 0, charsRead);
             }
-        }
-
-        if (builder.length() >= len) {
-            return builder.substring(0, len);
         } else {
-            return builder.toString();
+            long readLen = len;
+            while ((charsRead = reader.read(buffer)) != -1) {
+                if (readLen >= charsRead) {
+                    builder.append(buffer, 0, charsRead);
+                    readLen -= charsRead;
+                } else {
+                    builder.append(buffer, 0, (int) readLen);
+                    break;
+                }
+            }
         }
+
+        return builder.toString();
     }
     // lineIterator
     //-----------------------------------------------------------------------
