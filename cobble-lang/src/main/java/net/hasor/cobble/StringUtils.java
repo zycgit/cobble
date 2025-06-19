@@ -397,6 +397,90 @@ public class StringUtils {
         }
         return ((st > 0) || (len < val.length)) ? str.substring(st, len) : str;
     }
+
+    /**
+     * <pre>
+     * StringUtils.trimBlank(null)              = null
+     * StringUtils.trimBlank("")                = ""
+     * StringUtils.trimBlank("  \n   ")         = ""
+     * StringUtils.trimBlank("abc")             = "abc"
+     * StringUtils.trimBlank("  \n  abc  \n  ") = "abc  \n  "
+     * StringUtils.trimBlank("1111abc1111")     = "1111abc1111"
+     * </pre>
+     * @param str the String to be trimmed, may be null
+     * @return the trimmed String, or an empty String if <code>null</code> input
+     */
+    public static String trimBlankStart(final String str) {
+        if (str == null || str.equals("")) {
+            return str;
+        }
+
+        char[] val = str.toCharArray();
+        int len = val.length;
+        int st = 0;
+
+        while ((st < len) && Character.isWhitespace(val[st])) {
+            st++;
+        }
+        return st > 0 ? str.substring(st, len) : str;
+    }
+
+    /**
+     * <pre>
+     * StringUtils.trimBlank(null)              = null
+     * StringUtils.trimBlank("")                = ""
+     * StringUtils.trimBlank("  \n   ")         = ""
+     * StringUtils.trimBlank("abc")             = "abc"
+     * StringUtils.trimBlank("  \n  abc  \n  ") = "  \n  abc"
+     * StringUtils.trimBlank("1111abc1111")     = "1111abc1111"
+     * </pre>
+     * @param str the String to be trimmed, may be null
+     * @return the trimmed String, or an empty String if <code>null</code> input
+     */
+    public static String trimBlankEnd(final String str) {
+        if (str == null || str.equals("")) {
+            return str;
+        }
+
+        char[] val = str.toCharArray();
+        int len = val.length;
+        int st = 0;
+
+        while ((st < len) && Character.isWhitespace(val[len - 1])) {
+            len--;
+        }
+        return len < val.length ? str.substring(st, len) : str;
+    }
+
+    /**
+     * <pre>
+     * StringUtils.trimBlank(null)              = null
+     * StringUtils.trimBlank("")                = ""
+     * StringUtils.trimBlank("  \n   ")         = ""
+     * StringUtils.trimBlank("abc")             = "abc"
+     * StringUtils.trimBlank("  \n  abc  \n  ") = "abc"
+     * StringUtils.trimBlank("1111abc1111")     = "1111abc1111"
+     * </pre>
+     * @param str the String to be trimmed, may be null
+     * @return the trimmed String, or an empty String if <code>null</code> input
+     */
+    public static String trimBlank(final String str) {
+        if (str == null || str.equals("")) {
+            return str;
+        }
+
+        char[] val = str.toCharArray();
+        int len = val.length;
+        int st = 0;
+
+        while ((st < len) && Character.isWhitespace(val[st])) {
+            st++;
+        }
+        while ((st < len) && Character.isWhitespace(val[len - 1])) {
+            len--;
+        }
+        return ((st > 0) || (len < val.length)) ? str.substring(st, len) : str;
+    }
     // Stripping
     //-----------------------------------------------------------------------
 
