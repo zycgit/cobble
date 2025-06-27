@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.hasor</groupId>
     <artifactId>cobble-parent</artifactId>
-    <version>4.7.1</version>
+    <version>4.7.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- 项目信息 -->
@@ -31,10 +31,10 @@
 
     <!-- SCM -->
     <scm>
-        <connection>scm:git:git@git.oschina.net:zycgit/cobble.git</connection>
-        <developerConnection>scm:git:git@git.oschina.net:zycgit/cobble.git</developerConnection>
-        <url>git@git.oschina.net:zycgit/cobble.git</url>
-        <tag>Release.Cobble-4.7.1</tag>
+        <connection>scm:git:git@gitee.com:zycgit/cobble.git</connection>
+        <developerConnection>scm:git:git@gitee.com:zycgit/cobble.git</developerConnection>
+        <url>https://gitee.com/zycgit/cobble</url>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
