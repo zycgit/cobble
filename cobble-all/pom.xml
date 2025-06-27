@@ -36,7 +36,7 @@
 
     <properties>
         <generatedSourceDir>${project.build.directory}/src</generatedSourceDir>
-        <javadocs.bottom><![CDATA[ [<a target="_blank" href="http://www.hasor.net">Web Site</a>] ]]></javadocs.bottom>
+        <javadocs.bottom><![CDATA[ [<a target="_blank" href="https://www.hasor.net">Web Site</a>] ]]></javadocs.bottom>
     </properties>
 
     <build>
@@ -76,7 +76,7 @@
                     <excludePackageNames>net.hasor.cobble.setting.provider.yaml.lib.*,net.hasor.cobble.dynamic.asm.*</excludePackageNames>
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
-                    <header><![CDATA[ [<a target="_blank" href="http://www.hasor.net">Web Site</a>] ]]></header>
+                    <header><![CDATA[ [<a target="_blank" href="https://www.hasor.net">Web Site</a>] ]]></header>
                     <bottom>${javadocs.bottom}</bottom>
                 </configuration>
                 <executions>
@@ -232,9 +232,9 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <delete dir="${basedir}/target/src" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar" />
-                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar" />
+                                <delete dir="${basedir}/target/src"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}.jar"/>
+                                <delete file="${basedir}/target/original-${project.artifactId}-${project.version}-sources.jar"/>
                             </target>
                         </configuration>
                         <goals>
