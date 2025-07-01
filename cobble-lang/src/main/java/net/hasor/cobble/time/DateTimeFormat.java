@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.hasor.cobble;
+package net.hasor.cobble.time;
+
+import net.hasor.cobble.StringUtils;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -28,7 +30,7 @@ import java.util.function.Function;
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2022-07-25
  */
-public enum WellKnowFormat {
+public enum DateTimeFormat {
     // java DateTimeFormatter 定义的
     BASIC_ISO_DATE(DateTimeFormatter.BASIC_ISO_DATE),
     ISO_LOCAL_DATE(DateTimeFormatter.ISO_LOCAL_DATE),
@@ -106,21 +108,21 @@ public enum WellKnowFormat {
     private final int               fraction;
     private final DateTimeFormatter ofPattern;
 
-    WellKnowFormat(DateTimeFormatter ofPattern) {
+    DateTimeFormat(DateTimeFormatter ofPattern) {
         this(false, 0, ofPattern);
     }
 
-    WellKnowFormat(boolean isWKF, DateTimeFormatter ofPattern) {
+    DateTimeFormat(boolean isWKF, DateTimeFormatter ofPattern) {
         this(isWKF, 0, ofPattern);
     }
 
-    WellKnowFormat(boolean isWKF, int fraction, DateTimeFormatter ofPattern) {
+    DateTimeFormat(boolean isWKF, int fraction, DateTimeFormatter ofPattern) {
         this.isWKF = isWKF;
         this.fraction = fraction;
         this.ofPattern = ofPattern;
     }
 
-    WellKnowFormat(boolean isWKF, int fraction, Function<DateTimeFormatterBuilder, DateTimeFormatterBuilder> ofPattern) {
+    DateTimeFormat(boolean isWKF, int fraction, Function<DateTimeFormatterBuilder, DateTimeFormatterBuilder> ofPattern) {
         this.isWKF = isWKF;
         this.fraction = fraction;
         this.ofPattern = ofPattern.apply(new DateTimeFormatterBuilder()).toFormatter();
@@ -147,8 +149,8 @@ public enum WellKnowFormat {
         return (text == null) ? null : this.ofPattern.parse(text);
     }
 
-    public static WellKnowFormat valueOfCode(String code) {
-        for (WellKnowFormat wkf : WellKnowFormat.values()) {
+    public static DateTimeFormat valueOfCode(String code) {
+        for (DateTimeFormat wkf : DateTimeFormat.values()) {
             if (StringUtils.equalsIgnoreCase(code, wkf.name())) {
                 return wkf;
             }
@@ -156,8 +158,8 @@ public enum WellKnowFormat {
         return null;
     }
 
-    public static WellKnowFormat valueOfCode(String code, int fraction) {
-        WellKnowFormat wkf = valueOfCode(code);
+    public static DateTimeFormat valueOfCode(String code, int fraction) {
+        DateTimeFormat wkf = valueOfCode(code);
         if (wkf != null && wkf.isWKF && wkf.fraction == 0 && fraction > 0) {
             return valueOfCode(wkf.name() + "_S" + fraction);
         } else {
@@ -165,7 +167,7 @@ public enum WellKnowFormat {
         }
     }
 
-    private static DateTimeFormatter buildWKFOffsetDateTime24Zone(WellKnowFormat baseFormatter, String offsetFmt) {
+    private static DateTimeFormatter buildWKFOffsetDateTime24Zone(DateTimeFormat baseFormatter, String offsetFmt) {
         DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
         builder.append(baseFormatter.ofPattern).appendOffset(offsetFmt, "+00:00");
         return builder.toFormatter();
