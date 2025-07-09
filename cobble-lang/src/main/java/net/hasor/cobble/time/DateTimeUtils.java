@@ -175,7 +175,7 @@ public class DateTimeUtils {
     }
 
     private static String removeZone(String datetime) {
-        if (datetime == null || datetime.length() == 0) {
+        if (datetime == null || datetime.isEmpty()) {
             return datetime;
         }
         // remove zone
@@ -340,12 +340,12 @@ public class DateTimeUtils {
                 return instant.atZone(ZoneId.systemDefault()).toLocalDateTime(); // first to ZonedDateTime ,then drop zone.
             }
         } else {
-            return stringSafeToLocalDateTime(value);
+            return stringSafeToLocalDateTime(value.toString());
         }
     }
 
-    private static LocalDateTime stringSafeToLocalDateTime(Object value) {
-        String dateStr = value.toString();
+    private static LocalDateTime stringSafeToLocalDateTime(String value) {
+        String dateStr = value;
         if (dateStr.trim().length() < 4) {
             if (StringUtils.isNumeric(dateStr)) {
                 return LocalDateTime.of(toInt(dateStr), 1, 1, 0, 0, 0, 0);
