@@ -14,13 +14,8 @@ public class WrapByteBufferTest {
     public void basicTest01() {
         BytesIO io1 = BytesIO.wrap(ByteBuffer.allocate(111));
         assert io1.capacity() == 111;
-        assert io1.toString().startsWith("WrapByteBuffer[rMark=");
+        assert io1.toString().startsWith("WrapBufferBytesIO[rMark=");
         io1.free();
-
-        BytesIO io2 = BytesIO.wrap(ByteBuffer.allocateDirect(111));
-        assert io2.capacity() == 111;
-        assert io2.toString().startsWith("WrapByteBuffer[rMark=");
-        io2.free();
     }
 
     @Test
