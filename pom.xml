@@ -20,6 +20,7 @@
         <jacoco.version>0.8.5</jacoco.version>
         <!--<maven.test.skip>true</maven.test.skip>-->
         <!--<skipTests>true</skipTests>-->
+        <project.addModuleInfoFile>true</project.addModuleInfoFile>
     </properties>
 
     <!-- 授权协议 -->
@@ -48,8 +49,8 @@
     <modules>
         <module>cobble-all</module>
         <module>cobble-lang</module>
-        <module>cobble-loader</module>
         <module>cobble-dynamic</module>
+        <module>cobble-loader</module>
         <module>cobble-settings</module>
     </modules>
 
@@ -75,16 +76,20 @@
                 <artifactId>cobble-loader</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.sun.activation</groupId>
+                <artifactId>javax.activation</artifactId>
+                <version>1.2.0</version>
+            </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
-                <version>9.7.1</version>
+                <version>9.8</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
-                <version>2.3</version>
+                <version>2.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -106,7 +111,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -131,13 +136,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.11.3</version>
                 <configuration>
                     <failOnError>false</failOnError>
                     <failOnWarnings>false</failOnWarnings>
                     <doclint>none</doclint>
                     <additionalJOption>--allow-script-in-comments</additionalJOption>
-                    <excludePackageNames>net.hasor.cobble.asm.*,net.hasor.cobble.setting.provider.yaml.lib.*</excludePackageNames>
+                    <excludePackageNames>net.hasor.cobble.asm.*,net.hasor.cobble.setting.provider.yaml.lib.*
+                    </excludePackageNames>
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
                     <!-- <header><![CDATA[ [<a target="_blank" href="http://www.hasor.net">Web Site</a>] ]]></header>-->
@@ -156,52 +162,41 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <!-- eclipse 插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.10</version>
-                <configuration>
-                    <workspace>${basedir}</workspace>
-                    <downloadSources>${downloadSources}</downloadSources>
-                    <downloadJavadocs>${downloadJavadocs}</downloadJavadocs>
-                </configuration>
-            </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
-            <!--                <version>3.4.0</version>-->
-            <!--                <dependencies>-->
-            <!--                    <dependency>-->
-            <!--                        <groupId>com.puppycrawl.tools</groupId>-->
-            <!--                        <artifactId>checkstyle</artifactId>-->
-            <!--                        <version>9.3</version>-->
-            <!--                    </dependency>-->
-            <!--                </dependencies>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>checkstyle</id>-->
-            <!--                        <phase>validate</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>check</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <skip>false</skip>-->
-            <!--                            <failOnViolation>true</failOnViolation>-->
-            <!--                            <includeTestSourceDirectory>false</includeTestSourceDirectory>-->
-            <!--                            <configLocation>src/checkstyle/druid-checks.xml</configLocation>-->
-            <!--                            <excludes>-->
-            <!--                            </excludes>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
-            <!-- Test 失败继续 -->
+            <!-- <plugin>-->
+            <!--     <groupId>org.apache.maven.plugins</groupId>-->
+            <!--     <artifactId>maven-checkstyle-plugin</artifactId>-->
+            <!--     <version>3.4.0</version>-->
+            <!--     <dependencies>-->
+            <!--         <dependency>-->
+            <!--             <groupId>com.puppycrawl.tools</groupId>-->
+            <!--             <artifactId>checkstyle</artifactId>-->
+            <!--             <version>9.3</version>-->
+            <!--         </dependency>-->
+            <!--     </dependencies>-->
+            <!--     <executions>-->
+            <!--         <execution>-->
+            <!--             <id>checkstyle</id>-->
+            <!--             <phase>validate</phase>-->
+            <!--             <goals>-->
+            <!--                 <goal>check</goal>-->
+            <!--             </goals>-->
+            <!--             <configuration>-->
+            <!--                 <skip>false</skip>-->
+            <!--                 <failOnViolation>true</failOnViolation>-->
+            <!--                 <includeTestSourceDirectory>false</includeTestSourceDirectory>-->
+            <!--                 <configLocation>src/checkstyle/druid-checks.xml</configLocation>-->
+            <!--                 <excludes>-->
+            <!--                 </excludes>-->
+            <!--             </configuration>-->
+            <!--         </execution>-->
+            <!--     </executions>-->
+            <!-- </plugin>-->
+            <!-- test 失败继续 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -236,13 +231,14 @@
         </plugins>
     </build>
 
-    <!-- 使用“-P release”启用下面配置 -->
     <profiles>
+        <!-- 使用“-P release”启用下面配置 -->
         <profile>
             <id>release</id>
             <properties>
                 <gpg.executable>gpg2</gpg.executable>
                 <gpg.passphrase>fubing220106</gpg.passphrase>
+                <project.addModuleInfoFile>false</project.addModuleInfoFile>
             </properties>
             <build>
                 <plugins>
@@ -286,29 +282,11 @@
                 </plugins>
             </build>
         </profile>
+        <!-- JDK9+ 在 surefire 中 增加 add-opens 参数为了测试 -->
         <profile>
-            <id>jdk-1.8</id>
+            <id>jdk9+</id>
             <activation>
-                <jdk>1.8</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.2.5</version>
-                        <configuration>
-                            <testFailureIgnore>true</testFailureIgnore>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>jdk-default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <jdk>!1.8</jdk>
+                <jdk>[9,)</jdk>
             </activation>
             <build>
                 <plugins>
@@ -319,11 +297,43 @@
                         <configuration>
                             <testFailureIgnore>true</testFailureIgnore>
                             <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
-                            <argLine>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</argLine>
-                            <argLine>--add-opens=java.base/java.io=ALL-UNNAMED</argLine>
-                            <argLine>--add-opens=java.base/java.net=ALL-UNNAMED</argLine>
+                            <!-- <argLine>&#45;&#45;add-opens=java.base/java.lang.reflect=ALL-UNNAMED</argLine>-->
+                            <!-- <argLine>&#45;&#45;add-opens=java.base/java.io=ALL-UNNAMED</argLine>-->
+                            <!-- <argLine>&#45;&#45;add-opens=java.base/java.net=ALL-UNNAMED</argLine>-->
                             <!-- <argLine>&#45;&#45;add-opens=jdk.unsupported=ALL-UNNAMED</argLine>-->
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- JDK9+ 在开发中让 IDE 可以识别 module-info.java 文件 -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <jdk>[9,)</jdk>
+                <property>
+                    <name>project.addModuleInfoFile</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/main/module</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

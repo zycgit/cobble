@@ -18,7 +18,6 @@ package net.hasor.cobble;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -2274,7 +2273,7 @@ public class ArrayUtils {
         }
         final char[] result = new char[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].charValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2295,7 +2294,7 @@ public class ArrayUtils {
         final char[] result = new char[array.length];
         for (int i = 0; i < array.length; i++) {
             Character b = array[i];
-            result[i] = b == null ? valueForNull : b.charValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2314,7 +2313,7 @@ public class ArrayUtils {
         }
         final Character[] result = new Character[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Character(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2336,7 +2335,7 @@ public class ArrayUtils {
         }
         final long[] result = new long[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].longValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2357,7 +2356,7 @@ public class ArrayUtils {
         final long[] result = new long[array.length];
         for (int i = 0; i < array.length; i++) {
             Long b = array[i];
-            result[i] = b == null ? valueForNull : b.longValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2376,7 +2375,7 @@ public class ArrayUtils {
         }
         final Long[] result = new Long[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Long(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2398,7 +2397,7 @@ public class ArrayUtils {
         }
         final int[] result = new int[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].intValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2419,7 +2418,7 @@ public class ArrayUtils {
         final int[] result = new int[array.length];
         for (int i = 0; i < array.length; i++) {
             Integer b = array[i];
-            result[i] = b == null ? valueForNull : b.intValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2438,7 +2437,7 @@ public class ArrayUtils {
         }
         final Integer[] result = new Integer[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Integer(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2460,7 +2459,7 @@ public class ArrayUtils {
         }
         final short[] result = new short[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].shortValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2481,7 +2480,7 @@ public class ArrayUtils {
         final short[] result = new short[array.length];
         for (int i = 0; i < array.length; i++) {
             Short b = array[i];
-            result[i] = b == null ? valueForNull : b.shortValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2500,7 +2499,7 @@ public class ArrayUtils {
         }
         final Short[] result = new Short[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Short(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2546,9 +2545,8 @@ public class ArrayUtils {
             }
         } else if (value instanceof Iterable) {
             ArrayList<Object> arrays = new ArrayList<>();
-            Iterator<?> iterator = ((Iterable<?>) value).iterator();
-            while (iterator.hasNext()) {
-                arrays.add(iterator.next());
+            for (Object object : (Iterable<?>) value) {
+                arrays.add(object);
             }
             return arrays.toArray();
         } else {
@@ -2574,7 +2572,7 @@ public class ArrayUtils {
         }
         final byte[] result = new byte[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].byteValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2595,7 +2593,7 @@ public class ArrayUtils {
         final byte[] result = new byte[array.length];
         for (int i = 0; i < array.length; i++) {
             Byte b = array[i];
-            result[i] = b == null ? valueForNull : b.byteValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2614,7 +2612,7 @@ public class ArrayUtils {
         }
         final Byte[] result = new Byte[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Byte(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2636,7 +2634,7 @@ public class ArrayUtils {
         }
         final double[] result = new double[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].doubleValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2657,7 +2655,7 @@ public class ArrayUtils {
         final double[] result = new double[array.length];
         for (int i = 0; i < array.length; i++) {
             Double b = array[i];
-            result[i] = b == null ? valueForNull : b.doubleValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2676,7 +2674,7 @@ public class ArrayUtils {
         }
         final Double[] result = new Double[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Double(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2698,7 +2696,7 @@ public class ArrayUtils {
         }
         final float[] result = new float[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].floatValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2719,7 +2717,7 @@ public class ArrayUtils {
         final float[] result = new float[array.length];
         for (int i = 0; i < array.length; i++) {
             Float b = array[i];
-            result[i] = b == null ? valueForNull : b.floatValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -2738,7 +2736,7 @@ public class ArrayUtils {
         }
         final Float[] result = new Float[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = new Float(array[i]);
+            result[i] = array[i];
         }
         return result;
     }
@@ -2760,7 +2758,7 @@ public class ArrayUtils {
         }
         final boolean[] result = new boolean[array.length];
         for (int i = 0; i < array.length; i++) {
-            result[i] = array[i].booleanValue();
+            result[i] = array[i];
         }
         return result;
     }
@@ -2781,7 +2779,7 @@ public class ArrayUtils {
         final boolean[] result = new boolean[array.length];
         for (int i = 0; i < array.length; i++) {
             Boolean b = array[i];
-            result[i] = b == null ? valueForNull : b.booleanValue();
+            result[i] = b == null ? valueForNull : b;
         }
         return result;
     }
@@ -3602,7 +3600,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static char[] add(final char[] array, final int index, final char element) {
-        return (char[]) ArrayUtils.add(array, index, new Character(element), Character.TYPE);
+        return (char[]) ArrayUtils.add(array, index, element, Character.TYPE);
     }
 
     /**
@@ -3628,7 +3626,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static byte[] add(final byte[] array, final int index, final byte element) {
-        return (byte[]) ArrayUtils.add(array, index, new Byte(element), Byte.TYPE);
+        return (byte[]) ArrayUtils.add(array, index, element, Byte.TYPE);
     }
 
     /**
@@ -3654,7 +3652,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static short[] add(final short[] array, final int index, final short element) {
-        return (short[]) ArrayUtils.add(array, index, new Short(element), Short.TYPE);
+        return (short[]) ArrayUtils.add(array, index, element, Short.TYPE);
     }
 
     /**
@@ -3680,7 +3678,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static int[] add(final int[] array, final int index, final int element) {
-        return (int[]) ArrayUtils.add(array, index, new Integer(element), Integer.TYPE);
+        return (int[]) ArrayUtils.add(array, index, element, Integer.TYPE);
     }
 
     /**
@@ -3706,7 +3704,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static long[] add(final long[] array, final int index, final long element) {
-        return (long[]) ArrayUtils.add(array, index, new Long(element), Long.TYPE);
+        return (long[]) ArrayUtils.add(array, index, element, Long.TYPE);
     }
 
     /**
@@ -3732,7 +3730,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static float[] add(final float[] array, final int index, final float element) {
-        return (float[]) ArrayUtils.add(array, index, new Float(element), Float.TYPE);
+        return (float[]) ArrayUtils.add(array, index, element, Float.TYPE);
     }
 
     /**
@@ -3758,7 +3756,7 @@ public class ArrayUtils {
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      */
     public static double[] add(final double[] array, final int index, final double element) {
-        return (double[]) ArrayUtils.add(array, index, new Double(element), Double.TYPE);
+        return (double[]) ArrayUtils.add(array, index, element, Double.TYPE);
     }
 
     /**

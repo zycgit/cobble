@@ -16,7 +16,6 @@
 package net.hasor.cobble.logging;
 
 import net.hasor.cobble.logging.jdk14.Jdk14LoggingImpl;
-import net.hasor.cobble.logging.log4j.Logger4JImpl;
 import net.hasor.cobble.logging.log4j2.Logger4J2Impl;
 import net.hasor.cobble.logging.nologging.NoLoggingImpl;
 import net.hasor.cobble.logging.slf4j.Slf4jImpl;
@@ -38,7 +37,7 @@ public final class LoggerFactory {
     static {
         tryImplementation(LoggerFactory::useSlf4jLogger);
         tryImplementation(LoggerFactory::useLog4J2Logger);
-        tryImplementation(LoggerFactory::useLog4JLogger);
+        //tryImplementation(LoggerFactory::useLog4JLogger);
         tryImplementation(LoggerFactory::useJdkLogger);
         tryImplementation(LoggerFactory::useNoLogger);
     }
@@ -67,9 +66,9 @@ public final class LoggerFactory {
         setImplementation(Slf4jImpl.class);
     }
 
-    public static synchronized void useLog4JLogger() {
-        setImplementation(Logger4JImpl.class);
-    }
+    //    public static synchronized void useLog4JLogger() {
+    //        setImplementation(Logger4JImpl.class);
+    //    }
 
     public static synchronized void useLog4J2Logger() {
         setImplementation(Logger4J2Impl.class);

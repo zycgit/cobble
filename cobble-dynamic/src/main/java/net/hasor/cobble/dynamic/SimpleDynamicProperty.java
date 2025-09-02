@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import java.util.Observable;
-
 /**
  * PropertyDelegate 默认简单实现
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2020-09-29
  */
-public class SimpleDynamicProperty extends Observable implements DynamicProperty {
-    private Object value = null;
+public class SimpleDynamicProperty implements DynamicProperty {
+    private Object value;
 
     public SimpleDynamicProperty() {
         this(null);
@@ -48,12 +46,6 @@ public class SimpleDynamicProperty extends Observable implements DynamicProperty
         if (this.value == newValue) {
             return;
         }
-        try {
-            this.value = newValue;
-            this.setChanged();
-            this.notifyObservers(newValue);
-        } finally {
-            this.clearChanged();
-        }
+        this.value = newValue;
     }
 }

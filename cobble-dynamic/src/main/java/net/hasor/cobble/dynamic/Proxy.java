@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
+
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.dynamic.DynamicConfig.DynamicPropertyInfo;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
+import org.objectweb.asm.Type;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.invoke.MethodHandles;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.*;
 import java.util.*;
@@ -37,6 +39,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * Proxy 代理类，可以代替 java Proxy代理类，并提供更强大的支持。
  * - 支持增强：类、抽象类、接口
+ *
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2022-06-05
  */
@@ -46,7 +49,6 @@ public final class Proxy {
     private static final String                                             aopMethodSuffix   = "redirect$";
     private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> proxyClassCache   = new JdkWeakCache<>(new KeyFactory(), new ProxyClassFactory());
     private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> dynamicClassCache = new JdkWeakCache<>(new KeyFactory(), new DynamicClassFactory());
-    private static final Method                                             defineClassMethod;
 
     private static final class KeyFactory implements BiFunction<ClassLoader, DynamicConfig, Object> {
         @Override
@@ -77,7 +79,7 @@ public final class Proxy {
         }
     }
 
-    private static class ProxyInvocationException extends RuntimeException {
+    private static final class ProxyInvocationException extends RuntimeException {
         public ProxyInvocationException(Exception e) {
             super(e.getMessage(), e);
         }
@@ -87,7 +89,7 @@ public final class Proxy {
         @Override
         public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
             try {
-                return buildAndLoadClass(config, true, classLoader);
+                return buildAndLoadClass(config, true);
             } catch (Exception e) {
                 throw new ProxyInvocationException(e);
             }
@@ -98,19 +100,10 @@ public final class Proxy {
         @Override
         public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
             try {
-                return buildAndLoadClass(config, false, classLoader);
+                return buildAndLoadClass(config, false);
             } catch (Exception e) {
                 throw new ProxyInvocationException(e);
             }
-        }
-    }
-
-    static {
-        try {
-            defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-            defineClassMethod.setAccessible(true);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(e);
         }
     }
 
@@ -125,16 +118,16 @@ public final class Proxy {
     }
 
     /** 兼容 jdk Proxy 用法，interfaces 中可以含有（一个类或抽象类）作为父类 */
-    public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler handler) {
+    public static Object newProxyInstance(Class<?>[] interfaces, InvocationHandler handler) {
         try {
-            return newProxyClass(loader, interfaces, handler).newInstance();
+            return newProxyClass(interfaces, handler).getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw ExceptionUtils.toRuntime(e);
         }
     }
 
     /** 兼容 jdk Proxy 用法，interfaces 中可以含有（一个类或抽象类）作为父类 */
-    public static Class<?> newProxyClass(ClassLoader loader, Class<?>[] interfaces, InvocationHandler handler) {
+    public static Class<?> newProxyClass(Class<?>[] interfaces, InvocationHandler handler) {
         if (interfaces.length == 0 || handler == null) {
             throw new IllegalStateException("no interfaces or handler is specified.");
         }
@@ -162,11 +155,11 @@ public final class Proxy {
             config.addImplements(inter, handler);
         }
 
-        return buildProxyClass(loader, config);
+        return buildProxyClass(config);
     }
 
     /** 对象已经实现的某个接口做增强 */
-    public static <T> T newProxyInstance(ClassLoader loader, T instance, Class<?>[] interfaces, MethodInterceptor... interceptors) {
+    public static <T> T newProxyInstance(T instance, Class<?>[] interfaces, MethodInterceptor... interceptors) {
         Objects.requireNonNull(instance, "instance is null.");
         if (interfaces == null || interfaces.length == 0) {
             throw new NullPointerException("interfaces is null.");
@@ -179,7 +172,7 @@ public final class Proxy {
             }
         }
 
-        return newProxyInstance(loader, instance, method -> {
+        return newProxyInstance(instance, method -> {
             for (Predicate<Method> p : matcherList) {
                 if (p.test(method)) {
                     return true;
@@ -190,7 +183,7 @@ public final class Proxy {
     }
 
     /** 增强一个对象，无论它是否实现任何一个接口 */
-    public static <T> T newProxyInstance(ClassLoader loader, T instance, Predicate<Method> matchers, MethodInterceptor... interceptors) {
+    public static <T> T newProxyInstance(T instance, Predicate<Method> matchers, MethodInterceptor... interceptors) {
         Objects.requireNonNull(instance, "instance is null.");
         Objects.requireNonNull(matchers, "matchers is null.");
 
@@ -201,8 +194,8 @@ public final class Proxy {
             return instance;
         }
 
-        Class<?> buildClass = buildInstanceClass(loader, config);
-        Constructor<?> constructor = buildClass.getConstructors()[0];
+        Class<?> buildClass = buildInstanceClass(config);
+        Constructor<?> constructor = buildClass.getDeclaredConstructors()[0];
         try {
             return (T) constructor.newInstance(instance);
         } catch (ReflectiveOperationException e) {
@@ -211,7 +204,7 @@ public final class Proxy {
     }
 
     /** 增强一个对象，无论它是否实现任何一个接口。使用对象身上的 @Aop 注解 */
-    public static <T> T newProxyInstance(ClassLoader loader, T instance) {
+    public static <T> T newProxyInstance(T instance) {
         Objects.requireNonNull(instance, "instance is null.");
 
         try {
@@ -222,31 +215,16 @@ public final class Proxy {
                 return instance;
             }
 
-            Class<?> buildClass = buildInstanceClass(loader, config);
-            Constructor<?> constructor = buildClass.getConstructors()[0];
+            Class<?> buildClass = buildInstanceClass(config);
+            Constructor<?> constructor = buildClass.getDeclaredConstructors()[0];
             return (T) constructor.newInstance(instance);
         } catch (ReflectiveOperationException e) {
             throw ExceptionUtils.toRuntime(e);
         }
     }
 
-    /** 对象已经实现的某个接口做增强 */
-    public static <T> T newProxyInstance(T instance, Class<?>[] interfaces, MethodInterceptor... interceptors) {
-        return newProxyInstance(instance.getClass().getClassLoader(), instance, interfaces, interceptors);
-    }
-
-    /** 增强一个对象，无论它是否实现任何一个接口 */
-    public static <T> T newProxyInstance(T instance, Predicate<Method> matchers, MethodInterceptor... interceptors) {
-        return newProxyInstance(instance.getClass().getClassLoader(), instance, matchers, interceptors);
-    }
-
-    /** 增强一个对象，无论它是否实现任何一个接口。使用对象身上的 @Aop 注解 */
-    public static <T> T newProxyInstance(T instance) {
-        return newProxyInstance(instance.getClass().getClassLoader(), instance);
-    }
-
     /** 对类型已经实现的某个接口做增强，返回一个增强类型 */
-    public static Class<?> newProxyClass(ClassLoader loader, Class<?> superType, Class<?>[] interfaces, MethodInterceptor... interceptors) {
+    public static Class<?> newProxyClass(Class<?> superType, Class<?>[] interfaces, MethodInterceptor... interceptors) {
         Objects.requireNonNull(superType, "superType is null.");
         if (interfaces == null || interfaces.length == 0) {
             throw new NullPointerException("interfaces is null.");
@@ -259,7 +237,7 @@ public final class Proxy {
             }
         }
 
-        return newProxyClass(loader, superType, method -> {
+        return newProxyClass(superType, method -> {
             for (Predicate<Method> p : matcherList) {
                 if (p.test(method)) {
                     return true;
@@ -270,7 +248,7 @@ public final class Proxy {
     }
 
     /** 对类型的方法做增强，返回一个增强类型 */
-    public static Class<?> newProxyClass(ClassLoader loader, Class<?> superType, Predicate<Method> methodMatcher, MethodInterceptor... interceptors) {
+    public static Class<?> newProxyClass(Class<?> superType, Predicate<Method> methodMatcher, MethodInterceptor... interceptors) {
         Objects.requireNonNull(superType, "instance is null.");
         Objects.requireNonNull(methodMatcher, "methodMatcher is null.");
         if (interceptors == null || interceptors.length == 0) {
@@ -285,11 +263,11 @@ public final class Proxy {
         if (!config.hasChange()) {
             return superType;
         }
-        return dynamicClassCache.get(loader, config);
+        return dynamicClassCache.get(ClassLoader.getPlatformClassLoader(), config);
     }
 
     /** 增强一个类型，使用对象身上的 @Aop 注解 */
-    public static Class<?> newProxyClass(ClassLoader loader, Class<?> superType) {
+    public static Class<?> newProxyClass(Class<?> superType) {
         Objects.requireNonNull(superType, "instance is null.");
 
         try {
@@ -298,7 +276,7 @@ public final class Proxy {
             if (!config.hasChange()) {
                 return superType;
             }
-            return dynamicClassCache.get(loader, config);
+            return dynamicClassCache.get(ClassLoader.getPlatformClassLoader(), config);
         } catch (ReflectiveOperationException e) {
             throw ExceptionUtils.toRuntime(e);
         }
@@ -307,39 +285,36 @@ public final class Proxy {
     // --------------------------------------------------------------------------------------------------------------------------
 
     /** 创建一个工厂，创建增强的代理类对象 */
-    public static <T> ProxyFactory<T> newProxyFactory(ClassLoader loader, DynamicConfig config) {
-        Class<?> buildClass = buildInstanceClass(loader, config);
+    public static <T> ProxyFactory<T> newProxyFactory(DynamicConfig config) {
+        Class<?> buildClass = buildInstanceClass(config);
         return o -> {
-            Constructor<?> constructor = buildClass.getConstructors()[0];
+            Constructor<?> constructor = buildClass.getDeclaredConstructors()[0];
             return (T) constructor.newInstance(o);
         };
     }
 
     /** 对象增强类型 */
-    public static Class<?> buildInstanceClass(ClassLoader loader, DynamicConfig config) {
-        return proxyClassCache.get(loader, config);
+    public static Class<?> buildInstanceClass(DynamicConfig config) {
+        return proxyClassCache.get(ClassLoader.getPlatformClassLoader(), config);
     }
 
     /** 类型增强类型 */
-    public static Class<?> buildProxyClass(ClassLoader loader, DynamicConfig config) {
-        return dynamicClassCache.get(loader, config);
+    public static Class<?> buildProxyClass(DynamicConfig config) {
+        return dynamicClassCache.get(ClassLoader.getPlatformClassLoader(), config);
     }
 
-    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy, ClassLoader loader) throws ReflectiveOperationException {
+    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy) throws ReflectiveOperationException {
         String className = getClassName(config);
         byte[] classBytes = buildClassBytes(config, className, isProxy);
         logClassBytes(className, classBytes, config.getDebugOutputDir());
 
         // load class
-        try {
-            Class<?> buildType = (Class<?>) defineClassMethod.invoke(loader, new Object[] { className, classBytes, 0, classBytes.length });
-            Field dynamicConfig = buildType.getDeclaredField("dynamicConfig");
-            dynamicConfig.setAccessible(true);
-            dynamicConfig.set(null, config);
-            return buildType;
-        } catch (Exception e) {
-            throw e;
-        }
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(config.getSuperClass(), MethodHandles.lookup());
+        Class<?> buildType = lookup.defineClass(classBytes);
+        Field dynamicConfig = buildType.getDeclaredField("dynamicConfig");
+        dynamicConfig.setAccessible(true);
+        dynamicConfig.set(null, config);
+        return buildType;
     }
 
     private static void logClassBytes(String className, byte[] classBytes, File debugOutputFile) {

@@ -213,19 +213,19 @@ public abstract class NumberConverter extends AbstractConverter {
         }
         // Handle Boolean
         if (value instanceof Boolean) {
-            return this.toNumber(sourceType, targetType, ((Boolean) value).booleanValue() ? NumberConverter.ONE : NumberConverter.ZERO);
+            return this.toNumber(sourceType, targetType, (Boolean) value ? NumberConverter.ONE : NumberConverter.ZERO);
         }
         // Handle Date --> Long
         if (value instanceof Date && Long.class.equals(targetType)) {
-            return new Long(((Date) value).getTime());
+            return ((Date) value).getTime();
         }
         // Handle Calendar --> Long
         if (value instanceof Calendar && Long.class.equals(targetType)) {
-            return new Long(((Calendar) value).getTime().getTime());
+            return ((Calendar) value).getTime().getTime();
         }
         // Convert all other types to String & handle
         String stringValue = value.toString().trim();
-        if (stringValue.length() == 0) {
+        if (stringValue.isEmpty()) {
             return this.handleMissing(targetType);
         }
         // Convert/Parse a String
@@ -357,27 +357,27 @@ public abstract class NumberConverter extends AbstractConverter {
     private Number toNumber(final Class sourceType, final Class targetType, final String value) {
         // Byte
         if (ByteUtils.isByteType(targetType)) {
-            return new Byte(value);
+            return Byte.valueOf(value);
         }
         // Short
         if (NumberUtils.isShortType(targetType)) {
-            return new Short(value);
+            return Short.valueOf(value);
         }
         // Integer
         if (NumberUtils.isIntType(targetType)) {
-            return new Integer(value);
+            return Integer.valueOf(value);
         }
         // Long
         if (NumberUtils.isLongType(targetType)) {
-            return new Long(value);
+            return Long.valueOf(value);
         }
         // Float
         if (NumberUtils.isFloatType(targetType)) {
-            return new Float(value);
+            return Float.valueOf(value);
         }
         // Double
         if (NumberUtils.isDoubleType(targetType)) {
-            return new Double(value);
+            return Double.valueOf(value);
         }
         // BigDecimal
         if (targetType.equals(BigDecimal.class)) {

@@ -17,9 +17,8 @@
 package net.hasor.cobble;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Random;
-
-import static java.math.BigDecimal.ROUND_DOWN;
 
 /**
  * <p>Utility library that supplements the standard {@link Random} class.</p>
@@ -267,7 +266,7 @@ public class RandomUtils {
             result = new BigDecimal(nextBigInteger(scaleMin, scaleMax)).divide(scaleMul);
         }
 
-        return result.setScale(scale, ROUND_DOWN);
+        return result.setScale(scale, RoundingMode.DOWN);
     }
 
     /**
@@ -291,7 +290,7 @@ public class RandomUtils {
 
         BigDecimal randomDecimal = new BigDecimal(nextBigInteger(0, new BigInteger(StringUtils.repeat("9", precision))));
         BigDecimal divNum = new BigDecimal("1" + StringUtils.repeat("0", scale));
-        randomDecimal = randomDecimal.divide(divNum, scale, ROUND_DOWN).stripTrailingZeros();
+        randomDecimal = randomDecimal.divide(divNum, scale, RoundingMode.DOWN).stripTrailingZeros();
 
         return nextBoolean() ? randomDecimal : randomDecimal.negate();
     }

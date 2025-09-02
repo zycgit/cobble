@@ -20,7 +20,6 @@ import net.hasor.cobble.dynamic.beans.PropertyBean;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,7 +119,7 @@ public class ProxyTest {
         config.setDebugOutputDir(new File("target/proxy_" + System.currentTimeMillis()));
         config.getDebugOutputDir().deleteOnExit();
 
-        Class<?> instance = Proxy.buildProxyClass(Thread.currentThread().getContextClassLoader(), config);
+        Class<?> instance = Proxy.buildProxyClass(config);
         List list = (List) instance.newInstance();
         list.add("abc");
         list.add("bcd");
@@ -134,7 +133,7 @@ public class ProxyTest {
     public void jdkProxyStyle1() {
         final List<Object> data = new ArrayList<>();
 
-        List list = (List) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] { List.class }, (proxy, method, args) -> {
+        List list = (List) Proxy.newProxyInstance(new Class[] { List.class }, (proxy, method, args) -> {
             data.add(args[0]);
             return true;
         });
@@ -152,7 +151,7 @@ public class ProxyTest {
         data.add("abc");
         data.add("bcd");
 
-        List list = (List) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] { AbstractList.class }, (proxy, method, args) -> {
+        List list = (List) Proxy.newProxyInstance(new Class[] { List.class }, (proxy, method, args) -> {
             if (method.getName().equals("size")) {
                 return data.size();
             } else {

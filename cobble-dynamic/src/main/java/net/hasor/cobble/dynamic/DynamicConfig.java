@@ -184,7 +184,7 @@ public class DynamicConfig {
         // class
         Set<Class<? extends MethodInterceptor>> classLevels = extractAopType(this.superClass);
         for (Class<? extends MethodInterceptor> interceptorType : classLevels) {
-            this.addAopInterceptor(t -> true, interceptorType.newInstance());
+            this.addAopInterceptor(t -> true, interceptorType.getDeclaredConstructor().newInstance());
         }
 
         // method
@@ -196,7 +196,7 @@ public class DynamicConfig {
                     continue;
                 }
 
-                this.addAopInterceptor(t -> t.equals(method), interceptorType.newInstance());
+                this.addAopInterceptor(t -> t.equals(method), interceptorType.getDeclaredConstructor().newInstance());
             }
         }
     }

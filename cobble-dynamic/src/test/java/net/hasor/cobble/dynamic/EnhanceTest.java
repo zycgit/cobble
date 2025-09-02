@@ -32,7 +32,7 @@ public class EnhanceTest {
         DynamicConfig classConfig = new DynamicConfig(PropertyBean.class);
         classConfig.addAopInterceptor(t -> true, aopInterceptor);
         classConfig.addProperty("aacc", String.class);
-        Class<?> buildClass = Proxy.buildProxyClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        Class<?> buildClass = Proxy.buildProxyClass(classConfig);
         PropertyBean instance = (PropertyBean) buildClass.newInstance();
 
         assert !Proxy.isProxyObject(instance);
@@ -164,7 +164,7 @@ public class EnhanceTest {
         };
 
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
-        Class<?> buildClass = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), ConstructorBean.class, t -> true, aopInterceptor);
+        Class<?> buildClass = Proxy.newProxyClass(ConstructorBean.class, t -> true, aopInterceptor);
         ConstructorBean instance = (ConstructorBean) buildClass.getConstructor(initTypes).newInstance(initParams);
 
         assert !Proxy.isProxyObject(instance);
@@ -212,7 +212,7 @@ public class EnhanceTest {
     @Test
     public void aopTest3() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
-        Class<?> buildClass = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), PropertyBean.class, t -> true, aopInterceptor);
+        Class<?> buildClass = Proxy.newProxyClass(PropertyBean.class, t -> true, aopInterceptor);
         PropertyBean instance = (PropertyBean) buildClass.newInstance();
 
         ClassLoader loader = instance.getClass().getClassLoader();
@@ -231,7 +231,7 @@ public class EnhanceTest {
         classConfig.setDebugOutputDir(new File("target/proxy_" + System.currentTimeMillis()));
         classConfig.getDebugOutputDir().deleteOnExit();
 
-        Class<?> buildClass = Proxy.buildProxyClass(Thread.currentThread().getContextClassLoader(), classConfig);
+        Class<?> buildClass = Proxy.buildProxyClass(classConfig);
         PropertyBean instance = (PropertyBean) buildClass.newInstance();
 
         String fullName = buildClass.getName().replace(".", String.valueOf(File.separatorChar)) + ".class";
@@ -243,7 +243,7 @@ public class EnhanceTest {
     @Test
     public void aopTest5() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
-        Class<?> buildClass = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), ThrowAopBean.class, t -> true, aopInterceptor);
+        Class<?> buildClass = Proxy.newProxyClass(ThrowAopBean.class, t -> true, aopInterceptor);
         ThrowAopBean instance = (ThrowAopBean) buildClass.newInstance();
 
         try {
@@ -263,7 +263,7 @@ public class EnhanceTest {
     @Test
     public void aopTest6() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
-        Class<?> buildClass = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), GenericsMethodAopBean.class, t -> true, aopInterceptor);
+        Class<?> buildClass = Proxy.newProxyClass(GenericsMethodAopBean.class, t -> true, aopInterceptor);
         GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.newInstance();
 
         instance.fooCall1("abc1", "abc2", "abc3");
@@ -285,7 +285,7 @@ public class EnhanceTest {
     @Test
     public void aopTest7() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
-        Class<?> buildClass = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), GenericsMethodAopBean.class, method -> true, aopInterceptor);
+        Class<?> buildClass = Proxy.newProxyClass(GenericsMethodAopBean.class, method -> true, aopInterceptor);
         GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.newInstance();
 
         instance.fooCall1("abc1", "abc2", "abc3");

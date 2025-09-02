@@ -66,7 +66,7 @@ public class CharUtils {
     static {
         for (int i = 127; i >= 0; i--) {
             CharUtils.CHAR_STRING_ARRAY[i] = CharUtils.CHAR_STRING.substring(i, i + 1);
-            CharUtils.CHAR_ARRAY[i] = new Character((char) i);
+            CharUtils.CHAR_ARRAY[i] = (char) i;
         }
     }
 
@@ -96,7 +96,7 @@ public class CharUtils {
         if (ch < CharUtils.CHAR_ARRAY.length) {
             return CharUtils.CHAR_ARRAY[ch];
         }
-        return new Character(ch);
+        return ch;
     }
 
     /**
@@ -136,7 +136,7 @@ public class CharUtils {
         if (ch == null) {
             throw new IllegalArgumentException("The Character must not be null");
         }
-        return ch.charValue();
+        return ch;
     }
 
     /**
@@ -154,7 +154,7 @@ public class CharUtils {
         if (ch == null) {
             return defaultValue;
         }
-        return ch.charValue();
+        return ch;
     }
     //-----------------------------------------------------------------------
 
@@ -212,7 +212,7 @@ public class CharUtils {
      * @throws IllegalArgumentException if the character is not ASCII numeric
      */
     public static int toIntValue(final char ch) {
-        if (CharUtils.isAsciiNumeric(ch) == false) {
+        if (!CharUtils.isAsciiNumeric(ch)) {
             throw new IllegalArgumentException("The character " + ch + " is not in the range '0' - '9'");
         }
         return ch - 48;
@@ -231,7 +231,7 @@ public class CharUtils {
      * @return the int value of the character
      */
     public static int toIntValue(final char ch, final int defaultValue) {
-        if (CharUtils.isAsciiNumeric(ch) == false) {
+        if (!CharUtils.isAsciiNumeric(ch)) {
             return defaultValue;
         }
         return ch - 48;
@@ -293,7 +293,7 @@ public class CharUtils {
         if (ch < 128) {
             return CharUtils.CHAR_STRING_ARRAY[ch];
         }
-        return new String(new char[] { ch });
+        return String.valueOf(ch);
     }
 
     /**
@@ -508,7 +508,7 @@ public class CharUtils {
     }
 
     //
-    public static boolean isCharType(Class targetType) {
+    public static boolean isCharType(Class<?> targetType) {
         return targetType.equals(Character.class) || targetType.equals(Character.TYPE);
     }
 }

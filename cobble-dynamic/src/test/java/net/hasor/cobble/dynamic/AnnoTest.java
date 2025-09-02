@@ -15,7 +15,7 @@ public class AnnoTest {
         ClassAnnoInterceptor.reset();
         MethodAnnoInterceptor.reset();
 
-        Class<?> aClass = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), AopBean.class);
+        Class<?> aClass = Proxy.newProxyClass(AopBean.class);
         AopBean instance = (AopBean) aClass.newInstance();
         assert instance instanceof DynamicClass;
 
@@ -127,7 +127,7 @@ public class AnnoTest {
     public void aopTest3() throws Exception {
         MyAopInterceptor.resetInit();
         assert !MyAopInterceptor.isCalled();
-        Class<?> withMethodType = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), MethodMyAopBean.class);
+        Class<?> withMethodType = Proxy.newProxyClass(MethodMyAopBean.class);
         MethodMyAopBean withMethodInstance = (MethodMyAopBean) withMethodType.newInstance();
         assert withMethodInstance.fooCall("abc").equals("call back : abc");
         assert MyAopInterceptor.isCalled();
@@ -136,7 +136,7 @@ public class AnnoTest {
         //
         MyAopInterceptor.resetInit();
         assert !MyAopInterceptor.isCalled();
-        Class<?> withClassType = Proxy.newProxyClass(Thread.currentThread().getContextClassLoader(), MethodMyAopBean.class);
+        Class<?> withClassType = Proxy.newProxyClass(MethodMyAopBean.class);
         MethodMyAopBean withClassInstance = (MethodMyAopBean) withClassType.newInstance();
         assert withClassInstance.fooCall("abc").equals("call back : abc");
         assert MyAopInterceptor.isCalled();

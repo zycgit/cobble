@@ -5306,8 +5306,7 @@ public class StringUtils {
      * </pre>
      * @param str1 the first String, may be null
      * @param str2 the second String, may be null
-     * @return the portion of str2 where it differs from str1; returns the
-     * empty String if they are equal
+     * @return the portion of str2 where it differs from str1; returns the empty String if they are equal
      * @since 2.0
      */
     public static String difference(final String str1, final String str2) {
@@ -5469,9 +5468,8 @@ public class StringUtils {
      * StringUtils.getCommonPrefix(new String[] {"i am a machine", "i am a robot"}) = "i am a "
      * </pre>
      * @param strs array of String objects, entries may be null
-     * @return the initial sequence of characters that are common to all Strings
-     * in the array; empty String if the array is null, the elements are all null
-     * or if there is no common prefix.
+     * @return the initial sequence of characters that are common to all Strings in the array;
+     *         empty String if the array is null, the elements are all null or if there is no common prefix.
      * @since 2.4
      */
     public static String getCommonPrefix(final String[] strs) {
@@ -5604,8 +5602,7 @@ public class StringUtils {
      * </pre>
      * @param str the String to check, may be null
      * @param prefix the prefix to find, may be null
-     * @return <code>true</code> if the String starts with the prefix, case sensitive, or
-     * both <code>null</code>
+     * @return <code>true</code> if the String starts with the prefix, case sensitive, or both <code>null</code>
      * @see String#startsWith(String)
      * @since 2.4
      */
@@ -5626,8 +5623,7 @@ public class StringUtils {
      * </pre>
      * @param str the String to check, may be null
      * @param prefix the prefix to find, may be null
-     * @return <code>true</code> if the String starts with the prefix, case insensitive, or
-     * both <code>null</code>
+     * @return <code>true</code> if the String starts with the prefix, case insensitive, or both <code>null</code>
      * @see String#startsWith(String)
      * @since 2.4
      */
@@ -5639,10 +5635,8 @@ public class StringUtils {
      * <p>Check if a String starts with a specified prefix (optionally case insensitive).</p>
      * @param str the String to check, may be null
      * @param prefix the prefix to find, may be null
-     * @param ignoreCase inidicates whether the compare should ignore case
-     * (case insensitive) or not.
-     * @return <code>true</code> if the String starts with the prefix or
-     * both <code>null</code>
+     * @param ignoreCase inidicates whether the compare should ignore case (case insensitive) or not.
+     * @return <code>true</code> if the String starts with the prefix or both <code>null</code>
      * @see String#startsWith(String)
      */
     private static boolean startsWith(final String str, final String prefix, final boolean ignoreCase) {
@@ -5671,8 +5665,7 @@ public class StringUtils {
      * </pre>
      * @param string the String to check, may be null
      * @param searchStrings the Strings to find, may be null or empty
-     * @return <code>true</code> if the String starts with any of the the prefixes, case insensitive, or
-     * both <code>null</code>
+     * @return <code>true</code> if the String starts with any of the the prefixes, case insensitive, or both <code>null</code>
      * @see #startsWith(String, String)
      * @since 2.5
      */
@@ -5704,8 +5697,7 @@ public class StringUtils {
      * </pre>
      * @param str the String to check, may be null
      * @param suffix the suffix to find, may be null
-     * @return <code>true</code> if the String ends with the suffix, case sensitive, or
-     * both <code>null</code>
+     * @return <code>true</code> if the String ends with the suffix, case sensitive, or both <code>null</code>
      * @see String#endsWith(String)
      * @since 2.4
      */
@@ -5727,8 +5719,7 @@ public class StringUtils {
      * </pre>
      * @param str the String to check, may be null
      * @param suffix the suffix to find, may be null
-     * @return <code>true</code> if the String ends with the suffix, case insensitive, or
-     * both <code>null</code>
+     * @return <code>true</code> if the String ends with the suffix, case insensitive, or both <code>null</code>
      * @see String#endsWith(String)
      * @since 2.4
      */
@@ -5740,10 +5731,8 @@ public class StringUtils {
      * <p>Check if a String ends with a specified suffix (optionally case insensitive).</p>
      * @param str the String to check, may be null
      * @param suffix the suffix to find, may be null
-     * @param ignoreCase inidicates whether the compare should ignore case
-     * (case insensitive) or not.
-     * @return <code>true</code> if the String starts with the prefix or
-     * both <code>null</code>
+     * @param ignoreCase inidicates whether the compare should ignore case (case insensitive) or not.
+     * @return <code>true</code> if the String starts with the prefix or both <code>null</code>
      * @see String#endsWith(String)
      */
     private static boolean endsWith(final String str, final String suffix, final boolean ignoreCase) {
@@ -5762,17 +5751,14 @@ public class StringUtils {
 
     /**
      * <p>
-     * Similar to <a
-     * href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize
-     * -space</a>
+     * Similar to <a href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize-space</a>
      * </p>
      * <p>
      * The function returns the argument string with whitespace normalized by using
      * <code>{@link #trim(String)}</code> to remove leading and trailing whitespace
      * and then replacing sequences of whitespace characters by a single space.
      * </p>
-     * In XML Whitespace characters are the same as those allowed by the <a
-     * href="http://www.w3.org/TR/REC-xml/#NT-S">S</a> production, which is S ::= (#x20 | #x9 | #xD | #xA)+
+     * In XML Whitespace characters are the same as those allowed by the <a href="http://www.w3.org/TR/REC-xml/#NT-S">S</a> production, which is S ::= (#x20 | #x9 | #xD | #xA)+
      * <p>
      * See Java's {@link Character#isWhitespace(char)} for which characters are considered whitespace.
      * <p>
@@ -5784,8 +5770,7 @@ public class StringUtils {
      * @return the modified string with whitespace normalized, <code>null</code> if null String input
      * @see Character#isWhitespace(char)
      * @see #trim(String)
-     * @see <ahref="http://www.w3.org/TR/xpath/#function-normalize-space">
-     * http://www.w3.org/TR/xpath/#function-normalize-space</a>
+     * @see <a href="http://www.w3.org/TR/xpath/#function-normalize-space">http://www.w3.org/TR/xpath/#function-normalize-space</a>
      * @since 2.6
      */
     public static String normalizeSpace(String str) {
@@ -5819,8 +5804,7 @@ public class StringUtils {
      * </pre>
      * @param string the String to check, may be null
      * @param searchStrings the Strings to find, may be null or empty
-     * @return <code>true</code> if the String ends with any of the the prefixes, case insensitive, or
-     * both <code>null</code>
+     * @return <code>true</code> if the String ends with any of the the prefixes, case insensitive, or both <code>null</code>
      * @since 2.6
      */
     public static boolean endsWithAny(final String string, final String[] searchStrings) {
