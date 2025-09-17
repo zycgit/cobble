@@ -1,10 +1,6 @@
 module net.hasor.cobble.loader {
     requires transitive net.hasor.cobble;
 
-    requires static java.desktop;
-    requires static java.sql;
-    requires static org.objectweb.asm;
-
     exports net.hasor.cobble.loader;
     exports net.hasor.cobble.loader.jar;
     exports net.hasor.cobble.loader.providers;

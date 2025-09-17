@@ -49,6 +49,8 @@ public final class Proxy {
     private static final String                                             aopMethodSuffix   = "redirect$";
     private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> proxyClassCache   = new JdkWeakCache<>(new KeyFactory(), new ProxyClassFactory());
     private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> dynamicClassCache = new JdkWeakCache<>(new KeyFactory(), new DynamicClassFactory());
+    private static final Method                                             privateLookupMethod;
+    private static final Method                                             defineClassMethod;
 
     private static final class KeyFactory implements BiFunction<ClassLoader, DynamicConfig, Object> {
         @Override
@@ -89,7 +91,7 @@ public final class Proxy {
         @Override
         public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
             try {
-                return buildAndLoadClass(config, true);
+                return buildAndLoadClass(config, true, classLoader);
             } catch (Exception e) {
                 throw new ProxyInvocationException(e);
             }
@@ -100,11 +102,40 @@ public final class Proxy {
         @Override
         public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
             try {
-                return buildAndLoadClass(config, false);
+                return buildAndLoadClass(config, false, classLoader);
             } catch (Exception e) {
                 throw new ProxyInvocationException(e);
             }
         }
+    }
+
+    static {
+        Method _privateLookupMethod;
+        Method _defineClassMethod;
+        try {
+            _privateLookupMethod = MethodHandles.class.getDeclaredMethod("privateLookupIn", Class.class, MethodHandles.Lookup.class);
+            _defineClassMethod = MethodHandles.Lookup.class.getDeclaredMethod("defineClass", byte[].class);
+        } catch (Exception ignored) {
+            _privateLookupMethod = null;
+            _defineClassMethod = null;
+        }
+
+        if (_privateLookupMethod == null) {
+            try {
+                _defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+                _defineClassMethod.setAccessible(true);
+            } catch (Exception ignored) {
+                _defineClassMethod = null;
+            }
+        }
+
+        privateLookupMethod = _privateLookupMethod;
+        defineClassMethod = _defineClassMethod;
+    }
+
+    private static ClassLoader toClassLoader(DynamicConfig config) {
+        ClassLoader loader = config.getSuperClass().getClassLoader();
+        return loader == null ? ClassLoader.getSystemClassLoader() : loader;
     }
 
     // --------------------------------------------------------------------------------------------------------------------------
@@ -263,7 +294,7 @@ public final class Proxy {
         if (!config.hasChange()) {
             return superType;
         }
-        return dynamicClassCache.get(ClassLoader.getPlatformClassLoader(), config);
+        return dynamicClassCache.get(toClassLoader(config), config);
     }
 
     /** 增强一个类型，使用对象身上的 @Aop 注解 */
@@ -276,7 +307,7 @@ public final class Proxy {
             if (!config.hasChange()) {
                 return superType;
             }
-            return dynamicClassCache.get(ClassLoader.getPlatformClassLoader(), config);
+            return dynamicClassCache.get(toClassLoader(config), config);
         } catch (ReflectiveOperationException e) {
             throw ExceptionUtils.toRuntime(e);
         }
@@ -295,22 +326,30 @@ public final class Proxy {
 
     /** 对象增强类型 */
     public static Class<?> buildInstanceClass(DynamicConfig config) {
-        return proxyClassCache.get(ClassLoader.getPlatformClassLoader(), config);
+        return proxyClassCache.get(toClassLoader(config), config);
     }
 
     /** 类型增强类型 */
     public static Class<?> buildProxyClass(DynamicConfig config) {
-        return dynamicClassCache.get(ClassLoader.getPlatformClassLoader(), config);
+        return dynamicClassCache.get(toClassLoader(config), config);
     }
 
-    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy) throws ReflectiveOperationException {
+    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy, ClassLoader loader) throws Exception {
         String className = getClassName(config);
         byte[] classBytes = buildClassBytes(config, className, isProxy);
         logClassBytes(className, classBytes, config.getDebugOutputDir());
 
         // load class
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(config.getSuperClass(), MethodHandles.lookup());
-        Class<?> buildType = lookup.defineClass(classBytes);
+        Class<?> buildType;
+        if (privateLookupMethod != null) {
+            // JDK9+
+            MethodHandles.Lookup lookup = (MethodHandles.Lookup) privateLookupMethod.invoke(null, new Object[] { config.getSuperClass(), MethodHandles.lookup() });
+            buildType = (Class<?>) defineClassMethod.invoke(lookup, new Object[] { classBytes });
+        } else {
+            // JDK8
+            buildType = (Class<?>) defineClassMethod.invoke(loader, new Object[] { className, classBytes, 0, classBytes.length });
+        }
+
         Field dynamicConfig = buildType.getDeclaredField("dynamicConfig");
         dynamicConfig.setAccessible(true);
         dynamicConfig.set(null, config);

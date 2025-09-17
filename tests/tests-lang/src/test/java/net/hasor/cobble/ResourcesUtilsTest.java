@@ -26,7 +26,7 @@ import java.io.InputStream;
 public class ResourcesUtilsTest {
     @Test
     public void getResourceTest1() throws IOException {
-        InputStream resource = ResourcesUtils.getResourceAsStream("file:README.md");
+        InputStream resource = ResourcesUtils.getResourceAsStream("file:src/test/resources/i18n/authlabel_en_US.properties");
         assert resource != null;
     }
 

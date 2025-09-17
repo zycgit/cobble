@@ -1,11 +1,4 @@
 module net.hasor.cobble {
-    requires static org.objectweb.asm;
-    requires static java.sql;
-    requires static java.desktop;
-    requires static java.logging;
-    requires static org.slf4j;
-    requires static org.apache.logging.log4j;
-
     exports net.hasor.cobble;
     exports net.hasor.cobble.bus;
     exports net.hasor.cobble.codec;
