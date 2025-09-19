@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.hasor</groupId>
-        <artifactId>cobble-parent</artifactId>
-        <version>4.7.2-SNAPSHOT</version>
+        <artifactId>cobble-tests</artifactId>
+        <version>4.8.1-SNAPSHOT</version>
     </parent>
 
     <!-- Maven Info -->

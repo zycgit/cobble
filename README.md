@@ -16,7 +16,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 ## release versions and prepare next SNAPSHOT version
 
-    mvn release:clean release:prepare -Dmaven.test.skip -Prelease
+    mvn release:clean release:prepare -Dmaven.test.skip -Prelease -Ptests
 
 ## push to center maven repository (version tag must be RELEASE)
 
