@@ -17,6 +17,8 @@ package net.hasor.cobble.concurrent.timer;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ObjectUtils;
 import net.hasor.cobble.SystemUtils;
+import net.hasor.cobble.logging.Logger;
+import net.hasor.cobble.logging.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -24,7 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
 
 /**
  * A {@link Timer} optimized for approximated I/O timeout scheduling.
@@ -58,7 +59,7 @@ import java.util.logging.Logger;
  * this class copy from netty io.netty.util.HashedWheelTimer
  */
 public class HashedWheelTimer implements Timer {
-    static final         Logger                                      logger                    = Logger.getLogger(HashedWheelTimer.class.getName());
+    static final         Logger                                      logger                    = LoggerFactory.getLogger(HashedWheelTimer.class.getName());
     private static final AtomicInteger                               INSTANCE_COUNTER          = new AtomicInteger();
     private static final AtomicBoolean                               WARNED_TOO_MANY_INSTANCES = new AtomicBoolean();
     private static final int                                         INSTANCE_COUNT_LIMIT      = 64;
@@ -193,7 +194,7 @@ public class HashedWheelTimer implements Timer {
         }
 
         if (duration < MILLISECOND_NANOS) {
-            logger.warning("Configured tickDuration " + tickDuration + " smaller then " + MILLISECOND_NANOS + ", using 1ms.");
+            logger.warn("Configured tickDuration " + tickDuration + " smaller then " + MILLISECOND_NANOS + ", using 1ms.");
             this.tickDuration = MILLISECOND_NANOS;
         } else {
             this.tickDuration = duration;
@@ -349,7 +350,7 @@ public class HashedWheelTimer implements Timer {
 
     private static void reportTooManyInstances() {
         String resourceType = HashedWheelTimer.class.getSimpleName();
-        logger.severe("You are creating too many " + resourceType + " instances. " + resourceType + " is a shared resource that must be reused across the JVM, " + "so that only a few instances are created.");
+        logger.error("You are creating too many " + resourceType + " instances. " + resourceType + " is a shared resource that must be reused across the JVM, " + "so that only a few instances are created.");
     }
 
     private final class Worker implements Runnable {
@@ -431,7 +432,7 @@ public class HashedWheelTimer implements Timer {
                 try {
                     timeout.remove();
                 } catch (Throwable t) {
-                    logger.throwing(TimerTask.class.getSimpleName(), "processCancelledTasks", t);
+                    logger.error(TimerTask.class.getSimpleName() + " processCancelledTasks", t);
                 }
             }
         }
@@ -568,7 +569,7 @@ public class HashedWheelTimer implements Timer {
             try {
                 task.run(this);
             } catch (Throwable t) {
-                logger.throwing(TimerTask.class.getSimpleName(), "expire", t);
+                logger.error(TimerTask.class.getSimpleName() + " expire", t);
             }
         }
 

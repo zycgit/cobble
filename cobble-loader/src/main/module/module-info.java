@@ -1,5 +1,7 @@
 module net.hasor.cobble.loader {
     requires transitive net.hasor.cobble;
+    requires static java.desktop;
+    requires static java.sql;
 
     exports net.hasor.cobble.loader;
     exports net.hasor.cobble.loader.jar;
