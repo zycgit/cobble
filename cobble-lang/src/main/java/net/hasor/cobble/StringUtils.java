@@ -19,6 +19,7 @@ package net.hasor.cobble;
 import net.hasor.cobble.text.ThreadLocalCoders;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -6085,7 +6086,7 @@ public class StringUtils {
                 c = s.charAt(i);
                 continue;
             }
-            bb.clear();
+            ((Buffer) bb).clear();
             int ui = i;
             for (; ; ) {
                 assert (n - i >= 2);
@@ -6096,14 +6097,14 @@ public class StringUtils {
                 if (c != '%')
                     break;
             }
-            bb.flip();
-            cb.clear();
+            ((Buffer) bb).flip();
+            ((Buffer) cb).clear();
             dec.reset();
             CoderResult cr = dec.decode(bb, cb, true);
             assert cr.isUnderflow();
             cr = dec.flush(cb);
             assert cr.isUnderflow();
-            sb.append(cb.flip());
+            sb.append(((Buffer) cb).flip());
         }
 
         return sb.toString();
