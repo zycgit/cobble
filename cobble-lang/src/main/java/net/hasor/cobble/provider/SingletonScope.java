@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.provider;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-import net.hasor.cobble.ref.Range;
-
 import java.io.IOException;
 import java.io.Writer;
+import net.hasor.cobble.ref.Range;
 
 /**
  * Translates codepoints to their XML numeric entity escaped value.

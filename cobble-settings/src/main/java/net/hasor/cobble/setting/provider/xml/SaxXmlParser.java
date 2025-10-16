@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting.provider.xml;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.setting.SettingNode;
 import net.hasor.cobble.setting.Settings;
@@ -21,10 +24,6 @@ import net.hasor.cobble.setting.data.TreeNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * @author 赵永春 (zyc@byshell.org)

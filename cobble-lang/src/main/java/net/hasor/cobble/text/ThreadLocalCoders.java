@@ -1,5 +1,4 @@
 package net.hasor.cobble.text;
-
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;

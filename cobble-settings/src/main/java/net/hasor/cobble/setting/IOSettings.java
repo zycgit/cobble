@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
-import net.hasor.cobble.setting.provider.StreamType;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import net.hasor.cobble.setting.provider.StreamType;
 
 /**
  * 需要经过解析读取配置文件资源的{@link  Settings}

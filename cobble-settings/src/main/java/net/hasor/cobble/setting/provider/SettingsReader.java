@@ -16,10 +16,9 @@
  *
  */
 package net.hasor.cobble.setting.provider;
-import net.hasor.cobble.setting.Settings;
-
 import java.io.IOException;
 import java.io.Reader;
+import net.hasor.cobble.setting.Settings;
 
 /**
  * @author 赵永春 (zyc@byshell.org)

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.MatchUtils;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.loader.providers.MergedLoader;
-
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -25,6 +21,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import net.hasor.cobble.MatchUtils;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.loader.providers.MergedLoader;
 
 /**
  * ResourceLoader 转 ClassLoader

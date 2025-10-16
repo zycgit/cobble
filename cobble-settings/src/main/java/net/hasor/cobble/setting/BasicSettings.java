@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.convert.ConverterUtils;
@@ -21,13 +27,6 @@ import net.hasor.cobble.logging.Logger;
 import net.hasor.cobble.logging.LoggerFactory;
 import net.hasor.cobble.setting.data.TreeNode;
 import net.hasor.cobble.text.token.GenericTokenParser;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Settings接口的抽象实现。

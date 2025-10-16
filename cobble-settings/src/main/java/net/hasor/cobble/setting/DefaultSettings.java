@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
-import net.hasor.cobble.ResourcesUtils;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.setting.provider.StreamType;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import net.hasor.cobble.ResourcesUtils;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.setting.provider.StreamType;
 
 /**
  * 继承自{@link MergedSettings}父类。

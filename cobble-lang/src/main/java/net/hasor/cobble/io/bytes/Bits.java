@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.bytes;
-
 class Bits {
     private static byte long7(long x) {
         return (byte) (x >> 56);

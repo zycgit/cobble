@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.input;
-import net.hasor.cobble.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
+import net.hasor.cobble.io.IOUtils;
 
 /**
  * Proxy stream that closes and discards the underlying stream as soon as the

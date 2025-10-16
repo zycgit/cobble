@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.AbstractResourceLoader;
-import net.hasor.cobble.loader.MatchType;
-import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.loader.Scanner;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -27,6 +22,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
+import net.hasor.cobble.loader.AbstractResourceLoader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.loader.Scanner;
 
 /**
  * 允许将 ResourceLoader 的中的一部分资源设置为 '可见'，并将不同的 ResourceLoader 之间 '可见' 部分汇聚为一个新的 ResourceLoader。

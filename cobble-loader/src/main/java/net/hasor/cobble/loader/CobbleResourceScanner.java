@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import net.hasor.cobble.loader.ClassMatcher.ClassInfo;
 import net.hasor.cobble.loader.ClassMatcher.ClassMatcherContext;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ResourceLoader 的 ClassFinder 接口实现

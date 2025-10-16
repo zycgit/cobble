@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble.convert.convert;
-import net.hasor.cobble.convert.ConversionException;
-import net.hasor.cobble.convert.Converter;
-
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.util.*;
+import net.hasor.cobble.convert.ConversionException;
+import net.hasor.cobble.convert.Converter;
 
 /**
  * Generic {@link Converter} implementaion that handles conversion

@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.i18n;
-import net.hasor.cobble.ClassUtils;
-import net.hasor.cobble.ResourcesUtils;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.logging.Logger;
-import net.hasor.cobble.ref.LinkedCaseInsensitiveMap;
-import net.hasor.cobble.text.token.GenericTokenParser;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,6 +22,12 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.ResourcesUtils;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.logging.Logger;
+import net.hasor.cobble.ref.LinkedCaseInsensitiveMap;
+import net.hasor.cobble.text.token.GenericTokenParser;
 
 /**
  * 国际化资源文件加载器

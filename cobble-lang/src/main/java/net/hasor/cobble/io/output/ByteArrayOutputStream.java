@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.output;
-import net.hasor.cobble.io.input.ClosedInputStream;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.hasor.cobble.io.input.ClosedInputStream;
 
 /**
  * This class implements an output stream in which the data is

@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-import net.hasor.cobble.CharUtils;
-import net.hasor.cobble.StringUtils;
-
 import java.io.IOException;
 import java.io.Writer;
+import net.hasor.cobble.CharUtils;
+import net.hasor.cobble.StringUtils;
 
 /**
  * This class holds inner classes for escaping/unescaping Comma Separated Values.

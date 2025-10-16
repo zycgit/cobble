@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.reflect.resolvable;
+import java.io.Serializable;
+import java.lang.reflect.*;
+import java.util.*;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ObjectUtils;
 import net.hasor.cobble.StringUtils;
@@ -21,10 +24,6 @@ import net.hasor.cobble.ref.ConcurrentReferenceHashMap;
 import net.hasor.cobble.reflect.resolvable.SerializableTypeWrapper.FieldTypeProvider;
 import net.hasor.cobble.reflect.resolvable.SerializableTypeWrapper.MethodParameterTypeProvider;
 import net.hasor.cobble.reflect.resolvable.SerializableTypeWrapper.TypeProvider;
-
-import java.io.Serializable;
-import java.lang.reflect.*;
-import java.util.*;
 
 /**
  * Encapsulates a Java {@link java.lang.reflect.Type}, providing access to

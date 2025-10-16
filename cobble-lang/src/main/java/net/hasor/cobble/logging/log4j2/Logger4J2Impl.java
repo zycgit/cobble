@@ -14,7 +14,6 @@
  *    limitations under the License.
  */
 package net.hasor.cobble.logging.log4j2;
-
 import net.hasor.cobble.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.spi.AbstractLogger;

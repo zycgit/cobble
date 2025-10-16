@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.function;
-import net.hasor.cobble.ExceptionUtils;
-
 import java.util.function.Supplier;
+import net.hasor.cobble.ExceptionUtils;
 
 /**
  * Supplier 允许异常抛出。

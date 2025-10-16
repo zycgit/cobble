@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-
-import net.hasor.cobble.text.ThreadLocalCoders;
-
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -31,6 +28,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import net.hasor.cobble.text.ThreadLocalCoders;
 
 /**
  * <p>Operations on {@link String} that are
@@ -5470,7 +5468,7 @@ public class StringUtils {
      * </pre>
      * @param strs array of String objects, entries may be null
      * @return the initial sequence of characters that are common to all Strings in the array;
-     *         empty String if the array is null, the elements are all null or if there is no common prefix.
+     * empty String if the array is null, the elements are all null or if there is no common prefix.
      * @since 2.4
      */
     public static String getCommonPrefix(final String[] strs) {

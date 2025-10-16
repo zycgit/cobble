@@ -244,11 +244,11 @@ public class ObjectUtils {
      * @param c1 the first comparable, may be null
      * @param c2 the second comparable, may be null
      * @return <ul>
-     *   <li>If both objects are non-null and unequal, the lesser object.
-     *   <li>If both objects are non-null and equal, c1.
-     *   <li>If one of the comparables is null, the non-null object.
-     *   <li>If both the comparables are null, null is returned.
-     *  </ul>
+     * <li>If both objects are non-null and unequal, the lesser object.
+     * <li>If both objects are non-null and equal, c1.
+     * <li>If one of the comparables is null, the non-null object.
+     * <li>If both the comparables are null, null is returned.
+     * </ul>
      */
     public static Object min(Comparable c1, Comparable c2) {
         return (compare(c1, c2, true) <= 0 ? c1 : c2);
@@ -259,11 +259,11 @@ public class ObjectUtils {
      * @param c1 the first comparable, may be null
      * @param c2 the second comparable, may be null
      * @return <ul>
-     *   <li>If both objects are non-null and unequal, the greater object.
-     *   <li>If both objects are non-null and equal, c1.
-     *   <li>If one of the comparables is null, the non-null object.
-     *   <li>If both the comparables are null, null is returned.
-     *  </ul>
+     * <li>If both objects are non-null and unequal, the greater object.
+     * <li>If both objects are non-null and equal, c1.
+     * <li>If one of the comparables is null, the non-null object.
+     * <li>If both the comparables are null, null is returned.
+     * </ul>
      */
     public static Object max(Comparable c1, Comparable c2) {
         return (compare(c1, c2, false) >= 0 ? c1 : c2);

@@ -14,14 +14,12 @@
  *    limitations under the License.
  */
 package net.hasor.cobble.logging;
-
+import java.lang.reflect.Constructor;
 import net.hasor.cobble.logging.jdk14.Jdk14LoggingImpl;
 import net.hasor.cobble.logging.log4j2.Logger4J2Impl;
 import net.hasor.cobble.logging.nologging.NoLoggingImpl;
 import net.hasor.cobble.logging.slf4j.Slf4jImpl;
 import net.hasor.cobble.logging.stdout.StdOutImpl;
-
-import java.lang.reflect.Constructor;
 
 /**
  * <p>copy form mybatis org.apache.ibatis.logging.LogFactory</p>

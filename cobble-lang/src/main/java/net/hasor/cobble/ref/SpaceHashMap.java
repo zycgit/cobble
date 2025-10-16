@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-import net.hasor.cobble.CollectionUtils;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import net.hasor.cobble.CollectionUtils;
 
 /**
  * 可以将多个 Map 合并成一个 Map 对象进行操作，同时每个 Map 可以根据名字独立操作它。

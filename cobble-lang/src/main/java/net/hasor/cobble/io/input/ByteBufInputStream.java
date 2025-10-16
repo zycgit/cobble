@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.input;
-
-import net.hasor.cobble.io.bytes.BytesIO;
-import net.hasor.cobble.io.output.ByteBufOutputStream;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Objects;
+import net.hasor.cobble.io.bytes.BytesIO;
+import net.hasor.cobble.io.output.ByteBufOutputStream;
 
 /**
  * An {@link InputStream} which reads data from a {@link BytesIO}.

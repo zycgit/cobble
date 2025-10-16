@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.ClassUtils;
-import net.hasor.cobble.ExceptionUtils;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.SystemUtils;
-import net.hasor.cobble.function.ESupplier;
-import net.hasor.cobble.io.FileUtils;
-import net.hasor.cobble.loader.Scanner;
-import net.hasor.cobble.loader.*;
-import net.hasor.cobble.logging.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +28,15 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.ExceptionUtils;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.SystemUtils;
+import net.hasor.cobble.function.ESupplier;
+import net.hasor.cobble.io.FileUtils;
+import net.hasor.cobble.loader.*;
+import net.hasor.cobble.loader.Scanner;
+import net.hasor.cobble.logging.Logger;
 
 /**
  * 用于创建一个可以从 classpath 中获取资源的 ResourceLoader

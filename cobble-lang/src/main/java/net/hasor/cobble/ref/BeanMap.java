@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.convert.ConverterBean;
-
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -26,6 +23,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.convert.ConverterBean;
 
 /**
  * An implementation of Map for JavaBeans which uses introspection to

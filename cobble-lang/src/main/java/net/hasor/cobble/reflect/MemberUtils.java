@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble.reflect;
-import net.hasor.cobble.ArrayUtils;
-import net.hasor.cobble.ClassUtils;
-import net.hasor.cobble.StringUtils;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import net.hasor.cobble.ArrayUtils;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.StringUtils;
 
 /**
  * Contains common code for working with Methods/Constructors, extracted and

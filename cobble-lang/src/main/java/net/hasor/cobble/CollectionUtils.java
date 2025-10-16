@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import net.hasor.cobble.function.Property;
-import net.hasor.cobble.ref.BufferedIterator;
-import net.hasor.cobble.reflect.SFunction;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.hasor.cobble.function.Property;
+import net.hasor.cobble.ref.BufferedIterator;
+import net.hasor.cobble.reflect.SFunction;
 
 /**
  * @author 赵永春 (zyc@hasor.net)
@@ -57,7 +56,6 @@ public class CollectionUtils {
 
     /**
      * 切分list
-     * @param sourceList
      * @param groupSize 每组定长
      */
     public static <T> List<List<T>> splitList(List<T> sourceList, int groupSize) {

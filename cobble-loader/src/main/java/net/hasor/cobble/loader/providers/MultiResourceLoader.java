@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.loader.AbstractResourceLoader;
-import net.hasor.cobble.loader.MatchType;
-import net.hasor.cobble.loader.ResourceLoader;
-import net.hasor.cobble.loader.Scanner;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -28,6 +23,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
+import net.hasor.cobble.loader.AbstractResourceLoader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ResourceLoader;
+import net.hasor.cobble.loader.Scanner;
 
 /**
  * 可以将不同的 ResourceLoader 汇聚到一起，不具备 '可见性' 控制。实现更加简单、效率更高。

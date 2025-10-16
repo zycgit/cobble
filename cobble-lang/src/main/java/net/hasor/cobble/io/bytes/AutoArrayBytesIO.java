@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.bytes;
-
 import java.nio.ByteBuffer;
 
 /**

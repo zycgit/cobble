@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.convert.convert;
+import java.lang.reflect.Array;
+import java.util.Collection;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.convert.ConversionException;
 import net.hasor.cobble.convert.Converter;
-
-import java.lang.reflect.Array;
-import java.util.Collection;
 
 /**
  * Base {@link Converter} implementation that provides the structure

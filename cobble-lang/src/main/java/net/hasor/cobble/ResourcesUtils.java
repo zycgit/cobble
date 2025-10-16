@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
-import net.hasor.cobble.io.input.AutoCloseInputStream;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +25,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
+import net.hasor.cobble.io.input.AutoCloseInputStream;
 
 /**
  * 资源加载工具类，所有方法均是程序级优先。

@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.convert;
-import net.hasor.cobble.convert.convert.*;
-import net.hasor.cobble.ref.ContextClassLoaderLocal;
-
 import java.io.File;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -27,6 +24,8 @@ import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
+import net.hasor.cobble.convert.convert.*;
+import net.hasor.cobble.ref.ContextClassLoaderLocal;
 
 /**
  * <p>Utility methods for converting String scalar values to objects of the

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.text;
-import net.hasor.cobble.StringUtils;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import net.hasor.cobble.StringUtils;
 
 /**
  * <p>Escapes and unescapes {@code String}s for Java, Java Script, HTML and XML.</p>

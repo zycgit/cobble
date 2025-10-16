@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io;
-import net.hasor.cobble.io.output.StringBuilderWriter;
-
 import java.io.*;
 import java.net.*;
 import java.nio.channels.Selector;
@@ -25,6 +23,7 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import net.hasor.cobble.io.output.StringBuilderWriter;
 
 /**
  * General IO stream manipulation utilities.

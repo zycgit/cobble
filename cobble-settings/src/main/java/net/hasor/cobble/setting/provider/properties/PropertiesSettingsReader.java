@@ -16,12 +16,11 @@
  *
  */
 package net.hasor.cobble.setting.provider.properties;
-import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.provider.SettingsReader;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Properties;
+import net.hasor.cobble.setting.Settings;
+import net.hasor.cobble.setting.provider.SettingsReader;
 
 /**
  * @author 赵永春 (zyc@byshell.org)

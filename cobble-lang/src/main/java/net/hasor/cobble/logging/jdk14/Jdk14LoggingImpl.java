@@ -14,10 +14,8 @@
  *    limitations under the License.
  */
 package net.hasor.cobble.logging.jdk14;
-
-import net.hasor.cobble.logging.Logger;
-
 import java.util.logging.Level;
+import net.hasor.cobble.logging.Logger;
 
 /**
  * <p>copy form mybatis org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl</p>

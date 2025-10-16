@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.codec;
-import net.hasor.cobble.ArrayUtils;
-import net.hasor.cobble.ExceptionUtils;
-import net.hasor.cobble.StringUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import net.hasor.cobble.ArrayUtils;
+import net.hasor.cobble.ExceptionUtils;
+import net.hasor.cobble.StringUtils;
 
 /**
  * @author 赵永春 (zyc@hasor.net)

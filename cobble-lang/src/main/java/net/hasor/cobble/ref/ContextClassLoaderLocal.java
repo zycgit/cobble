@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-import net.hasor.cobble.BeanUtils;
-
 import java.util.Map;
 import java.util.WeakHashMap;
+import net.hasor.cobble.BeanUtils;
 
 /**
  * An instance of this class represents a value that is provided per (thread)

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.provider;
-import net.hasor.cobble.ExceptionUtils;
-
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+import net.hasor.cobble.ExceptionUtils;
 
 /**
  * 提供者实现这个接口就相当于同时实现了

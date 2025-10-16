@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io;
-import net.hasor.cobble.io.reader.ReversedLinesFileReader;
-
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
@@ -25,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import net.hasor.cobble.io.reader.ReversedLinesFileReader;
 
 /**
  * General file manipulation utilities.

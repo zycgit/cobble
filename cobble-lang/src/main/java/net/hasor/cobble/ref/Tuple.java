@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-
-import net.hasor.cobble.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import net.hasor.cobble.StringUtils;
 
 /**
  * 元组。

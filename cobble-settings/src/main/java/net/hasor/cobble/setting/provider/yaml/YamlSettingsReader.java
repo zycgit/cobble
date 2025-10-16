@@ -16,17 +16,16 @@
  *
  */
 package net.hasor.cobble.setting.provider.yaml;
-import net.hasor.cobble.setting.SettingNode;
-import net.hasor.cobble.setting.Settings;
-import net.hasor.cobble.setting.data.TreeNode;
-import net.hasor.cobble.setting.provider.SettingsReader;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.hasor.cobble.setting.SettingNode;
+import net.hasor.cobble.setting.Settings;
+import net.hasor.cobble.setting.data.TreeNode;
+import net.hasor.cobble.setting.provider.SettingsReader;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * @author 赵永春 (zyc@byshell.org)

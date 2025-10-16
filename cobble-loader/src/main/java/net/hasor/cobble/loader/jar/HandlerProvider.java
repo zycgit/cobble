@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.jar;
-import net.hasor.cobble.StringUtils;
-
 import java.net.URLStreamHandler;
 import java.net.spi.URLStreamHandlerProvider;
+import net.hasor.cobble.StringUtils;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.

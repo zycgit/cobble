@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 package net.hasor.cobble.ref;
-import net.hasor.cobble.RandomUtils;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import net.hasor.cobble.RandomUtils;
 
 /**
  * 控制操作生成比率

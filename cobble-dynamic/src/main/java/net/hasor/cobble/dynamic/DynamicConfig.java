@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.ArrayUtils;
-import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.provider.Provider;
-
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -28,6 +23,10 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import net.hasor.cobble.ArrayUtils;
+import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.provider.Provider;
 
 /**
  * 策略执行顺序：1. superClass、2. interceptorMethods、3. dynamicPropertyMap、4. implementMap、

@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.input;
-import net.hasor.cobble.io.IOUtils;
-
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import net.hasor.cobble.io.IOUtils;
 
 /**
  * A Proxy stream which acts as expected, that is it passes the method

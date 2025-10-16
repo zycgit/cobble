@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.output;
-import net.hasor.cobble.io.IOUtils;
-
-import java.io.ByteArrayOutputStream;
 import java.io.*;
+import java.io.ByteArrayOutputStream;
+import net.hasor.cobble.io.IOUtils;
 
 /**
  * An output stream which will retain data in memory until a specified

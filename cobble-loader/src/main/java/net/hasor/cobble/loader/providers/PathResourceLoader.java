@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader.providers;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.SystemUtils;
-import net.hasor.cobble.function.ESupplier;
-import net.hasor.cobble.loader.AbstractResourceLoader;
-import net.hasor.cobble.loader.MatchType;
-import net.hasor.cobble.loader.ScanEvent;
-import net.hasor.cobble.loader.Scanner;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +25,13 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.SystemUtils;
+import net.hasor.cobble.function.ESupplier;
+import net.hasor.cobble.loader.AbstractResourceLoader;
+import net.hasor.cobble.loader.MatchType;
+import net.hasor.cobble.loader.ScanEvent;
+import net.hasor.cobble.loader.Scanner;
 
 /**
  * 将一个 File 对象所代表的路径作为根路径。

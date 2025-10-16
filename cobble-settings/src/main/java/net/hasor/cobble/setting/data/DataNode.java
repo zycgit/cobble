@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting.data;
-import net.hasor.cobble.StringUtils;
-import net.hasor.cobble.setting.Settings;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import net.hasor.cobble.StringUtils;
+import net.hasor.cobble.setting.Settings;
 
 /**
  * @author 赵永春 (zyc@hasor.net)

@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.reader;
-import net.hasor.cobble.io.Charsets;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
+import net.hasor.cobble.io.Charsets;
 
 /**
  * Reads lines in a file reversely (similar to a BufferedReader, but starting at the last line). Useful for e.g. searching in log files.

@@ -14,7 +14,6 @@
  *    limitations under the License.
  */
 package net.hasor.cobble.logging.slf4j;
-
 import net.hasor.cobble.logging.Logger;
 
 /**

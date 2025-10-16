@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.input;
-import net.hasor.cobble.io.IOUtils;
-
 import java.io.IOException;
 import java.io.Reader;
+import net.hasor.cobble.io.IOUtils;
 
 /**
  * 具有自动关闭的输入流

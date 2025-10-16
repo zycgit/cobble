@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.function.ESupplier;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import net.hasor.cobble.function.ESupplier;
 
 /**
  * 扫描的资源

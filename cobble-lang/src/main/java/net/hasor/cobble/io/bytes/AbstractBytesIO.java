@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.io.bytes;
-import net.hasor.cobble.ObjectUtils;
-
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import net.hasor.cobble.ObjectUtils;
 
 /**
  * <pre>
@@ -29,7 +28,6 @@ import java.nio.ByteOrder;
  * |          |             |            |             |          |
  * 0   ≤   marked  ≤  readerIndex  ≤  marked  ≤  writerIndex ≤ capacity
  *      readerIndex                writerIndex
- *
  * </pre>
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2022-11-01

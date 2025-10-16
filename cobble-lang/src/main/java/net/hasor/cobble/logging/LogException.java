@@ -14,7 +14,6 @@
  *    limitations under the License.
  */
 package net.hasor.cobble.logging;
-
 /**
  * <p>copy form mybatis org.apache.ibatis.logging.LogException</p>
  * @author Clinton Begin

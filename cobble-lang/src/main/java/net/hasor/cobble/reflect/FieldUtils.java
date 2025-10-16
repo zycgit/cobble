@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.reflect;
-import net.hasor.cobble.ClassUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import net.hasor.cobble.ClassUtils;
 
 /**
  * Utilities for working with fields by reflection. Adapted and refactored

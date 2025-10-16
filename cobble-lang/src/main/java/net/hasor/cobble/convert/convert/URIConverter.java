@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.convert.convert;
-import net.hasor.cobble.convert.Converter;
-
 import java.net.URI;
+import net.hasor.cobble.convert.Converter;
 
 /**
  * {@link Converter} implementaion that handles conversion

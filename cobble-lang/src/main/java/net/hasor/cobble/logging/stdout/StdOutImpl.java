@@ -14,7 +14,6 @@
  *    limitations under the License.
  */
 package net.hasor.cobble.logging.stdout;
-
 import net.hasor.cobble.logging.Logger;
 
 /**

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
-import net.hasor.cobble.setting.data.UpdateValue;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.hasor.cobble.setting.data.UpdateValue;
 
 /**
  * 属性节点。

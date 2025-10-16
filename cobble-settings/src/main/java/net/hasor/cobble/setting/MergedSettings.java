@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package net.hasor.cobble.setting;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.input.AutoCloseInputStream;
 import net.hasor.cobble.io.input.AutoCloseReader;
@@ -22,10 +25,6 @@ import net.hasor.cobble.setting.provider.StreamType;
 import net.hasor.cobble.setting.provider.properties.PropertiesSettingsReader;
 import net.hasor.cobble.setting.provider.xml.XmlSettingsReader;
 import net.hasor.cobble.setting.provider.yaml.YamlSettingsReader;
-
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /***
  * 传入{@link InputStream}的方式获取{@link Settings}接口的支持。

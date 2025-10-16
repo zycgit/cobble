@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.loader;
-import net.hasor.cobble.loader.ClassMatcher.ClassInfo;
-
 import java.util.function.Predicate;
+import net.hasor.cobble.loader.ClassMatcher.ClassInfo;
 
 /**
  * 扫描过程中的匹配器

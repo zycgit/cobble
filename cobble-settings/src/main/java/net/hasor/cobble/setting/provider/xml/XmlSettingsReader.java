@@ -16,16 +16,15 @@
  *
  */
 package net.hasor.cobble.setting.provider.xml;
+import java.io.IOException;
+import java.io.Reader;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import net.hasor.cobble.setting.Settings;
 import net.hasor.cobble.setting.provider.SettingsReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.Reader;
 
 /**
  * @author 赵永春 (zyc@byshell.org)
