@@ -38,43 +38,43 @@ public class Tuple {
         return new Tuple(values);
     }
 
-    public <T> T get0() {
+    public <T> T getArg0() {
         return this.getByIndex(0);
     }
 
-    public <T> T get1() {
+    public <T> T getArg1() {
         return this.getByIndex(1);
     }
 
-    public <T> T get2() {
+    public <T> T getArg2() {
         return this.getByIndex(2);
     }
 
-    public <T> T get3() {
+    public <T> T getArg3() {
         return this.getByIndex(3);
     }
 
-    public <T> T get4() {
+    public <T> T getArg4() {
         return this.getByIndex(4);
     }
 
-    public <T> T get5() {
+    public <T> T getArg5() {
         return this.getByIndex(5);
     }
 
-    public <T> T get6() {
+    public <T> T getArg6() {
         return this.getByIndex(6);
     }
 
-    public <T> T get7() {
+    public <T> T getArg7() {
         return this.getByIndex(7);
     }
 
-    public <T> T get8() {
+    public <T> T getArg8() {
         return this.getByIndex(8);
     }
 
-    public <T> T get9() {
+    public <T> T getArg9() {
         return this.getByIndex(9);
     }
 
