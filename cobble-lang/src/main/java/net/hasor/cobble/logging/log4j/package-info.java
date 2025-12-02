@@ -1,3 +1,4 @@
+package net.hasor.cobble.logging.log4j;
 /// *
 // *    Copyright 2009-2021 the original author or authors.
 // *

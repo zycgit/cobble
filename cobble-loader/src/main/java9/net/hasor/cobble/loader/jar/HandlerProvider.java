@@ -19,7 +19,7 @@ import java.net.spi.URLStreamHandlerProvider;
 import net.hasor.cobble.StringUtils;
 
 /**
- * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
+ * {@link URLStreamHandler} for loader {@link JarFile}s.
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @see JarFile#registerUrlProtocolHandler()
