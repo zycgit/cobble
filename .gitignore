@@ -18,6 +18,7 @@ yarn-error.logger*
 
 # Editor directories and files
 .settings
+.github
 target
 .classpath
 .project
