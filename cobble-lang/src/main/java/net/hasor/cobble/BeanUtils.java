@@ -742,6 +742,7 @@ class SimpleProperty implements Property {
         this.writerMethod = writerMethod;
     }
 
+    @Override
     public Field getField() {
         return this.field;
     }
@@ -809,6 +810,11 @@ class MapProperty implements Property {
     @Override
     public boolean isReadOnly() {
         return false;
+    }
+
+    @Override
+    public Field getField() {
+        return null;
     }
 
     @Override

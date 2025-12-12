@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package net.hasor.cobble.function;
+import java.lang.reflect.Field;
+
 /**
  * Property 定义了属性的两个操作方法。
  * @author 赵永春 (zyc@hasor.net)
@@ -21,6 +23,8 @@ package net.hasor.cobble.function;
  */
 public interface Property {
     boolean isReadOnly();
+
+    Field getField();
 
     Object get(Object instance);
 
