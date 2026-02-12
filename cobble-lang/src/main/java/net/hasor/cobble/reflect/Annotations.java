@@ -251,6 +251,27 @@ public class Annotations {
         });
     }
 
+    /** 仅合并字段和方法注解，不合并类级注解 */
+    void mergeMembers(Annotations other) {
+        if (other == null) {
+            return;
+        }
+        other.fieldData.forEach((name, annotations) -> {
+            if (this.fieldData.containsKey(name)) {
+                this.fieldData.get(name).merge(annotations);
+            } else {
+                this.fieldData.put(name, annotations);
+            }
+        });
+        other.methodData.forEach((name, annotations) -> {
+            if (this.methodData.containsKey(name)) {
+                this.methodData.get(name).merge(annotations);
+            } else {
+                this.methodData.put(name, annotations);
+            }
+        });
+    }
+
     boolean isEmpty() {
         return this.typeData.isEmpty() && this.fieldData.isEmpty() && this.methodData.isEmpty();
     }
@@ -336,6 +357,17 @@ public class Annotations {
 
     public static String toMethodName(String name, Class<?>... args) {
         return name + "(" + ByteCodeTools.toAsmType(args) + ")";
+    }
+
+    /** 解析类及其所有父类的注解信息，类级注解仅取目标类自身，字段和方法注解合并整个继承链 */
+    public static Annotations ofClassHierarchy(Class<?> theClass) throws IOException {
+        Annotations result = ofClass(theClass);
+        Class<?> parent = theClass.getSuperclass();
+        while (parent != null && parent != Object.class) {
+            result.mergeMembers(ofClass(parent));
+            parent = parent.getSuperclass();
+        }
+        return result;
     }
 
     public static String toConstructorName(Class<?>... args) {
