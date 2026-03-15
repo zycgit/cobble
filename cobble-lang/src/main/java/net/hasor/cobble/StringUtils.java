@@ -187,7 +187,7 @@ public class StringUtils {
      * @param str the String to check, may be null
      * @return <code>true</code> if the String is empty or null
      */
-    public static boolean isEmpty(final String str) {
+    public static boolean isEmpty(final CharSequence str) {
         return str == null || str.length() == 0;
     }
 
@@ -203,7 +203,7 @@ public class StringUtils {
      * @param str the String to check, may be null
      * @return <code>true</code> if the String is not empty and not null
      */
-    public static boolean isNotEmpty(final String str) {
+    public static boolean isNotEmpty(final CharSequence str) {
         return !isEmpty(str);
     }
 
@@ -220,7 +220,7 @@ public class StringUtils {
      * @return <code>true</code> if the String is null, empty or whitespace
      * @since 2.0
      */
-    public static boolean isBlank(final String str) {
+    public static boolean isBlank(final CharSequence str) {
         int strLen;
         if (str == null || (strLen = str.length()) == 0) {
             return true;
@@ -247,7 +247,7 @@ public class StringUtils {
      * not empty and not null and not whitespace
      * @since 2.0
      */
-    public static boolean isNotBlank(final String str) {
+    public static boolean isNotBlank(final CharSequence str) {
         return !isBlank(str);
     }
     // Trim
