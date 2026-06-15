@@ -114,10 +114,10 @@ public class ZipResourceLoaderTests {
 
         String file = ResourcesUtils.getResource("/jars/app-2.zip").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file));
-        InputStream inputStream = loader.scanOneResource(scanner);
+        InputStream inputStream = loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
 
-        List<InputStream> inputStreams = loader.scanResources(scanner);
+        List<InputStream> inputStreams = loader.scanResources(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(inputStreams.get(1)));
     }

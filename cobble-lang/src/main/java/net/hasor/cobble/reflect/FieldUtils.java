@@ -291,7 +291,7 @@ public class FieldUtils {
         if (field == null) {
             throw new IllegalArgumentException("The field must not be null");
         }
-        if (forceAccess && !field.isAccessible()) {
+        if (forceAccess && !field.canAccess(target)) {
             field.setAccessible(true);
         } else {
             MemberUtils.setAccessibleWorkaround(field);
@@ -492,7 +492,7 @@ public class FieldUtils {
         if (field == null) {
             throw new IllegalArgumentException("The field must not be null");
         }
-        if (forceAccess && !field.isAccessible()) {
+        if (forceAccess && !field.canAccess(target)) {
             field.setAccessible(true);
         } else {
             MemberUtils.setAccessibleWorkaround(field);

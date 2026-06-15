@@ -33,7 +33,7 @@ public class EnhanceTest {
         classConfig.addAopInterceptor(t -> true, aopInterceptor);
         classConfig.addProperty("aacc", String.class);
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        PropertyBean instance = (PropertyBean) buildClass.newInstance();
+        PropertyBean instance = (PropertyBean) buildClass.getDeclaredConstructor().newInstance();
 
         assert !Proxy.isProxyObject(instance);
         assert !Proxy.isProxyClass(instance.getClass());
@@ -213,7 +213,7 @@ public class EnhanceTest {
     public void aopTest3() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(PropertyBean.class, t -> true, aopInterceptor);
-        PropertyBean instance = (PropertyBean) buildClass.newInstance();
+        PropertyBean instance = (PropertyBean) buildClass.getDeclaredConstructor().newInstance();
 
         ClassLoader loader = instance.getClass().getClassLoader();
         InputStream resourceAsStream = loader.getResourceAsStream(instance.getClass().getName().replace(".", "/") + ".class");
@@ -232,7 +232,7 @@ public class EnhanceTest {
         classConfig.getDebugOutputDir().deleteOnExit();
 
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        PropertyBean instance = (PropertyBean) buildClass.newInstance();
+        PropertyBean instance = (PropertyBean) buildClass.getDeclaredConstructor().newInstance();
 
         String fullName = buildClass.getName().replace(".", String.valueOf(File.separatorChar)) + ".class";
         assert new File(classConfig.getDebugOutputDir(), fullName).exists();
@@ -244,7 +244,7 @@ public class EnhanceTest {
     public void aopTest5() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(ThrowAopBean.class, t -> true, aopInterceptor);
-        ThrowAopBean instance = (ThrowAopBean) buildClass.newInstance();
+        ThrowAopBean instance = (ThrowAopBean) buildClass.getDeclaredConstructor().newInstance();
 
         try {
             instance.fooCall("abc");
@@ -264,7 +264,7 @@ public class EnhanceTest {
     public void aopTest6() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(GenericsMethodAopBean.class, t -> true, aopInterceptor);
-        GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.newInstance();
+        GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.getDeclaredConstructor().newInstance();
 
         instance.fooCall1("abc1", "abc2", "abc3");
         assert aopInterceptor.getCallInfo().get("fooCall1").size() == 2;
@@ -286,7 +286,7 @@ public class EnhanceTest {
     public void aopTest7() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(GenericsMethodAopBean.class, method -> true, aopInterceptor);
-        GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.newInstance();
+        GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.getDeclaredConstructor().newInstance();
 
         instance.fooCall1("abc1", "abc2", "abc3");
         assert aopInterceptor.getCallInfo().get("fooCall1").size() == 2;

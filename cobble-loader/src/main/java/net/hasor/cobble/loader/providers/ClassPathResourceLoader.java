@@ -71,11 +71,29 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
     }
 
     private String formatResourcePath(String resourcePath) {
+        if (StringUtils.isBlank(resourcePath)) {
+            return "";
+        }
         resourcePath = resourcePath.replaceAll("/{2}", "/");
         if (resourcePath.charAt(0) == '/') {
             resourcePath = resourcePath.substring(1);
         }
         return resourcePath;
+    }
+
+    private void checkScanPaths(MatchType matchType, String[] scanPaths) {
+        if (matchType == null || matchType == MatchType.None) {
+            throw new IllegalArgumentException("ClassPathResourceLoader scan requires a bounded match type.");
+        }
+        if (scanPaths == null || scanPaths.length == 0) {
+            throw new IllegalArgumentException("ClassPathResourceLoader scan requires at least one scan path.");
+        }
+        for (String scanPath : scanPaths) {
+            String path = formatResourcePath(scanPath);
+            if (StringUtils.isBlank(path) || ".".equals(path)) {
+                throw new IllegalArgumentException("ClassPathResourceLoader scan path cannot be root.");
+            }
+        }
     }
 
     @Override
@@ -129,6 +147,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
     @Override
     public <T> List<T> scanResources(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        checkScanPaths(matchType, scanPaths);
         final Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
         final Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
 
@@ -158,8 +177,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                         continue;
                     }
 
-                    try {
-                        JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir);
+                    try (JarFile jarFile = new net.hasor.cobble.loader.jar.JarFile(contextDir)) {
                         jarScan(result, jarFile, testJar, scanner, false);
                     } catch (Exception e) {
                         logger.error("cannot open jar (" + jarName + ") " + e.getMessage(), e);
@@ -176,6 +194,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
 
     @Override
     public <T> T scanOneResource(MatchType matchType, Predicate<URI> matcher, Scanner<T> scanner, String[] scanPaths) throws IOException {
+        checkScanPaths(matchType, scanPaths);
         List<T> result = new ArrayList<>();
         Predicate<JarEntry>[] testJar = buildPredicate(matchType, scanPaths, ZipEntry::getName);
         Predicate<String>[] testDir = buildPredicate(matchType, scanPaths, s -> s);
@@ -205,8 +224,7 @@ public class ClassPathResourceLoader extends AbstractResourceLoader {
                         continue;
                     }
 
-                    try {
-                        JarFile jarFile = new JarFile(contextDir);
+                    try (JarFile jarFile = new JarFile(contextDir)) {
                         jarScan(result, jarFile, testJar, scanner, true);
                     } catch (Exception e) {
                         logger.error("cannot open jar (" + jarName + ") " + e.getMessage(), e);

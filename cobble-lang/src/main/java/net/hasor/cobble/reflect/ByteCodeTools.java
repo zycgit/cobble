@@ -57,11 +57,11 @@ public class ByteCodeTools implements Opcodes {
 
     /** 将某一个类型转为asm形式的表述， int,int 转为 II，String,int转为 Ljava/lang/String;I */
     public static String toAsmType(final Class<?>[] classType) {
-        String returnString = "";
+        StringBuilder returnString = new StringBuilder();
         for (Class<?> c : classType) {
-            returnString += toAsmType(c);
+            returnString.append(toAsmType(c));
         }
-        return returnString;
+        return returnString.toString();
     }
 
     public static String toJavaType(final String asmType) {
@@ -80,7 +80,7 @@ public class ByteCodeTools implements Opcodes {
             TypeVariable<?> paramType  = null;
         }
         //
-        StringBuffer signature = new StringBuffer();
+        StringBuilder signature = new StringBuilder();
         {
             //Step:1
             Class<?>[] pTypeArray = targetMethod.getParameterTypes();
@@ -95,9 +95,9 @@ public class ByteCodeTools implements Opcodes {
             java.lang.reflect.Type[] gTypeArray = targetMethod.getGenericParameterTypes();
             for (int i = 0; i < gTypeArray.length; i++) {
                 java.lang.reflect.Type gType = gTypeArray[i];
-                if (gType instanceof TypeVariable) {
-                    mTypeList[i].name = ((TypeVariable<?>) gType).getName();
-                    mTypeList[i].paramType = (TypeVariable<?>) gType;
+                if (gType instanceof TypeVariable<?> typeVariable) {
+                    mTypeList[i].name = typeVariable.getName();
+                    mTypeList[i].paramType = typeVariable;
                 }
             }
             //Step:3
@@ -149,13 +149,11 @@ public class ByteCodeTools implements Opcodes {
         return signature.toString();
     }
 
-    private static StringBuffer getTypeVarStr(StringBuffer atString, java.lang.reflect.Type type) {
+    private static StringBuilder getTypeVarStr(StringBuilder atString, java.lang.reflect.Type type) {
         //
-        if (type instanceof TypeVariable) {
-            TypeVariable<?> paramType = (TypeVariable<?>) type;
+        if (type instanceof TypeVariable<?> paramType) {
             atString.append("T" + paramType.getName() + ";");
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType paramType = (ParameterizedType) type;
+        } else if (type instanceof ParameterizedType paramType) {
             atString.append("L" + replaceClassName((Class<?>) paramType.getRawType()));
             atString.append("<");
             for (java.lang.reflect.Type atType : paramType.getActualTypeArguments()) {
@@ -166,8 +164,7 @@ public class ByteCodeTools implements Opcodes {
         } else if (type instanceof Class<?>) {
             Class<?> paramType = (Class<?>) type;
             atString.append(toAsmType(paramType));
-        } else if (type instanceof WildcardType) {
-            WildcardType paramType = (WildcardType) type;
+        } else if (type instanceof WildcardType paramType) {
             java.lang.reflect.Type[] upperType = paramType.getUpperBounds();//上边界
             java.lang.reflect.Type[] lowerType = paramType.getLowerBounds();//下边界
             if (lowerType.length == 0 && upperType.length != 0) {
@@ -192,7 +189,7 @@ public class ByteCodeTools implements Opcodes {
 
     /** 获取方法的ASM格式描述信息 */
     public static String toAsmFullDesc(Method method) {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         str.append(method.getName());
         str.append("(");
         str.append(toAsmType(method.getParameterTypes()));
@@ -208,7 +205,7 @@ public class ByteCodeTools implements Opcodes {
 
     /** 获取方法的ASM格式描述信息 */
     public static String toAsmDesc(Method method) {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         str.append("(");
         str.append(toAsmType(method.getParameterTypes()));
         str.append(")");
@@ -236,15 +233,15 @@ public class ByteCodeTools implements Opcodes {
 
             /** 读取到下一个分号为止或者结束为止。*/
             private String readToSemicolon() throws IOException {
-                String res = "";
+                StringBuilder res = new StringBuilder();
                 while (true) {
                     int strInt = this.sread.read();
                     if (strInt == -1) {
-                        return res;
+                        return res.toString();
                     } else if ((char) strInt == ';') {
-                        return res + ';';
+                        return res.append(';').toString();
                     } else {
-                        res += (char) strInt;
+                        res.append((char) strInt);
                     }
                 }
             }
@@ -255,19 +252,16 @@ public class ByteCodeTools implements Opcodes {
                 if (strInt == -1) {
                     return "";
                 }
-                switch ((char) strInt) {
-                    case '['://array
-                        return '[' + this.readType();
-                    case 'L'://Object
-                        return 'L' + this.readToSemicolon();
-                    default:
-                        return String.valueOf((char) strInt);
-                }
+                return switch ((char) strInt) {
+                    case '[' -> '[' + this.readType();//array
+                    case 'L' -> 'L' + this.readToSemicolon();//Object
+                    default -> String.valueOf((char) strInt);
+                };
             }
 
             /** 读取所有类型 */
             public String[] readTypes() throws IOException {
-                ArrayList<String> ss = new ArrayList<String>(0);
+                ArrayList<String> ss = new ArrayList<>(0);
                 while (true) {
                     String s = this.readType();
                     if ("".equals(s)) {
@@ -276,9 +270,7 @@ public class ByteCodeTools implements Opcodes {
                         ss.add(s);
                     }
                 }
-                String[] res = new String[ss.size()];
-                ss.toArray(res);
-                return res;
+                return ss.toArray(new String[0]);
             }
         }
         try {

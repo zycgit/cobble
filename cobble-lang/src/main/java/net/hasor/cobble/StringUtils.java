@@ -5974,7 +5974,7 @@ public class StringUtils {
             return null;
         }
         Matcher matcher = humpPattern.matcher(str);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (matcher.find()) {
             matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
         }
@@ -6017,7 +6017,7 @@ public class StringUtils {
             assert false;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (bb.hasRemaining()) {
             int b = bb.get() & 0xff;
             if (b >= 0x80) {
@@ -6032,7 +6032,7 @@ public class StringUtils {
     // -- Escaping and encoding --
     private final static char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    private static void appendEscape(StringBuffer sb, byte b) {
+    private static void appendEscape(StringBuilder sb, byte b) {
         sb.append('%');
         sb.append(hexDigits[(b >> 4) & 0x0f]);
         sb.append(hexDigits[(b >> 0) & 0x0f]);

@@ -14,6 +14,7 @@
  * under the License.
  */
 package net.hasor.cobble.concurrent.timer;
+import java.lang.ref.Cleaner;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -64,8 +65,11 @@ public class HashedWheelTimer implements Timer {
     private static final int                                         INSTANCE_COUNT_LIMIT      = 64;
     private static final long                                        MILLISECOND_NANOS         = TimeUnit.MILLISECONDS.toNanos(1);
     private static final AtomicIntegerFieldUpdater<HashedWheelTimer> WORKER_STATE_UPDATER      = AtomicIntegerFieldUpdater.newUpdater(HashedWheelTimer.class, "workerState");
+    private static final Cleaner                                     CLEANER                   = Cleaner.create();
     private final        Worker                                      worker                    = new Worker();
     private final        Thread                                      workerThread;
+    private final        InstanceCounterCleanup                      instanceCounterCleanup    = new InstanceCounterCleanup();
+    private final        Cleaner.Cleanable                           cleanable;
     public static final  int                                         WORKER_STATE_INIT         = 0;
     public static final  int                                         WORKER_STATE_STARTED      = 1;
     public static final  int                                         WORKER_STATE_SHUTDOWN     = 2;
@@ -208,19 +212,7 @@ public class HashedWheelTimer implements Timer {
         if (INSTANCE_COUNTER.incrementAndGet() > INSTANCE_COUNT_LIMIT && WARNED_TOO_MANY_INSTANCES.compareAndSet(false, true)) {
             reportTooManyInstances();
         }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            super.finalize();
-        } finally {
-            // This object is going to be GCed and it is assumed the ship has sailed to do a proper shutdown. If
-            // we have not yet shutdown then we want to make sure we decrement the active instance count.
-            if (WORKER_STATE_UPDATER.getAndSet(this, WORKER_STATE_SHUTDOWN) != WORKER_STATE_SHUTDOWN) {
-                INSTANCE_COUNTER.decrementAndGet();
-            }
-        }
+        this.cleanable = CLEANER.register(this, this.instanceCounterCleanup);
     }
 
     private static HashedWheelBucket[] createWheel(int ticksPerWheel) {
@@ -287,7 +279,7 @@ public class HashedWheelTimer implements Timer {
         if (!WORKER_STATE_UPDATER.compareAndSet(this, WORKER_STATE_STARTED, WORKER_STATE_SHUTDOWN)) {
             // workerState can be 0 or 2 at this moment - let it always be 2.
             if (WORKER_STATE_UPDATER.getAndSet(this, WORKER_STATE_SHUTDOWN) != WORKER_STATE_SHUTDOWN) {
-                INSTANCE_COUNTER.decrementAndGet();
+                cleanable.clean();
             }
 
             return Collections.emptySet();
@@ -308,7 +300,7 @@ public class HashedWheelTimer implements Timer {
                 Thread.currentThread().interrupt();
             }
         } finally {
-            INSTANCE_COUNTER.decrementAndGet();
+            cleanable.clean();
         }
         return worker.unprocessedTimeouts();
     }
@@ -350,6 +342,17 @@ public class HashedWheelTimer implements Timer {
     private static void reportTooManyInstances() {
         String resourceType = HashedWheelTimer.class.getSimpleName();
         logger.error("You are creating too many " + resourceType + " instances. " + resourceType + " is a shared resource that must be reused across the JVM, " + "so that only a few instances are created.");
+    }
+
+    private static final class InstanceCounterCleanup implements Runnable {
+        private final AtomicBoolean closed = new AtomicBoolean();
+
+        @Override
+        public void run() {
+            if (closed.compareAndSet(false, true)) {
+                INSTANCE_COUNTER.decrementAndGet();
+            }
+        }
     }
 
     private final class Worker implements Runnable {

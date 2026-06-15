@@ -1,0 +1,1 @@
+tests/tests-loader/src/test/resources/dir/app-1.jar/META-INF/jar.mf -text -diff

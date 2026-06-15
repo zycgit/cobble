@@ -16,7 +16,7 @@ public class AnnoTest {
         MethodAnnoInterceptor.reset();
 
         Class<?> aClass = Proxy.newProxyClass(AopBean.class);
-        AopBean instance = (AopBean) aClass.newInstance();
+        AopBean instance = (AopBean) aClass.getDeclaredConstructor().newInstance();
         assert instance instanceof DynamicClass;
 
         instance.doInit(new ArrayList<>());
@@ -128,7 +128,7 @@ public class AnnoTest {
         MyAopInterceptor.resetInit();
         assert !MyAopInterceptor.isCalled();
         Class<?> withMethodType = Proxy.newProxyClass(MethodMyAopBean.class);
-        MethodMyAopBean withMethodInstance = (MethodMyAopBean) withMethodType.newInstance();
+        MethodMyAopBean withMethodInstance = (MethodMyAopBean) withMethodType.getDeclaredConstructor().newInstance();
         assert withMethodInstance.fooCall("abc").equals("call back : abc");
         assert MyAopInterceptor.isCalled();
         //
@@ -137,7 +137,7 @@ public class AnnoTest {
         MyAopInterceptor.resetInit();
         assert !MyAopInterceptor.isCalled();
         Class<?> withClassType = Proxy.newProxyClass(MethodMyAopBean.class);
-        MethodMyAopBean withClassInstance = (MethodMyAopBean) withClassType.newInstance();
+        MethodMyAopBean withClassInstance = (MethodMyAopBean) withClassType.getDeclaredConstructor().newInstance();
         assert withClassInstance.fooCall("abc").equals("call back : abc");
         assert MyAopInterceptor.isCalled();
     }

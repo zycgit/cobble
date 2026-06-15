@@ -45,8 +45,6 @@ public final class Proxy {
     private static final String                                             aopMethodSuffix   = "redirect$";
     private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> proxyClassCache   = new JdkWeakCache<>(new KeyFactory(), new ProxyClassFactory());
     private static final JdkWeakCache<ClassLoader, DynamicConfig, Class<?>> dynamicClassCache = new JdkWeakCache<>(new KeyFactory(), new DynamicClassFactory());
-    private static final Method                                             privateLookupMethod;
-    private static final Method                                             defineClassMethod;
 
     private static final class KeyFactory implements BiFunction<ClassLoader, DynamicConfig, Object> {
         @Override
@@ -87,7 +85,7 @@ public final class Proxy {
         @Override
         public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
             try {
-                return buildAndLoadClass(config, true, classLoader);
+                return buildAndLoadClass(config, true);
             } catch (Exception e) {
                 throw new ProxyInvocationException(e);
             }
@@ -98,35 +96,11 @@ public final class Proxy {
         @Override
         public Class<?> apply(ClassLoader classLoader, DynamicConfig config) {
             try {
-                return buildAndLoadClass(config, false, classLoader);
+                return buildAndLoadClass(config, false);
             } catch (Exception e) {
                 throw new ProxyInvocationException(e);
             }
         }
-    }
-
-    static {
-        Method _privateLookupMethod;
-        Method _defineClassMethod;
-        try {
-            _privateLookupMethod = MethodHandles.class.getDeclaredMethod("privateLookupIn", Class.class, MethodHandles.Lookup.class);
-            _defineClassMethod = MethodHandles.Lookup.class.getDeclaredMethod("defineClass", byte[].class);
-        } catch (Exception ignored) {
-            _privateLookupMethod = null;
-            _defineClassMethod = null;
-        }
-
-        if (_privateLookupMethod == null) {
-            try {
-                _defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-                _defineClassMethod.setAccessible(true);
-            } catch (Exception ignored) {
-                _defineClassMethod = null;
-            }
-        }
-
-        privateLookupMethod = _privateLookupMethod;
-        defineClassMethod = _defineClassMethod;
     }
 
     private static ClassLoader toClassLoader(DynamicConfig config) {
@@ -330,21 +304,14 @@ public final class Proxy {
         return dynamicClassCache.get(toClassLoader(config), config);
     }
 
-    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy, ClassLoader loader) throws Exception {
+    private static Class<?> buildAndLoadClass(DynamicConfig config, boolean isProxy) throws Exception {
         String className = getClassName(config);
         byte[] classBytes = buildClassBytes(config, className, isProxy);
         logClassBytes(className, classBytes, config.getDebugOutputDir());
 
         // load class
-        Class<?> buildType;
-        if (privateLookupMethod != null) {
-            // JDK9+
-            MethodHandles.Lookup lookup = (MethodHandles.Lookup) privateLookupMethod.invoke(null, new Object[] { config.getSuperClass(), MethodHandles.lookup() });
-            buildType = (Class<?>) defineClassMethod.invoke(lookup, new Object[] { classBytes });
-        } else {
-            // JDK8
-            buildType = (Class<?>) defineClassMethod.invoke(loader, new Object[] { className, classBytes, 0, classBytes.length });
-        }
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(config.getSuperClass(), MethodHandles.lookup());
+        Class<?> buildType = lookup.defineClass(classBytes);
 
         Field dynamicConfig = buildType.getDeclaredField("dynamicConfig");
         dynamicConfig.setAccessible(true);
@@ -496,22 +463,22 @@ public final class Proxy {
         mv.visitLdcInsn(Type.getType("L" + thisClassName + ";"));
         mv.visitVarInsn(ASTORE, thisClassIndex);
 
-        mv.visitIntInsn(BIPUSH, implClassList.size());
+        AsmTools.pushInt(mv, implClassList.size());
         mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Class.class));
         for (int i = 0; i < implClassList.size(); i++) {
             mv.visitInsn(DUP);
-            mv.visitIntInsn(BIPUSH, i);
+            AsmTools.pushInt(mv, i);
             mv.visitLdcInsn(Type.getType("L" + AsmTools.replaceClassName(implClassList.get(i)) + ";"));
             mv.visitInsn(AASTORE);
         }
         mv.visitVarInsn(ASTORE, implsClassIndex);
 
         mv.visitLabel(tryStartCodeLabel);
-        mv.visitIntInsn(BIPUSH, (int) arraySize);
+        AsmTools.pushInt(mv, (int) arraySize);
         mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
         mv.visitFieldInsn(PUTSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
         if (!isProxy) {
-            mv.visitIntInsn(BIPUSH, (int) arraySize);
+            AsmTools.pushInt(mv, (int) arraySize);
             mv.visitTypeInsn(ANEWARRAY, AsmTools.replaceClassName(Method.class));
             mv.visitFieldInsn(PUTSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
         }
@@ -526,7 +493,7 @@ public final class Proxy {
             //
             // targetMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
             mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-            mv.visitIntInsn(BIPUSH, i);
+            AsmTools.pushInt(mv, i);
             mv.visitVarInsn(ALOAD, superClassIndex); // superClass
             mv.visitLdcInsn(asmMethodName);
             AsmTools.codeBuilder_2(mv, parameterTypes);
@@ -535,7 +502,7 @@ public final class Proxy {
             //
             // targetMethod[n].setAccessible(true);
             mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-            mv.visitIntInsn(BIPUSH, i);
+            AsmTools.pushInt(mv, i);
             mv.visitInsn(AALOAD);
             mv.visitInsn(ICONST_1);
             mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
@@ -543,7 +510,7 @@ public final class Proxy {
             if (!isProxy) {
                 // propxyMethod[n] = superClass.getMethod("aop$" + "xxxx",new Class[] { xxx,xxx});
                 mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, i);
+                AsmTools.pushInt(mv, i);
                 mv.visitVarInsn(ALOAD, thisClassIndex); // thisClass
                 mv.visitLdcInsn(aopMethodSuffix + asmMethodName);
                 AsmTools.codeBuilder_2(mv, parameterTypes);
@@ -552,7 +519,7 @@ public final class Proxy {
                 //
                 // targetMethod[n].setAccessible(true);
                 mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, i);
+                AsmTools.pushInt(mv, i);
                 mv.visitInsn(AALOAD);
                 mv.visitInsn(ICONST_1);
                 mv.visitMethodInsn(INVOKEVIRTUAL, AsmTools.replaceClassName(Method.class), "setAccessible", "(Z)V", false);
@@ -569,7 +536,7 @@ public final class Proxy {
 
                 // targetMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
                 mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, i);
+                AsmTools.pushInt(mv, i);
                 mv.visitVarInsn(ALOAD, thisClassIndex); // thisClass
                 mv.visitLdcInsn(asmMethodName);
                 AsmTools.codeBuilder_2(mv, parameterTypes);
@@ -578,9 +545,9 @@ public final class Proxy {
 
                 // proxyMethod[n] = superClass.getMethod("xxxx",new Class[] { xxx,xxx});
                 mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-                mv.visitIntInsn(BIPUSH, i);
+                AsmTools.pushInt(mv, i);
                 mv.visitVarInsn(ALOAD, implsClassIndex); // implsClass
-                mv.visitIntInsn(BIPUSH, implIndex);
+                AsmTools.pushInt(mv, implIndex);
                 mv.visitInsn(AALOAD);
                 mv.visitLdcInsn(asmMethodName);
                 AsmTools.codeBuilder_2(mv, parameterTypes);
@@ -786,11 +753,11 @@ public final class Proxy {
         mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
         mv.visitLdcInsn(aopMethodKey);
         mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-        mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
+        AsmTools.pushInt(mv, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
         mv.visitInsn(AALOAD);
         if (!isProxy) {
             mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-            mv.visitIntInsn(BIPUSH, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
+            AsmTools.pushInt(mv, indexMap.get(AsmTools.toAsmFullDesc(aopMethod)));
             mv.visitInsn(AALOAD);
         } else {
             mv.visitInsn(ACONST_NULL);
@@ -970,10 +937,10 @@ public final class Proxy {
         mv.visitInsn(isProxy ? ICONST_1 : ICONST_0);
         mv.visitLdcInsn(Type.getType(AsmTools.toAsmType(implType)));
         mv.visitFieldInsn(GETSTATIC, thisClassName, "targetMethod", AsmTools.toAsmType(Method[].class));
-        mv.visitIntInsn(BIPUSH, indexMap.get(methodKey));
+        AsmTools.pushInt(mv, indexMap.get(methodKey));
         mv.visitInsn(AALOAD);
         mv.visitFieldInsn(GETSTATIC, thisClassName, "proxyMethod", AsmTools.toAsmType(Method[].class));
-        mv.visitIntInsn(BIPUSH, indexMap.get(methodKey));
+        AsmTools.pushInt(mv, indexMap.get(methodKey));
         mv.visitInsn(AALOAD);
         mv.visitFieldInsn(GETSTATIC, thisClassName, "dynamicConfig", AsmTools.toAsmType(DynamicConfig.class));
         mv.visitVarInsn(ALOAD, paramIndexMap.get("this"));

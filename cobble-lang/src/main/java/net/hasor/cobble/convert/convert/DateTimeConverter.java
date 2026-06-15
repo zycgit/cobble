@@ -178,7 +178,7 @@ public abstract class DateTimeConverter extends AbstractConverter {
     public void setPatterns(final String[] patterns) {
         this.patterns = patterns;
         if (patterns != null && patterns.length > 1) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             for (int i = 0; i < patterns.length; i++) {
                 if (i > 0) {
                     buffer.append(", ");

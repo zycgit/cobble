@@ -25,7 +25,7 @@ public class PropertyTest {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", String.class, Provider.of(delegate));
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        Object instance = buildClass.newInstance();
+        Object instance = buildClass.getDeclaredConstructor().newInstance();
 
         BeanUtils.writeProperty(instance, "name", "abc");
         assert BeanUtils.readProperty(instance, "name").equals("abc");
@@ -40,7 +40,7 @@ public class PropertyTest {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", Boolean.TYPE);
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        Object instance = buildClass.newInstance();
+        Object instance = buildClass.getDeclaredConstructor().newInstance();
 
         BeanUtils.writeProperty(instance, "name", true);
         assert BeanUtils.readProperty(instance, "name").equals(true);

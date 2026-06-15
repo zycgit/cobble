@@ -69,20 +69,12 @@ public class MergedSettings extends BasicSettings implements IOSettings {
     }
 
     private void loadConfigSource(Reader dataReader, StreamType type) throws IOException {
-        SettingsReader reader;
-        switch (type) {
-            case Xml:
-                reader = new XmlSettingsReader();
-                break;
-            case Yaml:
-                reader = new YamlSettingsReader();
-                break;
-            case Properties:
-                reader = new PropertiesSettingsReader();
-                break;
-            default:
-                throw new UnsupportedOperationException(type + " Unsupported.");
-        }
+        SettingsReader reader = switch (type) {
+            case Xml -> new XmlSettingsReader();
+            case Yaml -> new YamlSettingsReader();
+            case Properties -> new PropertiesSettingsReader();
+            default -> throw new UnsupportedOperationException(type + " Unsupported.");
+        };
         reader.readSetting(dataReader, this);
         this.updateSettings();
     }

@@ -171,9 +171,7 @@ public class BasicSettings extends AbstractSettings implements Settings {
 
     /** 获取指在某个特定命名空间下的Settings接口对象 */
     public final BasicSettings getSettings(final String namespace) {
-        final Map<String, TreeNode> localData = Collections.unmodifiableMap(new HashMap<String, TreeNode>() {{
-            put(namespace, allSettingValue().get(namespace));
-        }});
+        final Map<String, TreeNode> localData = Collections.singletonMap(namespace, allSettingValue().get(namespace));
         return new BasicSettings() {
             public Map<String, TreeNode> allSettingValue() {
                 return localData;

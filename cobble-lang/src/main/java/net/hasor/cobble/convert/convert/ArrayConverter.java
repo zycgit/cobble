@@ -231,8 +231,8 @@ public class ArrayConverter extends AbstractConverter {
         if (this.onlyFirstToString) {
             size = 1;
         }
-        // Create a StringBuffer containing a delimited list of the values
-        StringBuffer buffer = new StringBuffer();
+        // Create a StringBuilder containing a delimited list of the values
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < size; i++) {
             if (i > 0) {
                 buffer.append(this.delimiter);
@@ -351,7 +351,7 @@ public class ArrayConverter extends AbstractConverter {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(this.toString(this.getClass()));
         buffer.append("[UseDefault=");
         buffer.append(this.isUseDefault());

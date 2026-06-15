@@ -396,7 +396,7 @@ public abstract class NumberConverter extends AbstractConverter {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(this.toString(this.getClass()));
         buffer.append("[UseDefault=");
         buffer.append(this.isUseDefault());

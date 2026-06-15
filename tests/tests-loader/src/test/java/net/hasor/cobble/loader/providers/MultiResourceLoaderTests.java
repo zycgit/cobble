@@ -225,10 +225,10 @@ public class MultiResourceLoaderTests {
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
         MultiResourceLoader loader = new MultiResourceLoader(loader1, loader2);
 
-        InputStream inputStream = loader.scanOneResource(scanner);
+        InputStream inputStream = loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
 
-        List<InputStream> inputStreams = loader.scanResources(scanner);
+        List<InputStream> inputStreams = loader.scanResources(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(inputStreams.get(1)));
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(inputStreams.get(2)));
@@ -255,10 +255,10 @@ public class MultiResourceLoaderTests {
         JarResourceLoader loader2 = new JarResourceLoader(new File(file2));
         MultiResourceLoader loader = new MultiResourceLoader(loader2, loader1);
 
-        InputStream inputStream = loader.scanOneResource(scanner);
+        InputStream inputStream = loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(inputStream));
 
-        List<InputStream> inputStreams = loader.scanResources(scanner);
+        List<InputStream> inputStreams = loader.scanResources(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat3, IOUtils.toByteArray(inputStreams.get(0)));
         assert Objects.deepEquals(byteDat4, IOUtils.toByteArray(inputStreams.get(1)));
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(2)));
@@ -291,7 +291,10 @@ public class MultiResourceLoaderTests {
 
         CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
         classLoader.asIsolation();
-        Object obj1 = classLoader.loadClass("ApplicationForApp1").newInstance();
+        Class<?> app1Class = classLoader.loadClass("ApplicationForApp1");
+        assert app1Class == classLoader.loadClass("ApplicationForApp1");
+
+        Object obj1 = app1Class.getDeclaredConstructor().newInstance();
         Object obj2 = classLoader.loadClass("ApplicationForApp2").newInstance();
 
         assert obj1 instanceof Function;

@@ -25,24 +25,8 @@ import java.util.function.Predicate;
  * @version : 2021-09-29
  */
 public abstract class AbstractResourceLoader implements ResourceLoader {
-    public <T> List<T> scanResources(Scanner<T> scanner) throws IOException {
-        return this.scanResources(MatchType.None, scanner, new String[0]);
-    }
-
-    public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return this.scanResources(matchType, scanner, new String[0]);
-    }
-
     public <T> List<T> scanResources(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
         return this.scanResources(matchType, t -> true, scanner, scanPaths);
-    }
-
-    public <T> T scanOneResource(Scanner<T> scanner) throws IOException {
-        return this.scanOneResource(MatchType.None, scanner, new String[0]);
-    }
-
-    public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner) throws IOException {
-        return this.scanOneResource(matchType, scanner, new String[0]);
     }
 
     public <T> T scanOneResource(MatchType matchType, Scanner<T> scanner, String[] scanPaths) throws IOException {
@@ -56,36 +40,15 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
         Predicate<T>[] tests = new Predicate[scanPaths.length];
         for (int i = 0; i < scanPaths.length; i++) {
             final String matchExpr = scanPaths[i];
-            switch (matchType) {
-                case None: {
-                    tests[i] = e -> true;
-                    break;
-                }
-                case Match: {
-                    tests[i] = e -> nameFunc.apply(e).equals(matchExpr);
-                    break;
-                }
-                case Regex: {
-                    tests[i] = e -> nameFunc.apply(e).matches(matchExpr);
-                    break;
-                }
-                case ContainsAny: {
-                    tests[i] = e -> nameFunc.apply(e).contains(matchExpr);
-                    break;
-                }
-                case Prefix: {
-                    tests[i] = e -> nameFunc.apply(e).startsWith(matchExpr);
-                    break;
-                }
-                case Suffix: {
-                    tests[i] = e -> nameFunc.apply(e).endsWith(matchExpr);
-                    break;
-                }
-                default: {
-                    tests[i] = e -> false;
-                    break;
-                }
-            }
+            tests[i] = switch (matchType) {
+                case None -> e -> true;
+                case Match -> e -> nameFunc.apply(e).equals(matchExpr);
+                case Regex -> e -> nameFunc.apply(e).matches(matchExpr);
+                case ContainsAny -> e -> nameFunc.apply(e).contains(matchExpr);
+                case Prefix -> e -> nameFunc.apply(e).startsWith(matchExpr);
+                case Suffix -> e -> nameFunc.apply(e).endsWith(matchExpr);
+                default -> e -> false;
+            };
         }
         return tests;
     }
@@ -93,5 +56,10 @@ public abstract class AbstractResourceLoader implements ResourceLoader {
     @Override
     public CobbleClassLoader toClassLoader(ClassLoader parent) {
         return new CobbleClassLoader(parent, this);
+    }
+
+    @Override
+    public void close() throws IOException {
+        // no-op
     }
 }

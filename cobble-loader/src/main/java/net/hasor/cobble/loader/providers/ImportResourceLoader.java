@@ -294,4 +294,28 @@ public class ImportResourceLoader extends AbstractResourceLoader implements Merg
         ResourceLoader loader = findLoader(resource);
         return loader == null ? null : loader.getManifest(resource);
     }
+
+    @Override
+    public void close() throws IOException {
+        IOException closeError = null;
+        Set<ResourceLoader> loaders = new LinkedHashSet<>();
+        Iterator<LoaderWrap> allLoader = getAllLoader();
+        while (allLoader.hasNext()) {
+            loaders.add(allLoader.next().loader);
+        }
+        for (ResourceLoader loader : loaders) {
+            try {
+                loader.close();
+            } catch (IOException e) {
+                if (closeError == null) {
+                    closeError = e;
+                } else {
+                    closeError.addSuppressed(e);
+                }
+            }
+        }
+        if (closeError != null) {
+            throw closeError;
+        }
+    }
 }

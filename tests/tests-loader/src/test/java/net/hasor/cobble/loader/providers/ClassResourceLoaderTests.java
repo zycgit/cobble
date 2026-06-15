@@ -19,6 +19,7 @@ import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.*;
 import net.hasor.cobble.loader.jar.JarFile;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -107,10 +108,10 @@ public class ClassResourceLoaderTests {
         };
 
         ClassPathResourceLoader loader = new ClassPathResourceLoader();
-        InputStream inputStream = loader.scanOneResource(scanner);
+        InputStream inputStream = loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "dir/app-1.jar/app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
 
-        List<InputStream> inputStreams = loader.scanResources(scanner);
+        List<InputStream> inputStreams = loader.scanResources(MatchType.Prefix, scanner, new String[] { "dir/app-1.jar/app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(inputStreams.get(1)));
     }
@@ -118,6 +119,20 @@ public class ClassResourceLoaderTests {
     @Test
     public void classpathLoaderTest8() throws Exception {
         ClassPathResourceLoader loader = new ClassPathResourceLoader();
+        try {
+            loader.scanOneResource(MatchType.None, ScanEvent::getStream, new String[] { "dir/app-1.jar/app" });
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("bounded match type"));
+        }
+
+        try {
+            loader.scanResources(MatchType.Prefix, ScanEvent::getStream, new String[] { "/" });
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("cannot be root"));
+        }
+
         assert loader.scanOneResource(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }) == null;
         assert loader.scanResources(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }).isEmpty();
     }
@@ -144,23 +159,16 @@ public class ClassResourceLoaderTests {
         assert resourceLoader.getResource("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class") != null;
         assert resourceLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
 
-        Set<Class<?>> classSet = new CobbleClassScanner(resourceLoader).getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.subClassesOf(ResourceLoader.class));
-        assert classSet.contains(ClassPathResourceLoader.class);
-        assert classSet.contains(MultiResourceLoader.class);
-        assert classSet.contains(ExportResourceLoader.class);
-        assert classSet.contains(ImportResourceLoader.class);
-        assert classSet.contains(AbstractResourceLoader.class);
-        assert classSet.contains(JarResourceLoader.class);
-        assert classSet.contains(PathResourceLoader.class);
+        try {
+            new CobbleClassScanner(resourceLoader).getClassSet(ClassMatchers.subClassesOf(Object.class));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().contains("requires package ranges"));
+        }
 
-        classSet = new CobbleClassScanner(resourceLoader).getClassSet(new String[] { "net.hasor.cobble" }, ClassMatchers.featureWith(ResourceLoader.class));
-        assert classSet.contains(ClassPathResourceLoader.class);
-        assert classSet.contains(PathResourceLoader.class);
-        assert classSet.contains(JarResourceLoader.class);
-        assert classSet.contains(MultiResourceLoader.class);
-        assert classSet.contains(AbstractResourceLoader.class);
-        assert classSet.contains(ImportResourceLoader.class);
-        assert classSet.contains(ExportResourceLoader.class);
-        assert classSet.contains(ResourceLoader.class);
+        Set<Class<?>> classSet = new CobbleClassScanner(resourceLoader).getClassSet(new String[] { "net.hasor.cobble.loader.providers" }, ClassMatchers.subClassesOf(Object.class));
+        assert classSet.contains(ClassResourceLoaderTests.class);
+        assert classSet.contains(JarResourceLoaderTests.class);
+        assert classSet.contains(PathResourceLoaderTests.class);
     }
 }

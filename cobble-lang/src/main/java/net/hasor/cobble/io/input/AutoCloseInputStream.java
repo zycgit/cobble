@@ -17,6 +17,7 @@
 package net.hasor.cobble.io.input;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.Cleaner;
 import net.hasor.cobble.io.IOUtils;
 
 /**
@@ -36,6 +37,8 @@ import net.hasor.cobble.io.IOUtils;
  * @since 1.4
  */
 public class AutoCloseInputStream extends ProxyInputStream {
+    private static final Cleaner CLEANER = Cleaner.create();
+    private final        Cleaner.Cleanable cleanable;
 
     /**
      * Creates an automatically closing proxy for the given input stream.
@@ -43,6 +46,7 @@ public class AutoCloseInputStream extends ProxyInputStream {
      */
     public AutoCloseInputStream(final InputStream in) {
         super(in);
+        this.cleanable = CLEANER.register(this, new StreamCleanup(in));
     }
 
     /**
@@ -59,7 +63,7 @@ public class AutoCloseInputStream extends ProxyInputStream {
      */
     @Override
     public void close() throws IOException {
-        in.close();
+        cleanable.clean();
         in = new ClosedInputStream();
     }
 
@@ -76,15 +80,25 @@ public class AutoCloseInputStream extends ProxyInputStream {
         }
     }
 
-    /**
-     * Ensures that the stream is closed before it gets garbage-collected.
-     * As mentioned in {@link #close()}, this is a no-op if the stream has
-     * already been closed.
-     * @throws Throwable if an error occurs
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        close();
-        super.finalize();
+    private static final class StreamCleanup implements Runnable {
+        private InputStream in;
+
+        private StreamCleanup(InputStream in) {
+            this.in = in;
+        }
+
+        @Override
+        public void run() {
+            InputStream target = this.in;
+            this.in = null;
+            if (target == null) {
+                return;
+            }
+            try {
+                target.close();
+            } catch (IOException ignored) {
+                // best-effort cleanup
+            }
+        }
     }
 }

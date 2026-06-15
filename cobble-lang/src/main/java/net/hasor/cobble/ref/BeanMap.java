@@ -110,7 +110,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
      * <ul>
      * <li>If there is no underlying bean, return a cloned BeanMap without a bean.
      * <li>Since there is an underlying bean, try to instantiate a new bean of
-     * the same type using Class.newInstance().
+     * the same type using its no-arg constructor.
      * <li>If the instantiation fails, throw a CloneNotSupportedException
      * <li>Clone the bean map and set the newly instantiated bean as the
      * underlying bean for the bean map.
@@ -131,7 +131,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         Object newBean = null;
         Class<?> beanClass = bean.getClass(); // Cannot throw Exception
         try {
-            newBean = beanClass.newInstance();
+            newBean = beanClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             // unable to instantiate
             throw new CloneNotSupportedException("Unable to instantiate the underlying bean \"" + beanClass.getName() + "\": " + e);
@@ -187,7 +187,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         Class<?> beanClass = null;
         try {
             beanClass = bean.getClass();
-            bean = beanClass.newInstance();
+            bean = beanClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new UnsupportedOperationException("Could not create new instance of class: " + beanClass);
         }

@@ -31,7 +31,7 @@ public class MatchUtils {
         if (wild == null) {
             throw new NullPointerException("wild param is null");
         }
-        StringBuffer result = new StringBuffer("");
+        StringBuilder result = new StringBuilder();
         char metachar[] = { '$', '^', '[', ']', '(', ')', '{', '|', '+', '.', '\\' };
         for (int i = 0; i < wild.length(); i++) {
             char ch = wild.charAt(i);

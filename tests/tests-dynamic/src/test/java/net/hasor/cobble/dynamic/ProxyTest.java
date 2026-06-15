@@ -20,6 +20,7 @@ import net.hasor.cobble.dynamic.beans.PropertyBean;
 import org.junit.Test;
 
 import java.io.File;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,7 +121,7 @@ public class ProxyTest {
         config.getDebugOutputDir().deleteOnExit();
 
         Class<?> instance = Proxy.buildProxyClass(config);
-        List list = (List) instance.newInstance();
+        List list = (List) instance.getDeclaredConstructor().newInstance();
         list.add("abc");
         list.add("bcd");
 
@@ -160,5 +161,18 @@ public class ProxyTest {
         });
 
         assert list.size() == 2;
+    }
+
+    @Test
+    public void jdkProxyStyleWithLargeInterface() throws Exception {
+        ResultSet resultSet = (ResultSet) Proxy.newProxyInstance(new Class[] { ResultSet.class }, (proxy, method, args) -> {
+            if (method.getName().equals("getFetchSize")) {
+                return 16;
+            } else {
+                return BeanUtils.getDefaultValue(method.getReturnType());
+            }
+        });
+
+        assert resultSet.getFetchSize() == 16;
     }
 }

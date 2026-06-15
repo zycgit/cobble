@@ -120,9 +120,9 @@ public class Matchers {
         }
 
         public boolean equals(final Object other) {
-            if (other instanceof MethodOf) {
-                MatchTypeEnum otherMatchTypeEnum = ((MethodOf) other).matchTypeEnum;
-                String otherMatcherExpression = ((MethodOf) other).matcherExpression;
+            if (other instanceof MethodOf methodOf) {
+                MatchTypeEnum otherMatchTypeEnum = methodOf.matchTypeEnum;
+                String otherMatcherExpression = methodOf.matcherExpression;
                 return this.matchTypeEnum.equals(otherMatchTypeEnum) && this.matcherExpression.equals(otherMatcherExpression);
             }
             return false;
@@ -152,9 +152,9 @@ public class Matchers {
         }
 
         public boolean equals(final Object other) {
-            if (other instanceof ClassOf) {
-                MatchTypeEnum otherMatchTypeEnum = ((ClassOf) other).matchTypeEnum;
-                String otherMatcherExpression = ((ClassOf) other).matcherExpression;
+            if (other instanceof ClassOf classOf) {
+                MatchTypeEnum otherMatchTypeEnum = classOf.matchTypeEnum;
+                String otherMatcherExpression = classOf.matcherExpression;
                 return this.matchTypeEnum.equals(otherMatchTypeEnum) && this.matcherExpression.equals(otherMatcherExpression);
             }
             return false;

@@ -981,7 +981,7 @@ public class ClassUtils {
      */
     public static String getDescNameWithOutModifiers(final Method method) {
         //public void addChild(org.noe.safety.services.SYS_TB_MenuTree)
-        StringBuffer str = new StringBuffer("");
+        StringBuilder str = new StringBuilder();
         //2.返回值
         Class<?> returnType = method.getReturnType();
         str.append(ClassUtils.getDescName(returnType) + " ");
@@ -1056,8 +1056,8 @@ public class ClassUtils {
 
     public static <T> T newInstance(final Class<?> clazz) {
         try {
-            return (T) clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return (T) clazz.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw ExceptionUtils.toRuntime(e);
         }
     }

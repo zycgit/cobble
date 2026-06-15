@@ -83,6 +83,36 @@ public class JarResourceLoader extends AbstractResourceLoader {
     }
 
     @Override
+    public void close() throws IOException {
+        IOException closeError = null;
+        for (JarFile nestedJar : this.nestedJarFile) {
+            try {
+                nestedJar.close();
+            } catch (IOException e) {
+                if (closeError == null) {
+                    closeError = e;
+                } else {
+                    closeError.addSuppressed(e);
+                }
+            }
+        }
+        try {
+            this.jarFile.close();
+        } catch (IOException e) {
+            if (closeError == null) {
+                closeError = e;
+            } else {
+                closeError.addSuppressed(e);
+            }
+        } finally {
+            this.manifestCache.clear();
+        }
+        if (closeError != null) {
+            throw closeError;
+        }
+    }
+
+    @Override
     public Manifest getManifest(String resource) throws IOException {
         if (StringUtils.isEmpty(resource)) {
             return null;

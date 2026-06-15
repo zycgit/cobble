@@ -184,12 +184,12 @@ public class ImportResourceLoaderTests {
         };
 
         assert Objects.deepEquals(//
-                IOUtils.toByteArray(loader.scanOneResource(scanner).stream), //
-                IOUtils.toByteArray(loader.scanOneResource(scanner).stream)//
+                IOUtils.toByteArray(loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app" }).stream), //
+                IOUtils.toByteArray(loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app" }).stream)//
         );
 
         Map<String, InputStream> objects = new LinkedHashMap<>();
-        List<Info> inputInfos = loader.scanResources(scanner);
+        List<Info> inputInfos = loader.scanResources(MatchType.Prefix, scanner, new String[] { "app" });
         for (Info info : inputInfos) {
             objects.put(info.name, info.stream);
         }
@@ -235,7 +235,7 @@ public class ImportResourceLoaderTests {
         loader.importResources("ApplicationForApp1.class", loader1);
         loader.importResources("ApplicationForApp2.class", loader2);
 
-        List<Object> list1 = loader.scanResources(ScanEvent::getName);
+        List<Object> list1 = loader.scanResources(MatchType.Prefix, ScanEvent::getName, new String[] { "ApplicationFor" });
         assert list1.size() == 2;
 
         List<Object> list2 = loader.scanResources(MatchType.Suffix, ScanEvent::getName, new String[] { "App1.class" });

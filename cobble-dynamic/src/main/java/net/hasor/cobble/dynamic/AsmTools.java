@@ -33,61 +33,28 @@ class AsmTools extends ByteCodeTools {
     /** 根据类型获取其Return指令 */
     public static int getReturn(final String asmType) {
         char t = asmType.charAt(0);
-        switch (t) {
-            case 'B':
-                return Opcodes.IRETURN;//Byte
-            case 'C':
-                return Opcodes.IRETURN;//Char
-            case 'D':
-                return Opcodes.DRETURN;//Double
-            case 'F':
-                return Opcodes.FRETURN;//Float
-            case 'I':
-                return Opcodes.IRETURN;//Integer
-            case 'J':
-                return Opcodes.LRETURN;//Long
-            case 'L':
-                return Opcodes.ARETURN;//Ref
-            case 'S':
-                return Opcodes.IRETURN;//Short
-            case 'Z':
-                return Opcodes.IRETURN;//Boolean
-            case '[':
-                return Opcodes.ARETURN;//Array
-            case 'V':
-                return Opcodes.RETURN;//Void
-            default:
-                throw new UnsupportedOperationException("Unsupported LOAD instruction.");//
-        }
+        return switch (t) {
+            case 'B', 'C', 'I', 'S', 'Z' -> Opcodes.IRETURN;//Byte/Char/Integer/Short/Boolean
+            case 'D' -> Opcodes.DRETURN;//Double
+            case 'F' -> Opcodes.FRETURN;//Float
+            case 'J' -> Opcodes.LRETURN;//Long
+            case 'L', '[' -> Opcodes.ARETURN;//Ref/Array
+            case 'V' -> Opcodes.RETURN;//Void
+            default -> throw new UnsupportedOperationException("Unsupported LOAD instruction.");//
+        };
     }
 
     /** 根据类型获取其Load指令 */
     public static int getLoad(final String asmType) {
         char t = asmType.charAt(0);
-        switch (t) {
-            case 'B':
-                return Opcodes.ILOAD;//Byte
-            case 'C':
-                return Opcodes.ILOAD;//Char
-            case 'D':
-                return Opcodes.DLOAD;//Double
-            case 'F':
-                return Opcodes.FLOAD;//Float
-            case 'I':
-                return Opcodes.ILOAD;//Integer
-            case 'J':
-                return Opcodes.LLOAD;//Long
-            case 'L':
-                return Opcodes.ALOAD;//Ref
-            case 'S':
-                return Opcodes.ILOAD;//Short
-            case 'Z':
-                return Opcodes.ILOAD;//Boolean
-            case '[':
-                return Opcodes.ALOAD;//Array
-            default:
-                throw new UnsupportedOperationException("Unsupported LOAD instruction.");//
-        }
+        return switch (t) {
+            case 'B', 'C', 'I', 'S', 'Z' -> Opcodes.ILOAD;//Byte/Char/Integer/Short/Boolean
+            case 'D' -> Opcodes.DLOAD;//Double
+            case 'F' -> Opcodes.FLOAD;//Float
+            case 'J' -> Opcodes.LLOAD;//Long
+            case 'L', '[' -> Opcodes.ALOAD;//Ref/Array
+            default -> throw new UnsupportedOperationException("Unsupported LOAD instruction.");//
+        };
     }
 
     /** 根据asm类型获取其ASTORE指令 */
@@ -140,16 +107,28 @@ class AsmTools extends ByteCodeTools {
         return false;
     }
 
+    public static void pushInt(MethodVisitor mv, int value) {
+        if (value >= -1 && value <= 5) {
+            mv.visitInsn(Opcodes.ICONST_0 + value);
+        } else if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) {
+            mv.visitIntInsn(Opcodes.BIPUSH, value);
+        } else if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) {
+            mv.visitIntInsn(Opcodes.SIPUSH, value);
+        } else {
+            mv.visitLdcInsn(value);
+        }
+    }
+
     //Code Builder “new Object[] { abc, abcc, abcc };”
     public static void codeBuilder_1(MethodVisitor mv, String[] asmParams, Map<String, Integer> paramIndexMap) {
         Set<String> typeEnum = new HashSet<>(Arrays.asList("B", "S", "I", "J", "F", "D", "C", "Z"));
         int paramCount = asmParams.length;
-        mv.visitIntInsn(Opcodes.BIPUSH, paramCount);
+        pushInt(mv, paramCount);
         mv.visitTypeInsn(Opcodes.ANEWARRAY, "java/lang/Object");
         for (int i = 0; i < paramCount; i++) {
             String asmType = asmParams[i];
             mv.visitInsn(Opcodes.DUP);
-            mv.visitIntInsn(Opcodes.BIPUSH, i);
+            pushInt(mv, i);
             if (typeEnum.contains(asmParams[i])) {
                 mv.visitVarInsn(AsmTools.getLoad(asmType), paramIndexMap.get("args" + i));
                 codeBuilder_valueOf(mv, asmParams[i]);
@@ -184,12 +163,12 @@ class AsmTools extends ByteCodeTools {
     //Code Builder “new Class[] { int.class, Object.class, boolean.class, short.class };”
     public static void codeBuilder_2(MethodVisitor mv, String[] asmParams) {
         int paramCount = asmParams.length;
-        mv.visitIntInsn(BIPUSH, paramCount);
+        pushInt(mv, paramCount);
         mv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
         for (int i = 0; i < paramCount; i++) {
             String asmType = asmParams[i];
             mv.visitInsn(Opcodes.DUP);
-            mv.visitIntInsn(Opcodes.BIPUSH, i);
+            pushInt(mv, i);
             if (asmParams[i].equals("B")) {
                 mv.visitFieldInsn(GETSTATIC, "java/lang/Byte", "TYPE", "Ljava/lang/Class;");
             } else if (asmParams[i].equals("S")) {

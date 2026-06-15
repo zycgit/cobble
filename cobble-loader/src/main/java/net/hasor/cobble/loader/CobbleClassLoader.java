@@ -90,43 +90,58 @@ public class CobbleClassLoader extends ClassLoader {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        Class<?> loaded = findLoadedClass(name);
-        if (loaded != null) {
-            return loaded;
-        }
-
-        // for isolation
-        if (this.isolation && this.resourceLoader instanceof MergedLoader) {
-            String resource = name.replace(".", "/") + ".class";
-            ResourceLoader loader = ((MergedLoader) this.resourceLoader).findLoader(resource);
-            if (loader != null) {
-                CobbleClassLoader cl = this.isolationMap.computeIfAbsent(loader, rl -> {
-                    return new CobbleClassLoader(this.getParent(), rl, this);
-                });
-                return cl.findClass(name);
+        synchronized (getClassLoadingLock(name)) {
+            Class<?> loaded = findLoadedClass(name);
+            if (loaded != null) {
+                return loaded;
             }
-        }
 
-        // none
-        if (this.includePackages.isEmpty()) {
-            return super.loadClass(name, resolve);
-        } else {
-            for (String include : this.includePackages) {
-                if (StringUtils.startsWith(name, include) || MatchUtils.matchWild(include, name)) {
-                    for (String exclude : this.excludePackages) {
-                        if (StringUtils.startsWith(name, exclude) || MatchUtils.matchWild(exclude, name)) {
-                            return super.loadClass(name, resolve);
-                        }
-                    }
-
-                    Class<?> c = this.findClass(name);
-                    if (c != null && resolve) {
-                        this.resolveClass(c);
-                    }
-                    return c;
+            // for isolation
+            if (this.isolation && this.resourceLoader instanceof MergedLoader) {
+                String resource = name.replace(".", "/") + ".class";
+                ResourceLoader loader = ((MergedLoader) this.resourceLoader).findLoader(resource);
+                if (loader != null) {
+                    CobbleClassLoader cl = this.isolationMap.computeIfAbsent(loader, rl -> {
+                        return new CobbleClassLoader(this.getParent(), rl, this);
+                    });
+                    return cl.loadResourceClass(name, resolve);
                 }
             }
-            return super.loadClass(name, resolve);
+
+            // none
+            if (this.includePackages.isEmpty()) {
+                return super.loadClass(name, resolve);
+            } else {
+                for (String include : this.includePackages) {
+                    if (StringUtils.startsWith(name, include) || MatchUtils.matchWild(include, name)) {
+                        for (String exclude : this.excludePackages) {
+                            if (StringUtils.startsWith(name, exclude) || MatchUtils.matchWild(exclude, name)) {
+                                return super.loadClass(name, resolve);
+                            }
+                        }
+
+                        Class<?> c = this.findClass(name);
+                        if (c != null && resolve) {
+                            this.resolveClass(c);
+                        }
+                        return c;
+                    }
+                }
+                return super.loadClass(name, resolve);
+            }
+        }
+    }
+
+    private Class<?> loadResourceClass(String name, boolean resolve) throws ClassNotFoundException {
+        synchronized (getClassLoadingLock(name)) {
+            Class<?> loaded = findLoadedClass(name);
+            if (loaded == null) {
+                loaded = findClass(name);
+            }
+            if (resolve) {
+                resolveClass(loaded);
+            }
+            return loaded;
         }
     }
 
@@ -316,7 +331,7 @@ public class CobbleClassLoader extends ClassLoader {
 
     // Also called by VM to define Package for classes loaded from the CDS archive
     private void definePackageInternal(String pkgname, Manifest man) {
-        if (getPackage(pkgname) == null) {
+        if (getDefinedPackage(pkgname) == null) {
             try {
                 if (man != null) {
                     definePackage(pkgname, man);
@@ -326,7 +341,7 @@ public class CobbleClassLoader extends ClassLoader {
             } catch (IllegalArgumentException iae) {
                 // parallel-capable class loaders: re-verify in case of a
                 // race condition
-                if (getPackage(pkgname) == null) {
+                if (getDefinedPackage(pkgname) == null) {
                     // Should never happen
                     throw new AssertionError("Cannot find package " + pkgname);
                 }

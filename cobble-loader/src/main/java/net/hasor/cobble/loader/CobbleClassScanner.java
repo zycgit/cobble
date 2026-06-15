@@ -91,8 +91,9 @@ public class CobbleClassScanner extends CobbleResourceScanner {
      * @param matcher 匹配规则。
      * @return 返回扫描结果。
      */
+    @Deprecated
     public Set<Class<?>> getClassSet(ClassMatcher matcher) {
-        return this.getClassSet(new String[0], matcher);
+        throw new IllegalArgumentException("Class scan requires package ranges, use getClassSet(String[], ClassMatcher).");
     }
 
     /**

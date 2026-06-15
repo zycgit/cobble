@@ -69,7 +69,7 @@ public class WeakArrayList<T> extends AbstractList<T> {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < this.size; ++i) {
             Object obj;
             Reference<?> ref = (Reference<?>) this.data[i];
@@ -120,7 +120,7 @@ public class WeakArrayList<T> extends AbstractList<T> {
             j = 0;
             for (int i = 0; i < this.size; ++i) {
                 Reference<T> ref = (Reference<T>) this.data[i];
-                if (ref == null || ref.isEnqueued() || ref.get() == null) {
+                if (ref == null || ref.get() == null) {
                     if (ref != null) {
                         ref.clear();
                     }

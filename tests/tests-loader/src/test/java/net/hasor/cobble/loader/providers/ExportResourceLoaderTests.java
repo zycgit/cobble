@@ -156,13 +156,13 @@ public class ExportResourceLoaderTests {
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         ExportResourceLoader loader = new ExportResourceLoader(new JarResourceLoader(new File(file)));
 
-        assert loader.scanOneResource(scanner) == null;
-        assert loader.scanResources(scanner).isEmpty();
+        assert loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app/F" }) == null;
+        assert loader.scanResources(MatchType.Prefix, scanner, new String[] { "app/F" }).isEmpty();
 
         loader.addExport("app");
-        InputStream inputStream = loader.scanOneResource(scanner);
+        InputStream inputStream = loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
-        List<InputStream> inputStreams = loader.scanResources(scanner);
+        List<InputStream> inputStreams = loader.scanResources(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(inputStreams.get(1)));
     }

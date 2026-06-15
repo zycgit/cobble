@@ -45,6 +45,16 @@ public class JarResourceLoaderTests {
         assert !loader.exist("abc/abc.text");
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void jarLoaderCloseTest() throws Exception {
+        String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
+        try (JarResourceLoader loader = new JarResourceLoader(new File(file))) {
+            assert loader.exist("app/FooImpl.class");
+            loader.close();
+            loader.exist("app/FooImpl.class");
+        }
+    }
+
     @Test
     public void jarLoaderTest2() throws Exception {
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
@@ -125,10 +135,10 @@ public class JarResourceLoaderTests {
 
         String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
         JarResourceLoader loader = new JarResourceLoader(new File(file));
-        InputStream inputStream = loader.scanOneResource(scanner);
+        InputStream inputStream = loader.scanOneResource(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStream));
 
-        List<InputStream> inputStreams = loader.scanResources(scanner);
+        List<InputStream> inputStreams = loader.scanResources(MatchType.Prefix, scanner, new String[] { "app/F" });
         assert Objects.deepEquals(byteDat1, IOUtils.toByteArray(inputStreams.get(0)));
         assert Objects.deepEquals(byteDat2, IOUtils.toByteArray(inputStreams.get(1)));
     }

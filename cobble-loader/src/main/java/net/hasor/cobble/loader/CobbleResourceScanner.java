@@ -46,6 +46,7 @@ public class CobbleResourceScanner {
      * @return 返回扫描结果。
      */
     public Set<String> getClassNamesSet(String[] loadPackages, ClassMatcher matcher) {
+        checkLoadPackages(loadPackages);
         String[] packages = new String[loadPackages.length];
         for (int i = 0; i < loadPackages.length; i++) {
             packages[i] = loadPackages[i].replace(".", "/");
@@ -68,6 +69,24 @@ public class CobbleResourceScanner {
             return new HashSet<>(classes);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void checkLoadPackages(String[] loadPackages) {
+        if (loadPackages == null || loadPackages.length == 0) {
+            throw new IllegalArgumentException("Class scan requires at least one package.");
+        }
+        for (String loadPackage : loadPackages) {
+            if (loadPackage == null) {
+                throw new IllegalArgumentException("Class scan package cannot be root.");
+            }
+            String scanPath = loadPackage.trim().replace('.', '/');
+            while (scanPath.startsWith("/")) {
+                scanPath = scanPath.substring(1);
+            }
+            if (scanPath.isBlank() || ".".equals(scanPath)) {
+                throw new IllegalArgumentException("Class scan package cannot be root.");
+            }
         }
     }
 

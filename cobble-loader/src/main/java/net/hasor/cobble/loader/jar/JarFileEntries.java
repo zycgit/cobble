@@ -244,7 +244,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
                 multiRelease = false;
             } else {
                 Attributes attributes = manifest.getMainAttributes();
-                multiRelease = attributes.containsKey(MULTI_RELEASE);
+                multiRelease = Boolean.parseBoolean(attributes.getValue(MULTI_RELEASE));
             }
         } catch (IOException ex) {
             multiRelease = false;

@@ -48,7 +48,7 @@ public abstract class Base64 {
         if (s.length == 0) {
             return "";
         }
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int b0, b1, b2, b3;
         int len = s.length;
         int i = 0;

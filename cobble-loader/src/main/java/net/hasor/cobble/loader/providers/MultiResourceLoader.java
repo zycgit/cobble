@@ -139,4 +139,23 @@ public class MultiResourceLoader extends AbstractResourceLoader implements Merge
         ResourceLoader loader = findLoader(resource);
         return loader == null ? null : loader.getManifest(resource);
     }
+
+    @Override
+    public void close() throws IOException {
+        IOException closeError = null;
+        for (ResourceLoader loader : this.loaders) {
+            try {
+                loader.close();
+            } catch (IOException e) {
+                if (closeError == null) {
+                    closeError = e;
+                } else {
+                    closeError.addSuppressed(e);
+                }
+            }
+        }
+        if (closeError != null) {
+            throw closeError;
+        }
+    }
 }
