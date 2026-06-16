@@ -45,10 +45,10 @@ import net.hasor.cobble.logging.Logger;
  * @version : 2021-09-29
  */
 public class JarResourceLoader extends AbstractResourceLoader {
-    private static final Logger                logger        = Logger.getLogger(JarResourceLoader.class);
-    private final        JarFile               jarFile;
-    private final        List<JarFile>         nestedJarFile;
-    private final        Map<String, Manifest> manifestCache = new ConcurrentHashMap<>();
+    private static final Logger         logger        = Logger.getLogger(JarResourceLoader.class);
+    private final JarFile               jarFile;
+    private final List<JarFile>         nestedJarFile;
+    private final Map<String, Manifest> manifestCache = new ConcurrentHashMap<>();
 
     public JarResourceLoader(File file) throws IOException {
         this.jarFile = new JarFile(file);
@@ -210,7 +210,7 @@ public class JarResourceLoader extends AbstractResourceLoader {
             for (JarFile nestedJar : nestedJarFile) {
                 ZipEntry nestedZipEntry = nestedJar.getEntry(resource);
                 if (nestedZipEntry != null) {
-                    result.add(new URL(nestedJar.getUrl(), nestedJar.getName()));
+                    result.add(new URL(nestedJar.getUrl(), nestedZipEntry.getName()));
                 }
             }
         }

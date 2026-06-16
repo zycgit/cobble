@@ -22,8 +22,7 @@ import java.util.Date;
  * 环境变量来源以及加载顺序，靠后顺位会覆盖前一顺位的重复配置。
  * 1st，System.getProperties()
  * 2st，System.getenv()
- * 3st，配置文件"hasor.environmentVar"
- * 4st，传入的配置
+ * 3st，传入的配置
  * @author 赵永春 (zyc@hasor.net)
  * @version : 2013-4-23
  */

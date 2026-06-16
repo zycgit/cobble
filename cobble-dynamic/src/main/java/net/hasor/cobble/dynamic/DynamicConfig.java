@@ -25,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.hasor.cobble.ArrayUtils;
 import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.provider.Provider;
 
@@ -40,7 +41,7 @@ public class DynamicConfig {
     private final Map<String, MethodInterceptor[]> interceptorMap     = new HashMap<>();
     private final Map<String, Method>              interceptorMethods = new HashMap<>();
     private final Map<Class<?>, InvocationHandler> implementMap       = new HashMap<>();
-    private       File                             debugOutputDir;
+    private File                                   debugOutputDir;
 
     /** 创建 {@link DynamicConfig} 类型对象，用于生成一个自定义类 */
     public DynamicConfig() {
@@ -183,7 +184,7 @@ public class DynamicConfig {
         // class
         Set<Class<? extends MethodInterceptor>> classLevels = extractAopType(this.superClass);
         for (Class<? extends MethodInterceptor> interceptorType : classLevels) {
-            this.addAopInterceptor(t -> true, interceptorType.getDeclaredConstructor().newInstance());
+            this.addAopInterceptor(t -> true, ClassUtils.newInstance(interceptorType));
         }
 
         // method
@@ -195,7 +196,7 @@ public class DynamicConfig {
                     continue;
                 }
 
-                this.addAopInterceptor(t -> t.equals(method), interceptorType.getDeclaredConstructor().newInstance());
+                this.addAopInterceptor(t -> t.equals(method), ClassUtils.newInstance(interceptorType));
             }
         }
     }

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.provider.Provider;
 import org.junit.Test;
+import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.provider.Provider;
 
 public class PropertyTest {
     @Test
@@ -25,7 +26,7 @@ public class PropertyTest {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", String.class, Provider.of(delegate));
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        Object instance = buildClass.getDeclaredConstructor().newInstance();
+        Object instance = ClassUtils.newInstance(buildClass);
 
         BeanUtils.writeProperty(instance, "name", "abc");
         assert BeanUtils.readProperty(instance, "name").equals("abc");
@@ -40,7 +41,7 @@ public class PropertyTest {
         DynamicConfig classConfig = new DynamicConfig();
         classConfig.addProperty("name", Boolean.TYPE);
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        Object instance = buildClass.getDeclaredConstructor().newInstance();
+        Object instance = ClassUtils.newInstance(buildClass);
 
         BeanUtils.writeProperty(instance, "name", true);
         assert BeanUtils.readProperty(instance, "name").equals(true);

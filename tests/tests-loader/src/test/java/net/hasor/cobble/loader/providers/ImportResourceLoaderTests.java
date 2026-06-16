@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.hasor.cobble.loader.providers;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.function.Function;
+import org.junit.Before;
+import org.junit.Test;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.CobbleClassLoader;
@@ -22,14 +29,6 @@ import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.function.Function;
 
 /**
  * Tests for {@link JarFile}.
@@ -218,8 +217,8 @@ public class ImportResourceLoaderTests {
 
         CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
         classLoader.asIsolation();
-        Object applicationForApp1 = classLoader.loadClass("ApplicationForApp1").newInstance();
-        Object applicationForApp2 = classLoader.loadClass("ApplicationForApp2").newInstance();
+        Object applicationForApp1 = ClassUtils.newInstance(classLoader.loadClass("ApplicationForApp1"));
+        Object applicationForApp2 = ClassUtils.newInstance(classLoader.loadClass("ApplicationForApp2"));
         assert applicationForApp1 != null;
         assert applicationForApp2 != null;
     }
@@ -257,7 +256,7 @@ public class ImportResourceLoaderTests {
         loader.importResources("export/", loader1);
 
         CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
-        Object obj1 = classLoader.loadClass("Application").newInstance();
+        Object obj1 = ClassUtils.newInstance(classLoader.loadClass("Application"));
         try {
             Object result = ((Function) obj1).apply("hello");
             assert result.toString().equals("FooForApp1 running...");
@@ -281,7 +280,7 @@ public class ImportResourceLoaderTests {
         loader.importResources("export/", loader2);
 
         CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
-        Object obj1 = classLoader.loadClass("Application").newInstance();
+        Object obj1 = ClassUtils.newInstance(classLoader.loadClass("Application"));
         try {
             Object result = ((Function) obj1).apply("hello");
             assert result.toString().equals("FooForApp2 running...");
@@ -305,7 +304,7 @@ public class ImportResourceLoaderTests {
         CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
 
         try {
-            classLoader.loadClass("Application").newInstance();
+            ClassUtils.newInstance(classLoader.loadClass("Application"));
             assert false;
         } catch (NoClassDefFoundError e) {
             assert e.getMessage().contains("lib/Foo");

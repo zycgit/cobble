@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
-import net.hasor.cobble.dynamic.beans.*;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import org.junit.Test;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
+import net.hasor.cobble.dynamic.beans.*;
 
 public class EnhanceTest {
     @Test
@@ -33,7 +33,7 @@ public class EnhanceTest {
         classConfig.addAopInterceptor(t -> true, aopInterceptor);
         classConfig.addProperty("aacc", String.class);
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        PropertyBean instance = (PropertyBean) buildClass.getDeclaredConstructor().newInstance();
+        PropertyBean instance = (PropertyBean) ClassUtils.newInstance(buildClass);
 
         assert !Proxy.isProxyObject(instance);
         assert !Proxy.isProxyClass(instance.getClass());
@@ -213,7 +213,7 @@ public class EnhanceTest {
     public void aopTest3() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(PropertyBean.class, t -> true, aopInterceptor);
-        PropertyBean instance = (PropertyBean) buildClass.getDeclaredConstructor().newInstance();
+        PropertyBean instance = (PropertyBean) ClassUtils.newInstance(buildClass);
 
         ClassLoader loader = instance.getClass().getClassLoader();
         InputStream resourceAsStream = loader.getResourceAsStream(instance.getClass().getName().replace(".", "/") + ".class");
@@ -232,7 +232,7 @@ public class EnhanceTest {
         classConfig.getDebugOutputDir().deleteOnExit();
 
         Class<?> buildClass = Proxy.buildProxyClass(classConfig);
-        PropertyBean instance = (PropertyBean) buildClass.getDeclaredConstructor().newInstance();
+        PropertyBean instance = (PropertyBean) ClassUtils.newInstance(buildClass);
 
         String fullName = buildClass.getName().replace(".", String.valueOf(File.separatorChar)) + ".class";
         assert new File(classConfig.getDebugOutputDir(), fullName).exists();
@@ -244,7 +244,7 @@ public class EnhanceTest {
     public void aopTest5() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(ThrowAopBean.class, t -> true, aopInterceptor);
-        ThrowAopBean instance = (ThrowAopBean) buildClass.getDeclaredConstructor().newInstance();
+        ThrowAopBean instance = (ThrowAopBean) ClassUtils.newInstance(buildClass);
 
         try {
             instance.fooCall("abc");
@@ -264,7 +264,7 @@ public class EnhanceTest {
     public void aopTest6() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(GenericsMethodAopBean.class, t -> true, aopInterceptor);
-        GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.getDeclaredConstructor().newInstance();
+        GenericsMethodAopBean instance = (GenericsMethodAopBean) ClassUtils.newInstance(buildClass);
 
         instance.fooCall1("abc1", "abc2", "abc3");
         assert aopInterceptor.getCallInfo().get("fooCall1").size() == 2;
@@ -286,7 +286,7 @@ public class EnhanceTest {
     public void aopTest7() throws Exception {
         CommonAopInterceptor aopInterceptor = new CommonAopInterceptor();
         Class<?> buildClass = Proxy.newProxyClass(GenericsMethodAopBean.class, method -> true, aopInterceptor);
-        GenericsMethodAopBean instance = (GenericsMethodAopBean) buildClass.getDeclaredConstructor().newInstance();
+        GenericsMethodAopBean instance = (GenericsMethodAopBean) ClassUtils.newInstance(buildClass);
 
         instance.fooCall1("abc1", "abc2", "abc3");
         assert aopInterceptor.getCallInfo().get("fooCall1").size() == 2;

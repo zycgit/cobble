@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.convert.ConverterBean;
 
 /**
@@ -40,19 +41,19 @@ import net.hasor.cobble.convert.ConverterBean;
  * 2019-12-03 reduction based on Apache Commons Beanutils, org.apache.commons.beanutils.BeanMap
  */
 public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
-    private transient       Object                     bean;
-    private transient       ConverterBean              transformConvert;
-    private final transient Map<String, Method>        readMethods      = new LinkedHashMap<>();
-    private final transient Map<String, Method>        writeMethods     = new LinkedHashMap<>();
-    private final transient Map<String, Class<?>>      types            = new LinkedHashMap<>();
+    private transient Object                        bean;
+    private transient ConverterBean                 transformConvert;
+    private final transient Map<String, Method>     readMethods      = new LinkedHashMap<>();
+    private final transient Map<String, Method>     writeMethods     = new LinkedHashMap<>();
+    private final transient Map<String, Class<?>>   types            = new LinkedHashMap<>();
     /** An empty array.  Used to invoke accessors via reflection. */
-    public static final     Object[]                   NULL_ARGUMENTS   = {};
+    public static final Object[]                    NULL_ARGUMENTS   = {};
     /**
      * Maps primitive Class types to transformers.  The transformer
      * transform strings into the appropriate primitive wrapper.
      * N.B. private & unmodifiable replacement for the (public & static) defaultTransformers instance.
      */
-    private static final    Map<Class<?>, Transformer> typeTransformers = Collections.unmodifiableMap(createTypeTransformers());
+    private static final Map<Class<?>, Transformer> typeTransformers = Collections.unmodifiableMap(createTypeTransformers());
 
     private static Map<Class<?>, Transformer> createTypeTransformers() {
         Map<Class<?>, Transformer> defaultTransformers = new HashMap<>();
@@ -131,7 +132,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         Object newBean = null;
         Class<?> beanClass = bean.getClass(); // Cannot throw Exception
         try {
-            newBean = beanClass.getDeclaredConstructor().newInstance();
+            newBean = ClassUtils.newInstance(beanClass);
         } catch (Exception e) {
             // unable to instantiate
             throw new CloneNotSupportedException("Unable to instantiate the underlying bean \"" + beanClass.getName() + "\": " + e);
@@ -187,7 +188,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
         Class<?> beanClass = null;
         try {
             beanClass = bean.getClass();
-            bean = beanClass.getDeclaredConstructor().newInstance();
+            bean = ClassUtils.newInstance(beanClass);
         } catch (Exception e) {
             throw new UnsupportedOperationException("Could not create new instance of class: " + beanClass);
         }
@@ -315,7 +316,7 @@ public class BeanMap extends AbstractMap<String, Object> implements Cloneable {
      */
     public Collection<Object> values() {
         ArrayList<Object> answer = new ArrayList<>(readMethods.size());
-        for (Iterator<Object> iter = valueIterator(); iter.hasNext(); ) {
+        for (Iterator<Object> iter = valueIterator(); iter.hasNext();) {
             answer.add(iter.next());
         }
         return Collections.unmodifiableList(answer);

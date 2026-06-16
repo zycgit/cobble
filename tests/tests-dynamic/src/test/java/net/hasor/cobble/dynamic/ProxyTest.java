@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
-import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
-import net.hasor.cobble.dynamic.beans.PropertyBean;
-import org.junit.Test;
-
 import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.junit.Test;
+import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.ClassUtils;
+import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
+import net.hasor.cobble.dynamic.beans.PropertyBean;
 
 public class ProxyTest {
     @Test
@@ -121,7 +121,7 @@ public class ProxyTest {
         config.getDebugOutputDir().deleteOnExit();
 
         Class<?> instance = Proxy.buildProxyClass(config);
-        List list = (List) instance.getDeclaredConstructor().newInstance();
+        List list = (List) ClassUtils.newInstance(instance);
         list.add("abc");
         list.add("bcd");
 

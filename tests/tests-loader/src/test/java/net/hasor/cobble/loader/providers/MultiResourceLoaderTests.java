@@ -15,6 +15,13 @@
  */
 
 package net.hasor.cobble.loader.providers;
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import org.junit.Test;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.CobbleClassLoader;
@@ -22,13 +29,6 @@ import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Tests for {@link JarFile}.
@@ -294,8 +294,8 @@ public class MultiResourceLoaderTests {
         Class<?> app1Class = classLoader.loadClass("ApplicationForApp1");
         assert app1Class == classLoader.loadClass("ApplicationForApp1");
 
-        Object obj1 = app1Class.getDeclaredConstructor().newInstance();
-        Object obj2 = classLoader.loadClass("ApplicationForApp2").newInstance();
+        Object obj1 = ClassUtils.newInstance(app1Class);
+        Object obj2 = ClassUtils.newInstance(classLoader.loadClass("ApplicationForApp2"));
 
         assert obj1 instanceof Function;
         assert obj2 instanceof Function;
@@ -320,8 +320,8 @@ public class MultiResourceLoaderTests {
         loader.addLoader(loader2);
 
         CobbleClassLoader classLoader = loader.toClassLoader(Thread.currentThread().getContextClassLoader());
-        Object obj1 = classLoader.loadClass("ApplicationForApp1").newInstance();
-        Object obj2 = classLoader.loadClass("ApplicationForApp2").newInstance();
+        Object obj1 = ClassUtils.newInstance(classLoader.loadClass("ApplicationForApp1"));
+        Object obj2 = ClassUtils.newInstance(classLoader.loadClass("ApplicationForApp2"));
 
         assert obj1 instanceof Function;
         assert obj2 instanceof Function;

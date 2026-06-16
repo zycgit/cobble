@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package net.hasor.cobble.dynamic;
+import static org.objectweb.asm.Opcodes.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.invoke.MethodHandles;
@@ -26,12 +27,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import org.objectweb.asm.*;
+import org.objectweb.asm.Type;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ExceptionUtils;
 import net.hasor.cobble.StringUtils;
 import net.hasor.cobble.dynamic.DynamicConfig.DynamicPropertyInfo;
-import org.objectweb.asm.*;
-import org.objectweb.asm.Type;
-import static org.objectweb.asm.Opcodes.*;
 
 /**
  * Proxy 代理类，可以代替 java Proxy代理类，并提供更强大的支持。
@@ -120,11 +121,7 @@ public final class Proxy {
 
     /** 兼容 jdk Proxy 用法，interfaces 中可以含有（一个类或抽象类）作为父类 */
     public static Object newProxyInstance(Class<?>[] interfaces, InvocationHandler handler) {
-        try {
-            return newProxyClass(interfaces, handler).getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw ExceptionUtils.toRuntime(e);
-        }
+        return ClassUtils.newInstance(newProxyClass(interfaces, handler));
     }
 
     /** 兼容 jdk Proxy 用法，interfaces 中可以含有（一个类或抽象类）作为父类 */

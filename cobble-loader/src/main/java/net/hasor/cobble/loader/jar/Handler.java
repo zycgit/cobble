@@ -34,25 +34,23 @@ import java.util.regex.Pattern;
 public class Handler extends URLStreamHandler {
     // NOTE: in order to be found as a URL protocol handler, this class must be public,
     // must be named Handler and must be in a package ending '.jar'
-    private static final String                            JAR_PROTOCOL            = "jar:";
-    private static final String                            FILE_PROTOCOL           = "file:";
-    private static final String                            TOMCAT_WARFILE_PROTOCOL = "war:file:";
-    private static final String                            SEPARATOR               = "!/";
-    private static final Pattern                           SEPARATOR_PATTERN       = Pattern.compile(SEPARATOR, Pattern.LITERAL);
-    private static final String                            CURRENT_DIR             = "/./";
-    private static final Pattern                           CURRENT_DIR_PATTERN     = Pattern.compile(CURRENT_DIR, Pattern.LITERAL);
-    private static final String                            PARENT_DIR              = "/../";
-    public static final  String                            PROTOCOL_HANDLER        = "java.protocol.handler.pkgs";
-    private static final String[]                          FALLBACK_HANDLERS       = { "sun.net.www.protocol.jar.Handler" };
-    private static       URL                               jarContextUrl;
-    private static       SoftReference<Map<File, JarFile>> rootFileCache;
+    private static final String                      JAR_PROTOCOL            = "jar:";
+    private static final String                      FILE_PROTOCOL           = "file:";
+    private static final String                      TOMCAT_WARFILE_PROTOCOL = "war:file:";
+    private static final String                      SEPARATOR               = "!/";
+    private static final Pattern                     SEPARATOR_PATTERN       = Pattern.compile(SEPARATOR, Pattern.LITERAL);
+    private static final String                      CURRENT_DIR             = "/./";
+    private static final Pattern                     CURRENT_DIR_PATTERN     = Pattern.compile(CURRENT_DIR, Pattern.LITERAL);
+    private static final String                      PARENT_DIR              = "/../";
+    public static final String                       PROTOCOL_HANDLER        = "java.protocol.handler.pkgs";
+    private static URL                               jarContextUrl;
+    private static SoftReference<Map<File, JarFile>> rootFileCache;
 
     static {
         rootFileCache = new SoftReference<>(null);
     }
 
-    private final JarFile          jarFile;
-    private       URLStreamHandler fallbackHandler;
+    private final JarFile jarFile;
 
     public Handler() {
         this(null);
@@ -83,7 +81,9 @@ public class Handler extends URLStreamHandler {
         try {
             URLConnection connection = openFallbackTomcatConnection(url);
             connection = (connection != null) ? connection : openFallbackContextConnection(url);
-            return (connection != null) ? connection : openFallbackHandlerConnection(url);
+            if (connection != null) {
+                return connection;
+            }
         } catch (Exception ex) {
             if (reason instanceof IOException) {
                 log(false, "Unable to open fallback handler", ex);
@@ -95,13 +95,20 @@ public class Handler extends URLStreamHandler {
             }
             throw new IllegalStateException(reason);
         }
+        if (reason instanceof IOException) {
+            throw (IOException) reason;
+        }
+        if (reason instanceof RuntimeException) {
+            throw (RuntimeException) reason;
+        }
+        throw new IllegalStateException(reason);
     }
 
     /**
      * Attempt to open a Tomcat formatted 'jar:war:file:...' URL. This method allows us to
-     * use our own nested JAR support to open the content rather than the logic in
-     * {@code sun.net.www.protocol.jar.URLJarFile} which will extract the nested jar to
-     * the temp folder to that its content can be accessed.
+     * use our own nested JAR support to open the content rather than the logic in the
+     * JDK default jar URL handler which will extract the nested jar to the temp folder
+     * so that its content can be accessed.
      * @param url the URL to open
      * @return a {@link URLConnection} or {@code null}
      */
@@ -149,34 +156,6 @@ public class Handler extends URLStreamHandler {
         } catch (Exception ex) {
         }
         return null;
-    }
-
-    /**
-     * Attempt to open a fallback connection by using reflection to access Java's default
-     * jar {@link URLStreamHandler}.
-     * @param url the URL to open
-     * @return the {@link URLConnection}
-     * @throws Exception if not connection could be opened
-     */
-    private URLConnection openFallbackHandlerConnection(URL url) throws Exception {
-        URLStreamHandler fallbackHandler = getFallbackHandler();
-        return new URL(null, url.toExternalForm(), fallbackHandler).openConnection();
-    }
-
-    private URLStreamHandler getFallbackHandler() {
-        if (this.fallbackHandler != null) {
-            return this.fallbackHandler;
-        }
-        for (String handlerClassName : FALLBACK_HANDLERS) {
-            try {
-                Class<?> handlerClass = Class.forName(handlerClassName);
-                this.fallbackHandler = (URLStreamHandler) handlerClass.getDeclaredConstructor().newInstance();
-                return this.fallbackHandler;
-            } catch (Exception ex) {
-                // Ignore
-            }
-        }
-        throw new IllegalStateException("Unable to find fallback handler");
     }
 
     private void log(boolean warning, String message, Exception cause) {

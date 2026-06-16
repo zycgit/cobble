@@ -1,13 +1,13 @@
 package net.hasor.cobble.dynamic;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Test;
+import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.dynamic.anno.aop.AopBean;
 import net.hasor.cobble.dynamic.anno.aop.ClassAnnoInterceptor;
 import net.hasor.cobble.dynamic.anno.aop.MethodAnnoInterceptor;
 import net.hasor.cobble.dynamic.anno.custom.MethodMyAopBean;
 import net.hasor.cobble.dynamic.anno.custom.MyAopInterceptor;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AnnoTest {
     @Test
@@ -16,7 +16,7 @@ public class AnnoTest {
         MethodAnnoInterceptor.reset();
 
         Class<?> aClass = Proxy.newProxyClass(AopBean.class);
-        AopBean instance = (AopBean) aClass.getDeclaredConstructor().newInstance();
+        AopBean instance = (AopBean) ClassUtils.newInstance(aClass);
         assert instance instanceof DynamicClass;
 
         instance.doInit(new ArrayList<>());
@@ -128,7 +128,7 @@ public class AnnoTest {
         MyAopInterceptor.resetInit();
         assert !MyAopInterceptor.isCalled();
         Class<?> withMethodType = Proxy.newProxyClass(MethodMyAopBean.class);
-        MethodMyAopBean withMethodInstance = (MethodMyAopBean) withMethodType.getDeclaredConstructor().newInstance();
+        MethodMyAopBean withMethodInstance = (MethodMyAopBean) ClassUtils.newInstance(withMethodType);
         assert withMethodInstance.fooCall("abc").equals("call back : abc");
         assert MyAopInterceptor.isCalled();
         //
@@ -137,7 +137,7 @@ public class AnnoTest {
         MyAopInterceptor.resetInit();
         assert !MyAopInterceptor.isCalled();
         Class<?> withClassType = Proxy.newProxyClass(MethodMyAopBean.class);
-        MethodMyAopBean withClassInstance = (MethodMyAopBean) withClassType.getDeclaredConstructor().newInstance();
+        MethodMyAopBean withClassInstance = (MethodMyAopBean) ClassUtils.newInstance(withClassType);
         assert withClassInstance.fooCall("abc").equals("call back : abc");
         assert MyAopInterceptor.isCalled();
     }
