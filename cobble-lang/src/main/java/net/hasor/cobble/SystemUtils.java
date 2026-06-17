@@ -15,7 +15,13 @@
  * limitations under the License.
  */
 package net.hasor.cobble;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import net.hasor.cobble.logging.Logger;
+import net.hasor.cobble.logging.LoggerFactory;
 
 /**
  * <p>
@@ -34,12 +40,17 @@ import java.util.Locale;
  * @since 1.0
  */
 public final class SystemUtils {
-    private static final boolean IS_WINDOWS       = isWindows0();
-    private static final boolean IS_ANDROID       = isAndroid0();
-    private static final boolean IS_OSX           = isOsx0();
-    private static final boolean IS_J9_JVM        = isJ9Jvm0();
-    private static final boolean IS_IVKVM_DOT_NET = isIkvmDotNet0();
-    private static final boolean IS_SUPER_USER    = maybeSuperUser0();
+    private static final Logger           logger             = LoggerFactory.getLogger(SystemUtils.class);
+    private static final Object           SHUTDOWN_HOOK_LOCK = new Object();
+    private static final Set<Callable<?>> shutdownHooks      = new LinkedHashSet<>();
+    private static Thread                 shutdownHookThread;
+    private static boolean                shutdownHookRunning;
+    private static final boolean          IS_WINDOWS         = isWindows0();
+    private static final boolean          IS_ANDROID         = isAndroid0();
+    private static final boolean          IS_OSX             = isOsx0();
+    private static final boolean          IS_J9_JVM          = isJ9Jvm0();
+    private static final boolean          IS_IVKVM_DOT_NET   = isIkvmDotNet0();
+    private static final boolean          IS_SUPER_USER      = maybeSuperUser0();
 
     //--------------------------------------------------------------------
 
@@ -80,6 +91,109 @@ public final class SystemUtils {
         }
 
         return value;
+    }
+
+    //--------------------------------------------------------------------
+
+    /**
+     * Register a callback that is invoked when the JVM is shutting down.
+     * @param shutdownHook callback invoked during JVM shutdown.
+     * @return handle used to unregister the callback.
+     */
+    public static AutoCloseable registerShutdownHook(Callable<?> shutdownHook) {
+        Objects.requireNonNull(shutdownHook, "shutdownHook is null.");
+        synchronized (SHUTDOWN_HOOK_LOCK) {
+            if (shutdownHookRunning) {
+                throw new IllegalStateException("Shutdown is already in progress.");
+            }
+            if (!shutdownHooks.add(shutdownHook)) {
+                return new ShutdownHookRegistration(shutdownHook);
+            }
+            if (shutdownHookThread == null) {
+                Thread hookThread = new Thread(SystemUtils::doShutdownHook, "Cobble-ShutdownHook");
+                try {
+                    Runtime.getRuntime().addShutdownHook(hookThread);
+                    shutdownHookThread = hookThread;
+                } catch (Throwable e) {
+                    shutdownHooks.remove(shutdownHook);
+                    throw e;
+                }
+            }
+            return new ShutdownHookRegistration(shutdownHook);
+        }
+    }
+
+    /**
+     * Unregister a callback from JVM shutdown callbacks.
+     * @param shutdownHook registered callback.
+     * @return true if the callback was registered.
+     */
+    public static boolean unregisterShutdownHook(Callable<?> shutdownHook) {
+        if (shutdownHook == null) {
+            return false;
+        }
+        Thread hookThread = null;
+        boolean removed;
+        synchronized (SHUTDOWN_HOOK_LOCK) {
+            removed = shutdownHooks.remove(shutdownHook);
+            if (!shutdownHookRunning && shutdownHooks.isEmpty()) {
+                hookThread = shutdownHookThread;
+            }
+        }
+        if (hookThread != null) {
+            removeShutdownHook(hookThread);
+        }
+        return removed;
+    }
+
+    private static void doShutdownHook() {
+        Set<Callable<?>> hookSet = null;
+        synchronized (SHUTDOWN_HOOK_LOCK) {
+            shutdownHookRunning = true;
+            hookSet = new LinkedHashSet<>(shutdownHooks);
+            shutdownHooks.clear();
+        }
+        for (Callable<?> shutdownHook : hookSet) {
+            try {
+                shutdownHook.call();
+            } catch (Throwable e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    private static void removeShutdownHook(Thread hookThread) {
+        try {
+            Runtime.getRuntime().removeShutdownHook(hookThread);
+        } catch (IllegalStateException e) {
+            if (!"Shutdown in progress".equals(e.getMessage())) {
+                logger.error(e.getMessage(), e);
+            }
+        } finally {
+            synchronized (SHUTDOWN_HOOK_LOCK) {
+                if (shutdownHookThread == hookThread) {
+                    shutdownHookThread = null;
+                }
+            }
+        }
+    }
+
+    private static final class ShutdownHookRegistration implements AutoCloseable {
+        private final Callable<?> shutdownHook;
+        private boolean           closed;
+
+        private ShutdownHookRegistration(Callable<?> shutdownHook) {
+            this.shutdownHook = shutdownHook;
+        }
+
+        @Override
+        public void close() {
+            if (this.closed) {
+                return;
+            }
+            this.closed = true;
+            unregisterShutdownHook(this.shutdownHook);
+        }
     }
 
     //--------------------------------------------------------------------
