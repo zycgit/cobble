@@ -1,12 +1,13 @@
-.cache
-test-work
-bin
-/out/
-.DS_Store
-_book
-dependency-reduced-pom.xml
-.gradle
-/.gradle/
+.github
+.vscode
+
+# Editor directories and files
+.settings
+.classpath
+.project
+*.iml
+*/*.iml
+.idea
 
 # nodejs
 package-lock.json
@@ -16,24 +17,8 @@ npm-debug.logger*
 yarn-debug.logger*
 yarn-error.logger*
 
-# Editor directories and files
-.settings
-.github
+#
 target
-.classpath
-.project
-*.iml
-*/*.iml
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-pom.xml.versionsBackup
-
-# codes
-gen/
-logs/*
-hasor-dataql/logs/*
-hasor-rsf/logs/*
+dependency-reduced-pom.xml
+pom.xml.releaseBackup
+release.properties
