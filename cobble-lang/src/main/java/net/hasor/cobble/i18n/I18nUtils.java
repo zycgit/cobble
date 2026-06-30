@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ResourcesUtils;
@@ -36,7 +37,7 @@ import net.hasor.cobble.text.token.GenericTokenParser;
 public class I18nUtils {
 
     private static final Logger              logger      = Logger.getLogger(I18nUtils.class);
-    public static final  I18nUtils           DEFAULT     = new I18nUtils();
+    public static final I18nUtils            DEFAULT     = new I18nUtils();
     private static final Map<String, Locale> LOCAL_CACHE = new LinkedCaseInsensitiveMap<>();
 
     static {
@@ -145,14 +146,22 @@ public class I18nUtils {
         }
     }
 
-    private       String                   defaultI18nKey;
+    private final AtomicReference<String>  defaultI18nKey;
     private final I18nMessageSource        messageSource;
     private final Function<String, String> variablesSource;
     private final Map<String, ClassLoader> i18nSource;
     private final Set<String>              i18nLoaded;
 
+    private I18nUtils(I18nUtils parent) {
+        this.defaultI18nKey = parent.defaultI18nKey;
+        this.messageSource = new I18nMessageSourceImpl();
+        this.variablesSource = new VariablesSourceImpl();
+        this.i18nSource = new LinkedHashMap<>();
+        this.i18nLoaded = new LinkedHashSet<>();
+    }
+
     private I18nUtils() {
-        this.defaultI18nKey = toI18nKey(Locale.getDefault());
+        this.defaultI18nKey = new AtomicReference<>(toI18nKey(Locale.getDefault()));
         this.messageSource = new I18nMessageSourceImpl();
         this.variablesSource = new VariablesSourceImpl();
         this.i18nSource = new LinkedHashMap<>();
@@ -160,7 +169,7 @@ public class I18nUtils {
     }
 
     public I18nUtils(I18nMessageSource messageSource) {
-        this.defaultI18nKey = toI18nKey(Locale.getDefault());
+        this.defaultI18nKey = new AtomicReference<>(toI18nKey(Locale.getDefault()));
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = new VariablesSourceImpl();
         this.i18nSource = new LinkedHashMap<>();
@@ -168,7 +177,7 @@ public class I18nUtils {
     }
 
     public I18nUtils(I18nMessageSource messageSource, Function<String, String> variablesSource) {
-        this.defaultI18nKey = toI18nKey(Locale.getDefault());
+        this.defaultI18nKey = new AtomicReference<>(toI18nKey(Locale.getDefault()));
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = variablesSource == null ? new VariablesSourceImpl() : variablesSource;
         this.i18nSource = new LinkedHashMap<>();
@@ -176,15 +185,15 @@ public class I18nUtils {
     }
 
     public String getDefaultI18nKey() {
-        return defaultI18nKey;
+        return defaultI18nKey.get();
     }
 
     public void setDefaultI18nKey(String defaultI18nKey) {
-        this.defaultI18nKey = defaultI18nKey;
+        this.defaultI18nKey.set(defaultI18nKey);
     }
 
     public void setDefaultI18nKey(Locale defaultLocale) {
-        this.defaultI18nKey = toI18nKey(defaultLocale);
+        this.defaultI18nKey.set(toI18nKey(defaultLocale));
     }
 
     public Set<String> getI18nSources() {
@@ -273,12 +282,12 @@ public class I18nUtils {
 
     /** 获取 i18n 文本 */
     public String getMessage(String code) {
-        return getMessage(code, null, this.defaultI18nKey);
+        return getMessage(code, null, this.defaultI18nKey.get());
     }
 
     /** 获取 i18n 文本 */
     public String getMessage(String code, Object[] args) {
-        return getMessage(code, args, this.defaultI18nKey);
+        return getMessage(code, args, this.defaultI18nKey.get());
     }
 
     /** 获取 i18n 文本 */
