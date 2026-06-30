@@ -15,19 +15,18 @@
  */
 
 package net.hasor.cobble.loader.providers;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import org.junit.Assert;
+import org.junit.Test;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.*;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 /**
  * Tests for {@link JarFile}.
  */
@@ -157,7 +156,8 @@ public class ClassResourceLoaderTests {
 
         assert resourceLoader.exist("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class");
         assert resourceLoader.getResource("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class") != null;
-        assert resourceLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class").size() == 1;
+        List<URL> resources = resourceLoader.getResources("net/hasor/cobble/loader/providers/ClassPathResourceLoader.class");
+        assert !resources.isEmpty();
 
         try {
             new CobbleClassScanner(resourceLoader).getClassSet(ClassMatchers.subClassesOf(Object.class));

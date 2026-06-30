@@ -32,15 +32,15 @@ import net.hasor.cobble.loader.providers.MergedLoader;
  */
 public class CobbleClassLoader extends ClassLoader {
 
-    private final ResourceLoader                         resourceLoader;
-    private final Set<String>                            includePackages;
-    private final Set<String>                            excludePackages;
-    private final String                                 tempDirectory = "cobbleLoader/" + System.currentTimeMillis();
-    private       File                                   tempDir;
+    private final ResourceLoader resourceLoader;
+    private final Set<String>    includePackages;
+    private final Set<String>    excludePackages;
+    private final String         tempDirectory = "cobble/" + System.currentTimeMillis();
+    private File                 tempDir;
     //
-    private       CobbleClassLoader                      owner;
-    private       boolean                                isolation;
-    private       Map<ResourceLoader, CobbleClassLoader> isolationMap;
+    private final CobbleClassLoader                owner;
+    private boolean                                isolation;
+    private Map<ResourceLoader, CobbleClassLoader> isolationMap;
 
     public CobbleClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
         this(parent, resourceLoader, null);
@@ -108,28 +108,46 @@ public class CobbleClassLoader extends ClassLoader {
                 }
             }
 
-            // none
-            if (this.includePackages.isEmpty()) {
-                return super.loadClass(name, resolve);
-            } else {
-                for (String include : this.includePackages) {
-                    if (StringUtils.startsWith(name, include) || MatchUtils.matchWild(include, name)) {
-                        for (String exclude : this.excludePackages) {
-                            if (StringUtils.startsWith(name, exclude) || MatchUtils.matchWild(exclude, name)) {
-                                return super.loadClass(name, resolve);
-                            }
-                        }
-
-                        Class<?> c = this.findClass(name);
-                        if (c != null && resolve) {
-                            this.resolveClass(c);
-                        }
-                        return c;
-                    }
+            if (shouldLoadFromLocalFirst(name)) {
+                try {
+                    return loadFromLocal(name, resolve);
+                } catch (ClassNotFoundException e) {
+                    return loadFromParent(name, resolve);
                 }
-                return super.loadClass(name, resolve);
+            } else {
+                try {
+                    return loadFromParent(name, resolve);
+                } catch (ClassNotFoundException e) {
+                    return loadFromLocal(name, resolve);
+                }
             }
         }
+    }
+
+    private boolean shouldLoadFromLocalFirst(String name) {
+        if (this.includePackages.isEmpty()) {
+            return false;
+        }
+
+        for (String include : this.includePackages) {
+            if (StringUtils.startsWith(name, include) || MatchUtils.matchWild(include, name)) {
+                for (String exclude : this.excludePackages) {
+                    if (StringUtils.startsWith(name, exclude) || MatchUtils.matchWild(exclude, name)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Class<?> loadFromLocal(String name, boolean resolve) throws ClassNotFoundException {
+        return findLocalClass(name, resolve);
+    }
+
+    private Class<?> loadFromParent(String name, boolean resolve) throws ClassNotFoundException {
+        return super.loadClass(name, resolve);
     }
 
     private Class<?> loadResourceClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -149,12 +167,9 @@ public class CobbleClassLoader extends ClassLoader {
     protected Class<?> findClass(String className) throws ClassNotFoundException {
         String resource = className.replace(".", "/") + ".class";
 
-        try (InputStream inStream = this.resourceLoader.getResourceAsStream(resource)) {
-            if (inStream != null) {
-                return innerLoadClass(className, resource, inStream);
-            }
-        } catch (IOException e2) {
-            throw new ClassNotFoundException(className, e2);
+        try {
+            return findLocalClass(className, false);
+        } catch (ClassNotFoundException ignored) {
         }
 
         try (InputStream inStream = super.getResourceAsStream(resource)) {
@@ -166,6 +181,22 @@ public class CobbleClassLoader extends ClassLoader {
         }
 
         return super.findClass(className);
+    }
+
+    private Class<?> findLocalClass(String className, boolean resolve) throws ClassNotFoundException {
+        String resource = className.replace(".", "/") + ".class";
+        try (InputStream inStream = this.resourceLoader.getResourceAsStream(resource)) {
+            if (inStream != null) {
+                Class<?> c = innerLoadClass(className, resource, inStream);
+                if (resolve) {
+                    this.resolveClass(c);
+                }
+                return c;
+            }
+        } catch (IOException e2) {
+            throw new ClassNotFoundException(className, e2);
+        }
+        throw new ClassNotFoundException(className);
     }
 
     private Class<?> innerLoadClass(String className, String resource, InputStream inStream) throws IOException {
