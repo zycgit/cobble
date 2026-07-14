@@ -96,7 +96,7 @@ prepare_release() {
     shift
     shift
     local gradle_options=("$@")
-    local current_version release_default release_version next_default next_version confirm
+    local current_version release_default release_version release_tag next_default next_version confirm
 
     ensure_clean_worktree
     current_version="$(project_version)"
@@ -105,13 +105,14 @@ prepare_release() {
 
     echo "Current version: ${current_version}"
     release_version="$(prompt_with_default "Release version" "$release_default")"
+    release_tag="Release.Cobble-${release_version}"
     next_default="$(next_snapshot_of "$release_version")"
     next_version="$(prompt_with_default "Next development version" "$next_default")"
 
     echo
     echo "Release plan:"
     echo "  release version: ${release_version}"
-    echo "  release tag:     v${release_version}"
+    echo "  release tag:     ${release_tag}"
     if [[ "$run_tests" == "true" ]]; then
         echo "  test:            yes, before deploy"
     fi
@@ -140,8 +141,8 @@ prepare_release() {
         fi
     fi
     git add gradle.properties
-    git commit -m "Release v${release_version}"
-    git tag -a "v${release_version}" -m "Release v${release_version}"
+    git commit -m "Release ${release_version}"
+    git tag -a "${release_tag}" -m "${release_tag}"
 
     if [[ "$release_deploy" == "true" ]]; then
         if ! ./build.sh deploy "${gradle_options[@]}"; then
@@ -164,7 +165,7 @@ mode="package"
 run_tests="false"
 dry_run="false"
 release_deploy="false"
-gradle_args=(--parallel --max-workers 8)
+gradle_args=()
 
 for arg in "$@"; do
     case "$arg" in
@@ -253,7 +254,28 @@ if [[ "$mode" == "deploy" ]]; then
     gradle_args+=("-PcentralBundleDir=${central_dir}")
 fi
 
-./gradlew "${tasks[@]}" "${gradle_args[@]}"
+has_parallel_option="false"
+has_max_workers_option="false"
+for arg in "${gradle_args[@]}"; do
+    case "$arg" in
+        --parallel|--no-parallel)
+            has_parallel_option="true"
+            ;;
+        --max-workers|--max-workers=*)
+            has_max_workers_option="true"
+            ;;
+    esac
+done
+
+gradle_defaults=()
+if [[ "$has_parallel_option" == "false" ]]; then
+    gradle_defaults+=(--parallel)
+fi
+if [[ "$has_max_workers_option" == "false" ]]; then
+    gradle_defaults+=(--max-workers 8)
+fi
+
+./gradlew "${tasks[@]}" "${gradle_defaults[@]}" "${gradle_args[@]}"
 
 if [[ "$mode" == "deploy" && "$dry_run" != "true" ]]; then
     find "$central_dir" -type f \
