@@ -1,0 +1,167 @@
+plugins {
+    id 'com.gradleup.shadow' version '9.2.2' apply false
+}
+
+allprojects {
+    group = 'net.hasor'
+}
+
+def pomInfo = [
+        'cobble-lang'    : ['Cobble Lang', 'lang utils.'],
+        'cobble-dynamic' : ['Cobble Dynamic', 'dynamic proxy util.'],
+        'cobble-loader'  : ['Cobble Loader', 'resource loader util.'],
+        'cobble-settings': ['Cobble Settings', 'config reader utils.'],
+        'cobble-all'     : ['Cobble All-in-One', 'java utils']
+]
+
+def pomDeps = [
+        'cobble-lang'    : [
+                ['org.ow2.asm', 'asm', property('lib.asm'), 'compile', true],
+                ['com.sun.activation', 'javax.activation', property('lib.activation'), 'compile', true],
+                ['org.slf4j', 'slf4j-api', property('lib.slf4j'), 'compile', true],
+                ['org.slf4j', 'slf4j-reload4j', property('lib.slf4j.reload4j'), 'compile', true],
+                ['org.apache.logging.log4j', 'log4j-api', property('lib.log4j'), 'compile', true],
+                ['commons-logging', 'commons-logging', property('lib.commons.logging'), 'compile', true]
+        ],
+        'cobble-dynamic' : [
+                ['net.hasor', 'cobble-lang', version, 'compile', false],
+                ['org.ow2.asm', 'asm', property('lib.asm'), 'compile', true]
+        ],
+        'cobble-loader'  : [
+                ['net.hasor', 'cobble-lang', version, 'compile', false],
+                ['org.ow2.asm', 'asm', property('lib.asm'), 'compile', true]
+        ],
+        'cobble-settings': [
+                ['net.hasor', 'cobble-lang', version, 'compile', false],
+                ['org.yaml', 'snakeyaml', property('lib.snakeyaml'), 'compile', true]
+        ],
+        'cobble-all'     : [
+                ['net.hasor', 'cobble-lang', version, 'compile', true],
+                ['net.hasor', 'cobble-dynamic', version, 'compile', true],
+                ['net.hasor', 'cobble-settings', version, 'compile', true],
+                ['net.hasor', 'cobble-loader', version, 'compile', true]
+        ]
+]
+
+subprojects {
+    plugins.withType(JavaPlugin).configureEach {
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
+        }
+
+        tasks.withType(JavaCompile).configureEach {
+            options.encoding = 'UTF-8'
+            options.release = 17
+        }
+
+        tasks.withType(Javadoc).configureEach {
+            options.encoding = 'UTF-8'
+            options.addStringOption('Xdoclint:none', '-quiet')
+            failOnError = false
+            exclude 'net/hasor/cobble/asm/**'
+            exclude 'net/hasor/cobble/setting/provider/yaml/lib/**'
+        }
+
+        tasks.withType(Test).configureEach {
+            useJUnit()
+            ignoreFailures = true
+            jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+        }
+
+        tasks.withType(GenerateModuleMetadata).configureEach {
+            enabled = false
+        }
+
+        dependencies {
+            testImplementation "junit:junit:${property('lib.junit')}"
+        }
+
+        plugins.withId('maven-publish') {
+            apply plugin: 'signing'
+            java {
+                withSourcesJar()
+                withJavadocJar()
+            }
+
+            publishing {
+                publications {
+                    mavenJava(MavenPublication) {
+                        pom {
+                            name = pomInfo[project.name][0]
+                            description = pomInfo[project.name][1]
+                            url = 'https://www.hasor.net/'
+                            licenses {
+                                license {
+                                    name = 'The Apache Software License, Version 2.0'
+                                    url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                                }
+                            }
+                            developers {
+                                developer {
+                                    name = '赵永春(Mr.Zhao)'
+                                    email = 'zyc@hasor.net'
+                                }
+                            }
+                            scm {
+                                connection = 'scm:git:git@gitee.com:zycgit/cobble.git'
+                                developerConnection = 'scm:git:git@gitee.com:zycgit/cobble.git'
+                                url = 'https://gitee.com/zycgit/cobble'
+                                tag = 'HEAD'
+                            }
+                            withXml {
+                                def deps = pomDeps[project.name]
+                                if (deps) {
+                                    def dependenciesNode = asNode().appendNode('dependencies')
+                                    deps.each {
+                                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                                        dependencyNode.appendNode('groupId', it[0])
+                                        dependencyNode.appendNode('artifactId', it[1])
+                                        dependencyNode.appendNode('version', it[2])
+                                        dependencyNode.appendNode('scope', it[3])
+                                        if (it[4]) {
+                                            dependencyNode.appendNode('optional', 'true')
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (findProperty('centralBundleDir')) {
+                    repositories {
+                        maven {
+                            name = 'centralBundle'
+                            url = uri(findProperty('centralBundleDir'))
+                        }
+                    }
+                }
+            }
+
+            afterEvaluate {
+                publishing.publications.named('mavenJava', MavenPublication) {
+                    if (plugins.hasPlugin('com.gradleup.shadow')) {
+                        artifact(tasks.named('shadowJar')) {
+                            classifier = null
+                        }
+                        artifact tasks.named('sourcesJar')
+                        artifact tasks.named('javadocJar')
+                    } else {
+                        from components.java
+                    }
+                }
+            }
+
+            signing {
+                required { findProperty('centralRelease') == 'true' }
+                def signingKey = findProperty('maven.central.signing_key')
+                def signingPassword = findProperty('maven.central.signing_password')
+                if (signingKey) {
+                    useInMemoryPgpKeys(signingKey.replace('\\n', '\n'), signingPassword)
+                }
+                sign publishing.publications.mavenJava
+            }
+        }
+    }
+}

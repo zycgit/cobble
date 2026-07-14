@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.gradleup.shadow'
+}
+
+dependencies {
+    api project(':cobble-lang')
+    implementation "org.ow2.asm:asm:${property('lib.asm')}"
+}
+
+tasks.named('shadowJar') {
+    archiveClassifier = 'all'
+    relocate 'org.objectweb.asm', 'net.hasor.cobble.asm'
+    dependencies {
+        include dependency('org.ow2.asm:asm:.*')
+    }
+    exclude 'META-INF/MANIFEST.MF'
+    exclude 'module-info.class'
+    manifest {
+        attributes 'Automatic-Module-Name': 'net.hasor.cobble.loader'
+    }
+}

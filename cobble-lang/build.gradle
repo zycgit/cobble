@@ -1,0 +1,28 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.gradleup.shadow'
+}
+
+dependencies {
+    implementation "org.ow2.asm:asm:${property('lib.asm')}"
+
+    compileOnly "com.sun.activation:javax.activation:${property('lib.activation')}"
+    compileOnly "org.slf4j:slf4j-api:${property('lib.slf4j')}"
+    compileOnly "org.slf4j:slf4j-reload4j:${property('lib.slf4j.reload4j')}"
+    compileOnly "org.apache.logging.log4j:log4j-api:${property('lib.log4j')}"
+    compileOnly "commons-logging:commons-logging:${property('lib.commons.logging')}"
+}
+
+tasks.named('shadowJar') {
+    archiveClassifier = 'all'
+    relocate 'org.objectweb.asm', 'net.hasor.cobble.asm'
+    dependencies {
+        include dependency('org.ow2.asm:asm:.*')
+    }
+    exclude 'META-INF/MANIFEST.MF'
+    exclude 'module-info.class'
+    manifest {
+        attributes 'Automatic-Module-Name': 'net.hasor.cobble'
+    }
+}

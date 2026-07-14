@@ -1,0 +1,8 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    testImplementation project(':cobble-loader')
+    testImplementation "org.ow2.asm:asm:${property('lib.asm')}"
+}

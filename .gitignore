@@ -8,6 +8,7 @@
 *.iml
 */*.iml
 .idea
+.DS_Store
 
 # nodejs
 package-lock.json
@@ -19,6 +20,9 @@ yarn-error.logger*
 
 #
 target
+.gradle
+build
+**/build/
 dependency-reduced-pom.xml
 pom.xml.releaseBackup
 release.properties

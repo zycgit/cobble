@@ -1,0 +1,34 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'cobble-parent'
+
+include 'cobble-lang'
+include 'cobble-dynamic'
+include 'cobble-loader'
+include 'cobble-settings'
+include 'cobble-all'
+
+if (providers.gradleProperty('includeTests').orNull == 'true') {
+    include 'tests-lang'
+    include 'tests-dynamic'
+    include 'tests-loader'
+    include 'tests-settings'
+
+    project(':tests-lang').projectDir = file('tests/tests-lang')
+    project(':tests-dynamic').projectDir = file('tests/tests-dynamic')
+    project(':tests-loader').projectDir = file('tests/tests-loader')
+    project(':tests-settings').projectDir = file('tests/tests-settings')
+}
