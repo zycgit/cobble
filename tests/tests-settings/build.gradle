@@ -1,8 +1,0 @@
-plugins {
-    id 'java-library'
-}
-
-dependencies {
-    testImplementation project(':cobble-settings')
-    testImplementation "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
-}

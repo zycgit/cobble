@@ -13,11 +13,3 @@
 
 https://glassfish.dev.java.net/public/CDDL+GPL.html
 http://www.apache.org/licenses/LICENSE-2.0
-
-## release versions and prepare next SNAPSHOT version
-
-    mvn release:clean release:prepare
-
-## push to center maven repository (version tag must be RELEASE)
-
-    mvn clean package install deploy -Prelease

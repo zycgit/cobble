@@ -1054,9 +1054,9 @@ public class ClassUtils {
         return params.length;
     }
 
-    public static <T> T newInstance(final Class<?> clazz) {
+    public static <T> T newInstance(final Class<T> clazz) {
         try {
-            return (T) clazz.getDeclaredConstructor().newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw ExceptionUtils.toRuntime(e);
         }
