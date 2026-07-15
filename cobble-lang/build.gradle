@@ -4,22 +4,31 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
+ext.pomName = 'Cobble Lang'
+description = 'Language utilities.'
+
+configurations {
+    shaded
+}
+
 dependencies {
-    implementation "org.ow2.asm:asm:${property('lib.asm')}"
+    compileOnly "org.ow2.asm:asm:${property('lib.asm')}"
+    shaded "org.ow2.asm:asm:${property('lib.asm')}"
 
     compileOnly "com.sun.activation:javax.activation:${property('lib.activation')}"
     compileOnly "org.slf4j:slf4j-api:${property('lib.slf4j')}"
     compileOnly "org.slf4j:slf4j-reload4j:${property('lib.slf4j.reload4j')}"
     compileOnly "org.apache.logging.log4j:log4j-api:${property('lib.log4j')}"
     compileOnly "commons-logging:commons-logging:${property('lib.commons.logging')}"
+
+    testImplementation "org.ow2.asm:asm:${property('lib.asm')}"
+    testImplementation "org.slf4j:slf4j-api:${property('lib.slf4j')}"
+    testImplementation "org.apache.logging.log4j:log4j-api:${property('lib.log4j')}"
 }
 
 tasks.named('shadowJar') {
-    archiveClassifier = 'all'
+    configurations = [project.configurations.shaded]
     relocate 'org.objectweb.asm', 'net.hasor.cobble.asm'
-    dependencies {
-        include dependency('org.ow2.asm:asm:.*')
-    }
     exclude 'META-INF/MANIFEST.MF'
     exclude 'module-info.class'
     manifest {

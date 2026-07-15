@@ -4,13 +4,26 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
+ext.pomName = 'Cobble All-in-One'
+description = 'Java utilities.'
+
+configurations {
+    shaded
+}
+
 dependencies {
-    implementation "org.ow2.asm:asm:${property('lib.asm')}"
-    implementation "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
+    compileOnly project(':cobble-lang')
+    compileOnly project(':cobble-dynamic')
+    compileOnly project(':cobble-settings')
+    compileOnly project(':cobble-loader')
+    compileOnly "org.ow2.asm:asm:${property('lib.asm')}"
+    compileOnly "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
+    shaded "org.ow2.asm:asm:${property('lib.asm')}"
+    shaded "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
 }
 
 tasks.named('shadowJar') {
-    archiveClassifier = 'all'
+    configurations = [project.configurations.shaded]
     dependsOn ':cobble-lang:shadowJar'
     dependsOn ':cobble-dynamic:shadowJar'
     dependsOn ':cobble-settings:shadowJar'

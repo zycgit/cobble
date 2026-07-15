@@ -4,17 +4,23 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
+ext.pomName = 'Cobble Settings'
+description = 'Configuration reader utilities.'
+
+configurations {
+    shaded
+}
+
 dependencies {
     api project(':cobble-lang')
-    implementation "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
+    compileOnly "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
+    shaded "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
+    testImplementation "org.yaml:snakeyaml:${property('lib.snakeyaml')}"
 }
 
 tasks.named('shadowJar') {
-    archiveClassifier = 'all'
+    configurations = [project.configurations.shaded]
     relocate 'org.yaml.snakeyaml', 'net.hasor.cobble.setting.provider.yaml.lib'
-    dependencies {
-        include dependency('org.yaml:snakeyaml:.*')
-    }
     exclude 'META-INF/**'
     manifest {
         attributes 'Automatic-Module-Name': 'net.hasor.cobble.setting'

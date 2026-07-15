@@ -4,17 +4,23 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
+ext.pomName = 'Cobble Loader'
+description = 'Resource loader utilities.'
+
+configurations {
+    shaded
+}
+
 dependencies {
     api project(':cobble-lang')
-    implementation "org.ow2.asm:asm:${property('lib.asm')}"
+    compileOnly "org.ow2.asm:asm:${property('lib.asm')}"
+    shaded "org.ow2.asm:asm:${property('lib.asm')}"
+    testImplementation "org.ow2.asm:asm:${property('lib.asm')}"
 }
 
 tasks.named('shadowJar') {
-    archiveClassifier = 'all'
+    configurations = [project.configurations.shaded]
     relocate 'org.objectweb.asm', 'net.hasor.cobble.asm'
-    dependencies {
-        include dependency('org.ow2.asm:asm:.*')
-    }
     exclude 'META-INF/MANIFEST.MF'
     exclude 'module-info.class'
     manifest {
