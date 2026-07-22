@@ -20,6 +20,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * 通用对象池工具。
@@ -31,8 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  *       用于跨线程回收场景的兜底。</li>
  * </ol>
  * <p>
- * 提供两套 API：
+ * 提供三套 API：
  * <ul>
+ *   <li><b>Recycler API（推荐）</b>：{@link #recycler(Supplier, Consumer, Consumer)}。
+ *       将类型索引和对象工厂封装为类型安全的复用句柄。</li>
  *   <li><b>索引 API（快速路径）</b>：{@link #get(int, ObjHandler)} / {@link #free(int, Object)}。
  *       通过类型索引直接定位缓存槽，无需 ConcurrentHashMap 查找，性能最优。
  *       建议在静态初始化阶段通过 {@link #registerType()} 预先注册类型索引。</li>
@@ -78,6 +82,31 @@ public class RecycleObjectPool {
         return idx;
     }
 
+    /**
+     * Creates a type-safe handle with acquire and recycle lifecycle callbacks.
+     * <p>
+     * The initializer runs every time an object is acquired, including immediately
+     * after creation. The recycle callback runs before the object is cached. When
+     * that callback fails, the object is deliberately not returned to the pool.
+     * @param factory factory used when the pool is empty
+     * @param initializer callback invoked before an acquired object is returned
+     * @param recycler callback invoked before an object is cached
+     * @param <T> pooled object type
+     * @return recycler handle for the object type
+     */
+    public static <T> Recycler<T> recycler(Supplier<? extends T> factory, Consumer<? super T> initializer, Consumer<? super T> recycler) {
+        if (factory == null) {
+            throw new NullPointerException("factory");
+        }
+        if (initializer == null) {
+            throw new NullPointerException("initializer");
+        }
+        if (recycler == null) {
+            throw new NullPointerException("recycler");
+        }
+        return new Recycler<>(registerType(), factory, initializer, recycler);
+    }
+
     // ==================== Class API（兼容路径） ====================
 
     /**
@@ -85,6 +114,10 @@ public class RecycleObjectPool {
      * 通过数组索引定位 ThreadLocal，无 ConcurrentHashMap 查找开销。
      */
     public static <T> T get(int typeIndex, ObjHandler<?> handler) {
+        return getIndexed(typeIndex, handler::create);
+    }
+
+    private static <T> T getIndexed(int typeIndex, Supplier<?> factory) {
         // 1. 尝试 L1（ThreadLocal）
         ArrayDeque<Object> localDeque = LOCAL_INDEXED_CACHES.get()[typeIndex];
         if (!localDeque.isEmpty()) {
@@ -100,7 +133,7 @@ public class RecycleObjectPool {
         }
 
         // 3. 创建新对象
-        return (T) handler.create();
+        return (T) factory.get();
     }
 
     /**
@@ -183,6 +216,41 @@ public class RecycleObjectPool {
     private static class RecyclerQueue {
         final Queue<Object> queue = new ConcurrentLinkedQueue<>();
         final AtomicInteger size  = new AtomicInteger(0);
+    }
+
+    /**
+     * Type-safe handle for acquiring and recycling instances through the indexed
+     * object-pool fast path.
+     * @param <T> pooled object type
+     */
+    public static final class Recycler<T> {
+        private final int                   typeIndex;
+        private final Supplier<? extends T> factory;
+        private final Consumer<? super T>   initializer;
+        private final Consumer<? super T>   recycler;
+
+        private Recycler(int typeIndex, Supplier<? extends T> factory, Consumer<? super T> initializer, Consumer<? super T> recycler) {
+            this.typeIndex = typeIndex;
+            this.factory = factory;
+            this.initializer = initializer;
+            this.recycler = recycler;
+        }
+
+        /** Returns a cached instance, or creates one when the pool is empty. */
+        public T get() {
+            T object = RecycleObjectPool.getIndexed(this.typeIndex, this.factory);
+            this.initializer.accept(object);
+            return object;
+        }
+
+        /** Returns an instance to this recycler. */
+        public void recycle(T object) {
+            if (object == null) {
+                throw new NullPointerException("object");
+            }
+            this.recycler.accept(object);
+            RecycleObjectPool.free(this.typeIndex, object);
+        }
     }
 
     /**

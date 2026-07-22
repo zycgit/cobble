@@ -1,13 +1,12 @@
 package net.hasor.cobble.ref;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * RecycleObjectPool 单元测试。
@@ -112,7 +111,7 @@ public class RecycleObjectPoolTest {
         @Override
         public int[] create() {
             createCount.incrementAndGet();
-            return new int[]{0, 0};
+            return new int[] { 0, 0 };
         }
 
         @Override
@@ -264,6 +263,77 @@ public class RecycleObjectPoolTest {
         Assert.assertNotSame(a, b);
         // 两个对象都是新建的
         Assert.assertEquals(2, ((AtomicInteger) getField(handler, "cnt")).get());
+    }
+
+    @Test
+    public void recycler_reusesObjectFromItsOwnIndexedSlot() {
+        RecycleObjectPool.Recycler<StringBuilder> recycler = RecycleObjectPool.recycler(StringBuilder::new, object -> {
+        }, object -> {
+        });
+        StringBuilder first = recycler.get();
+        first.append("reused");
+        recycler.recycle(first);
+
+        StringBuilder second = recycler.get();
+        Assert.assertSame(first, second);
+        Assert.assertEquals("reused", second.toString());
+    }
+
+    @Test
+    public void recycler_keepsDifferentTypesInDifferentSlots() {
+        RecycleObjectPool.Recycler<StringBuilder> strings = RecycleObjectPool.recycler(StringBuilder::new, object -> {
+        }, object -> {
+        });
+        RecycleObjectPool.Recycler<AtomicInteger> integers = RecycleObjectPool.recycler(AtomicInteger::new, object -> {
+        }, object -> {
+        });
+
+        StringBuilder string = strings.get();
+        AtomicInteger integer = integers.get();
+        strings.recycle(string);
+        integers.recycle(integer);
+
+        Assert.assertSame(string, strings.get());
+        Assert.assertSame(integer, integers.get());
+    }
+
+    @Test
+    public void recycler_invokesLifecycleCallbacksInOrder() {
+        StringBuilder events = new StringBuilder();
+        RecycleObjectPool.Recycler<Object> recycler = RecycleObjectPool.recycler(() -> {
+            events.append("create>");
+            return new Object();
+        }, object -> events.append("init>"), object -> events.append("recycle>"));
+
+        Object object = recycler.get();
+        recycler.recycle(object);
+        Assert.assertEquals("create>init>recycle>", events.toString());
+
+        Assert.assertSame(object, recycler.get());
+        Assert.assertEquals("create>init>recycle>init>", events.toString());
+    }
+
+    @Test
+    public void recycler_doesNotCacheObjectWhenRecycleCallbackFails() {
+        AtomicInteger created = new AtomicInteger();
+        RecycleObjectPool.Recycler<Object> recycler = RecycleObjectPool.recycler(() -> {
+            created.incrementAndGet();
+            return new Object();
+        }, object -> {
+        }, object -> {
+            throw new IllegalStateException("recycle failed");
+        });
+
+        Object first = recycler.get();
+        try {
+            recycler.recycle(first);
+            Assert.fail("Expected recycle callback failure.");
+        } catch (IllegalStateException expected) {
+            Assert.assertEquals("recycle failed", expected.getMessage());
+        }
+
+        Assert.assertNotSame(first, recycler.get());
+        Assert.assertEquals(2, created.get());
     }
 
     /** 反射获取匿名类字段，仅用于测试断言 */
