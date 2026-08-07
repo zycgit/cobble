@@ -38,7 +38,7 @@ public class I18nUtils {
 
     private static final Logger              logger      = Logger.getLogger(I18nUtils.class);
     public static final I18nUtils            DEFAULT     = new I18nUtils();
-    private static final Map<String, Locale> LOCAL_CACHE = new LinkedCaseInsensitiveMap<>();
+    private static final Map<String, Locale> LOCAL_CACHE = Collections.synchronizedMap(new LinkedCaseInsensitiveMap<>());
 
     static {
         for (Locale locale : Locale.getAvailableLocales()) {
@@ -157,7 +157,7 @@ public class I18nUtils {
         this.messageSource = new I18nMessageSourceImpl();
         this.variablesSource = new VariablesSourceImpl();
         this.i18nSource = new LinkedHashMap<>();
-        this.i18nLoaded = new LinkedHashSet<>();
+        this.i18nLoaded = ConcurrentHashMap.newKeySet();
     }
 
     private I18nUtils() {
@@ -165,7 +165,7 @@ public class I18nUtils {
         this.messageSource = new I18nMessageSourceImpl();
         this.variablesSource = new VariablesSourceImpl();
         this.i18nSource = new LinkedHashMap<>();
-        this.i18nLoaded = new LinkedHashSet<>();
+        this.i18nLoaded = ConcurrentHashMap.newKeySet();
     }
 
     public I18nUtils(I18nMessageSource messageSource) {
@@ -173,7 +173,7 @@ public class I18nUtils {
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = new VariablesSourceImpl();
         this.i18nSource = new LinkedHashMap<>();
-        this.i18nLoaded = new LinkedHashSet<>();
+        this.i18nLoaded = ConcurrentHashMap.newKeySet();
     }
 
     public I18nUtils(I18nMessageSource messageSource, Function<String, String> variablesSource) {
@@ -181,7 +181,7 @@ public class I18nUtils {
         this.messageSource = Objects.requireNonNull(messageSource, "messageSource is null.");
         this.variablesSource = variablesSource == null ? new VariablesSourceImpl() : variablesSource;
         this.i18nSource = new LinkedHashMap<>();
-        this.i18nLoaded = new LinkedHashSet<>();
+        this.i18nLoaded = ConcurrentHashMap.newKeySet();
     }
 
     public String getDefaultI18nKey() {
@@ -196,8 +196,8 @@ public class I18nUtils {
         this.defaultI18nKey.set(toI18nKey(defaultLocale));
     }
 
-    public Set<String> getI18nSources() {
-        return Collections.unmodifiableSet(this.i18nSource.keySet());
+    public synchronized Set<String> getI18nSources() {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(this.i18nSource.keySet()));
     }
 
     protected void loadResources(String... i18nResources) throws IOException {
@@ -205,7 +205,7 @@ public class I18nUtils {
         loadResources(classLoader, i18nResources);
     }
 
-    protected void loadResources(ClassLoader resourceLoader, String... i18nResources) throws IOException {
+    protected synchronized void loadResources(ClassLoader resourceLoader, String... i18nResources) throws IOException {
         if (!(this.messageSource instanceof I18nMessageSourceImpl)) {
             throw new UnsupportedOperationException("I18nMessageSource is external.");
         }
@@ -232,7 +232,7 @@ public class I18nUtils {
         i18nLoaded.clear();
     }
 
-    public void loadResources(Class<?>... i18nResources) throws IOException {
+    public synchronized void loadResources(Class<?>... i18nResources) throws IOException {
         Set<Class<?>> loaded = new HashSet<>();
         for (Class<?> i18nType : i18nResources) {
             // deep parents
@@ -307,7 +307,8 @@ public class I18nUtils {
 
     /** 获取 i18n 文本 */
     public String getMessage(String code, Object[] args, Locale locale) {
-        String i18nKey = toI18nKey(locale);
+        Locale targetLocale = locale == null ? Locale.getDefault() : locale;
+        String i18nKey = toI18nKey(targetLocale);
 
         if (!this.i18nLoaded.contains(i18nKey)) {
             synchronized (this) {
@@ -321,7 +322,7 @@ public class I18nUtils {
                                 Properties properties = new Properties();
                                 properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
                                 properties.forEach((key, value) -> {
-                                    ((I18nMessageSourceImpl) this.messageSource).putDictionary(key.toString(), locale, value.toString());
+                                    ((I18nMessageSourceImpl) this.messageSource).putDictionary(key.toString(), targetLocale, value.toString());
                                 });
                             }
                         } catch (IOException e) {
@@ -333,7 +334,7 @@ public class I18nUtils {
             }
         }
 
-        String message = this.messageSource.getMessage(code, args, locale);
+        String message = this.messageSource.getMessage(code, args, targetLocale);
         if (message == null) {
             return code;
         }
@@ -378,9 +379,12 @@ public class I18nUtils {
     }
 
     public void checkDifference(String localName) throws IOException {
-        for (String resource : this.getI18nSources()) {
-            ClassLoader classLoader = this.i18nSource.get(resource);
-            checkDifference(resource, classLoader, localName);
+        Map<String, ClassLoader> sources;
+        synchronized (this) {
+            sources = new LinkedHashMap<>(this.i18nSource);
+        }
+        for (Map.Entry<String, ClassLoader> entry : sources.entrySet()) {
+            checkDifference(entry.getKey(), entry.getValue(), localName);
         }
     }
 
