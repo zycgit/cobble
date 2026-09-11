@@ -1,21 +1,14 @@
 /*
  * Copyright 2012-2020 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.loader.jar;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 
 /**
@@ -25,8 +18,8 @@ import java.security.Permission;
  * @author Rostyslav Dudka
  */
 final class JarURLConnection extends java.net.JarURLConnection {
-    private static       ThreadLocal<Boolean>  useFastExceptions              = new ThreadLocal<>();
-    private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION       = new FileNotFoundException("Jar file or entry not found");
+    private static final ThreadLocal<Boolean>  useFastExceptions        = new ThreadLocal<>();
+    private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException("Jar file or entry not found");
     private static final IllegalStateException NOT_FOUND_CONNECTION_EXCEPTION = new IllegalStateException(FILE_NOT_FOUND_EXCEPTION);
     private static final String                SEPARATOR                      = "!/";
     private static final URL                   EMPTY_JAR_URL;
@@ -283,12 +276,8 @@ final class JarURLConnection extends java.net.JarURLConnection {
             for (int i = 0; i < length; i++) {
                 int c = source.charAt(i);
                 if (c > 127) {
-                    try {
-                        String encoded = URLEncoder.encode(String.valueOf((char) c), "UTF-8");
-                        write(encoded, outputStream);
-                    } catch (UnsupportedEncodingException ex) {
-                        throw new IllegalStateException(ex);
-                    }
+                    String encoded = URLEncoder.encode(String.valueOf((char) c), StandardCharsets.UTF_8);
+                    write(encoded, outputStream);
                 } else {
                     if (c == '%') {
                         if ((i + 2) >= length) {

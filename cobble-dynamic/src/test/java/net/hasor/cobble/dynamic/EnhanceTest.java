@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.dynamic;
 import java.io.File;
@@ -20,10 +12,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import org.junit.Test;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
 import net.hasor.cobble.dynamic.beans.*;
+import org.junit.Test;
 
 public class EnhanceTest {
     @Test
@@ -143,18 +135,18 @@ public class EnhanceTest {
                 , (byte) 1                  //
                 , (short) 2                 //
                 , (short) 2                 //
-                , (int) 3                   //
-                , (int) 3                   //
+                , 3                   //
+                , 3                   //
                 , (long) 4                  //
                 , (long) 4                  //
                 , (float) 5.5               //
                 , (float) 5.5               //
-                , (double) 6.6              //
-                , (double) 6.6              //
-                , (boolean) true            //
-                , (boolean) true            //
-                , (char) 'a'                //
-                , (char) 'a'                //
+                , 6.6              //
+                , 6.6              //
+                , true            //
+                , true            //
+                , 'a'                //
+                , 'a'                //
                 , new Date()                //
                 , new java.sql.Date(System.currentTimeMillis())     //
                 , new Time(System.currentTimeMillis())              //

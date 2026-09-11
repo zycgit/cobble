@@ -1,17 +1,9 @@
 /*
  * Copyright 2002-2007 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.reflect.resolvable;
 import java.io.Serializable;
@@ -240,7 +232,7 @@ public class ResolvableType implements Serializable {
 
         // In the form X is assignable to <? extends Number>
         if (typeBounds != null) {
-            return (ourBounds != null && ourBounds.isSameKind(typeBounds) && ourBounds.isAssignableFrom(typeBounds.getBounds()));
+            return (ourBounds != null && ourBounds.isSameKind(typeBounds) && ourBounds.isAssignableFrom(typeBounds.bounds()));
         }
 
         // In the form <? extends Number> is assignable to X...
@@ -252,8 +244,7 @@ public class ResolvableType implements Serializable {
         boolean exactMatch = (matchedBefore != null);  // We're checking nested generic variables now...
         boolean checkGenerics = true;
         Class<?> ourResolved = null;
-        if (this.type instanceof TypeVariable) {
-            TypeVariable<?> variable = (TypeVariable<?>) this.type;
+        if (this.type instanceof TypeVariable<?> variable) {
             // Try default variable resolution
             if (this.variableResolver != null) {
                 ResolvableType resolved = this.variableResolver.resolveVariable(variable);
@@ -670,8 +661,7 @@ public class ResolvableType implements Serializable {
             }
             return forType(resolved, this.variableResolver);
         }
-        if (this.type instanceof TypeVariable) {
-            TypeVariable<?> variable = (TypeVariable<?>) this.type;
+        if (this.type instanceof TypeVariable<?> variable) {
             // Try default variable resolution
             if (this.variableResolver != null) {
                 ResolvableType resolved = this.variableResolver.resolveVariable(variable);
@@ -696,8 +686,7 @@ public class ResolvableType implements Serializable {
         if (this.type instanceof TypeVariable) {
             return resolveType().resolveVariable(variable);
         }
-        if (this.type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) this.type;
+        if (this.type instanceof ParameterizedType parameterizedType) {
             Class<?> resolved = resolve();
             if (resolved == null) {
                 return null;
@@ -731,11 +720,10 @@ public class ResolvableType implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ResolvableType)) {
+        if (!(other instanceof ResolvableType otherType)) {
             return false;
         }
 
-        ResolvableType otherType = (ResolvableType) other;
         if (!Objects.deepEquals(this.type, otherType.type)) {
             return false;
         }
@@ -745,10 +733,7 @@ public class ResolvableType implements Serializable {
         if (this.variableResolver != otherType.variableResolver && (this.variableResolver == null || otherType.variableResolver == null || !Objects.deepEquals(this.variableResolver.getSource(), otherType.variableResolver.getSource()))) {
             return false;
         }
-        if (!Objects.deepEquals(this.componentType, otherType.componentType)) {
-            return false;
-        }
-        return true;
+        return Objects.deepEquals(this.componentType, otherType.componentType);
     }
 
     @Override
@@ -797,8 +782,7 @@ public class ResolvableType implements Serializable {
         if (this.resolved == null) {
             return "?";
         }
-        if (this.type instanceof TypeVariable) {
-            TypeVariable<?> variable = (TypeVariable<?>) this.type;
+        if (this.type instanceof TypeVariable<?> variable) {
             if (this.variableResolver == null || this.variableResolver.resolveVariable(variable) == null) {
                 // Don't bother with variable boundaries for toString()...
                 // Can cause infinite recursions in case of self-references
@@ -1249,193 +1233,169 @@ public class ResolvableType implements Serializable {
     }
 
     @SuppressWarnings("serial")
-    private static class DefaultVariableResolver implements VariableResolver {
-        private final ResolvableType source;
-
-        DefaultVariableResolver(ResolvableType resolvableType) {
-            this.source = resolvableType;
-        }
+        private record DefaultVariableResolver(ResolvableType source) implements VariableResolver {
 
         @Override
-        public ResolvableType resolveVariable(TypeVariable<?> variable) {
-            return this.source.resolveVariable(variable);
-        }
+            public ResolvableType resolveVariable(TypeVariable<?> variable) {
+                return this.source.resolveVariable(variable);
+            }
 
-        @Override
-        public Object getSource() {
-            return this.source;
+            @Override
+            public Object getSource() {
+                return this.source;
+            }
         }
-    }
 
     @SuppressWarnings("serial")
-    private static class TypeVariablesVariableResolver implements VariableResolver {
-        private final TypeVariable<?>[] variables;
-        private final ResolvableType[]  generics;
-
-        public TypeVariablesVariableResolver(TypeVariable<?>[] variables, ResolvableType[] generics) {
-            this.variables = variables;
-            this.generics = generics;
-        }
+        private record TypeVariablesVariableResolver(TypeVariable<?>[] variables, ResolvableType[] generics) implements VariableResolver {
 
         @Override
-        public ResolvableType resolveVariable(TypeVariable<?> variable) {
-            TypeVariable<?> variableToCompare = SerializableTypeWrapper.unwrap(variable);
-            for (int i = 0; i < this.variables.length; i++) {
-                TypeVariable<?> resolvedVariable = SerializableTypeWrapper.unwrap(this.variables[i]);
-                if (Objects.deepEquals(resolvedVariable, variableToCompare)) {
-                    return this.generics[i];
+            public ResolvableType resolveVariable(TypeVariable<?> variable) {
+                TypeVariable<?> variableToCompare = SerializableTypeWrapper.unwrap(variable);
+                for (int i = 0; i < this.variables.length; i++) {
+                    TypeVariable<?> resolvedVariable = SerializableTypeWrapper.unwrap(this.variables[i]);
+                    if (Objects.deepEquals(resolvedVariable, variableToCompare)) {
+                        return this.generics[i];
+                    }
                 }
+                return null;
             }
-            return null;
+
+            @Override
+            public Object getSource() {
+                return this.generics;
+            }
         }
+
+    private record SyntheticParameterizedType(Type rawType, Type[] typeArguments) implements ParameterizedType, Serializable {
 
         @Override
-        public Object getSource() {
-            return this.generics;
-        }
-    }
-
-    private static final class SyntheticParameterizedType implements ParameterizedType, Serializable {
-        private final Type   rawType;
-        private final Type[] typeArguments;
-
-        public SyntheticParameterizedType(Type rawType, Type[] typeArguments) {
-            this.rawType = rawType;
-            this.typeArguments = typeArguments;
-        }
-
-        @Override
-        public String getTypeName() {
-            String typeName = this.rawType.getTypeName();
-            if (this.typeArguments.length > 0) {
-                StringJoiner stringJoiner = new StringJoiner(", ", "<", ">");
-                for (Type argument : this.typeArguments) {
-                    stringJoiner.add(argument.getTypeName());
+            public String getTypeName() {
+                String typeName = this.rawType.getTypeName();
+                if (this.typeArguments.length > 0) {
+                    StringJoiner stringJoiner = new StringJoiner(", ", "<", ">");
+                    for (Type argument : this.typeArguments) {
+                        stringJoiner.add(argument.getTypeName());
+                    }
+                    return typeName + stringJoiner;
                 }
-                return typeName + stringJoiner;
+                return typeName;
             }
-            return typeName;
-        }
 
-        @Override
+            @Override
 
-        public Type getOwnerType() {
-            return null;
-        }
-
-        @Override
-        public Type getRawType() {
-            return this.rawType;
-        }
-
-        @Override
-        public Type[] getActualTypeArguments() {
-            return this.typeArguments;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (this == other) {
-                return true;
+            public Type getOwnerType() {
+                return null;
             }
-            if (!(other instanceof ParameterizedType)) {
-                return false;
+
+            @Override
+            public Type getRawType() {
+                return this.rawType;
             }
-            ParameterizedType otherType = (ParameterizedType) other;
-            return (otherType.getOwnerType() == null && this.rawType.equals(otherType.getRawType()) && Arrays.equals(this.typeArguments, otherType.getActualTypeArguments()));
-        }
 
-        @Override
-        public int hashCode() {
-            return (this.rawType.hashCode() * 31 + Arrays.hashCode(this.typeArguments));
-        }
+            @Override
+            public Type[] getActualTypeArguments() {
+                return this.typeArguments;
+            }
 
-        @Override
-        public String toString() {
-            return getTypeName();
+            @Override
+            public boolean equals(Object other) {
+                if (this == other) {
+                    return true;
+                }
+                if (!(other instanceof ParameterizedType otherType)) {
+                    return false;
+                }
+                return (otherType.getOwnerType() == null && this.rawType.equals(otherType.getRawType()) && Arrays.equals(this.typeArguments, otherType.getActualTypeArguments()));
+            }
+
+            @Override
+            public int hashCode() {
+                return (this.rawType.hashCode() * 31 + Arrays.hashCode(this.typeArguments));
+            }
+
+            @Override
+            public String toString() {
+                return getTypeName();
+            }
         }
-    }
 
     /** Internal helper to handle bounds from {@link WildcardType WildcardTypes}. */
-    private static class WildcardBounds {
-        private final Kind             kind;
-        private final ResolvableType[] bounds;
-
+        private record WildcardBounds(Kind kind, ResolvableType[] bounds) {
         /**
          * Internal constructor to create a new {@link WildcardBounds} instance.
          * @param kind the kind of bounds
          * @param bounds the bounds
          * @see #get(ResolvableType)
          */
-        public WildcardBounds(Kind kind, ResolvableType[] bounds) {
-            this.kind = kind;
-            this.bounds = bounds;
+        private WildcardBounds {
         }
 
-        /** Return {@code true} if this bounds is the same kind as the specified bounds. */
-        public boolean isSameKind(WildcardBounds bounds) {
-            return this.kind == bounds.kind;
-        }
+            /** Return {@code true} if this bounds is the same kind as the specified bounds. */
+            public boolean isSameKind(WildcardBounds bounds) {
+                return this.kind == bounds.kind;
+            }
 
-        /**
-         * Return {@code true} if this bounds is assignable to all the specified types.
-         * @param types the types to test against
-         * @return {@code true} if this bounds is assignable to all types
-         */
-        public boolean isAssignableFrom(ResolvableType... types) {
-            for (ResolvableType bound : this.bounds) {
-                for (ResolvableType type : types) {
-                    if (!isAssignable(bound, type)) {
-                        return false;
+            /**
+             * Return {@code true} if this bounds is assignable to all the specified types.
+             * @param types the types to test against
+             * @return {@code true} if this bounds is assignable to all types
+             */
+            public boolean isAssignableFrom(ResolvableType... types) {
+                for (ResolvableType bound : this.bounds) {
+                    for (ResolvableType type : types) {
+                        if (!isAssignable(bound, type)) {
+                            return false;
+                        }
                     }
                 }
+                return true;
             }
-            return true;
-        }
 
-        private boolean isAssignable(ResolvableType source, ResolvableType from) {
-            return (this.kind == Kind.UPPER ? source.isAssignableFrom(from) : from.isAssignableFrom(source));
-        }
+            private boolean isAssignable(ResolvableType source, ResolvableType from) {
+                return (this.kind == Kind.UPPER ? source.isAssignableFrom(from) : from.isAssignableFrom(source));
+            }
 
-        /**
-         * Return the underlying bounds.
-         */
-        public ResolvableType[] getBounds() {
-            return this.bounds;
-        }
+            /**
+             * Return the underlying bounds.
+             */
+            @Override
+            public ResolvableType[] bounds() {
+                return this.bounds;
+            }
 
-        /**
-         * Get a {@link WildcardBounds} instance for the specified type, returning
-         * {@code null} if the specified type cannot be resolved to a {@link WildcardType}.
-         * @param type the source type
-         * @return a {@link WildcardBounds} instance or {@code null}
-         */
-        public static WildcardBounds get(ResolvableType type) {
-            ResolvableType resolveToWildcard = type;
-            while (!(resolveToWildcard.getType() instanceof WildcardType)) {
-                if (resolveToWildcard == NONE) {
-                    return null;
+            /**
+             * Get a {@link WildcardBounds} instance for the specified type, returning
+             * {@code null} if the specified type cannot be resolved to a {@link WildcardType}.
+             * @param type the source type
+             * @return a {@link WildcardBounds} instance or {@code null}
+             */
+            public static WildcardBounds get(ResolvableType type) {
+                ResolvableType resolveToWildcard = type;
+                while (!(resolveToWildcard.getType() instanceof WildcardType)) {
+                    if (resolveToWildcard == NONE) {
+                        return null;
+                    }
+                    resolveToWildcard = resolveToWildcard.resolveType();
                 }
-                resolveToWildcard = resolveToWildcard.resolveType();
+                WildcardType wildcardType = (WildcardType) resolveToWildcard.type;
+                Kind boundsType = (wildcardType.getLowerBounds().length > 0 ? Kind.LOWER : Kind.UPPER);
+                Type[] bounds = (boundsType == Kind.UPPER ? wildcardType.getUpperBounds() : wildcardType.getLowerBounds());
+                ResolvableType[] resolvableBounds = new ResolvableType[bounds.length];
+                for (int i = 0; i < bounds.length; i++) {
+                    resolvableBounds[i] = ResolvableType.forType(bounds[i], type.variableResolver);
+                }
+                return new WildcardBounds(boundsType, resolvableBounds);
             }
-            WildcardType wildcardType = (WildcardType) resolveToWildcard.type;
-            Kind boundsType = (wildcardType.getLowerBounds().length > 0 ? Kind.LOWER : Kind.UPPER);
-            Type[] bounds = (boundsType == Kind.UPPER ? wildcardType.getUpperBounds() : wildcardType.getLowerBounds());
-            ResolvableType[] resolvableBounds = new ResolvableType[bounds.length];
-            for (int i = 0; i < bounds.length; i++) {
-                resolvableBounds[i] = ResolvableType.forType(bounds[i], type.variableResolver);
-            }
-            return new WildcardBounds(boundsType, resolvableBounds);
-        }
 
-        /**
-         * The various kinds of bounds.
-         */
-        enum Kind {
-            UPPER,
-            LOWER
+            /**
+             * The various kinds of bounds.
+             */
+            enum Kind {
+                UPPER,
+                LOWER
+            }
         }
-    }
 
     /** Internal {@link Type} used to represent an empty value. */
     @SuppressWarnings("serial")

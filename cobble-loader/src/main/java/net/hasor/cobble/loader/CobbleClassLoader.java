@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.loader;
 import java.io.*;
@@ -32,15 +24,15 @@ import net.hasor.cobble.loader.providers.MergedLoader;
  */
 public class CobbleClassLoader extends ClassLoader {
 
-    private final ResourceLoader resourceLoader;
-    private final Set<String>    includePackages;
-    private final Set<String>    excludePackages;
-    private final String         tempDirectory = "cobble/" + System.currentTimeMillis();
-    private File                 tempDir;
+    private final ResourceLoader                         resourceLoader;
+    private final Set<String>                            includePackages;
+    private final Set<String>                            excludePackages;
+    private final String                                 tempDirectory = "cobble/" + System.currentTimeMillis();
+    private       File                                   tempDir;
     //
-    private final CobbleClassLoader                owner;
-    private boolean                                isolation;
-    private Map<ResourceLoader, CobbleClassLoader> isolationMap;
+    private final CobbleClassLoader                      owner;
+    private       boolean                                isolation;
+    private       Map<ResourceLoader, CobbleClassLoader> isolationMap;
 
     public CobbleClassLoader(ClassLoader parent, ResourceLoader resourceLoader) {
         this(parent, resourceLoader, null);

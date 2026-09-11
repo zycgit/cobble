@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.dynamic.beans;
 import java.sql.Time;
@@ -22,33 +14,24 @@ import java.util.Date;
 public class ConstructorBean {
     private final byte          byteValue;
     private final Byte          byteValue2;
-    //
     private final short         shortValue;
     private final Short         shortValue2;
-    //
     private final int           intValue;
     private final Integer       intValue2;
-    //
     private final long          longValue;
     private final Long          longValue2;
-    //
     private final float         floatValue;
     private final Float         floatValue2;
-    //
     private final double        doubleValue;
     private final Double        doubleValue2;
-    //
     private final boolean       booleanValue;
     private final Boolean       booleanValue2;
-    //
     private final char          charValue;
     private final Character     charValue2;
-    //
     private final Date          dateValue1;
     private final java.sql.Date dateValue2;
     private final Time          dateValue3;
     private final Timestamp     dateValue4;
-    //
     private final String        stringValue;
     private final SelectEnum    enumValue;
 
@@ -69,15 +52,12 @@ public class ConstructorBean {
             , Boolean booleanValue2 //
             , char charValue        //
             , Character charValue2  //
-            //
             , Date dateValue1       //
             , java.sql.Date dateValue2//
             , Time dateValue3       //
             , Timestamp dateValue4  //
-            //
             , String stringValue    //
             , SelectEnum enumValue) {
-        //
         this.byteValue = byteValue;
         this.byteValue2 = byteValue2;
         this.shortValue = shortValue;

@@ -1,17 +1,9 @@
 /*
  * Copyright 2012-2020 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.loader.jar;
 import java.io.File;
@@ -59,10 +51,10 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
     private final        RandomFile              data;
     private final        JarFileType             type;
     private              URL                     url;
-    private              String                  urlString;
-    private              JarFileEntries          entries;
-    private              Supplier<Manifest>      manifestSupplier;
-    private              SoftReference<Manifest> manifest;
+    private       String             urlString;
+    private final JarFileEntries     entries;
+    private final Supplier<Manifest> manifestSupplier;
+    private       SoftReference<Manifest> manifest;
     private              boolean                 signed;
     private              String                  comment;
     private volatile     boolean                 closed;
@@ -368,23 +360,18 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
     }
 
     /** An {@link Enumeration} on {@linkplain java.util.jar.JarEntry jar entries}. */
-    private static class JarEntryEnumeration implements Enumeration<java.util.jar.JarEntry> {
-        private final Iterator<JarEntry> iterator;
-
-        JarEntryEnumeration(Iterator<JarEntry> iterator) {
-            this.iterator = iterator;
-        }
+        private record JarEntryEnumeration(Iterator<JarEntry> iterator) implements Enumeration<java.util.jar.JarEntry> {
 
         @Override
-        public boolean hasMoreElements() {
-            return this.iterator.hasNext();
-        }
+            public boolean hasMoreElements() {
+                return this.iterator.hasNext();
+            }
 
-        @Override
-        public java.util.jar.JarEntry nextElement() {
-            return this.iterator.next();
+            @Override
+            public java.util.jar.JarEntry nextElement() {
+                return this.iterator.next();
+            }
         }
-    }
 
     /**
      * Register a {@literal 'java.protocol.handler.pkgs'} property so that a

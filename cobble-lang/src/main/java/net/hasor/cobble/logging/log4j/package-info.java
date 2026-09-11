@@ -1,3 +1,10 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.logging.log4j;
 /// *
 // *    Copyright 2009-2021 the original author or authors.
@@ -14,7 +21,7 @@ package net.hasor.cobble.logging.log4j;
 // *    See the License for the specific language governing permissions and
 // *    limitations under the License.
 // */
-///**
+/// **
 // * logger using Log4J feature.
 // */
 //package net.hasor.cobble.logging.log4j;

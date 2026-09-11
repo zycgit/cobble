@@ -1,8 +1,14 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.io.bytes;
-import org.junit.Test;
-
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import org.junit.Test;
 
 public class ObjectByteBufTest {
     @Test

@@ -1,3 +1,10 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.ref;
 
 import java.util.ArrayList;
@@ -262,7 +269,7 @@ public class RecycleObjectPoolTest {
         Object b = RecycleObjectPool.get(Object.class, handler);
         Assert.assertNotSame(a, b);
         // 两个对象都是新建的
-        Assert.assertEquals(2, ((AtomicInteger) getField(handler, "cnt")).get());
+        Assert.assertEquals(2, getField(handler, "cnt").get());
     }
 
     @Test

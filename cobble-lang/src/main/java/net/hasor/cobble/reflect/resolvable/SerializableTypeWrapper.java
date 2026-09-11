@@ -1,17 +1,9 @@
 /*
  * Copyright 2002-2021 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.reflect.resolvable;
 import java.io.IOException;
@@ -139,51 +131,46 @@ class SerializableTypeWrapper {
     }
 
     /**
-     * {@link Serializable} {@link InvocationHandler} used by the proxied {@link Type}.
-     * Provides serialization support and enhances any methods that return {@code Type}
-     * or {@code Type[]}.
-     */
-    private static class TypeProxyInvocationHandler implements InvocationHandler, Serializable {
-        private final TypeProvider provider;
-
-        public TypeProxyInvocationHandler(TypeProvider provider) {
-            this.provider = provider;
-        }
+         * {@link Serializable} {@link InvocationHandler} used by the proxied {@link Type}.
+         * Provides serialization support and enhances any methods that return {@code Type}
+         * or {@code Type[]}.
+         */
+        private record TypeProxyInvocationHandler(TypeProvider provider) implements InvocationHandler, Serializable {
 
         @Override
 
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            switch (method.getName()) {
-                case "equals":
-                    Object other = args[0];
-                    // Unwrap proxies for speed
-                    if (other instanceof Type) {
-                        other = unwrap((Type) other);
-                    }
-                    return Objects.deepEquals(this.provider.getType(), other);
-                case "hashCode":
-                    return ObjectUtils.nullSafeHashCode(this.provider.getType());
-                case "getTypeProvider":
-                    return this.provider;
-            }
-
-            if (Type.class == method.getReturnType() && CollectionUtils.isEmpty(args)) {
-                return forTypeProvider(new MethodInvokeTypeProvider(this.provider, method, -1));
-            } else if (Type[].class == method.getReturnType() && CollectionUtils.isEmpty(args)) {
-                Type[] result = new Type[((Type[]) method.invoke(this.provider.getType())).length];
-                for (int i = 0; i < result.length; i++) {
-                    result[i] = forTypeProvider(new MethodInvokeTypeProvider(this.provider, method, i));
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                switch (method.getName()) {
+                    case "equals":
+                        Object other = args[0];
+                        // Unwrap proxies for speed
+                        if (other instanceof Type) {
+                            other = unwrap((Type) other);
+                        }
+                        return Objects.deepEquals(this.provider.getType(), other);
+                    case "hashCode":
+                        return ObjectUtils.nullSafeHashCode(this.provider.getType());
+                    case "getTypeProvider":
+                        return this.provider;
                 }
-                return result;
-            }
 
-            try {
-                return method.invoke(this.provider.getType(), args);
-            } catch (InvocationTargetException ex) {
-                throw ex.getTargetException();
+                if (Type.class == method.getReturnType() && CollectionUtils.isEmpty(args)) {
+                    return forTypeProvider(new MethodInvokeTypeProvider(this.provider, method, -1));
+                } else if (Type[].class == method.getReturnType() && CollectionUtils.isEmpty(args)) {
+                    Type[] result = new Type[((Type[]) method.invoke(this.provider.getType())).length];
+                    for (int i = 0; i < result.length; i++) {
+                        result[i] = forTypeProvider(new MethodInvokeTypeProvider(this.provider, method, i));
+                    }
+                    return result;
+                }
+
+                try {
+                    return method.invoke(this.provider.getType(), args);
+                } catch (InvocationTargetException ex) {
+                    throw ex.getTargetException();
+                }
             }
         }
-    }
 
     /** {@link TypeProvider} for {@link Type Types} obtained from a {@link Field}. */
     static class FieldTypeProvider implements TypeProvider {

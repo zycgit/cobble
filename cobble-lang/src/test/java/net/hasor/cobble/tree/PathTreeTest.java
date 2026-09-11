@@ -1,12 +1,18 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.tree;
-import net.hasor.cobble.BeanUtils;
-import net.hasor.cobble.CollectionUtils;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.hasor.cobble.BeanUtils;
+import net.hasor.cobble.CollectionUtils;
+import org.junit.Test;
 
 public class PathTreeTest {
 
@@ -76,8 +82,8 @@ public class PathTreeTest {
         assert ((List) root.get(0).get("sub")).size() == 2;
         assert ((Map) ((List) root.get(0).get("sub")).get(0)).get("id").equals(2);
         assert ((Map) ((List) root.get(0).get("sub")).get(1)).get("id").equals(3);
-        assert ((Map) root.get(1)).get("id").equals(4);
+        assert root.get(1).get("id").equals(4);
         assert ((Map) ((List) root.get(1).get("sub")).get(0)).get("id").equals(5);
-        assert ((Map) root.get(2)).get("id").equals(6);
+        assert root.get(2).get("id").equals(6);
     }
 }

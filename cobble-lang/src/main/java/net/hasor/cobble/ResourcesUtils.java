@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble;
 import java.io.File;
@@ -21,6 +13,7 @@ import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.jar.JarFile;
@@ -203,7 +196,7 @@ public class ResourcesUtils {
                 //JAR文件
                 JarFile jar = ((JarURLConnection) resourceURL.openConnection()).getJarFile();
                 String jarFile = jar.getName().replace("\\", "/");
-                String resourcePath = URLDecoder.decode(resourceURL.getPath(), "utf-8");
+                String resourcePath = URLDecoder.decode(resourceURL.getPath(), StandardCharsets.UTF_8);
                 int beginIndex = resourcePath.indexOf(jarFile) + jarFile.length();
                 String entPath = resourcePath.substring(beginIndex + 2);
                 ZipEntry e = jar.getEntry(entPath);

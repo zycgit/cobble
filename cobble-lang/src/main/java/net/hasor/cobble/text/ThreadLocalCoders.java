@@ -1,3 +1,10 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.text;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -58,7 +65,7 @@ public class ThreadLocalCoders {
 
     }
 
-    private static Cache decoderCache = new Cache(CACHE_SIZE) {
+    private static final Cache decoderCache = new Cache(CACHE_SIZE) {
         boolean hasName(Object ob, Object name) {
             if (name instanceof Charset)
                 return ((CharsetDecoder) ob).charset().equals(name);

@@ -1,10 +1,15 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.time;
-import org.junit.Test;
-
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-
+import org.junit.Test;
 import static net.hasor.cobble.time.DateTimeFormat.WKF_OFFSET_TIME24_S1;
 
 public class DateTimeFormatTest {

@@ -1,11 +1,17 @@
+/*
+ * Copyright 2015-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
+ */
 package net.hasor.cobble.dynamic.anno;
-import net.hasor.cobble.dynamic.MethodInterceptor;
-import net.hasor.cobble.dynamic.MethodInvocation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.hasor.cobble.dynamic.MethodInterceptor;
+import net.hasor.cobble.dynamic.MethodInvocation;
 
 public class CommonAopInterceptor implements MethodInterceptor {
     private final Map<String, List<String>> callInfo = new HashMap<>();

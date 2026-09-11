@@ -1,17 +1,9 @@
 /*
  * Copyright 2002-2021 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.ref;
 import java.lang.ref.ReferenceQueue;
@@ -601,12 +593,12 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
         }
 
         /** Return the size of the current references array. */
-        public final int getSize() {
+        public int getSize() {
             return this.references.length;
         }
 
         /** Return the total number of references in this segment. */
-        public final int getCount() {
+        public int getCount() {
             return this.count.get();
         }
     }
@@ -672,19 +664,18 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
         @Override
         @SuppressWarnings("rawtypes")
-        public final boolean equals(Object other) {
+        public boolean equals(Object other) {
             if (this == other) {
                 return true;
             }
-            if (!(other instanceof Map.Entry)) {
+            if (!(other instanceof Map.Entry otherEntry)) {
                 return false;
             }
-            Map.Entry otherEntry = (Map.Entry) other;
             return (Objects.deepEquals(getKey(), otherEntry.getKey()) && Objects.deepEquals(getValue(), otherEntry.getValue()));
         }
 
         @Override
-        public final int hashCode() {
+        public int hashCode() {
             return (ObjectUtils.nullSafeHashCode(this.key) ^ ObjectUtils.nullSafeHashCode(this.value));
         }
     }
@@ -759,8 +750,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
         @Override
         public boolean contains(Object o) {
-            if (o instanceof Map.Entry<?, ?>) {
-                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+            if (o instanceof Map.Entry<?, ?> entry) {
                 Reference<K, V> ref = ConcurrentReferenceHashMap.this.getReference(entry.getKey(), Restructure.NEVER);
                 Entry<K, V> otherEntry = (ref != null ? ref.get() : null);
                 if (otherEntry != null) {
@@ -772,8 +762,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
         @Override
         public boolean remove(Object o) {
-            if (o instanceof Map.Entry<?, ?>) {
-                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
+            if (o instanceof Map.Entry<?, ?> entry) {
                 return ConcurrentReferenceHashMap.this.remove(entry.getKey(), entry.getValue());
             }
             return false;

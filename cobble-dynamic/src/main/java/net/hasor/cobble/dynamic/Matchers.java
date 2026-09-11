@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.dynamic;
 import java.lang.annotation.Annotation;
@@ -105,94 +97,66 @@ public class Matchers {
     }
 
     /** 匹配方法 */
-    private static class MethodOf implements Predicate<Method> {
-        private final MatchTypeEnum matchTypeEnum;
-        private final String        matcherExpression;
-
-        public MethodOf(MatchTypeEnum matchTypeEnum, String matcherExpression) {
-            this.matchTypeEnum = matchTypeEnum;
-            this.matcherExpression = matcherExpression;
-        }
+        private record MethodOf(MatchTypeEnum matchTypeEnum, String matcherExpression) implements Predicate<Method> {
 
         public boolean test(Method target) {
-            String methodStr = ClassUtils.getDescNameWithOutModifiers(target);
-            return MatchUtils.wildToRegex(matcherExpression, methodStr, this.matchTypeEnum);
-        }
-
-        public boolean equals(final Object other) {
-            if (other instanceof MethodOf methodOf) {
-                MatchTypeEnum otherMatchTypeEnum = methodOf.matchTypeEnum;
-                String otherMatcherExpression = methodOf.matcherExpression;
-                return this.matchTypeEnum.equals(otherMatchTypeEnum) && this.matcherExpression.equals(otherMatcherExpression);
+                String methodStr = ClassUtils.getDescNameWithOutModifiers(target);
+                return MatchUtils.wildToRegex(matcherExpression, methodStr, this.matchTypeEnum);
             }
-            return false;
-        }
 
-        public int hashCode() {
-            return 37 * this.matcherExpression.hashCode() * this.matchTypeEnum.hashCode();
-        }
+            public boolean equals(final Object other) {
+                if (other instanceof MethodOf methodOf) {
+                    MatchTypeEnum otherMatchTypeEnum = methodOf.matchTypeEnum;
+                    String otherMatcherExpression = methodOf.matcherExpression;
+                    return this.matchTypeEnum.equals(otherMatchTypeEnum) && this.matcherExpression.equals(otherMatcherExpression);
+                }
+                return false;
+            }
 
         public String toString() {
-            return "MethodOf(" + this.matchTypeEnum.name() + ")";
+                return "MethodOf(" + this.matchTypeEnum.name() + ")";
+            }
         }
-    }
 
     /** 匹配类名 */
-    private static class ClassOf implements Predicate<Class<?>> {
-        private final MatchTypeEnum matchTypeEnum;
-        private final String        matcherExpression;
-
-        public ClassOf(MatchTypeEnum matchTypeEnum, String matcherExpression) {
-            this.matchTypeEnum = matchTypeEnum;
-            this.matcherExpression = matcherExpression;
-        }
+        private record ClassOf(MatchTypeEnum matchTypeEnum, String matcherExpression) implements Predicate<Class<?>> {
 
         public boolean test(Class<?> target) {
-            return MatchUtils.wildToRegex(matcherExpression, target.getName(), this.matchTypeEnum);
-        }
-
-        public boolean equals(final Object other) {
-            if (other instanceof ClassOf classOf) {
-                MatchTypeEnum otherMatchTypeEnum = classOf.matchTypeEnum;
-                String otherMatcherExpression = classOf.matcherExpression;
-                return this.matchTypeEnum.equals(otherMatchTypeEnum) && this.matcherExpression.equals(otherMatcherExpression);
+                return MatchUtils.wildToRegex(matcherExpression, target.getName(), this.matchTypeEnum);
             }
-            return false;
-        }
 
-        public int hashCode() {
-            return 37 * this.matcherExpression.hashCode() * this.matchTypeEnum.hashCode();
-        }
+            public boolean equals(final Object other) {
+                if (other instanceof ClassOf classOf) {
+                    MatchTypeEnum otherMatchTypeEnum = classOf.matchTypeEnum;
+                    String otherMatcherExpression = classOf.matcherExpression;
+                    return this.matchTypeEnum.equals(otherMatchTypeEnum) && this.matcherExpression.equals(otherMatcherExpression);
+                }
+                return false;
+            }
 
         public String toString() {
-            return "ClassOf(" + this.matchTypeEnum.name() + ")";
+                return "ClassOf(" + this.matchTypeEnum.name() + ")";
+            }
         }
-    }
 
     /** 匹配子类 */
-    private static class SubClassesOf implements Predicate<Class<?>> {
-        private final Class<?> superclass;
+        private record SubClassesOf(Class<?> superclass) implements Predicate<Class<?>> {
+            private SubClassesOf(final Class<?> superclass) {
+                this.superclass = Objects.requireNonNull(superclass, "superclass");
+            }
 
-        public SubClassesOf(final Class<?> superclass) {
-            this.superclass = Objects.requireNonNull(superclass, "superclass");
-        }
+            public boolean test(final Class<?> subclass) {
+                return this.superclass.isAssignableFrom(subclass);
+            }
 
-        public boolean test(final Class<?> subclass) {
-            return this.superclass.isAssignableFrom(subclass);
-        }
-
-        public boolean equals(final Object other) {
-            return other instanceof SubClassesOf && ((SubClassesOf) other).superclass.equals(this.superclass);
-        }
-
-        public int hashCode() {
-            return 37 * this.superclass.hashCode();
-        }
+            public boolean equals(final Object other) {
+                return other instanceof SubClassesOf && ((SubClassesOf) other).superclass.equals(this.superclass);
+            }
 
         public String toString() {
-            return "SubClassesOf(" + this.superclass.getSimpleName() + ".class)";
+                return "SubClassesOf(" + this.superclass.getSimpleName() + ".class)";
+            }
         }
-    }
 
     /** 匹配类或类方法上标记的注解 */
     private static class ClassAnnotationOf implements Predicate<Class<?>> {
@@ -218,11 +182,8 @@ public class Matchers {
             Annotation[] annoByType3 = Arrays.stream(matcherType.getDeclaredMethods()).flatMap((Function<Method, Stream<?>>) method -> {
                 return Arrays.stream(method.getAnnotationsByType(annotationType));
             }).toArray(Annotation[]::new);
-            if (annoByType3.length > 0) {
-                return true;
-            }
+            return annoByType3.length > 0;
             //
-            return false;
         }
 
         public boolean equals(final Object other) {
@@ -250,10 +211,7 @@ public class Matchers {
             if (matcherType.isAnnotationPresent(this.annotationType)) {
                 return true;
             }
-            if (matcherType.getDeclaringClass().isAnnotationPresent(this.annotationType)) {
-                return true;
-            }
-            return false;
+            return matcherType.getDeclaringClass().isAnnotationPresent(this.annotationType);
         }
 
         public boolean equals(final Object other) {

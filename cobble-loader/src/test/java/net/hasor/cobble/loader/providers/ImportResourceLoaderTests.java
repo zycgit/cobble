@@ -1,17 +1,9 @@
 /*
  * Copyright 2012-2020 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.loader.providers;
 import java.io.File;
@@ -19,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
-import org.junit.Before;
-import org.junit.Test;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
@@ -29,6 +19,8 @@ import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests for {@link JarFile}.
@@ -164,14 +156,7 @@ public class ImportResourceLoaderTests {
         byte[] byteDat2 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-1.jar/app/onlyjar/FooOnlyJar.java"));
         byte[] byteDat3 = IOUtils.toByteArray(ResourcesUtils.getResourceAsStream("dir/app-2.zip/app/onlyzip/FooOnlyZip.java"));
 
-        class Info {
-            public final String      name;
-            public final InputStream stream;
-
-            public Info(String name, InputStream stream) {
-                this.name = name;
-                this.stream = stream;
-            }
+        record Info(String name, InputStream stream) {
         }
 
         Scanner<Info> scanner = event -> {

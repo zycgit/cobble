@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble;
 /**
@@ -19,7 +11,7 @@ package net.hasor.cobble;
  * @version : 2014年7月8日
  */
 public class MatchUtils {
-    public static enum MatchTypeEnum {
+    public enum MatchTypeEnum {
         /** 通配符：通过：? 和 * 进行匹配。 */
         Wild,
         /** 正则表达式匹配。 */
@@ -32,7 +24,7 @@ public class MatchUtils {
             throw new NullPointerException("wild param is null");
         }
         StringBuilder result = new StringBuilder();
-        char metachar[] = { '$', '^', '[', ']', '(', ')', '{', '|', '+', '.', '\\' };
+        char[] metachar = { '$', '^', '[', ']', '(', ')', '{', '|', '+', '.', '\\' };
         for (int i = 0; i < wild.length(); i++) {
             char ch = wild.charAt(i);
             for (char element : metachar) {

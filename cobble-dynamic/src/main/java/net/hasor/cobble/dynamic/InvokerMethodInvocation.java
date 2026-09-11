@@ -1,17 +1,9 @@
 /*
  * Copyright 2008-2009 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Apache License, Version 2.0.
+ * See the LICENSE.txt file for the full license.
+ * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.dynamic;
 import java.lang.reflect.InvocationTargetException;
@@ -58,49 +50,38 @@ public class InvokerMethodInvocation implements MethodInvocation {
         return this.proceedingChain.getThis();
     }
 
-    private static class InnerChainMethodInvocation implements MethodInvocation {
-        private final boolean  isProxy;
-        private final Method   proxyMethod;
-        private final Method   targetMethod;
-        private final Object   targetObject;
-        private final Object[] paramObjects;
-
-        InnerChainMethodInvocation(boolean isProxy, Method proxyMethod, Method targetMethod, Object targetObject, Object[] paramObjects) {
-            this.isProxy = isProxy;
-            if (isProxy) {
-                this.proxyMethod = targetMethod;
-                this.targetObject = ((DynamicObject) targetObject).getOriginalObject();
-            } else {
-                this.proxyMethod = proxyMethod;
-                this.targetObject = targetObject;
+    private record InnerChainMethodInvocation(boolean isProxy, Method proxyMethod, Method targetMethod, Object targetObject, Object[] paramObjects) implements MethodInvocation {
+            private InnerChainMethodInvocation(boolean isProxy, Method proxyMethod, Method targetMethod, Object targetObject, Object[] paramObjects) {
+                this.isProxy = isProxy;
+                if (isProxy) {
+                    this.proxyMethod = targetMethod;
+                    this.targetObject = ((DynamicObject) targetObject).getOriginalObject();
+                } else {
+                    this.proxyMethod = proxyMethod;
+                    this.targetObject = targetObject;
+                }
+                this.targetMethod = targetMethod;
+                this.paramObjects = paramObjects;
             }
-            this.targetMethod = targetMethod;
-            this.paramObjects = paramObjects;
-        }
 
-        @Override
-        public boolean isProxy() {
-            return this.isProxy;
-        }
+            public Method getMethod() {
+                return this.targetMethod;
+            }
 
-        public Method getMethod() {
-            return this.targetMethod;
-        }
+            public Object[] getArguments() {
+                return this.paramObjects;
+            }
 
-        public Object[] getArguments() {
-            return this.paramObjects;
-        }
+            public Object proceed() throws Throwable {
+                try {
+                    return proxyMethod.invoke(this.targetObject, this.paramObjects);
+                } catch (InvocationTargetException e) {
+                    throw e.getTargetException();
+                }
+            }
 
-        public Object proceed() throws Throwable {
-            try {
-                return proxyMethod.invoke(this.targetObject, this.paramObjects);
-            } catch (InvocationTargetException e) {
-                throw e.getTargetException();
+            public Object getThis() {
+                return this.targetObject;
             }
         }
-
-        public Object getThis() {
-            return this.targetObject;
-        }
-    }
 }
