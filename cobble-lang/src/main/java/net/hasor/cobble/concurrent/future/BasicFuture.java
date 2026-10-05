@@ -88,24 +88,26 @@ public class BasicFuture<T> implements Future<T> {
             throw new NullPointerException("Time unit");
         }
 
-        final long msecs = unit.toMillis(timeout);
-        final long startTime = (msecs <= 0) ? 0 : System.currentTimeMillis();
-        long waitTime = msecs;
         if (this.completed) {
             return result();
-        } else if (waitTime <= 0) {
+        }
+
+        final long timeoutNanos = unit.toNanos(timeout);
+        if (timeoutNanos <= 0) {
             throw new TimeoutException();
-        } else {
-            for (; ; ) {
-                wait(waitTime);
-                if (this.completed) {
-                    return result();
-                } else {
-                    waitTime = msecs - (System.currentTimeMillis() - startTime);
-                    if (waitTime <= 0) {
-                        throw new TimeoutException();
-                    }
-                }
+        }
+
+        final long startTime = System.nanoTime();
+        long remainingNanos = timeoutNanos;
+        for (; ; ) {
+            TimeUnit.NANOSECONDS.timedWait(this, remainingNanos);
+            if (this.completed) {
+                return result();
+            }
+
+            remainingNanos = timeoutNanos - (System.nanoTime() - startTime);
+            if (remainingNanos <= 0) {
+                throw new TimeoutException();
             }
         }
     }
