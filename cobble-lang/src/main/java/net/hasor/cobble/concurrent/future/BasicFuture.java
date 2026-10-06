@@ -125,14 +125,16 @@ public class BasicFuture<T> implements Future<T> {
             this.completed = true;
             this.result = result;
 
-            if (this.callback != null) {
-                this.callback.completed(result);
+            try {
+                if (this.callback != null) {
+                    this.callback.completed(result);
+                }
+
+                this.triggerListener(this.completedListener);
+                this.triggerListener(this.finalListener);
+            } finally {
+                notifyAll();
             }
-
-            this.triggerListener(this.completedListener);
-            this.triggerListener(this.finalListener);
-
-            notifyAll();
         }
         return true;
     }
@@ -150,14 +152,16 @@ public class BasicFuture<T> implements Future<T> {
             this.completed = true;
             this.ex = exception;
 
-            if (this.callback != null) {
-                this.callback.failed(exception);
+            try {
+                if (this.callback != null) {
+                    this.callback.failed(exception);
+                }
+
+                this.triggerListener(this.failedListener);
+                this.triggerListener(this.finalListener);
+            } finally {
+                notifyAll();
             }
-
-            this.triggerListener(this.failedListener);
-            this.triggerListener(this.finalListener);
-
-            notifyAll();
         }
         return true;
     }
@@ -175,19 +179,21 @@ public class BasicFuture<T> implements Future<T> {
             this.completed = true;
             this.cancelled = true;
 
-            if (this.callback != null) {
-                if (this.callback instanceof CancelFutureCallback) {
-                    ((CancelFutureCallback) this.callback).cancelled();
-                } else {
-                    this.failed(new CancellationException());
-                    return true;
+            try {
+                if (this.callback != null) {
+                    if (this.callback instanceof CancelFutureCallback) {
+                        ((CancelFutureCallback) this.callback).cancelled();
+                    } else {
+                        this.failed(new CancellationException());
+                        return true;
+                    }
                 }
+
+                this.triggerListener(this.cancelListener);
+                this.triggerListener(this.finalListener);
+            } finally {
+                notifyAll();
             }
-
-            this.triggerListener(this.cancelListener);
-            this.triggerListener(this.finalListener);
-
-            notifyAll();
         }
         return true;
     }
