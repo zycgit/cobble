@@ -43,8 +43,8 @@ public final class SystemUtils {
     private static final Logger           logger             = LoggerFactory.getLogger(SystemUtils.class);
     private static final Object           SHUTDOWN_HOOK_LOCK = new Object();
     private static final Set<Callable<?>> shutdownHooks      = new LinkedHashSet<>();
-    private static Thread                 shutdownHookThread;
-    private static boolean                shutdownHookRunning;
+    private static       Thread           shutdownHookThread;
+    private static       boolean          shutdownHookRunning;
     private static final boolean          IS_WINDOWS         = isWindows0();
     private static final boolean          IS_ANDROID         = isAndroid0();
     private static final boolean          IS_OSX             = isOsx0();
@@ -132,18 +132,14 @@ public final class SystemUtils {
         if (shutdownHook == null) {
             return false;
         }
-        Thread hookThread = null;
-        boolean removed;
         synchronized (SHUTDOWN_HOOK_LOCK) {
-            removed = shutdownHooks.remove(shutdownHook);
-            if (!shutdownHookRunning && shutdownHooks.isEmpty()) {
-                hookThread = shutdownHookThread;
+            boolean removed = shutdownHooks.remove(shutdownHook);
+            if (!shutdownHookRunning && shutdownHooks.isEmpty() && shutdownHookThread != null) {
+                // A replacement callback must not reuse a hook that is being removed.
+                removeShutdownHook(shutdownHookThread);
             }
+            return removed;
         }
-        if (hookThread != null) {
-            removeShutdownHook(hookThread);
-        }
-        return removed;
     }
 
     private static void doShutdownHook() {
@@ -165,22 +161,17 @@ public final class SystemUtils {
     private static void removeShutdownHook(Thread hookThread) {
         try {
             Runtime.getRuntime().removeShutdownHook(hookThread);
+            shutdownHookThread = null;
         } catch (IllegalStateException e) {
             if (!"Shutdown in progress".equals(e.getMessage())) {
                 logger.error(e.getMessage(), e);
-            }
-        } finally {
-            synchronized (SHUTDOWN_HOOK_LOCK) {
-                if (shutdownHookThread == hookThread) {
-                    shutdownHookThread = null;
-                }
             }
         }
     }
 
     private static final class ShutdownHookRegistration implements AutoCloseable {
         private final Callable<?> shutdownHook;
-        private boolean           closed;
+        private       boolean     closed;
 
         private ShutdownHookRegistration(Callable<?> shutdownHook) {
             this.shutdownHook = shutdownHook;
