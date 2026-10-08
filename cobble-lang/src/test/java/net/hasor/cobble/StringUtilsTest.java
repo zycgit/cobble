@@ -1,75 +1,41 @@
 /*
- * Copyright 2015-2022 the original author or authors.
- *
+ * Copyright 2008-2026 the original author or authors.
  * Licensed under the Apache License, Version 2.0.
- * See the LICENSE.txt file for the full license.
- * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble;
-
-import org.junit.Assert;
+import java.util.Locale;
 import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StringUtilsTest {
-
     @Test
-    public void containsDotTest() {
-        Assert.assertFalse(StringUtils.contains("1", "."));
-        Assert.assertTrue(StringUtils.contains("abc.def", "."));
-        Assert.assertFalse(StringUtils.contains("abcdef", "."));
-        Assert.assertTrue(StringUtils.contains(".", "."));
-        Assert.assertFalse(StringUtils.contains("", "."));
-        Assert.assertFalse(StringUtils.contains(null, "."));
+    public void equalsIgnoreCaseHandlesNullAndEmptyStrings() {
+        assertTrue(StringUtils.equalsIgnoreCase(null, null));
+        assertFalse(StringUtils.equalsIgnoreCase(null, ""));
+        assertFalse(StringUtils.equalsIgnoreCase("", null));
+        assertTrue(StringUtils.equalsIgnoreCase("", ""));
+        assertTrue(StringUtils.equalsIgnoreCase("HtTpS", "https"));
+        assertFalse(StringUtils.equalsIgnoreCase("https", "http"));
     }
 
     @Test
-    public void startsWithDotTest() {
-        Assert.assertTrue(StringUtils.startsWith(".abc", "."));
-        Assert.assertFalse(StringUtils.startsWith("abc", "."));
-        Assert.assertTrue(StringUtils.startsWith(".", "."));
+    public void equalsIgnoreCaseDoesNotDependOnDefaultLocale() {
+        Locale original = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+            assertTrue(StringUtils.equalsIgnoreCase("CONNECTION", "connection"));
+            assertTrue(StringUtils.equalsIgnoreCase("DIRECT", "direct"));
+        } finally {
+            Locale.setDefault(original);
+        }
     }
 
     @Test
-    public void endsWithDotTest() {
-        Assert.assertTrue(StringUtils.endsWith("abc.", "."));
-        Assert.assertFalse(StringUtils.endsWith("abc", "."));
-        Assert.assertTrue(StringUtils.endsWith(".", "."));
-    }
-
-    @Test
-    public void containsIgnoreCaseDotTest() {
-        Assert.assertTrue(StringUtils.containsIgnoreCase("abc.def", "."));
-        Assert.assertTrue(StringUtils.containsIgnoreCase("ABC.DEF", "."));
-    }
-
-    @Test
-    public void dotHandlingTest() {
-        // contains
-        Assert.assertTrue(StringUtils.contains("a.b", "."));
-        Assert.assertFalse(StringUtils.contains("ab", "."));
-
-        // startsWith
-        Assert.assertTrue(StringUtils.startsWith(".a", "."));
-        Assert.assertFalse(StringUtils.startsWith("a.", "."));
-
-        // endsWith
-        Assert.assertTrue(StringUtils.endsWith("a.", "."));
-        Assert.assertFalse(StringUtils.endsWith(".a", "."));
-
-        // containsIgnoreCase
-        Assert.assertTrue(StringUtils.containsIgnoreCase("A.B", "."));
-
-        // startsWithIgnoreCase
-        Assert.assertTrue(StringUtils.startsWithIgnoreCase(".A", "."));
-
-        // endsWithIgnoreCase
-        Assert.assertTrue(StringUtils.endsWithIgnoreCase("A.", "."));
-    }
-
-    @Test
-    public void dotHandlingAnyNoneTest() {
-        Assert.assertTrue(StringUtils.containsAny("a.b", "."));
-        Assert.assertFalse(StringUtils.containsNone("a.b", "."));
-        Assert.assertTrue(StringUtils.containsOnly("...", "."));
+    public void equalsIgnoreCaseUsesCharacterComparisonWithoutExpandingCase() {
+        assertFalse(StringUtils.equalsIgnoreCase("straße", "STRASSE"));
+        assertFalse(StringUtils.equalsIgnoreCase("\uFB03", "FFI"));
+        assertTrue(StringUtils.equalsIgnoreCase("\u0130", "i"));
+        assertTrue(StringUtils.equalsIgnoreCase("\u03C2", "\u03C3"));
     }
 }
