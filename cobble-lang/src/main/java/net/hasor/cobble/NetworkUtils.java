@@ -16,6 +16,50 @@ import java.util.List;
  * @version : 2014年11月17日
  */
 public class NetworkUtils {
+    /**
+     * Converts a Unicode or ASCII DNS name to lowercase ASCII, encoding
+     * internationalized labels as Punycode A-labels.
+     *
+     * <p>Uses bundled Unicode 17.0.0 data for UTS #46 nontransitional processing
+     * with STD3, Bidi, ContextJ and ContextO checks. Results do not depend on the
+     * JDK's Unicode version or an optional ICU installation. This operation is
+     * thread-safe and does not perform DNS lookups.</p>
+     *
+     * <p>Validates the complete DNS name and its encoded length. A single trailing
+     * root dot is preserved. Empty names, empty interior labels, wildcards and URL
+     * syntax are rejected; inputs are interpreted as DNS names, not IP addresses
+     * or URLs.</p>
+     *
+     * @param name a complete DNS name, optionally ending in a root dot
+     * @return the validated ASCII DNS name, preserving an optional root dot
+     * @throws IllegalArgumentException if the name is null, empty or invalid
+     * @see #toDNSUnicode(String)
+     */
+    public static String toDNSAscii(String name) {
+        return IdnCodec.convert(name, true);
+    }
+
+    /**
+     * Decodes DNS Punycode A-labels and returns the normalized Unicode DNS name.
+     * Unicode input is also mapped and normalized; the original spelling or
+     * casing is not necessarily preserved.
+     *
+     * <p>Uses the same Unicode data, validation and encoded DNS length limits as
+     * {@link #toDNSAscii(String)}. A single trailing root dot is preserved.
+     * Invalid A-labels cause an exception rather than being returned unchanged.
+     * This operation is thread-safe and does not perform DNS lookups.</p>
+     *
+     * <p>Validation establishes DNS syntax, not whether a name is safe to display
+     * as a trusted identity; visually confusable names can still be distinct.</p>
+     *
+     * @param name a complete ASCII or Unicode DNS name
+     * @return the validated Unicode DNS name, preserving an optional root dot
+     * @throws IllegalArgumentException if the name is null, empty or invalid
+     */
+    public static String toDNSUnicode(String name) {
+        return IdnCodec.convert(name, false);
+    }
+
     private static void isPortAvailable(String host, int port) throws Exception {
         Socket s = new Socket();
         s.bind(new InetSocketAddress(host, port));

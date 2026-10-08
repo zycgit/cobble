@@ -15,7 +15,7 @@
 | ConverterUtils    |                                                                         |
 | ExceptionUtils    |                                                                         |
 | MatchUtils        |                                                                         |
-| NetworkUtils      |                                                                         |
+| NetworkUtils      | 网络工具，含 DNS 域名与 ASCII/Punycode 双向转换、IDNA 规范化及校验                 |
 | NumberUtils       |                                                                         |
 | ObjectUtils       |                                                                         |
 | RandomUtils       | 随机生成 boolean、bytes、double、float、int、long                                |
@@ -24,6 +24,22 @@
 | StringEscapeUtils |                                                                         |
 | StringUtils       |                                                                         |
 | SystemUtils       |                                                                         |
+
+## 国际化域名
+
+`net.hasor.cobble.NetworkUtils` 的 DNS 转换方法处理完整域名，不处理 URL 或通用文本转义：
+
+```java
+NetworkUtils.toDNSAscii("中国.中国");              // xn--fiqs8s.xn--fiqs8s
+NetworkUtils.toDNSUnicode("xn--fiqs8s.xn--fiqs8s"); // 中国.中国
+NetworkUtils.toDNSAscii("hoß.de");                 // xn--ho-hia.de
+```
+
+两个方法均使用内置 Unicode 17.0.0 数据执行 UTS #46 非过渡映射、NFC、STD3、
+Bidi、ContextJ 和 ContextO 校验，无外部运行时依赖。空值、空名称和非法输入抛出
+`IllegalArgumentException`；`toDNSUnicode` 也校验编码后的 DNS 长度，非法 A-label 不会原样返回。
+单个尾随根点保留（SNI 调用方应移除）；大小写、全角字符等会规范化，所以转换往返不保证原始拼写。
+生产数据和许可文本随 JAR 打包，测试使用 Unicode 官方数据。常规构建直接使用仓库内的资源，不联网下载数据。
 
 ## 类和反射
 
