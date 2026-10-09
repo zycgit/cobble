@@ -24,6 +24,7 @@ dependencies {
     testImplementation "org.ow2.asm:asm:${property('lib.asm')}"
     testImplementation "org.slf4j:slf4j-api:${property('lib.slf4j')}"
     testImplementation "org.apache.logging.log4j:log4j-api:${property('lib.log4j')}"
+    testImplementation "org.bouncycastle:bcpkix-jdk15on:${property('lib.bouncycastle')}"
 }
 
 tasks.named('shadowJar') {
