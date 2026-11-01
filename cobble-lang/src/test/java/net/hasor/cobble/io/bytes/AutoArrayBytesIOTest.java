@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import net.hasor.cobble.RandomUtils;
 import net.hasor.cobble.codec.MD5;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AutoArrayBytesIOTest {
     @Test

@@ -5,10 +5,12 @@
 package net.hasor.cobble.ref;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RecycleObjectPoolWeightTest {
     private RecycleObjectPool<int[]> pool(int local, int global, AtomicInteger cleaned) {
@@ -142,7 +144,8 @@ public class RecycleObjectPoolWeightTest {
         assertSame(c, pool.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void globalOverflowIsBoundedUnderConcurrentReturns() throws Exception {
         RecycleObjectPool<int[]> pool = pool(0, 128, new AtomicInteger());
         CountDownLatch start = new CountDownLatch(1);
@@ -186,7 +189,8 @@ public class RecycleObjectPoolWeightTest {
             assertTrue(acquired.contains(pool.get()));
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void concurrentBorrowAndReturnDoesNotDuplicateOwnership() throws Exception {
         RecycleObjectPool<AtomicInteger> pool = new RecycleObjectPool<>(AtomicInteger::new, value -> {
             if (!value.compareAndSet(0, 1))

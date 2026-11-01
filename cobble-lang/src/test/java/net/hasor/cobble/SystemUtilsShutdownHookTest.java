@@ -13,32 +13,38 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SystemUtilsShutdownHookTest {
-    @Test(timeout = 20000)
+    @Test
+    @Timeout(value = 20000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void lastCancellationSerializesWithReplacementRegistration() throws Exception {
         assertEquals("replacement\n", runChild("race-state"));
     }
 
-    @Test(timeout = 20000)
+    @Test
+    @Timeout(value = 20000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void concurrentReplacementActuallyRunsAtJvmExit() throws Exception {
         assertEquals("replacement\n", runChild("race-exit"));
     }
 
-    @Test(timeout = 20000)
+    @Test
+    @Timeout(value = 20000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void cancellationAndReregistrationPreserveOnlyLiveCallbacks() throws Exception {
         assertEquals("first\nsecond\n", runChild("lifecycle"));
     }
 
-    @Test(timeout = 20000)
+    @Test
+    @Timeout(value = 20000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void throwingCallbackDoesNotPreventFollowingCallbacks() throws Exception {
         assertEquals("rejected\nfollowing\n", runChild("shutdown"));
     }
 
-    @Test(timeout = 20000)
+    @Test
+    @Timeout(value = 20000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void failedNativeRemovalKeepsTheAlreadyStartingHook() throws Exception {
         assertEquals("replacement\n", runChild("starting"));
     }
@@ -50,9 +56,9 @@ public class SystemUtilsShutdownHookTest {
         String classpath = new File(SystemUtilsShutdownHookTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath() + File.pathSeparator + new File(SystemUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         Process process = new ProcessBuilder(new File(System.getProperty("java.home"), "bin/java").getPath(), "-cp", classpath, ExitProcess.class.getName(), mode, output.toString()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
-            assertTrue("child did not exit", process.waitFor(12, TimeUnit.SECONDS));
-            assertEquals(Files.readString(log), 0, process.exitValue());
-            assertTrue("live callbacks did not run: " + Files.readString(log), Files.exists(output));
+            assertTrue(process.waitFor(12, TimeUnit.SECONDS), "child did not exit");
+            assertEquals(0, process.exitValue(), Files.readString(log));
+            assertTrue(Files.exists(output), "live callbacks did not run: " + Files.readString(log));
             return Files.readString(output);
         } finally {
             if (process.isAlive()) {

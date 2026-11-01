@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.setting.provider.StreamType;
 import net.hasor.cobble.setting.provider.xml.XmlSettingsReader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class XmlProviderTest {
     @Test

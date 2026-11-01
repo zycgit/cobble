@@ -8,10 +8,12 @@
 package net.hasor.cobble.ref;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RecycleObjectPoolTest {
     @Test
@@ -219,7 +221,8 @@ public class RecycleObjectPoolTest {
         assertSame(next, pool.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void sharedOverflowTransfersAcrossThreadsWithoutStealingLocalObjects() throws Exception {
         RecycleObjectPool<Object> pool = new RecycleObjectPool<>(Object::new, value -> {
         }, value -> {
@@ -249,7 +252,8 @@ public class RecycleObjectPoolTest {
         assertSame(first, pool.get());
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void globalCountLimitIsStrictUnderConcurrentReturns() throws Exception {
         for (int round = 0; round < 8; round++) {
             RecycleObjectPool<Object> pool = new RecycleObjectPool<>(Object::new, value -> {

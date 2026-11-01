@@ -11,8 +11,8 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class I18nUtilsTest {
     @Test
@@ -24,7 +24,7 @@ public class I18nUtilsTest {
         assert i18n.getMessage("abc", null, "en_US").equals("message form en_us {0} zyc");
         assert i18n.getMessage("abc", new Object[] { 123 }, "zh_CN").equals("message form zh_cn 123 zyc");
         assert i18n.getMessage("abc", new Object[] { 123 }, "en_US").equals("message form en_us 123 zyc");
-        Assert.assertEquals("missing", i18n.getMessage("missing", null, (Locale) null));
+        Assertions.assertEquals("missing", i18n.getMessage("missing", null, (Locale) null));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class I18nUtilsTest {
         CountDownLatch resourceLoadFinished = new CountDownLatch(1);
         try {
             Future<String> message = executor.submit(() -> i18n.getMessage("abc", null, "zh_CN"));
-            Assert.assertTrue(localeLookupStarted.await(5, TimeUnit.SECONDS));
+            Assertions.assertTrue(localeLookupStarted.await(5, TimeUnit.SECONDS));
 
             Future<?> resourceLoad = executor.submit(() -> {
                 resourceLoadStarted.countDown();
@@ -67,13 +67,13 @@ public class I18nUtilsTest {
                     resourceLoadFinished.countDown();
                 }
             });
-            Assert.assertTrue(resourceLoadStarted.await(5, TimeUnit.SECONDS));
-            Assert.assertFalse(resourceLoadFinished.await(200, TimeUnit.MILLISECONDS));
+            Assertions.assertTrue(resourceLoadStarted.await(5, TimeUnit.SECONDS));
+            Assertions.assertFalse(resourceLoadFinished.await(200, TimeUnit.MILLISECONDS));
 
             continueLocaleLookup.countDown();
-            Assert.assertEquals("message form zh_cn {0} MY_NAME", message.get(5, TimeUnit.SECONDS));
+            Assertions.assertEquals("message form zh_cn {0} MY_NAME", message.get(5, TimeUnit.SECONDS));
             resourceLoad.get(5, TimeUnit.SECONDS);
-            Assert.assertEquals("loaded concurrently", i18n.getMessage("concurrent", null, "zh_CN"));
+            Assertions.assertEquals("loaded concurrently", i18n.getMessage("concurrent", null, "zh_CN"));
         } finally {
             continueLocaleLookup.countDown();
             executor.shutdownNow();

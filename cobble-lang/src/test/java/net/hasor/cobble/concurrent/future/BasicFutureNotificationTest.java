@@ -9,14 +9,15 @@ import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedClass;
+import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(Parameterized.class)
+@ParameterizedClass(name = "{0}/{1}/timed={2}", autoCloseArguments = false, quoteTextArguments = false)
+@MethodSource("cases")
 public class BasicFutureNotificationTest {
-    @Parameterized.Parameters(name = "{0}/{1}/timed={2}")
     public static Collection<Object[]> cases() {
         Collection<Object[]> cases = new ArrayList<>();
         for (String outcome : new String[] { "completed", "failed", "cancelled" }) {
@@ -39,7 +40,8 @@ public class BasicFutureNotificationTest {
         this.timed = timed;
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void terminalTransitionAlwaysWakesAllWaiters() throws Exception {
         AssertionError observerError = new AssertionError("observer error");
         IOException cause = new IOException("task failure");
@@ -131,7 +133,7 @@ public class BasicFutureNotificationTest {
             }
             for (Thread thread : threads) {
                 thread.join(2000);
-                assertFalse("waiter did not stop", thread.isAlive());
+                assertFalse(thread.isAlive(), "waiter did not stop");
             }
         }
     }

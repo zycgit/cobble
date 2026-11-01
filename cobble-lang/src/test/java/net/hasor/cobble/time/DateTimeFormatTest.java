@@ -9,7 +9,7 @@ package net.hasor.cobble.time;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static net.hasor.cobble.time.DateTimeFormat.WKF_OFFSET_TIME24_S1;
 
 public class DateTimeFormatTest {

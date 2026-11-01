@@ -15,7 +15,7 @@ import java.util.Date;
 import net.hasor.cobble.ClassUtils;
 import net.hasor.cobble.dynamic.anno.CommonAopInterceptor;
 import net.hasor.cobble.dynamic.beans.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EnhanceTest {
     @Test

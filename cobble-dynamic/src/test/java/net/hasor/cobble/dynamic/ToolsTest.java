@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import net.hasor.cobble.dynamic.anno.custom.MyAop;
 import net.hasor.cobble.dynamic.beans.extend.GrandFatherBean;
 import net.hasor.cobble.dynamic.beans.extend.JamesBean;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ToolsTest {
     @Test

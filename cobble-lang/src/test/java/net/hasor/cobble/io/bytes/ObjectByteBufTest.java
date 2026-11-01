@@ -8,7 +8,7 @@
 package net.hasor.cobble.io.bytes;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ObjectByteBufTest {
     @Test

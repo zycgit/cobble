@@ -12,7 +12,7 @@ import java.net.URI;
 import java.util.Objects;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link JarFile}.

@@ -8,8 +8,8 @@
 package net.hasor.cobble.ref;
 import java.lang.reflect.Field;
 import java.util.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CursorArrayListTest {
     @Test
@@ -260,7 +260,7 @@ public class CursorArrayListTest {
         assertTrue(head >= 0 && head + list.size() <= elements.length);
         for (int i = 0; i < elements.length; i++) {
             if (i < head || i >= head + list.size()) {
-                assertNull("retained slot " + i, elements[i]);
+                assertNull(elements[i], "retained slot " + i);
             }
         }
     }

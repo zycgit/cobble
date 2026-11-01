@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.Objects;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * use jar -cvf0 xxx.jar * to package jar.

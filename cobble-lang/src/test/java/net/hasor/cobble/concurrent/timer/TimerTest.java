@@ -7,7 +7,7 @@
  */
 package net.hasor.cobble.concurrent.timer;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TimerTest {
     @Test

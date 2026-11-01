@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import net.hasor.cobble.ref.SpaceHashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author 赵永春 (zyc@hasor.net)

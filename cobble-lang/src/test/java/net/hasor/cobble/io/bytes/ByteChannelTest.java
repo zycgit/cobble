@@ -8,7 +8,7 @@
 package net.hasor.cobble.io.bytes;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ByteChannelTest {
     @Test

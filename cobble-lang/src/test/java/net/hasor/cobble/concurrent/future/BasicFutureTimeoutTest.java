@@ -9,8 +9,9 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BasicFutureTimeoutTest {
     @Test
@@ -40,18 +41,20 @@ public class BasicFutureTimeoutTest {
         assertNull(cancelled.get(0, TimeUnit.SECONDS));
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void positiveSubmillisecondWaitsDoNotBecomeImmediateTimeouts() {
         BasicFuture<String> future = new BasicFuture<>();
         for (int i = 0; i < 20; i++) {
             long start = System.nanoTime();
             assertThrows(TimeoutException.class, () -> future.get(500000, TimeUnit.NANOSECONDS));
-            assertTrue("positive timeout was truncated", System.nanoTime() - start >= 500000);
+            assertTrue(System.nanoTime() - start >= 500000, "positive timeout was truncated");
         }
         assertFalse(future.isDone());
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void saturatedConversionStillAllowsCompletion() throws Exception {
         BasicFuture<String> future = new BasicFuture<>();
         FutureTask<String> result = new FutureTask<>(() -> future.get(Long.MAX_VALUE, TimeUnit.DAYS));
@@ -65,7 +68,8 @@ public class BasicFutureTimeoutTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void expirationDoesNotCompleteOrCancelTheFuture() throws Exception {
         BasicFuture<String> future = new BasicFuture<>();
         assertThrows(TimeoutException.class, () -> future.get(20, TimeUnit.MILLISECONDS));
@@ -75,7 +79,8 @@ public class BasicFutureTimeoutTest {
         assertEquals("later", future.get(0, TimeUnit.NANOSECONDS));
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void failureWakesTimedWaitersWithTheOriginalCause() throws Exception {
         BasicFuture<String> future = new BasicFuture<>();
         IOException cause = new IOException("expected");
@@ -97,7 +102,8 @@ public class BasicFutureTimeoutTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void cancellationWakesTimedWaitersWithoutChangingTheResultContract() throws Exception {
         BasicFuture<String> future = new BasicFuture<>();
         FutureTask<String> result = new FutureTask<>(() -> future.get(1, TimeUnit.DAYS));
@@ -112,7 +118,8 @@ public class BasicFutureTimeoutTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void interruptionEscapesWithoutCompletingTheFuture() throws Exception {
         BasicFuture<String> future = new BasicFuture<>();
         FutureTask<String> result = new FutureTask<>(() -> future.get(1, TimeUnit.DAYS));
@@ -127,7 +134,8 @@ public class BasicFutureTimeoutTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void notificationsDoNotRestartTheTimeoutBudget() throws Exception {
         BasicFuture<String> future = new BasicFuture<>();
         AtomicBoolean running = new AtomicBoolean(true);
@@ -177,6 +185,6 @@ public class BasicFutureTimeoutTest {
     private static void stop(Thread thread) throws InterruptedException {
         thread.interrupt();
         thread.join(2000);
-        assertFalse("waiter did not stop", thread.isAlive());
+        assertFalse(thread.isAlive(), "waiter did not stop");
     }
 }

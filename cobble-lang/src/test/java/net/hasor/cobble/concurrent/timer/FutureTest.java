@@ -7,7 +7,7 @@
  */
 package net.hasor.cobble.concurrent.timer;
 import net.hasor.cobble.concurrent.future.BasicFuture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class FutureTest {
     @Test

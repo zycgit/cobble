@@ -7,7 +7,7 @@
  */
 package net.hasor.cobble;
 import net.hasor.cobble.concurrent.QoSBucket;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author 赵永春 (zyc@hasor.net)

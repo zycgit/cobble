@@ -19,7 +19,8 @@ import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests for {@link JarFile}.
@@ -36,14 +37,16 @@ public class JarResourceLoaderTests {
         assert !loader.exist("abc/abc.text");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void jarLoaderCloseTest() throws Exception {
-        String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
-        try (JarResourceLoader loader = new JarResourceLoader(new File(file))) {
-            assert loader.exist("app/FooImpl.class");
-            loader.close();
-            loader.exist("app/FooImpl.class");
-        }
+        assertThrows(IllegalStateException.class, () -> {
+            String file = ResourcesUtils.getResource("/jars/app-1.jar").getFile();
+            try (JarResourceLoader loader = new JarResourceLoader(new File(file))) {
+                assert loader.exist("app/FooImpl.class");
+                loader.close();
+                loader.exist("app/FooImpl.class");
+            }
+        });
     }
 
     @Test

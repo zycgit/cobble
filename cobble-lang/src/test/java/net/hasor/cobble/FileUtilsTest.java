@@ -9,7 +9,7 @@ package net.hasor.cobble;
 import java.io.File;
 import java.util.List;
 import net.hasor.cobble.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /***
  * 创建 JDBC

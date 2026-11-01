@@ -8,7 +8,7 @@
 package net.hasor.cobble;
 import java.io.IOException;
 import java.io.InputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author 赵永春 (zyc@hasor.net)

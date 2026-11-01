@@ -19,8 +19,8 @@ import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link JarFile}.
@@ -28,7 +28,7 @@ import org.junit.Test;
 public class ImportResourceLoaderTests {
     private ImportResourceLoader loader;
 
-    @Before
+    @BeforeEach
     public void beforeImport() throws IOException {
         String file1 = ResourcesUtils.getResource("/dir/basic.jar").getFile();
         String file2 = ResourcesUtils.getResource("/dir/app-1.jar").getFile();

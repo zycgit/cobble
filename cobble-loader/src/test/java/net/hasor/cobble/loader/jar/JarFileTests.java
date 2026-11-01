@@ -19,7 +19,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link JarFile}.

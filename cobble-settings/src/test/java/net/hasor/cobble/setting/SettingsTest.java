@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import net.hasor.cobble.setting.enums.SelectEnum;
 import net.hasor.cobble.setting.provider.StreamType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SettingsTest {
     private static final String DATA_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";

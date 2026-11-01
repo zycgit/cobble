@@ -17,8 +17,8 @@ import net.hasor.cobble.ResourcesUtils;
 import net.hasor.cobble.io.IOUtils;
 import net.hasor.cobble.loader.*;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link JarFile}.
@@ -113,16 +113,16 @@ public class ClassResourceLoaderTests {
         ClassPathResourceLoader loader = new ClassPathResourceLoader();
         try {
             loader.scanOneResource(MatchType.None, ScanEvent::getStream, new String[] { "dir/app-1.jar/app" });
-            Assert.fail();
+            Assertions.fail();
         } catch (IllegalArgumentException e) {
-            Assert.assertTrue(e.getMessage().contains("bounded match type"));
+            Assertions.assertTrue(e.getMessage().contains("bounded match type"));
         }
 
         try {
             loader.scanResources(MatchType.Prefix, ScanEvent::getStream, new String[] { "/" });
-            Assert.fail();
+            Assertions.fail();
         } catch (IllegalArgumentException e) {
-            Assert.assertTrue(e.getMessage().contains("cannot be root"));
+            Assertions.assertTrue(e.getMessage().contains("cannot be root"));
         }
 
         assert loader.scanOneResource(MatchType.Prefix, ScanEvent::getStream, new String[] { "net.hasor" }) == null;
@@ -154,9 +154,9 @@ public class ClassResourceLoaderTests {
 
         try {
             new CobbleClassScanner(resourceLoader).getClassSet(ClassMatchers.subClassesOf(Object.class));
-            Assert.fail();
+            Assertions.fail();
         } catch (IllegalArgumentException e) {
-            Assert.assertTrue(e.getMessage().contains("requires package ranges"));
+            Assertions.assertTrue(e.getMessage().contains("requires package ranges"));
         }
 
         Set<Class<?>> classSet = new CobbleClassScanner(resourceLoader).getClassSet(new String[] { "net.hasor.cobble.loader.providers" }, ClassMatchers.subClassesOf(Object.class));

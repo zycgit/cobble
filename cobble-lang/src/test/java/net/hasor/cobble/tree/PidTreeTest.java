@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import net.hasor.cobble.BeanUtils;
 import net.hasor.cobble.CollectionUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PidTreeTest {
     private TreeDTO newProject(int id, Integer pid, String name) {

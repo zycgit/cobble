@@ -3,9 +3,11 @@
  * Licensed under the Apache License, Version 2.0.
  */
 package net.hasor.cobble;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NetworkUtilsDnsTest {
     @Test
@@ -83,7 +85,8 @@ public class NetworkUtilsDnsTest {
         rejects("ü".repeat(64) + ".example");
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void processesLongMappedInputWithoutQuadraticNormalization() {
         assertEquals("xn--fiqs8s", NetworkUtils.toDNSAscii("\u00ad".repeat(100000) + "中国"));
         rejects("a" + "\u0315\u0300".repeat(50000) + ".example");
@@ -91,7 +94,7 @@ public class NetworkUtilsDnsTest {
     }
 
     private static void rejects(String name) {
-        assertThrows(String.valueOf(name), IllegalArgumentException.class, () -> NetworkUtils.toDNSAscii(name));
-        assertThrows(String.valueOf(name), IllegalArgumentException.class, () -> NetworkUtils.toDNSUnicode(name));
+        assertThrows(IllegalArgumentException.class, () -> NetworkUtils.toDNSAscii(name), String.valueOf(name));
+        assertThrows(IllegalArgumentException.class, () -> NetworkUtils.toDNSUnicode(name), String.valueOf(name));
     }
 }

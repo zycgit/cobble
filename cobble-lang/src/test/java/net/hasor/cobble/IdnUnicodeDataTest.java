@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /** Official Unicode data, with this utility's documented DNS name policy. */
 public class IdnUnicodeDataTest {
@@ -42,11 +42,11 @@ public class IdnUnicodeDataTest {
                     rootNames++;
                 }
                 if (error) {
-                    assertThrows("ASCII: " + body, IllegalArgumentException.class, () -> NetworkUtils.toDNSAscii(source));
-                    assertThrows("Unicode: " + body, IllegalArgumentException.class, () -> NetworkUtils.toDNSUnicode(source));
+                    assertThrows(IllegalArgumentException.class, () -> NetworkUtils.toDNSAscii(source), "ASCII: " + body);
+                    assertThrows(IllegalArgumentException.class, () -> NetworkUtils.toDNSUnicode(source), "Unicode: " + body);
                 } else {
-                    assertEquals(body, ascii, NetworkUtils.toDNSAscii(source));
-                    assertEquals(body, unicode, NetworkUtils.toDNSUnicode(source));
+                    assertEquals(ascii, NetworkUtils.toDNSAscii(source), body);
+                    assertEquals(unicode, NetworkUtils.toDNSUnicode(source), body);
                 }
                 count++;
             }
@@ -76,7 +76,7 @@ public class IdnUnicodeDataTest {
                     values[i] = value.toString();
                 }
                 for (int i = 0; i < values.length; i++) {
-                    assertEquals(body, values[i < 3 ? 1 : 3], IdnCodec.normalizeNfc(values[i]));
+                    assertEquals(values[i < 3 ? 1 : 3], IdnCodec.normalizeNfc(values[i]), body);
                 }
                 rows++;
             }
@@ -114,7 +114,7 @@ public class IdnUnicodeDataTest {
 
     private static BufferedReader resource(String name) throws Exception {
         InputStream input = IdnUnicodeDataTest.class.getResourceAsStream("idna/" + name);
-        assertNotNull(name, input);
+        assertNotNull(input, name);
         return new BufferedReader(new InputStreamReader(new GZIPInputStream(input), StandardCharsets.UTF_8));
     }
 }

@@ -6,10 +6,9 @@
  * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.io;
-
 import java.io.IOException;
 import java.io.StringReader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link IOUtils}.

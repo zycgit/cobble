@@ -17,7 +17,7 @@ import net.hasor.cobble.loader.MatchType;
 import net.hasor.cobble.loader.ScanEvent;
 import net.hasor.cobble.loader.Scanner;
 import net.hasor.cobble.loader.jar.JarFile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link JarFile}.

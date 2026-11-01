@@ -14,7 +14,7 @@ import net.hasor.cobble.dynamic.anno.aop.ClassAnnoInterceptor;
 import net.hasor.cobble.dynamic.anno.aop.MethodAnnoInterceptor;
 import net.hasor.cobble.dynamic.anno.custom.MethodMyAopBean;
 import net.hasor.cobble.dynamic.anno.custom.MyAopInterceptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AnnoTest {
     @Test

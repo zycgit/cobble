@@ -6,11 +6,10 @@
  * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.reflect.annotations;
-
 import java.io.IOException;
 import net.hasor.cobble.reflect.Annotation;
 import net.hasor.cobble.reflect.Annotations;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TypeHasArrayTest {
 

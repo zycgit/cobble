@@ -6,12 +6,11 @@
  * https://www.apache.org/licenses/LICENSE-2.0
  */
 package net.hasor.cobble.reflect.annotations.hierarchy;
-
 import java.io.IOException;
 import net.hasor.cobble.reflect.Annotation;
 import net.hasor.cobble.reflect.Annotations;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 测试 Annotations.ofClassHierarchy 方法
@@ -57,7 +56,7 @@ public class HierarchyTest {
 
         // 父类字段 id: @Column(name="parent_id", primary=true)
         Annotations idAnno = anno.getField("id");
-        assertNotNull("parent field 'id' should be visible", idAnno);
+        assertNotNull(idAnno, "parent field 'id' should be visible");
         Annotation idCol = idAnno.getAnnotation(Column.class);
         assertNotNull(idCol);
         assertEquals("parent_id", idCol.getString("name"));
@@ -65,7 +64,7 @@ public class HierarchyTest {
 
         // 父类字段 name: @Column(name="parent_name", update=false)
         Annotations nameAnno = anno.getField("name");
-        assertNotNull("parent field 'name' should be visible", nameAnno);
+        assertNotNull(nameAnno, "parent field 'name' should be visible");
         Annotation nameCol = nameAnno.getAnnotation(Column.class);
         assertNotNull(nameCol);
         assertEquals("parent_name", nameCol.getString("name"));
@@ -73,7 +72,7 @@ public class HierarchyTest {
 
         // 父类字段 secret: @Ignore
         Annotations secretAnno = anno.getField("secret");
-        assertNotNull("parent field 'secret' should be visible", secretAnno);
+        assertNotNull(secretAnno, "parent field 'secret' should be visible");
         assertNotNull(secretAnno.getAnnotation(Ignore.class));
     }
 
@@ -123,12 +122,12 @@ public class HierarchyTest {
 
         // MiddleEntity 字段 label
         Annotations labelAnno = anno.getField("label");
-        assertNotNull("middle class field 'label' should be visible", labelAnno);
+        assertNotNull(labelAnno, "middle class field 'label' should be visible");
         assertEquals("mid_label", labelAnno.getAnnotation(Column.class).getString("name"));
 
         // GrandParentEntity 字段 code
         Annotations codeAnno = anno.getField("code");
-        assertNotNull("grandparent field 'code' should be visible", codeAnno);
+        assertNotNull(codeAnno, "grandparent field 'code' should be visible");
         Annotation codeCol = codeAnno.getAnnotation(Column.class);
         assertEquals("gp_code", codeCol.getString("name"));
         assertEquals("true", codeCol.getString("primary"));
