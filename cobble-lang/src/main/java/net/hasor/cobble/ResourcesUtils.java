@@ -101,11 +101,7 @@ public class ResourcesUtils {
         } else if (resourcePath.startsWith("http:") || resourcePath.startsWith("https:") || resourcePath.startsWith("file:") || resourcePath.startsWith("jar:") || resourcePath.startsWith("ftp:")) {
             return new URL(resourcePath);
         } else {
-            URL resource = classLoader.getResource(formatResource(resourcePath));
-            if (resource != null) {
-                resource = new URL(StringUtils.escapeDecode(resource.toString()));
-            }
-            return resource;
+            return classLoader.getResource(formatResource(resourcePath));
         }
     }
 
@@ -124,8 +120,7 @@ public class ResourcesUtils {
         ArrayList<URL> urls = new ArrayList<>();
         Enumeration<URL> enumeration = classLoader.getResources(resourcePath);
         while (enumeration.hasMoreElements()) {
-            URL url = enumeration.nextElement();
-            urls.add(new URL(StringUtils.escapeDecode(url.toString())));
+            urls.add(enumeration.nextElement());
         }
         return urls;
     }
